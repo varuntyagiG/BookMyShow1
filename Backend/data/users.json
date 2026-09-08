@@ -1,0 +1,26 @@
+[
+  {
+    "id": "u_demo_1",
+    "name": "Demo User",
+    "email": "demo@bookmyshow.com",
+    "phone": "9876543210",
+    "password": "$2b$10$bh40qg5ngeUA2QfnVptJP.QpMx5GxAtux67OOWJUSbTOozQ3bGVYm",
+    "createdAt": "2026-09-08T17:06:20.698Z"
+  },
+  {
+    "id": "u_1788887637878",
+    "name": "Test User",
+    "email": "tester@gmail.com",
+    "phone": "9998887776",
+    "password": "$2b$10$J7aNsAPOtH.XGhWBRlugj.dHuVhMauoTP4z9BEHaGrs51Y1ZXnRue",
+    "createdAt": "2026-09-08T17:13:57.878Z"
+  },
+  {
+    "id": "u_1788890092838",
+    "name": "VARUN TYAGI",
+    "email": "varuntyagi2004@gmail.com",
+    "phone": "9258066241",
+    "password": "$2b$10$qrUX4EAfo6UOap5m6kBuzu.oZ.2sW22W310/oMMUqSoybn6Dhq3Kq",
+    "createdAt": "2026-09-08T17:54:52.838Z"
+  }
+]
