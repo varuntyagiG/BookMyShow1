@@ -88,6 +88,12 @@ const movieSchema = new mongoose.Schema(
     isPromoted: {
       type: Boolean,
       default: false
+    },
+    status: {
+      type: String,
+      enum: ['published', 'draft', 'archived'],
+      default: 'published',
+      index: true
     }
   },
   {

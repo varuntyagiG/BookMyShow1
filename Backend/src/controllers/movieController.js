@@ -14,7 +14,9 @@ async function getAllHomeData(req, res) {
   try {
     const { city, search } = req.query;
 
-    let movieQuery = {};
+    let movieQuery = {
+      status: { $nin: ['draft', 'archived'] }
+    };
     if (city && city !== 'All') {
       movieQuery.cities = city;
     }
@@ -85,6 +87,10 @@ async function getMovieById(req, res) {
       return res.status(404).json({ success: false, message: 'Movie not found' });
     }
 
+    if (movie.status && ['draft', 'archived'].includes(movie.status)) {
+      return res.status(404).json({ success: false, message: 'This movie is currently unpublished.' });
+    }
+
     return res.json({ success: true, movie: normalizeItem(movie) });
   } catch (error) {
     console.error('Error in getMovieById:', error);
@@ -98,7 +104,9 @@ async function getCategoryItems(req, res) {
     const { city, language, genre, format } = req.query;
 
     if (category === 'movies') {
-      const filter = {};
+      const filter = {
+        status: { $nin: ['draft', 'archived'] }
+      };
       if (city && city !== 'All') {
         filter.cities = city;
       }
