@@ -1,133 +1,143 @@
-const { getMovieData } = require('../config/db');
+const Movie = require('../models/Movie');
+const CategoryItem = require('../models/CategoryItem');
+const mongoose = require('mongoose');
 
-function getAllHomeData(req, res) {
+// Helper to normalize document output with backwards-compatible `id` property
+function normalizeItem(doc) {
+  if (!doc) return null;
+  const obj = doc.toObject ? doc.toObject() : { ...doc };
+  obj.id = obj.customId || obj._id.toString();
+  return obj;
+}
+
+async function getAllHomeData(req, res) {
   try {
     const { city, search } = req.query;
-    const data = getMovieData();
 
-    let movies = [...(data.movies || [])];
-    let events = [...(data.events || [])];
-    let banners = [...(data.banners || [])];
-    let premieres = [...(data.premieres || [])];
-    let sports = [...(data.sports || [])];
-    let plays = [...(data.plays || [])];
-    let activities = [...(data.activities || [])];
-
+    let movieQuery = {};
     if (city && city !== 'All') {
-      movies = movies.filter(m => !m.cities || m.cities.includes(city));
-      events = events.filter(e => !e.city || e.city.toLowerCase() === city.toLowerCase());
-      sports = sports.filter(s => !s.city || s.city.toLowerCase() === city.toLowerCase());
-      plays = plays.filter(p => !p.city || p.city.toLowerCase() === city.toLowerCase());
-      activities = activities.filter(a => !a.city || a.city.toLowerCase() === city.toLowerCase());
+      movieQuery.cities = city;
+    }
+    if (search) {
+      movieQuery.$or = [
+        { title: { $regex: search, $options: 'i' } },
+        { genre: { $regex: search, $options: 'i' } },
+        { language: { $regex: search, $options: 'i' } }
+      ];
     }
 
-    if (search) {
-      const q = search.toLowerCase();
-      movies = movies.filter(m =>
-        m.title.toLowerCase().includes(q) ||
-        m.genre.some(g => g.toLowerCase().includes(q)) ||
-        m.language.toLowerCase().includes(q)
-      );
-      events = events.filter(e =>
-        e.title.toLowerCase().includes(q) ||
-        e.category.toLowerCase().includes(q)
-      );
-      sports = sports.filter(s =>
-        s.title.toLowerCase().includes(q) ||
-        s.category.toLowerCase().includes(q)
-      );
-      plays = plays.filter(p =>
-        p.title.toLowerCase().includes(q) ||
-        p.category.toLowerCase().includes(q)
-      );
-    }
+    const [moviesDocs, bannersDocs, eventsDocs, sportsDocs, playsDocs, activitiesDocs, premieresDocs] = await Promise.all([
+      Movie.find(movieQuery).sort({ rating: -1 }),
+      CategoryItem.find({ categoryType: 'banner' }),
+      CategoryItem.find({
+        categoryType: 'event',
+        ...(city && city !== 'All' ? { city: { $regex: `^${city}$`, $options: 'i' } } : {})
+      }),
+      CategoryItem.find({
+        categoryType: 'sport',
+        ...(city && city !== 'All' ? { city: { $regex: `^${city}$`, $options: 'i' } } : {})
+      }),
+      CategoryItem.find({
+        categoryType: 'play',
+        ...(city && city !== 'All' ? { city: { $regex: `^${city}$`, $options: 'i' } } : {})
+      }),
+      CategoryItem.find({
+        categoryType: 'activity',
+        ...(city && city !== 'All' ? { city: { $regex: `^${city}$`, $options: 'i' } } : {})
+      }),
+      CategoryItem.find({ categoryType: 'premiere' })
+    ]);
 
     return res.json({
       success: true,
       data: {
-        banners,
-        movies,
-        events,
-        sports,
-        plays,
-        activities,
-        premieres
+        banners: bannersDocs.map(normalizeItem),
+        movies: moviesDocs.map(normalizeItem),
+        events: eventsDocs.map(normalizeItem),
+        sports: sportsDocs.map(normalizeItem),
+        plays: playsDocs.map(normalizeItem),
+        activities: activitiesDocs.map(normalizeItem),
+        premieres: premieresDocs.map(normalizeItem)
       }
     });
   } catch (error) {
-    console.error('Error fetching home data:', error);
+    console.error('Error fetching home data from MongoDB:', error);
     return res.status(500).json({
       success: false,
-      message: 'Failed to retrieve movies and events.'
+      message: 'Failed to retrieve movies and events from database.'
     });
   }
 }
 
-function getMovieById(req, res) {
+async function getMovieById(req, res) {
   try {
     const { id } = req.params;
-    const data = getMovieData();
-    const movie = data.movies.find(m => m.id === id);
+
+    let movie = null;
+    if (mongoose.Types.ObjectId.isValid(id)) {
+      movie = await Movie.findById(id);
+    }
+    if (!movie) {
+      movie = await Movie.findOne({ customId: id });
+    }
 
     if (!movie) {
       return res.status(404).json({ success: false, message: 'Movie not found' });
     }
 
-    return res.json({ success: true, movie });
+    return res.json({ success: true, movie: normalizeItem(movie) });
   } catch (error) {
-    return res.status(500).json({ success: false, message: 'Server error' });
+    console.error('Error in getMovieById:', error);
+    return res.status(500).json({ success: false, message: 'Server error retrieving movie' });
   }
 }
 
-function getCategoryItems(req, res) {
+async function getCategoryItems(req, res) {
   try {
     const { category } = req.params; // 'movies' | 'events' | 'sports' | 'plays' | 'activities' | 'stream'
     const { city, language, genre, format } = req.query;
-    const data = getMovieData();
 
     if (category === 'movies') {
-      let list = [...data.movies];
+      const filter = {};
       if (city && city !== 'All') {
-        list = list.filter(m => !m.cities || m.cities.includes(city));
+        filter.cities = city;
       }
       if (language) {
-        list = list.filter(m => m.language.toLowerCase().includes(language.toLowerCase()));
+        filter.language = { $regex: language, $options: 'i' };
       }
       if (genre) {
-        list = list.filter(m => m.genre.some(g => g.toLowerCase() === genre.toLowerCase()));
+        filter.genre = { $regex: genre, $options: 'i' };
       }
       if (format) {
-        list = list.filter(m => m.formats && m.formats.some(f => f.toLowerCase() === format.toLowerCase()));
+        filter.formats = { $regex: format, $options: 'i' };
       }
-      return res.json({ success: true, items: list });
+
+      const movies = await Movie.find(filter).sort({ rating: -1 });
+      return res.json({ success: true, items: movies.map(normalizeItem) });
     }
 
-    if (category === 'stream') {
-      return res.json({ success: true, items: data.premieres });
+    const typeMapping = {
+      stream: 'premiere',
+      events: 'event',
+      sports: 'sport',
+      plays: 'play',
+      activities: 'activity'
+    };
+
+    const targetType = typeMapping[category];
+    if (!targetType) {
+      return res.status(404).json({ success: false, message: 'Unknown category' });
     }
 
-    if (category === 'events') {
-      let list = [...data.events];
-      if (city && city !== 'All') {
-        list = list.filter(e => !e.city || e.city.toLowerCase() === city.toLowerCase());
-      }
-      return res.json({ success: true, items: list });
+    const itemFilter = { categoryType: targetType };
+    if (city && city !== 'All' && targetType !== 'premiere') {
+      itemFilter.city = { $regex: `^${city}$`, $options: 'i' };
     }
 
-    if (category === 'sports') {
-      return res.json({ success: true, items: data.sports || [] });
-    }
-
-    if (category === 'plays') {
-      return res.json({ success: true, items: data.plays || [] });
-    }
-
-    if (category === 'activities') {
-      return res.json({ success: true, items: data.activities || [] });
-    }
-
-    return res.status(404).json({ success: false, message: 'Unknown category' });
+    const items = await CategoryItem.find(itemFilter);
+    return res.json({ success: true, items: items.map(normalizeItem) });
   } catch (err) {
+    console.error('Error fetching category data:', err);
     return res.status(500).json({ success: false, message: 'Error fetching category data' });
   }
 }

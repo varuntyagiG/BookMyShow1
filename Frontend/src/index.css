@@ -2,18 +2,53 @@
 
 @layer base {
   :root {
+    /* Brand */
     --bms-primary: #F84464;
+    --bms-primary-hover: #E03A58;
+    --bms-primary-light: #FDE8EC;
+
+    /* Surfaces */
     --bms-dark: #333545;
     --bms-darker: #222432;
+    --bms-deep-black: #121216;
     --bms-stream: #2B3148;
+    --bms-stream-dark: #1F2533;
     --bms-light-bg: #F5F5FA;
+    --bms-card-border: #EEEEF2;
+
+    /* Text */
+    --bms-text: #222432;
+    --bms-text-muted: #666666;
+    --bms-text-subtle: #9999A8;
+
+    /* Status */
+    --bms-green: #4ABD5D;
+    --bms-orange: #FF9800;
+    --bms-red: #E53935;
+
+    /* Scrollbar */
+    --bms-scrollbar-track: #F1F1F4;
+    --bms-scrollbar-thumb: #C4C4CF;
+    --bms-scrollbar-thumb-hover: #9999A8;
+
+    /* Motion */
+    --bms-transition-fast: 150ms ease;
+    --bms-transition-base: 250ms ease;
+  }
+
+  *,
+  *::before,
+  *::after {
+    box-sizing: border-box;
   }
 
   body {
     margin: 0;
-    font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, 'Helvetica Neue', Arial, sans-serif;
-    background-color: #F5F5FA;
-    color: #333333;
+    font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, 'Inter', 'Helvetica Neue', Arial, sans-serif;
+    background-color: var(--bms-light-bg);
+    color: var(--bms-text);
+    -webkit-font-smoothing: antialiased;
+    -moz-osx-font-smoothing: grayscale;
     overflow-x: hidden;
   }
 
@@ -25,6 +60,21 @@
     margin: 0;
     text-align: left;
   }
+
+  /* Accessible focus ring — don't lose this for keyboard users */
+  a:focus-visible,
+  button:focus-visible,
+  input:focus-visible,
+  [tabindex]:focus-visible {
+    outline: 2px solid var(--bms-primary);
+    outline-offset: 2px;
+    border-radius: 4px;
+  }
+
+  ::selection {
+    background-color: var(--bms-primary-light);
+    color: var(--bms-primary-hover);
+  }
 }
 
 /* Custom scrollbars */
@@ -33,21 +83,55 @@
   height: 6px;
 }
 ::-webkit-scrollbar-track {
-  background: #f1f1f1;
+  background: var(--bms-scrollbar-track);
 }
 ::-webkit-scrollbar-thumb {
-  background: #ccc;
-  border-radius: 3px;
+  background: var(--bms-scrollbar-thumb);
+  border-radius: 4px;
 }
 ::-webkit-scrollbar-thumb:hover {
-  background: #999;
+  background: var(--bms-scrollbar-thumb-hover);
 }
 
-/* Hide scrollbar for clean carousels */
+/* Hide scrollbar for carousels while allowing smooth scrolling */
 .no-scrollbar::-webkit-scrollbar {
   display: none;
 }
 .no-scrollbar {
   -ms-overflow-style: none;
   scrollbar-width: none;
+}
+
+/* BookMyShow Screen Curved Perspective Effect */
+.cinema-screen-curve {
+  position: relative;
+  height: 36px;
+  width: 75%;
+  margin: 0 auto 30px;
+  border-top: 4px solid var(--bms-primary);
+  border-radius: 50% / 12px 12px 0 0;
+  box-shadow: 0 -8px 24px -4px rgba(248, 68, 100, 0.45);
+}
+
+/* Seat map legend / status swatches */
+.seat-available { background-color: var(--bms-card-border); }
+.seat-selected  { background-color: var(--bms-primary); }
+.seat-sold      { background-color: var(--bms-text-subtle); opacity: 0.5; }
+
+/* Skeleton loading shimmer, handy for movie card grids */
+.skeleton {
+  background: linear-gradient(90deg, var(--bms-card-border) 25%, #E4E4EC 37%, var(--bms-card-border) 63%);
+  background-size: 400% 100%;
+  animation: skeleton-shimmer 1.4s ease infinite;
+}
+@keyframes skeleton-shimmer {
+  0%   { background-position: 100% 50%; }
+  100% { background-position: 0% 50%; }
+}
+
+/* Rating badge glow, e.g. for high-rated films */
+.rating-badge {
+  background-color: var(--bms-green);
+  color: white;
+  transition: background-color var(--bms-transition-fast);
 }

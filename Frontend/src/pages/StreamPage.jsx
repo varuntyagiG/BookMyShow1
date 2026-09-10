@@ -1,6 +1,6 @@
 import React, { useState, useEffect } from 'react';
 import { contentApi } from '../services/api';
-import { Play, Crown, Tv, ShieldCheck, Film, CheckCircle, X, Loader2 } from 'lucide-react';
+import { Crown, Tv, ShieldCheck, Film, CheckCircle, X, Loader2 } from 'lucide-react';
 import { useAuth } from '../context/AuthContext';
 
 export default function StreamPage() {
@@ -36,45 +36,55 @@ export default function StreamPage() {
   };
 
   return (
-    <div className="bg-[#181A20] text-white min-h-screen py-10">
+    <div className="bg-[#121216] text-white min-h-screen py-8 sm:py-10">
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-        
+
         {/* Stream Brand Hero Banner */}
-        <div className="bg-gradient-to-r from-[#2B3148] via-[#1F2533] to-[#2B3148] rounded-2xl p-8 sm:p-12 mb-10 border border-gray-700/40 relative overflow-hidden">
+        <div className="relative bg-gradient-to-br from-[#222432] via-[#1C2130] to-[#121216] rounded-3xl p-6 sm:p-10 lg:p-12 mb-10 sm:mb-12 border border-white/10 overflow-hidden shadow-[0_20px_60px_-15px_rgba(0,0,0,0.6)]">
+          {/* Ambient accent glow */}
+          <div className="pointer-events-none absolute -top-24 -right-24 w-72 h-72 bg-[#F84464]/20 rounded-full blur-3xl" />
+          <div className="pointer-events-none absolute -bottom-24 -left-16 w-64 h-64 bg-[#F84464]/10 rounded-full blur-3xl" />
+
           <div className="relative z-10 max-w-2xl">
-            <div className="inline-flex items-center gap-1.5 px-3 py-1 bg-amber-400/20 text-amber-300 border border-amber-400/30 text-xs font-bold rounded-full mb-4">
+            <div className="inline-flex items-center gap-1.5 px-3 py-1.5 bg-[#F84464]/15 text-[#F84464] border border-[#F84464]/30 text-[11px] font-bold rounded-full mb-5 uppercase tracking-wider shadow-[0_0_20px_-6px_rgba(248,68,100,0.5)]">
               <Crown className="w-3.5 h-3.5" />
-              <span>BOOKMYSHOW STREAM</span>
+              <span>BookMyShow Stream</span>
             </div>
-            <h1 className="text-3xl sm:text-5xl font-black tracking-tight text-white my-0">
+            <h1 className="text-3xl sm:text-4xl lg:text-5xl font-black tracking-tight text-white my-0 leading-[1.08]">
               The Cinema Comes Home.
             </h1>
-            <p className="text-xs sm:text-sm text-gray-300 mt-3 leading-relaxed">
+            <p className="text-sm text-[#9A9BA5] mt-4 leading-relaxed font-medium max-w-lg">
               No monthly subscription needed. Pay only for what you watch. Rent or buy handpicked movies, global blockbusters, and critically acclaimed world cinema.
             </p>
           </div>
 
           {/* Feature Badges */}
-          <div className="grid grid-cols-1 sm:grid-cols-3 gap-4 mt-8 pt-8 border-t border-gray-700/50">
-            <div className="flex items-center gap-3">
-              <Film className="w-6 h-6 text-[#F84464]" />
+          <div className="relative z-10 grid grid-cols-1 sm:grid-cols-3 gap-5 sm:gap-6 mt-9 sm:mt-10 pt-8 border-t border-white/10">
+            <div className="flex items-center gap-3.5 p-3 -m-3 rounded-xl transition-colors hover:bg-white/[0.03]">
+              <div className="w-11 h-11 rounded-xl bg-[#F84464]/15 border border-[#F84464]/25 flex items-center justify-center shrink-0">
+                <Film className="w-5 h-5 text-[#F84464]" />
+              </div>
               <div>
-                <h2 className="text-xs font-bold text-white my-0">Premieres Every Friday</h2>
-                <p className="text-[11px] text-gray-400">Fresh theatrical releases straight to stream</p>
+                <h2 className="text-sm font-bold text-white my-0">Premieres Every Friday</h2>
+                <p className="text-xs text-[#9A9BA5] mt-0.5">Fresh theatrical releases straight to stream</p>
               </div>
             </div>
-            <div className="flex items-center gap-3">
-              <Tv className="w-6 h-6 text-[#F84464]" />
+            <div className="flex items-center gap-3.5 p-3 -m-3 rounded-xl transition-colors hover:bg-white/[0.03]">
+              <div className="w-11 h-11 rounded-xl bg-[#F84464]/15 border border-[#F84464]/25 flex items-center justify-center shrink-0">
+                <Tv className="w-5 h-5 text-[#F84464]" />
+              </div>
               <div>
-                <h2 className="text-xs font-bold text-white my-0">Stream on Any Device</h2>
-                <p className="text-[11px] text-gray-400">Smart TV, Mobile, Tablet, Laptop</p>
+                <h2 className="text-sm font-bold text-white my-0">Stream on Any Device</h2>
+                <p className="text-xs text-[#9A9BA5] mt-0.5">Smart TV, Mobile, Tablet, Laptop</p>
               </div>
             </div>
-            <div className="flex items-center gap-3">
-              <ShieldCheck className="w-6 h-6 text-[#F84464]" />
+            <div className="flex items-center gap-3.5 p-3 -m-3 rounded-xl transition-colors hover:bg-white/[0.03]">
+              <div className="w-11 h-11 rounded-xl bg-[#F84464]/15 border border-[#F84464]/25 flex items-center justify-center shrink-0">
+                <ShieldCheck className="w-5 h-5 text-[#F84464]" />
+              </div>
               <div>
-                <h2 className="text-xs font-bold text-white my-0">Zero Commitments</h2>
-                <p className="text-[11px] text-gray-400">No monthly fees. Pay per title.</p>
+                <h2 className="text-sm font-bold text-white my-0">Zero Commitments</h2>
+                <p className="text-xs text-[#9A9BA5] mt-0.5">No monthly fees. Pay per title.</p>
               </div>
             </div>
           </div>
@@ -84,59 +94,58 @@ export default function StreamPage() {
         <div className="mb-8">
           <div className="flex items-center justify-between mb-6">
             <div>
-              <h2 className="text-xl sm:text-2xl font-bold tracking-tight text-white my-0">
+              <h2 className="text-xl sm:text-2xl font-black tracking-tight text-white my-0">
                 Weekly Premieres &amp; New Releases
               </h2>
-              <p className="text-xs text-gray-400 mt-0.5">Rent starts from ₹119 • Watch in 4K Ultra HD &amp; Dolby 5.1</p>
+              <p className="text-xs sm:text-sm text-[#9A9BA5] mt-1">Rent starts from ₹119 • Watch in 4K Ultra HD &amp; Dolby 5.1</p>
             </div>
           </div>
 
           {loading ? (
-            <div className="flex flex-col items-center justify-center py-16">
-              <Loader2 className="w-8 h-8 text-[#F84464] animate-spin mb-2" />
-              <p className="text-xs text-gray-400">Loading stream catalogue...</p>
+            <div className="flex flex-col items-center justify-center py-24 rounded-2xl border border-white/5 bg-[#1C2130]/40">
+              <Loader2 className="w-8 h-8 text-[#F84464] animate-spin mb-3" />
+              <p className="text-xs text-[#9A9BA5] font-medium">Loading stream catalogue...</p>
             </div>
           ) : (
-            <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 gap-6">
+            <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-5 sm:gap-6">
               {premieres.map((item) => (
                 <div
                   key={item.id}
-                  className="bg-[#222634] rounded-xl overflow-hidden border border-gray-800 hover:border-[#F84464] transition-all flex flex-col group"
+                  className="bg-[#1C2130] rounded-2xl overflow-hidden border border-white/[0.06] hover:border-[#F84464]/60 transition-all duration-300 transform hover:-translate-y-1 hover:shadow-[0_16px_40px_-12px_rgba(248,68,100,0.35)] flex flex-col group"
                 >
-                  <div className="relative aspect-[16/9] w-full overflow-hidden bg-gray-900">
+                  <div className="relative aspect-[16/9] w-full overflow-hidden bg-[#121216]">
                     <img
                       src={item.imageUrl}
                       alt={item.title}
-                      className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-300"
+                      className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-500 ease-out"
                     />
-                    <div className="absolute top-2 left-2 bg-[#F84464] text-white text-[10px] font-bold px-2 py-0.5 rounded-xs">
+                    <div className="absolute inset-0 bg-gradient-to-t from-black/60 via-black/0 to-black/0 opacity-0 group-hover:opacity-100 transition-opacity duration-300" />
+                    <div className="absolute top-3 left-3 bg-[#F84464] text-white text-[10px] font-extrabold px-2.5 py-1 rounded-full shadow-[0_4px_12px_-2px_rgba(248,68,100,0.6)] uppercase tracking-wider">
                       {item.badge}
                     </div>
                   </div>
 
                   <div className="p-5 flex-1 flex flex-col justify-between">
                     <div>
-                      <h3 className="text-base font-bold text-white group-hover:text-[#F84464] transition-colors">
+                      <h3 className="text-base font-bold text-white group-hover:text-[#F84464] transition-colors tracking-tight">
                         {item.title}
                       </h3>
-                      <p className="text-xs text-gray-400 mt-1.5 line-clamp-2">
+                      <p className="text-xs text-[#9A9BA5] mt-2 line-clamp-2 leading-relaxed">
                         {item.description}
                       </p>
                     </div>
 
-                    <div className="mt-5 pt-4 border-t border-gray-800 flex items-center justify-between">
+                    <div className="mt-5 pt-4 border-t border-white/[0.06] flex items-center justify-between gap-3">
                       <div>
-                        <span className="text-xs text-gray-400 block">Rent for 48 hrs</span>
-                        <span className="text-sm font-bold text-white">{item.rentPrice || '₹149'}</span>
+                        <span className="text-[10px] text-[#9A9BA5] block uppercase font-semibold tracking-wide">Rent for 48 hrs</span>
+                        <span className="text-sm font-extrabold text-white">{item.rentPrice || '₹149'}</span>
                       </div>
-                      <div className="flex items-center gap-2">
-                        <button
-                          onClick={() => handleRent(item)}
-                          className="bg-[#F84464] hover:bg-[#e03a58] text-white text-xs font-bold py-2 px-4 rounded-md transition-colors cursor-pointer"
-                        >
-                          Rent Now
-                        </button>
-                      </div>
+                      <button
+                        onClick={() => handleRent(item)}
+                        className="bg-[#F84464] hover:bg-[#E03A58] active:scale-[0.97] text-white text-xs font-extrabold py-2.5 px-5 rounded-lg transition-all duration-200 cursor-pointer shadow-[0_4px_14px_-4px_rgba(248,68,100,0.5)] focus-visible:outline focus-visible:outline-2 focus-visible:outline-[#F84464] focus-visible:outline-offset-2"
+                      >
+                        Rent Now
+                      </button>
                     </div>
                   </div>
                 </div>
@@ -149,48 +158,50 @@ export default function StreamPage() {
 
       {/* Rent / Buy Modal */}
       {selectedMovie && (
-        <div className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-black/70 backdrop-blur-xs">
-          <div className="relative w-full max-w-sm bg-[#222634] text-white rounded-xl shadow-2xl p-6 border border-gray-700 animate-in fade-in zoom-in-95 duration-150">
+        <div className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-black/80 backdrop-blur-sm">
+          <div className="relative w-full max-w-sm bg-[#1C2130] text-white rounded-2xl shadow-[0_25px_70px_-15px_rgba(0,0,0,0.7)] p-6 border border-white/10 animate-in fade-in zoom-in-95 duration-200">
             <button
               onClick={() => setSelectedMovie(null)}
-              className="absolute right-4 top-4 p-1 text-gray-400 hover:text-white rounded-full"
+              className="absolute right-4 top-4 p-1.5 text-[#9A9BA5] hover:text-white hover:bg-white/10 rounded-full transition-colors cursor-pointer focus-visible:outline focus-visible:outline-2 focus-visible:outline-[#F84464]"
             >
               <X className="w-5 h-5" />
             </button>
 
             {!rentConfirmed ? (
               <div>
-                <h3 className="text-base font-bold mb-1">Rent {selectedMovie.title}</h3>
-                <p className="text-xs text-gray-400 mb-4">You will have 30 days to start watching and 48 hours to finish once started.</p>
-                
-                <div className="bg-gray-800/60 p-3 rounded-lg text-xs space-y-2 mb-5">
-                  <div className="flex justify-between">
-                    <span>Quality:</span>
+                <h3 className="text-lg font-bold mb-1.5">Rent {selectedMovie.title}</h3>
+                <p className="text-xs text-[#9A9BA5] mb-6 leading-relaxed">You will have 30 days to start watching and 48 hours to finish once started.</p>
+
+                <div className="bg-[#121216] p-4 rounded-xl text-xs space-y-3 mb-6 border border-white/[0.06]">
+                  <div className="flex justify-between items-center">
+                    <span className="text-[#9A9BA5]">Quality:</span>
                     <span className="font-bold text-white">4K UHD + Dolby Atmos</span>
                   </div>
-                  <div className="flex justify-between">
-                    <span>Rent Price:</span>
-                    <span className="font-bold text-[#F84464]">{selectedMovie.rentPrice || '₹149'}</span>
+                  <div className="flex justify-between items-center">
+                    <span className="text-[#9A9BA5]">Rent Price:</span>
+                    <span className="font-bold text-[#F84464] text-sm">{selectedMovie.rentPrice || '₹149'}</span>
                   </div>
                 </div>
 
                 <button
                   onClick={() => setRentConfirmed(true)}
-                  className="w-full py-2.5 bg-[#F84464] hover:bg-[#e03a58] text-white text-xs font-bold rounded-lg cursor-pointer transition-colors"
+                  className="w-full py-3 bg-[#F84464] hover:bg-[#E03A58] active:scale-[0.98] text-white text-sm font-bold rounded-xl cursor-pointer transition-all duration-200 shadow-[0_10px_30px_-8px_rgba(248,68,100,0.5)] focus-visible:outline focus-visible:outline-2 focus-visible:outline-white focus-visible:outline-offset-2"
                 >
                   Confirm &amp; Watch Now
                 </button>
               </div>
             ) : (
               <div className="text-center py-4">
-                <CheckCircle className="w-12 h-12 text-green-500 mx-auto mb-3" />
-                <h3 className="text-base font-bold mb-1">Rental Active!</h3>
-                <p className="text-xs text-gray-300 mb-4">
-                  Enjoy watching <strong>{selectedMovie.title}</strong> on BookMyShow Stream.
+                <div className="w-14 h-14 rounded-full bg-emerald-500/15 border border-emerald-500/30 flex items-center justify-center mx-auto mb-4">
+                  <CheckCircle className="w-7 h-7 text-emerald-400" />
+                </div>
+                <h3 className="text-lg font-bold mb-1.5">Rental Active!</h3>
+                <p className="text-xs text-[#9A9BA5] mb-6 leading-relaxed">
+                  Enjoy watching <strong className="text-white">{selectedMovie.title}</strong> on BookMyShow Stream.
                 </p>
                 <button
                   onClick={() => setSelectedMovie(null)}
-                  className="w-full py-2 bg-[#F84464] text-white text-xs font-bold rounded-lg cursor-pointer"
+                  className="w-full py-3 bg-[#F84464] hover:bg-[#E03A58] active:scale-[0.98] text-white text-sm font-bold rounded-xl cursor-pointer transition-all duration-200 focus-visible:outline focus-visible:outline-2 focus-visible:outline-white focus-visible:outline-offset-2"
                 >
                   Start Playback
                 </button>
@@ -203,4 +214,3 @@ export default function StreamPage() {
     </div>
   );
 }
-

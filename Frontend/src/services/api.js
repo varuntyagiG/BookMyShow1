@@ -1,5 +1,6 @@
-const API_BASE_URL = import.meta.env.VITE_API_URL 
-  ? `${import.meta.env.VITE_API_URL}/api` 
+const rawApiUrl = (import.meta.env.VITE_API_URL || '').trim().replace(/\/+$/, '');
+const API_BASE_URL = rawApiUrl
+  ? (rawApiUrl.endsWith('/api') ? rawApiUrl : `${rawApiUrl}/api`)
   : '/api';
 
 export async function request(endpoint, options = {}) {
@@ -56,6 +57,21 @@ export const contentApi = {
   getCategoryItems: (category, params = {}) => {
     const query = new URLSearchParams(params).toString();
     return request(`/categories/${category}${query ? `?${query}` : ''}`);
+  },
+};
+
+// Booking API
+export const bookingApi = {
+  createBooking: (bookingData) =>
+    request('/bookings', {
+      method: 'POST',
+      body: JSON.stringify(bookingData),
+    }),
+  getMyBookings: () => request('/bookings/my'),
+  getBookingById: (id) => request(`/bookings/${id}`),
+  getShowSeats: (params = {}) => {
+    const query = new URLSearchParams(params).toString();
+    return request(`/bookings/seats${query ? `?${query}` : ''}`);
   },
 };
 

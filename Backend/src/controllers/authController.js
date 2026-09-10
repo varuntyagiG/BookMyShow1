@@ -1,11 +1,15 @@
 const bcrypt = require('bcryptjs');
 const jwt = require('jsonwebtoken');
-const { getUsers, saveUsers } = require('../config/db');
+const User = require('../models/User');
 const { JWT_SECRET } = require('../middleware/authMiddleware');
 
 function generateToken(user) {
   return jwt.sign(
-    { id: user.id, email: user.email, name: user.name },
+    {
+      id: user._id ? user._id.toString() : user.id,
+      email: user.email,
+      name: user.name
+    },
     JWT_SECRET,
     { expiresIn: '7d' }
   );
@@ -24,9 +28,9 @@ async function register(req, res) {
     }
 
     const trimmedEmail = email.trim().toLowerCase();
-    const users = getUsers();
 
-    const existingUser = users.find(u => u.email.toLowerCase() === trimmedEmail);
+    // Check existing user in MongoDB
+    const existingUser = await User.findOne({ email: trimmedEmail });
     if (existingUser) {
       return res.status(409).json({
         success: false,
@@ -44,17 +48,13 @@ async function register(req, res) {
     const salt = await bcrypt.genSalt(10);
     const hashedPassword = await bcrypt.hash(password, salt);
 
-    const newUser = {
-      id: 'u_' + Date.now(),
+    const newUser = await User.create({
       name: name.trim(),
       email: trimmedEmail,
       phone: phone ? phone.trim() : '',
       password: hashedPassword,
-      createdAt: new Date().toISOString()
-    };
-
-    users.push(newUser);
-    saveUsers(users);
+      role: 'user'
+    });
 
     const token = generateToken(newUser);
 
@@ -63,10 +63,11 @@ async function register(req, res) {
       message: 'Account created successfully!',
       token,
       user: {
-        id: newUser.id,
+        id: newUser._id.toString(),
         name: newUser.name,
         email: newUser.email,
-        phone: newUser.phone
+        phone: newUser.phone,
+        role: newUser.role
       }
     });
   } catch (error) {
@@ -91,8 +92,9 @@ async function login(req, res) {
     }
 
     const trimmedEmail = email.trim().toLowerCase();
-    const users = getUsers();
-    const user = users.find(u => u.email.toLowerCase() === trimmedEmail);
+
+    // Find user in MongoDB
+    const user = await User.findOne({ email: trimmedEmail });
 
     if (!user) {
       return res.status(401).json({
@@ -101,7 +103,7 @@ async function login(req, res) {
       });
     }
 
-    const isMatch = await bcrypt.compare(password, user.password);
+    const isMatch = await user.comparePassword(password);
     if (!isMatch) {
       return res.status(401).json({
         success: false,
@@ -116,10 +118,11 @@ async function login(req, res) {
       message: 'Welcome back, ' + user.name + '!',
       token,
       user: {
-        id: user.id,
+        id: user._id.toString(),
         name: user.name,
         email: user.email,
-        phone: user.phone
+        phone: user.phone,
+        role: user.role
       }
     });
   } catch (error) {

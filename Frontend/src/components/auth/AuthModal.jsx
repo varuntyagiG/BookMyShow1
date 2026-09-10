@@ -82,7 +82,7 @@ export default function AuthModal() {
     setSubmitting(true);
     try {
       await quickDemoLogin();
-    } catch (err) {
+    } catch {
       setError('Demo login failed.');
     } finally {
       setSubmitting(false);
@@ -90,18 +90,18 @@ export default function AuthModal() {
   };
 
   return (
-    <div className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-black/60 backdrop-blur-xs">
-      <div className="relative w-full max-w-md bg-white rounded-xl shadow-2xl overflow-hidden animate-in fade-in zoom-in-95 duration-200">
+    <div className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-black/75 backdrop-blur-xs">
+      <div className="relative w-full max-w-md bg-white rounded-2xl shadow-2xl overflow-hidden animate-in fade-in zoom-in-95 duration-200">
         
         {/* Top Header */}
         <div className="px-6 pt-6 pb-4 border-b border-gray-100 flex items-center justify-between">
           <div>
-            <h2 className="text-xl font-bold text-gray-900">
-              {isSignUp ? 'Create an Account' : 'Get Started'}
-            </h2>
+            <div className="text-xl font-black tracking-tight text-gray-900 flex items-center gap-1">
+              <span>book<span className="text-[#F84464]">my</span>show</span>
+            </div>
             <p className="text-xs text-gray-500 mt-0.5">
               {isSignUp
-                ? 'Sign up to book tickets and get personalized movie updates'
+                ? 'Sign up to unlock rewards and movie tickets'
                 : 'Sign in to access your bookings and profile'}
             </p>
           </div>
@@ -114,17 +114,17 @@ export default function AuthModal() {
         </div>
 
         {/* Tab Switcher */}
-        <div className="flex border-b border-gray-200 bg-gray-50">
+        <div className="flex border-b border-gray-100 bg-gray-50/80 p-1">
           <button
             type="button"
             onClick={() => {
               setError('');
               setAuthModalMode('signin');
             }}
-            className={`flex-1 py-3 text-xs font-bold transition-all border-b-2 cursor-pointer text-center ${
+            className={`flex-1 py-2.5 text-xs font-black transition-all rounded-xl cursor-pointer text-center ${
               !isSignUp
-                ? 'border-[#F84464] text-[#F84464] bg-white'
-                : 'border-transparent text-gray-500 hover:text-gray-800'
+                ? 'bg-white text-[#F84464] shadow-xs'
+                : 'text-gray-500 hover:text-gray-900'
             }`}
           >
             Sign In
@@ -135,13 +135,13 @@ export default function AuthModal() {
               setError('');
               setAuthModalMode('signup');
             }}
-            className={`flex-1 py-3 text-xs font-bold transition-all border-b-2 cursor-pointer text-center ${
+            className={`flex-1 py-2.5 text-xs font-black transition-all rounded-xl cursor-pointer text-center ${
               isSignUp
-                ? 'border-[#F84464] text-[#F84464] bg-white'
-                : 'border-transparent text-gray-500 hover:text-gray-800'
+                ? 'bg-white text-[#F84464] shadow-xs'
+                : 'text-gray-500 hover:text-gray-900'
             }`}
           >
-            Create Account (Sign Up)
+            Create Account
           </button>
         </div>
 
@@ -153,22 +153,22 @@ export default function AuthModal() {
               type="button"
               onClick={handleDemoClick}
               disabled={submitting}
-              className="w-full py-2.5 px-4 bg-gradient-to-r from-amber-500 to-red-500 hover:from-amber-600 hover:to-red-600 text-white font-medium text-xs rounded-lg shadow-sm flex items-center justify-center gap-2 transition-all cursor-pointer"
+              className="w-full py-2.5 px-4 bg-gradient-to-r from-amber-500 via-[#F84464] to-[#e03a58] hover:opacity-95 text-white font-bold text-xs rounded-xl shadow-md shadow-red-500/20 flex items-center justify-center gap-2 transition-all cursor-pointer active:scale-[0.99]"
             >
-              <Sparkles className="w-4 h-4" />
+              <Sparkles className="w-4 h-4 text-amber-200" />
               <span>1-Click Instant Demo Login (demo@bookmyshow.com)</span>
             </button>
           </div>
 
           {/* Social Google button */}
-          <div className="mb-5">
+          <div className="mb-4">
             <button
               type="button"
               onClick={() => {
                 alert('Social Google Login: Logging in with test Google profile.');
                 quickDemoLogin();
               }}
-              className="w-full flex items-center justify-center gap-3 py-2.5 px-4 border border-gray-300 rounded-lg text-xs font-semibold text-gray-700 hover:bg-gray-50 transition-colors cursor-pointer"
+              className="w-full flex items-center justify-center gap-3 py-2.5 px-4 border border-gray-200 rounded-xl text-xs font-bold text-gray-700 hover:bg-gray-50 transition-colors cursor-pointer active:scale-[0.99]"
             >
               <svg className="w-4 h-4" viewBox="0 0 24 24">
                 <path
@@ -195,15 +195,15 @@ export default function AuthModal() {
           {/* Divider */}
           <div className="relative flex items-center justify-center my-4">
             <div className="border-t border-gray-200 w-full" />
-            <span className="bg-white px-3 text-[11px] uppercase tracking-wider text-gray-400 font-medium absolute">
+            <span className="bg-white px-3 text-[10px] uppercase tracking-wider text-gray-400 font-bold absolute">
               or with email
             </span>
           </div>
 
           {/* Error Message */}
           {error && (
-            <div className="mb-4 p-3 bg-red-50 border border-red-200 rounded-md flex items-center gap-2 text-xs text-red-600">
-              <AlertCircle className="w-4 h-4 shrink-0" />
+            <div className="mb-4 p-3 bg-red-50 border border-red-200 rounded-xl flex items-center gap-2.5 text-xs text-red-600 font-medium animate-in fade-in">
+              <AlertCircle className="w-4 h-4 shrink-0 text-[#F84464]" />
               <span>{error}</span>
             </div>
           )}
@@ -212,18 +212,18 @@ export default function AuthModal() {
           <form onSubmit={handleSubmit} className="space-y-3.5">
             {isSignUp && (
               <div>
-                <label className="block text-xs font-semibold text-gray-700 mb-1">
-                  Full Name <span className="text-red-500">*</span>
+                <label className="block text-xs font-bold text-gray-700 uppercase tracking-wider mb-1">
+                  Full Name <span className="text-[#F84464]">*</span>
                 </label>
                 <div className="relative flex items-center">
-                  <User className="absolute left-3 w-4 h-4 text-gray-400" />
+                  <User className="absolute left-3.5 w-4 h-4 text-gray-400" />
                   <input
                     type="text"
                     name="name"
                     value={formData.name}
                     onChange={handleChange}
                     placeholder="Enter your full name"
-                    className="w-full pl-9 pr-3 py-2 bg-gray-50 border border-gray-200 rounded-md text-xs text-gray-800 focus:bg-white focus:outline-none focus:border-[#F84464]"
+                    className="w-full pl-10 pr-4 py-2 bg-gray-50 border border-gray-200 rounded-xl text-xs text-gray-800 placeholder-gray-400 focus:bg-white focus:outline-none focus:border-[#F84464] focus:ring-2 focus:ring-[#F84464]/20 transition-all"
                     required={isSignUp}
                   />
                 </div>
@@ -231,18 +231,18 @@ export default function AuthModal() {
             )}
 
             <div>
-              <label className="block text-xs font-semibold text-gray-700 mb-1">
-                Email Address <span className="text-red-500">*</span>
+              <label className="block text-xs font-bold text-gray-700 uppercase tracking-wider mb-1">
+                Email Address <span className="text-[#F84464]">*</span>
               </label>
               <div className="relative flex items-center">
-                <Mail className="absolute left-3 w-4 h-4 text-gray-400" />
+                <Mail className="absolute left-3.5 w-4 h-4 text-gray-400" />
                 <input
                   type="email"
                   name="email"
                   value={formData.email}
                   onChange={handleChange}
                   placeholder="name@example.com"
-                  className="w-full pl-9 pr-3 py-2 bg-gray-50 border border-gray-200 rounded-md text-xs text-gray-800 focus:bg-white focus:outline-none focus:border-[#F84464]"
+                  className="w-full pl-10 pr-4 py-2 bg-gray-50 border border-gray-200 rounded-xl text-xs text-gray-800 placeholder-gray-400 focus:bg-white focus:outline-none focus:border-[#F84464] focus:ring-2 focus:ring-[#F84464]/20 transition-all"
                   required
                 />
               </div>
@@ -250,42 +250,42 @@ export default function AuthModal() {
 
             {isSignUp && (
               <div>
-                <label className="block text-xs font-semibold text-gray-700 mb-1">
-                  Mobile Number (Optional)
+                <label className="block text-xs font-bold text-gray-700 uppercase tracking-wider mb-1">
+                  Mobile Number <span className="text-gray-400 font-normal">(Optional)</span>
                 </label>
                 <div className="relative flex items-center">
-                  <Phone className="absolute left-3 w-4 h-4 text-gray-400" />
+                  <Phone className="absolute left-3.5 w-4 h-4 text-gray-400" />
                   <input
                     type="tel"
                     name="phone"
                     value={formData.phone}
                     onChange={handleChange}
                     placeholder="10-digit mobile number"
-                    className="w-full pl-9 pr-3 py-2 bg-gray-50 border border-gray-200 rounded-md text-xs text-gray-800 focus:bg-white focus:outline-none focus:border-[#F84464]"
+                    className="w-full pl-10 pr-4 py-2 bg-gray-50 border border-gray-200 rounded-xl text-xs text-gray-800 placeholder-gray-400 focus:bg-white focus:outline-none focus:border-[#F84464] focus:ring-2 focus:ring-[#F84464]/20 transition-all"
                   />
                 </div>
               </div>
             )}
 
             <div>
-              <label className="block text-xs font-semibold text-gray-700 mb-1">
-                Password <span className="text-red-500">*</span>
+              <label className="block text-xs font-bold text-gray-700 uppercase tracking-wider mb-1">
+                Password <span className="text-[#F84464]">*</span>
               </label>
               <div className="relative flex items-center">
-                <Lock className="absolute left-3 w-4 h-4 text-gray-400" />
+                <Lock className="absolute left-3.5 w-4 h-4 text-gray-400" />
                 <input
                   type={showPassword ? 'text' : 'password'}
                   name="password"
                   value={formData.password}
                   onChange={handleChange}
                   placeholder={isSignUp ? 'At least 6 characters' : 'Enter your password'}
-                  className="w-full pl-9 pr-10 py-2 bg-gray-50 border border-gray-200 rounded-md text-xs text-gray-800 focus:bg-white focus:outline-none focus:border-[#F84464]"
+                  className="w-full pl-10 pr-10 py-2 bg-gray-50 border border-gray-200 rounded-xl text-xs text-gray-800 placeholder-gray-400 focus:bg-white focus:outline-none focus:border-[#F84464] focus:ring-2 focus:ring-[#F84464]/20 transition-all"
                   required
                 />
                 <button
                   type="button"
                   onClick={() => setShowPassword(!showPassword)}
-                  className="absolute right-3 text-gray-400 hover:text-gray-600 cursor-pointer"
+                  className="absolute right-3.5 text-gray-400 hover:text-gray-600 cursor-pointer p-0.5"
                 >
                   {showPassword ? <EyeOff className="w-4 h-4" /> : <Eye className="w-4 h-4" />}
                 </button>
@@ -295,7 +295,7 @@ export default function AuthModal() {
             <button
               type="submit"
               disabled={submitting}
-              className="w-full py-2.5 bg-[#F84464] hover:bg-[#e03a58] text-white text-xs font-bold rounded-md shadow-xs transition-colors cursor-pointer mt-2 disabled:opacity-70"
+              className="w-full py-3 bg-[#F84464] hover:bg-[#e03a58] text-white text-xs font-black rounded-xl shadow-lg shadow-red-500/25 transition-all cursor-pointer mt-2 disabled:opacity-70 active:scale-[0.99]"
             >
               {submitting
                 ? 'Please wait...'
@@ -315,14 +315,14 @@ export default function AuthModal() {
                   setError('');
                   setAuthModalMode(isSignUp ? 'signin' : 'signup');
                 }}
-                className="text-[#F84464] font-semibold hover:underline cursor-pointer ml-1"
+                className="text-[#F84464] font-bold hover:underline cursor-pointer ml-1"
               >
                 {isSignUp ? 'Sign In' : 'Sign Up'}
               </button>
             </p>
           </div>
 
-          <p className="text-[10px] text-gray-400 text-center mt-5 leading-relaxed">
+          <p className="text-[10px] text-gray-400 text-center mt-4 leading-relaxed">
             I agree to the <span className="underline">Terms &amp; Conditions</span> &amp;{' '}
             <span className="underline">Privacy Policy</span>
           </p>

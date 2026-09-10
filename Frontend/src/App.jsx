@@ -16,6 +16,8 @@ import EventsPage from './pages/EventsPage';
 import CategoryPage from './pages/CategoryPage';
 import SignInPage from './pages/SignInPage';
 import SignUpPage from './pages/SignUpPage';
+import GiftCardsPage from './pages/GiftCardsPage';
+import OffersPage from './pages/OffersPage';
 
 function AppContent() {
   const [searchQuery, setSearchQuery] = useState('');
@@ -38,6 +40,8 @@ function AppContent() {
         <Route path="/sports" element={<CategoryPage />} />
         <Route path="/plays" element={<CategoryPage />} />
         <Route path="/activities" element={<CategoryPage />} />
+        <Route path="/giftcards" element={<GiftCardsPage />} />
+        <Route path="/offers" element={<OffersPage />} />
         <Route path="/signin" element={<SignInPage />} />
         <Route path="/signup" element={<SignUpPage />} />
       </Routes>

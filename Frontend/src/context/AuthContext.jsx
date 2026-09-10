@@ -21,7 +21,7 @@ export function AuthProvider({ children }) {
           } else {
             logout();
           }
-        } catch (err) {
+        } catch {
           console.warn('Session expired or invalid, logging out.');
           logout();
         }
