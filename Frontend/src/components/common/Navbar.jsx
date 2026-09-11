@@ -1,5 +1,5 @@
 import React, { useState, useRef, useEffect } from 'react';
-import { Search, ChevronDown, LogOut, Ticket, Settings, MapPin, X, Film, Sparkles, ShieldCheck } from 'lucide-react';
+import { Search, ChevronDown, LogOut, Ticket, Settings, MapPin, X, Film, Sparkles } from 'lucide-react';
 import { useAuth } from '../../context/AuthContext';
 import { useCity } from '../../context/CityContext';
 import { Link, useNavigate } from 'react-router-dom';
@@ -171,26 +171,6 @@ export default function Navbar({ onSearch }) {
                     </div>
 
                     <div className="py-1.5">
-                      {user?.role === 'admin' && (
-                        <Link
-                          to="/admin/dashboard"
-                          onClick={() => setUserDropdownOpen(false)}
-                          className="w-full flex items-center gap-3 px-4 py-2 text-xs font-bold text-indigo-600 bg-indigo-50 hover:bg-indigo-100 cursor-pointer transition-colors"
-                        >
-                          <ShieldCheck className="w-4 h-4 text-indigo-600" />
-                          <span>Platform Admin Control</span>
-                        </Link>
-                      )}
-                      {user?.role === 'cinema_partner' && (
-                        <Link
-                          to="/cinema-partner"
-                          onClick={() => setUserDropdownOpen(false)}
-                          className="w-full flex items-center gap-3 px-4 py-2 text-xs font-bold text-amber-600 bg-amber-500/10 hover:bg-amber-500/15 cursor-pointer transition-colors"
-                        >
-                          <ShieldCheck className="w-4 h-4 text-amber-600" />
-                          <span>Cinema Partner Portal</span>
-                        </Link>
-                      )}
                       <Link
                         to="/my-bookings"
                         onClick={() => setUserDropdownOpen(false)}

@@ -86,6 +86,3 @@ export const bookingApi = {
     return request(`/bookings/seats${query ? `?${query}` : ''}`);
   },
 };
-
-// B2B Cinema Partner API
-export { cinemaPartnerApi } from './cinemaPartnerApi';

@@ -1,5 +1,5 @@
 import React, { useState } from 'react';
-import { BrowserRouter, Routes, Route, Outlet } from 'react-router-dom';
+import { BrowserRouter, Routes, Route, Outlet, Navigate } from 'react-router-dom';
 import { AuthProvider } from './context/AuthContext';
 import { CityProvider } from './context/CityContext';
 
@@ -23,40 +23,6 @@ import GiftCardsPage from './pages/GiftCardsPage';
 import OffersPage from './pages/OffersPage';
 import CustomerBookingsPage from './pages/CustomerBookingsPage';
 import CustomerProfilePage from './pages/CustomerProfilePage';
-
-// B2B Cinema Partner Components & Pages
-import CinemaPartnerProtectedRoute from './components/cinemaPartner/CinemaPartnerProtectedRoute';
-import CinemaPartnerLayout from './components/cinemaPartner/CinemaPartnerLayout';
-import CinemaPartnerLoginPage from './pages/cinemaPartner/CinemaPartnerLoginPage';
-import CinemaPartnerDashboardPage from './pages/cinemaPartner/CinemaPartnerDashboardPage';
-import CinemaPartnerCinemasPage from './pages/cinemaPartner/CinemaPartnerCinemasPage';
-import CinemaPartnerScreensPage from './pages/cinemaPartner/CinemaPartnerScreensPage';
-import CinemaPartnerMoviesPage from './pages/cinemaPartner/CinemaPartnerMoviesPage';
-import CinemaPartnerShowsPage from './pages/cinemaPartner/CinemaPartnerShowsPage';
-import CinemaPartnerBookingsPage from './pages/cinemaPartner/CinemaPartnerBookingsPage';
-import CinemaPartnerTicketsPage from './pages/cinemaPartner/CinemaPartnerTicketsPage';
-import CinemaPartnerScannerPage from './pages/cinemaPartner/CinemaPartnerScannerPage';
-import CinemaPartnerRevenuePage from './pages/cinemaPartner/CinemaPartnerRevenuePage';
-import CinemaPartnerReportsPage from './pages/cinemaPartner/CinemaPartnerReportsPage';
-import CinemaPartnerProfilePage from './pages/cinemaPartner/CinemaPartnerProfilePage';
-
-// Platform Admin Components & Pages
-import AdminProtectedRoute from './components/admin/AdminProtectedRoute';
-import AdminLayout from './components/admin/AdminLayout';
-import AdminLoginPage from './pages/admin/AdminLoginPage';
-import AdminDashboardPage from './pages/admin/AdminDashboardPage';
-import AdminCustomersPage from './pages/admin/AdminCustomersPage';
-import AdminPartnersPage from './pages/admin/AdminPartnersPage';
-import AdminCinemasPage from './pages/admin/AdminCinemasPage';
-import AdminMoviesPage from './pages/admin/AdminMoviesPage';
-import AdminShowsPage from './pages/admin/AdminShowsPage';
-import AdminBookingsPage from './pages/admin/AdminBookingsPage';
-import AdminRevenuePage from './pages/admin/AdminRevenuePage';
-import AdminOffersPage from './pages/admin/AdminOffersPage';
-import AdminCitiesPage from './pages/admin/AdminCitiesPage';
-import AdminReportsPage from './pages/admin/AdminReportsPage';
-import AdminAuditLogsPage from './pages/admin/AdminAuditLogsPage';
-import AdminSettingsPage from './pages/admin/AdminSettingsPage';
 
 function CustomerLayout({ searchQuery, onSearch }) {
   return (
@@ -88,60 +54,7 @@ function AppRoutes() {
   return (
     <Routes>
       {/* =========================================
-          PLATFORM ADMIN PORTAL (ISOLATED LAYOUT)
-      ========================================= */}
-      <Route path="/admin/login" element={<AdminLoginPage />} />
-      <Route
-        path="/admin"
-        element={
-          <AdminProtectedRoute>
-            <AdminLayout />
-          </AdminProtectedRoute>
-        }
-      >
-        <Route index element={<AdminDashboardPage />} />
-        <Route path="dashboard" element={<AdminDashboardPage />} />
-        <Route path="customers" element={<AdminCustomersPage />} />
-        <Route path="partners" element={<AdminPartnersPage />} />
-        <Route path="cinemas" element={<AdminCinemasPage />} />
-        <Route path="movies" element={<AdminMoviesPage />} />
-        <Route path="shows" element={<AdminShowsPage />} />
-        <Route path="bookings" element={<AdminBookingsPage />} />
-        <Route path="revenue" element={<AdminRevenuePage />} />
-        <Route path="offers" element={<AdminOffersPage />} />
-        <Route path="cities" element={<AdminCitiesPage />} />
-        <Route path="reports" element={<AdminReportsPage />} />
-        <Route path="audit-logs" element={<AdminAuditLogsPage />} />
-        <Route path="settings" element={<AdminSettingsPage />} />
-      </Route>
-
-      {/* =========================================
-          B2B CINEMA PARTNER PORTAL (ISOLATED LAYOUT)
-      ========================================= */}
-      <Route path="/cinema-partner/login" element={<CinemaPartnerLoginPage />} />
-      <Route
-        path="/cinema-partner"
-        element={
-          <CinemaPartnerProtectedRoute>
-            <CinemaPartnerLayout />
-          </CinemaPartnerProtectedRoute>
-        }
-      >
-        <Route index element={<CinemaPartnerDashboardPage />} />
-        <Route path="cinemas" element={<CinemaPartnerCinemasPage />} />
-        <Route path="screens" element={<CinemaPartnerScreensPage />} />
-        <Route path="movies" element={<CinemaPartnerMoviesPage />} />
-        <Route path="shows" element={<CinemaPartnerShowsPage />} />
-        <Route path="bookings" element={<CinemaPartnerBookingsPage />} />
-        <Route path="tickets" element={<CinemaPartnerTicketsPage />} />
-        <Route path="scanner" element={<CinemaPartnerScannerPage />} />
-        <Route path="revenue" element={<CinemaPartnerRevenuePage />} />
-        <Route path="reports" element={<CinemaPartnerReportsPage />} />
-        <Route path="profile" element={<CinemaPartnerProfilePage />} />
-      </Route>
-
-      {/* =========================================
-          CUSTOMER PORTAL (STANDARD LAYOUT)
+          BOOKMYTRIP CUSTOMER PLATFORM
       ========================================= */}
       <Route
         element={
@@ -154,6 +67,7 @@ function AppRoutes() {
         <Route path="/" element={<HomePage searchQuery={searchQuery} />} />
         <Route path="/movies" element={<MoviesPage />} />
         <Route path="/movies/:id" element={<MovieDetailsPage />} />
+        <Route path="/movie/:id" element={<MovieDetailsPage />} />
         <Route path="/stream" element={<StreamPage />} />
         <Route path="/events" element={<EventsPage />} />
         <Route path="/sports" element={<CategoryPage />} />
@@ -162,9 +76,13 @@ function AppRoutes() {
         <Route path="/giftcards" element={<GiftCardsPage />} />
         <Route path="/offers" element={<OffersPage />} />
         <Route path="/my-bookings" element={<CustomerBookingsPage />} />
+        <Route path="/tickets" element={<Navigate to="/my-bookings" replace />} />
         <Route path="/profile" element={<CustomerProfilePage />} />
         <Route path="/signin" element={<SignInPage />} />
         <Route path="/signup" element={<SignUpPage />} />
+
+        {/* Catch-all route safely redirects any disabled/legacy admin or vendor routes to Customer Home */}
+        <Route path="*" element={<Navigate to="/" replace />} />
       </Route>
     </Routes>
   );
@@ -181,3 +99,4 @@ export default function App() {
     </BrowserRouter>
   );
 }
+

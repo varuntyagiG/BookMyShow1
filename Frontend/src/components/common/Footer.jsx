@@ -79,11 +79,9 @@ export default function Footer() {
 
           <div>
             <h5 className="font-bold text-white uppercase tracking-wider mb-3.5 flex items-center gap-1.5">
-              <span>Help &amp; Portals</span>
+              <span>Help &amp; Support</span>
             </h5>
             <ul className="space-y-2 text-gray-400">
-              <li><Link to="/cinema-partner/login" className="text-amber-400 hover:text-amber-300 font-semibold transition-colors flex items-center gap-1">★ Cinema Partner Hub (B2B)</Link></li>
-              <li><Link to="/admin/login" className="text-indigo-400 hover:text-indigo-300 font-semibold transition-colors flex items-center gap-1">⚡ Platform Admin Portal</Link></li>
               <li><a href="#" className="hover:text-white transition-colors">About BookMyShow</a></li>
               <li><a href="#" className="hover:text-white transition-colors">Contact Support</a></li>
               <li><a href="#" className="hover:text-white transition-colors">Terms &amp; Conditions</a></li>
