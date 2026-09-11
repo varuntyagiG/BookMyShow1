@@ -25,7 +25,9 @@ import {
   Input,
   Select,
   EmptyState,
-  Skeleton
+  Skeleton,
+  CopyBadge,
+  CopyButton
 } from '../../components/ui';
 
 export default function AdminOffersPage() {
@@ -146,17 +148,14 @@ export default function AdminOffersPage() {
       ) : offers.length > 0 ? (
         <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-5">
           {offers.map((offer) => (
-            <Card key={offer._id} className="relative overflow-hidden flex flex-col justify-between hover:shadow-md transition-shadow">
+            <Card key={offer._id} className="relative overflow-hidden flex flex-col justify-between hover:shadow-xl hover:-translate-y-1 hover:border-[#F84464]/30 transition-all duration-200">
               {/* Top Accent Strip */}
               <div className="absolute top-0 left-0 right-0 h-1 bg-gradient-to-r from-[#F84464] to-[#f76781]" />
 
               <div className="p-5 pb-0">
                 {/* Coupon Code Header */}
                 <div className="flex items-center justify-between gap-2 mb-3">
-                  <div className="inline-flex items-center gap-1.5 px-3 py-1 rounded-xl bg-gray-100 border border-gray-200 font-mono text-xs font-black text-[#222432] tracking-wider">
-                    <Ticket className="w-3.5 h-3.5 text-[#F84464]" />
-                    <span>{offer.code}</span>
-                  </div>
+                  <CopyBadge text={offer.code} variant="brand" />
                   <Badge variant={offer.status === 'active' ? 'approved' : 'neutral'} dot>
                     {offer.status || 'Active'}
                   </Badge>

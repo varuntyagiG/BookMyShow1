@@ -23,7 +23,9 @@ import {
   Badge,
   Select,
   EmptyState,
-  Skeleton
+  Skeleton,
+  CopyBadge,
+  CopyButton
 } from '../../components/ui';
 
 export default function AdminAuditLogsPage() {
@@ -145,8 +147,11 @@ export default function AdminAuditLogsPage() {
                       })}
                     </TableCell>
                     <TableCell>
-                      <div className="font-bold text-[#222432]">
-                        {log.adminEmail || log.admin?.name || 'Platform Administrator'}
+                      <div className="font-bold text-[#222432] flex items-center gap-1.5">
+                        <span>{log.adminEmail || log.admin?.name || 'Platform Administrator'}</span>
+                        {log.adminEmail && (
+                          <CopyButton text={log.adminEmail} size="xs" variant="ghost" title="Copy admin email" />
+                        )}
                       </div>
                     </TableCell>
                     <TableCell>
@@ -158,10 +163,13 @@ export default function AdminAuditLogsPage() {
                       {log.entityType}
                     </TableCell>
                     <TableCell className="font-mono text-xs text-gray-600">
-                      {log.entityName || log.entityId}
+                      <CopyBadge text={log.entityName || log.entityId} size="xs" variant="neutral" />
                     </TableCell>
-                    <TableCell className="text-right font-mono text-xs text-gray-400">
-                      {log.ipAddress || '127.0.0.1'}
+                    <TableCell className="text-right font-mono text-xs text-gray-500 whitespace-nowrap">
+                      <span className="inline-flex items-center gap-1">
+                        <span>{log.ipAddress || '127.0.0.1'}</span>
+                        <CopyButton text={log.ipAddress || '127.0.0.1'} size="xs" variant="ghost" title="Copy origin IP" />
+                      </span>
                     </TableCell>
                   </TableRow>
                 ))}

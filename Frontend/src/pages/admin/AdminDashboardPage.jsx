@@ -35,7 +35,9 @@ import {
   TableRow,
   TableCell,
   SkeletonMetric,
-  ErrorState
+  ErrorState,
+  CopyBadge,
+  CopyButton
 } from '../../components/ui';
 
 export default function AdminDashboardPage() {
@@ -252,9 +254,9 @@ export default function AdminDashboardPage() {
                   </TableHeader>
                   <TableBody>
                     {s.recentBookings.slice(0, 6).map((b) => (
-                      <TableRow key={b._id || b.bookingId}>
-                        <TableCell className="font-mono font-bold text-gray-600">
-                          {b.bookingId || b._id?.substring(0, 8)}
+                      <TableRow key={b._id || b.bookingId} className="transition-colors hover:bg-[#F84464]/5">
+                        <TableCell className="whitespace-nowrap">
+                          <CopyBadge text={b.bookingId || b._id?.substring(0, 8)} size="xs" />
                         </TableCell>
                         <TableCell className="font-bold text-[#222432]">
                           {b.movieTitle || b.movie?.title || 'Cinema Screening'}
@@ -262,10 +264,15 @@ export default function AdminDashboardPage() {
                         <TableCell className="text-gray-500">
                           {b.theatreName || b.cinema?.name || 'Multiplex Venue'}
                         </TableCell>
-                        <TableCell>
-                          <span className="font-mono bg-gray-100 px-2 py-0.5 rounded text-[11px] font-bold text-gray-700">
-                            {Array.isArray(b.seats) ? b.seats.join(', ') : '1 Seat'}
-                          </span>
+                        <TableCell className="whitespace-nowrap">
+                          <div className="flex items-center gap-1">
+                            <span className="font-mono bg-gray-100 px-2 py-0.5 rounded text-[11px] font-bold text-gray-700">
+                              {Array.isArray(b.seats) ? b.seats.join(', ') : '1 Seat'}
+                            </span>
+                            {Array.isArray(b.seats) && b.seats.length > 0 && (
+                              <CopyButton text={b.seats.join(', ')} size="xs" variant="ghost" title="Copy seats" />
+                            )}
+                          </div>
                         </TableCell>
                         <TableCell className="font-black text-[#222432]">
                           ₹{(b.totalAmount || 0).toLocaleString()}

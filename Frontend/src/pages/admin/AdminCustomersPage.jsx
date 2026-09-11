@@ -28,7 +28,9 @@ import {
   Select,
   ConfirmModal,
   EmptyState,
-  SkeletonTableRows
+  SkeletonTableRows,
+  CopyBadge,
+  CopyButton
 } from '../../components/ui';
 
 export default function AdminCustomersPage() {
@@ -184,7 +186,7 @@ export default function AdminCustomersPage() {
               <SkeletonTableRows rows={8} cols={7} />
             ) : customers.length > 0 ? (
               customers.map((c) => (
-                <TableRow key={c._id || c.id}>
+                <TableRow key={c._id || c.id} className="transition-colors hover:bg-[#F84464]/5">
                   <TableCell>
                     <div className="flex items-center gap-2.5">
                       <div className="w-8 h-8 rounded-xl bg-red-50 text-[#F84464] font-black text-xs flex items-center justify-center shrink-0 border border-red-100">
@@ -192,12 +194,22 @@ export default function AdminCustomersPage() {
                       </div>
                       <div className="min-w-0">
                         <div className="font-bold text-[#222432] truncate">{c.name}</div>
-                        <div className="text-[11px] text-gray-400 truncate">{c.email}</div>
+                        <div className="text-[11px] text-gray-400 truncate flex items-center gap-1.5 mt-0.5">
+                          <span>{c.email}</span>
+                          {c.email && (
+                            <CopyButton text={c.email} size="xs" variant="ghost" title="Copy email" />
+                          )}
+                        </div>
                       </div>
                     </div>
                   </TableCell>
-                  <TableCell className="font-mono text-gray-600">
-                    {c.phone || '—'}
+                  <TableCell className="font-mono text-gray-600 whitespace-nowrap">
+                    <div className="flex items-center gap-1">
+                      <span>{c.phone || '—'}</span>
+                      {c.phone && (
+                        <CopyButton text={c.phone} size="xs" variant="ghost" title="Copy phone" />
+                      )}
+                    </div>
                   </TableCell>
                   <TableCell>
                     <span className="font-bold text-[#222432]">{c.bookingsCount || 0}</span>
@@ -273,7 +285,12 @@ export default function AdminCustomersPage() {
                 </div>
                 <div>
                   <h3 className="text-sm font-black text-[#222432]">{selectedCustomer.name}</h3>
-                  <p className="text-[11px] text-gray-500">{selectedCustomer.email}</p>
+                  <div className="flex items-center gap-1.5 mt-0.5">
+                    <span className="text-[11px] text-gray-500 font-mono">{selectedCustomer.email}</span>
+                    {selectedCustomer.email && (
+                      <CopyButton text={selectedCustomer.email} size="xs" variant="ghost" title="Copy email" />
+                    )}
+                  </div>
                 </div>
               </div>
 
@@ -331,16 +348,21 @@ export default function AdminCustomersPage() {
 
                 {customerBookings.length > 0 ? (
                   customerBookings.map((b) => (
-                    <div key={b._id} className="p-3 rounded-xl border border-gray-100 bg-gray-50/50 space-y-1.5">
+                    <div key={b._id} className="p-3 rounded-xl border border-gray-100 bg-gray-50/50 space-y-1.5 hover:bg-white transition">
                       <div className="flex items-center justify-between">
                         <span className="font-bold text-xs text-[#222432]">{b.movieTitle || 'Movie Ticket'}</span>
                         <span className="font-black text-xs text-[#222432]">₹{(b.totalAmount || 0).toLocaleString()}</span>
                       </div>
                       <div className="flex items-center justify-between text-[11px] text-gray-500">
                         <span>{b.theatreName || 'Multiplex Venue'}</span>
-                        <Badge variant={b.bookingStatus === 'confirmed' ? 'active' : 'cancelled'} size="xs">
-                          {b.bookingStatus}
-                        </Badge>
+                        <div className="flex items-center gap-2">
+                          {b.bookingId && (
+                            <CopyBadge text={b.bookingId} size="xs" />
+                          )}
+                          <Badge variant={b.bookingStatus === 'confirmed' ? 'active' : 'cancelled'} size="xs">
+                            {b.bookingStatus}
+                          </Badge>
+                        </div>
                       </div>
                     </div>
                   ))

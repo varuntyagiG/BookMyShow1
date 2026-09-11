@@ -22,7 +22,9 @@ import {
   Modal,
   ConfirmModal,
   EmptyState,
-  Skeleton
+  Skeleton,
+  CopyBadge,
+  CopyButton
 } from '../../components/ui';
 
 export default function AdminMoviesPage() {
@@ -236,7 +238,7 @@ export default function AdminMoviesPage() {
       ) : movies.length > 0 ? (
         <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-5">
           {movies.map((m) => (
-            <Card key={m._id} hover className="overflow-hidden flex flex-col p-0 group">
+            <Card key={m._id} hover className="overflow-hidden flex flex-col p-0 group hover:shadow-xl hover:-translate-y-1 hover:border-[#F84464]/30 transition-all duration-200">
               {/* Poster Frame */}
               <div className="relative aspect-2/3 bg-gray-100 overflow-hidden">
                 <img
@@ -263,9 +265,12 @@ export default function AdminMoviesPage() {
               {/* Card Meta */}
               <div className="p-4 flex-1 flex flex-col justify-between space-y-3">
                 <div className="space-y-1">
-                  <h4 className="font-black text-sm text-[#222432] line-clamp-1 group-hover:text-[#F84464] transition-colors">
-                    {m.title}
-                  </h4>
+                  <div className="flex items-center justify-between gap-1.5">
+                    <h4 className="font-black text-sm text-[#222432] line-clamp-1 group-hover:text-[#F84464] transition-colors">
+                      {m.title}
+                    </h4>
+                    <CopyButton text={m.title} size="xs" variant="ghost" title="Copy title" />
+                  </div>
                   <p className="text-[11px] text-gray-500 line-clamp-1">
                     {Array.isArray(m.genre) ? m.genre.join(', ') : m.genre} • {m.certificate}
                   </p>

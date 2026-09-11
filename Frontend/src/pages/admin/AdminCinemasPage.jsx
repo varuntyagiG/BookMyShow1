@@ -25,7 +25,9 @@ import {
   Select,
   ConfirmModal,
   EmptyState,
-  SkeletonTableRows
+  SkeletonTableRows,
+  CopyButton,
+  CopyBadge
 } from '../../components/ui';
 
 export default function AdminCinemasPage() {
@@ -153,7 +155,7 @@ export default function AdminCinemasPage() {
               <SkeletonTableRows rows={6} cols={7} />
             ) : cinemas.length > 0 ? (
               cinemas.map((c) => (
-                <TableRow key={c._id}>
+                <TableRow key={c._id} className="transition-colors hover:bg-[#F84464]/5">
                   <TableCell>
                     <div className="flex items-center gap-2.5">
                       <div className="w-8 h-8 rounded-xl bg-red-50 text-[#F84464] font-black text-xs flex items-center justify-center shrink-0 border border-red-100">
@@ -161,7 +163,15 @@ export default function AdminCinemasPage() {
                       </div>
                       <div className="min-w-0">
                         <div className="font-bold text-[#222432] truncate">{c.name}</div>
-                        <div className="text-[11px] text-gray-400 truncate">{c.address}</div>
+                        <div className="text-[11px] text-gray-400 truncate flex items-center gap-1.5 mt-0.5">
+                          <span>{c.address}</span>
+                          <CopyButton
+                            text={`${c.name}, ${c.address}, ${c.city}`}
+                            size="xs"
+                            variant="ghost"
+                            title="Copy cinema address"
+                          />
+                        </div>
                       </div>
                     </div>
                   </TableCell>

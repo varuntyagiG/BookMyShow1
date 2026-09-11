@@ -29,7 +29,9 @@ import {
   Select,
   Modal,
   EmptyState,
-  SkeletonTableRows
+  SkeletonTableRows,
+  CopyBadge,
+  CopyButton
 } from '../../components/ui';
 
 export default function AdminPartnersPage() {
@@ -180,7 +182,7 @@ export default function AdminPartnersPage() {
                 const isApproved = p.partnerStatus === 'approved' || p.partnerStatus === 'active';
 
                 return (
-                  <TableRow key={p._id || p.id}>
+                  <TableRow key={p._id || p.id} className="transition-colors hover:bg-[#F84464]/5">
                     <TableCell>
                       <div className="flex items-center gap-2.5">
                         <div className="w-8 h-8 rounded-xl bg-amber-50 text-amber-600 font-black text-xs flex items-center justify-center shrink-0 border border-amber-100">
@@ -190,7 +192,12 @@ export default function AdminPartnersPage() {
                           <div className="font-bold text-[#222432] truncate">
                             {p.businessName || p.name}
                           </div>
-                          <div className="text-[11px] text-gray-400 truncate">{p.email}</div>
+                          <div className="text-[11px] text-gray-400 truncate flex items-center gap-1.5 mt-0.5">
+                            <span>{p.email}</span>
+                            {p.email && (
+                              <CopyButton text={p.email} size="xs" variant="ghost" title="Copy partner email" />
+                            )}
+                          </div>
                         </div>
                       </div>
                     </TableCell>
@@ -319,7 +326,17 @@ export default function AdminPartnersPage() {
                 </div>
                 <div>
                   <h3 className="text-sm font-black text-[#222432]">{selectedPartner.businessName || selectedPartner.name}</h3>
-                  <p className="text-[11px] text-gray-500">{selectedPartner.email}</p>
+                  <div className="flex items-center gap-1.5 mt-0.5">
+                    <span className="text-[11px] text-gray-500 font-mono">{selectedPartner.email}</span>
+                    {selectedPartner.email && (
+                      <CopyButton text={selectedPartner.email} size="xs" variant="ghost" title="Copy email" />
+                    )}
+                  </div>
+                  {selectedPartner._id && (
+                    <div className="mt-1">
+                      <CopyBadge text={`PTR-${selectedPartner._id.slice(-6).toUpperCase()}`} size="xs" variant="neutral" />
+                    </div>
+                  )}
                 </div>
               </div>
 

@@ -28,8 +28,27 @@ import {
   Select,
   Modal,
   EmptyState,
-  SkeletonTableRows
+  SkeletonTableRows,
+  CopyBadge,
+  CopyButton
 } from '../../components/ui';
+
+function getTimeOfDayBadge(timeStr) {
+  if (!timeStr) return null;
+  const lower = timeStr.toLowerCase();
+  const isPM = lower.includes('pm');
+  const hour = parseInt(timeStr, 10) || 0;
+  if (!isPM || (hour === 12 && !isPM)) {
+    return { label: 'Morning', style: 'bg-amber-50 text-amber-700 border-amber-200' };
+  }
+  if (isPM && (hour === 12 || hour < 4)) {
+    return { label: 'Matinee', style: 'bg-sky-50 text-sky-700 border-sky-200' };
+  }
+  if (isPM && hour < 8) {
+    return { label: 'Evening', style: 'bg-emerald-50 text-emerald-700 border-emerald-200' };
+  }
+  return { label: 'Night', style: 'bg-indigo-50 text-indigo-700 border-indigo-200' };
+}
 
 export default function AdminShowsPage() {
   const [shows, setShows] = useState([]);
@@ -153,15 +172,23 @@ export default function AdminShowsPage() {
                 const capacity = s.capacity || s.screen?.totalCapacity || 120;
                 const occupancyRate = s.occupancyRate || Math.round((bookedCount / capacity) * 100);
 
+                const timeBadge = getTimeOfDayBadge(s.startTime);
+                const showRef = `SHOW-${s._id.slice(-6).toUpperCase()}`;
+
                 return (
-                  <TableRow key={s._id}>
+                  <TableRow key={s._id} className="transition-colors hover:bg-[#F84464]/5">
                     <TableCell>
                       <div className="flex items-center gap-2.5">
                         <div className="w-8 h-8 rounded-xl bg-purple-50 text-purple-600 font-black text-xs flex items-center justify-center shrink-0 border border-purple-100">
                           <Film className="w-4 h-4" />
                         </div>
-                        <div className="min-w-0 font-bold text-[#222432] truncate">
-                          {s.movieTitle || s.movie?.title || 'Screening Film'}
+                        <div className="min-w-0">
+                          <div className="font-bold text-[#222432] truncate max-w-[160px]">
+                            {s.movieTitle || s.movie?.title || 'Screening Film'}
+                          </div>
+                          <div className="mt-0.5">
+                            <CopyBadge text={showRef} size="xs" variant="neutral" />
+                          </div>
                         </div>
                       </div>
                     </TableCell>
@@ -180,8 +207,15 @@ export default function AdminShowsPage() {
                     </TableCell>
 
                     <TableCell>
-                      <div className="font-bold text-[#222432]">{s.showDate}</div>
-                      <div className="text-[11px] text-gray-500 font-mono">{s.startTime}</div>
+                      <div className="flex items-center gap-1.5">
+                        <div className="font-bold text-[#222432]">{s.showDate}</div>
+                        {timeBadge && (
+                          <span className={`text-[9px] font-bold px-1.5 py-0.2 rounded border ${timeBadge.style}`}>
+                            {timeBadge.label}
+                          </span>
+                        )}
+                      </div>
+                      <div className="text-[11px] text-gray-500 font-mono mt-0.5">{s.startTime}</div>
                     </TableCell>
 
                     <TableCell>

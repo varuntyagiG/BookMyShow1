@@ -29,7 +29,9 @@ import {
   Select,
   Modal,
   EmptyState,
-  SkeletonTableRows
+  SkeletonTableRows,
+  CopyBadge,
+  CopyButton
 } from '../../components/ui';
 
 export default function AdminBookingsPage() {
@@ -183,9 +185,9 @@ export default function AdminBookingsPage() {
               <SkeletonTableRows rows={8} cols={8} />
             ) : bookings.length > 0 ? (
               bookings.map((b) => (
-                <TableRow key={b._id}>
-                  <TableCell className="font-mono font-bold text-gray-700">
-                    {b.bookingId || b._id?.substring(0, 8)}
+                <TableRow key={b._id} className="transition-colors hover:bg-[#F84464]/5">
+                  <TableCell className="whitespace-nowrap">
+                    <CopyBadge text={b.bookingId || b._id?.substring(0, 8)} size="xs" />
                   </TableCell>
 
                   <TableCell className="font-bold text-[#222432] max-w-[160px] truncate">
@@ -196,17 +198,27 @@ export default function AdminBookingsPage() {
                     <div className="font-bold text-[#222432] truncate">
                       {b.user?.name || 'Customer'}
                     </div>
-                    <div className="text-[11px] text-gray-400 truncate">{b.user?.email}</div>
+                    <div className="text-[11px] text-gray-400 truncate flex items-center gap-1.5 mt-0.5">
+                      <span>{b.user?.email || 'N/A'}</span>
+                      {b.user?.email && (
+                        <CopyButton text={b.user.email} size="xs" variant="ghost" title="Copy email" />
+                      )}
+                    </div>
                   </TableCell>
 
                   <TableCell className="text-gray-500 max-w-[150px] truncate">
                     {b.theatreName || b.cinema?.name || 'Cinema'}
                   </TableCell>
 
-                  <TableCell>
-                    <span className="font-mono bg-gray-100 px-2 py-0.5 rounded text-[11px] font-bold text-gray-700">
-                      {Array.isArray(b.seats) ? b.seats.join(', ') : '1 Seat'}
-                    </span>
+                  <TableCell className="whitespace-nowrap">
+                    <div className="flex items-center gap-1">
+                      <span className="font-mono bg-gray-100 px-2 py-0.5 rounded text-[11px] font-bold text-gray-700">
+                        {Array.isArray(b.seats) ? b.seats.join(', ') : '1 Seat'}
+                      </span>
+                      {Array.isArray(b.seats) && b.seats.length > 0 && (
+                        <CopyButton text={b.seats.join(', ')} size="xs" variant="ghost" title="Copy seats" />
+                      )}
+                    </div>
                   </TableCell>
 
                   <TableCell className="font-black text-[#222432]">
@@ -283,8 +295,11 @@ export default function AdminBookingsPage() {
               <div className="flex items-center gap-2">
                 <Ticket className="w-5 h-5 text-[#F84464]" />
                 <div>
-                  <h3 className="text-sm font-black text-[#222432]">Receipt #{selectedBooking.bookingId}</h3>
-                  <p className="text-[11px] text-gray-500">M-Ticket Digital Confirmation</p>
+                  <div className="flex items-center gap-2">
+                    <span className="text-sm font-black text-[#222432]">Receipt</span>
+                    <CopyBadge text={selectedBooking.bookingId} size="xs" />
+                  </div>
+                  <p className="text-[11px] text-gray-500 mt-0.5">M-Ticket Digital Confirmation</p>
                 </div>
               </div>
 
@@ -318,8 +333,11 @@ export default function AdminBookingsPage() {
 
                   <div>
                     <div className="text-[10px] uppercase font-bold text-gray-400">Seats</div>
-                    <div className="font-bold text-[#F84464]">
-                      {Array.isArray(selectedBooking.seats) ? selectedBooking.seats.join(', ') : '1 Seat'}
+                    <div className="font-bold text-[#F84464] flex items-center gap-1.5 mt-0.5">
+                      <span>{Array.isArray(selectedBooking.seats) ? selectedBooking.seats.join(', ') : '1 Seat'}</span>
+                      {Array.isArray(selectedBooking.seats) && selectedBooking.seats.length > 0 && (
+                        <CopyButton text={selectedBooking.seats.join(', ')} size="xs" variant="ghost" title="Copy seats" />
+                      )}
                     </div>
                   </div>
                 </div>
