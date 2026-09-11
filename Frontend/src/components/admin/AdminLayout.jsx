@@ -15,7 +15,8 @@ import {
   ShieldCheck,
   Zap,
   Activity,
-  ChevronRight
+  ChevronRight,
+  Shield
 } from 'lucide-react';
 
 export default function AdminLayout() {
@@ -38,26 +39,26 @@ export default function AdminLayout() {
   };
 
   return (
-    <div className="min-h-screen bg-[#0C0E14] text-gray-100 flex flex-col font-sans selection:bg-[#F84464] selection:text-white">
-      {/* Top Operations Header */}
-      <header className="bg-[#121620] border-b border-[#222738] sticky top-0 z-40 shadow-xl backdrop-blur-md">
+    <div className="min-h-screen bg-[#F5F5FA] text-gray-800 flex flex-col font-sans selection:bg-[#F84464] selection:text-white">
+      {/* Top Operations Header (Matching Vendor/Customer Header Theme) */}
+      <header className="bg-[#333545] text-white sticky top-0 z-40 shadow-md">
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 h-16 flex items-center justify-between">
           {/* Brand & Mobile Hamburger */}
           <div className="flex items-center gap-3">
             <button
               onClick={() => setSidebarOpen(!sidebarOpen)}
-              className="lg:hidden p-2 rounded-lg text-gray-400 hover:text-white hover:bg-[#1C2132] transition"
+              className="lg:hidden p-2 rounded-lg text-gray-300 hover:text-white hover:bg-[#222432] transition"
               aria-label="Toggle Navigation"
             >
-              {sidebarOpen ? <X size={20} /> : <Menu size={20} />}
+              {sidebarOpen ? <X size={22} /> : <Menu size={22} />}
             </button>
 
-            <Link to="/admin/dashboard" className="flex items-center gap-2.5">
+            <Link to="/admin/dashboard" className="flex items-center gap-2">
               <span className="text-2xl font-black tracking-tight text-white">
                 book<span className="text-[#F84464]">my</span>trip
               </span>
-              <span className="bg-gradient-to-r from-red-500/20 to-orange-500/20 text-[#F84464] border border-[#F84464]/30 text-[10px] uppercase font-extrabold tracking-widest px-2.5 py-0.5 rounded-full flex items-center gap-1 shadow-sm">
-                <Zap size={10} className="fill-current text-[#F84464]" />
+              <span className="bg-[#F84464] text-white text-[10px] uppercase font-bold tracking-wider px-2 py-0.5 rounded-full ml-1 flex items-center gap-1 shadow-sm">
+                <Zap size={10} className="fill-current text-white" />
                 Super Admin
               </span>
             </Link>
@@ -70,7 +71,7 @@ export default function AdminLayout() {
                 to="/"
                 target="_blank"
                 rel="noopener noreferrer"
-                className="inline-flex items-center gap-1.5 text-xs font-semibold text-gray-300 hover:text-white bg-[#1A1F2E] hover:bg-[#252C42] px-3 py-1.5 rounded-lg border border-[#2B344D] transition"
+                className="inline-flex items-center gap-1.5 text-xs font-semibold text-gray-300 hover:text-white bg-[#222432] hover:bg-black/40 px-3 py-1.5 rounded-lg border border-gray-700 transition"
                 title="Open Customer Frontstore"
               >
                 <span>Storefront</span>
@@ -81,7 +82,7 @@ export default function AdminLayout() {
                 to="/vendor/dashboard"
                 target="_blank"
                 rel="noopener noreferrer"
-                className="inline-flex items-center gap-1.5 text-xs font-semibold text-gray-300 hover:text-white bg-[#1A1F2E] hover:bg-[#252C42] px-3 py-1.5 rounded-lg border border-[#2B344D] transition"
+                className="inline-flex items-center gap-1.5 text-xs font-semibold text-gray-300 hover:text-white bg-[#222432] hover:bg-black/40 px-3 py-1.5 rounded-lg border border-gray-700 transition"
                 title="Open Cinema Partner Portal"
               >
                 <span>Partner Portal</span>
@@ -90,25 +91,20 @@ export default function AdminLayout() {
             </div>
 
             {/* Admin identity pill */}
-            <div className="hidden md:flex items-center gap-2.5 bg-[#171B28] border border-[#262D40] px-3 py-1.5 rounded-lg">
-              <div className="w-7 h-7 rounded-full bg-[#F84464]/20 border border-[#F84464]/40 flex items-center justify-center text-[#F84464]">
-                <ShieldCheck size={16} />
-              </div>
-              <div className="flex flex-col text-left">
-                <span className="text-xs font-bold text-gray-200 leading-tight">
-                  {admin?.name || 'Platform Admin'}
-                </span>
-                <span className="text-[10px] text-emerald-400 font-medium flex items-center gap-1">
-                  <span className="w-1.5 h-1.5 rounded-full bg-emerald-400 animate-pulse"></span>
-                  {admin?.email || 'admin@bookmytrip.com'}
-                </span>
-              </div>
+            <div className="hidden md:flex flex-col text-right">
+              <span className="text-sm font-semibold text-white leading-tight">
+                {admin?.name || 'Platform Super Admin'}
+              </span>
+              <span className="text-[11px] text-emerald-400 flex items-center justify-end gap-1">
+                <span className="w-1.5 h-1.5 rounded-full bg-emerald-400 animate-pulse"></span>
+                Root Administrator
+              </span>
             </div>
 
             {/* Logout */}
             <button
               onClick={handleLogout}
-              className="p-2 text-gray-400 hover:text-rose-400 hover:bg-rose-500/10 rounded-lg transition border border-transparent hover:border-rose-500/20"
+              className="p-2 text-gray-400 hover:text-white hover:bg-[#222432] rounded-lg transition"
               title="Terminate Admin Session"
             >
               <LogOut size={18} />
@@ -117,19 +113,19 @@ export default function AdminLayout() {
         </div>
       </header>
 
-      {/* Operations Body Container */}
+      {/* Main Workspace Body with Sidebar */}
       <div className="flex-1 max-w-7xl w-full mx-auto px-4 sm:px-6 lg:px-8 py-6 flex gap-6">
-        {/* Desktop Operations Sidebar */}
+        {/* Desktop Operations Sidebar (Matching Vendor Sidebar) */}
         <aside className="hidden lg:block w-64 shrink-0">
-          <div className="bg-[#121620] rounded-2xl border border-[#222738] shadow-xl p-4 sticky top-24">
+          <div className="bg-white rounded-xl border border-gray-200 shadow-sm p-4 sticky top-24">
             <div className="px-3 py-2 mb-2 flex items-center justify-between">
-              <p className="text-[10px] font-extrabold uppercase tracking-widest text-gray-400">
+              <p className="text-[11px] font-bold uppercase tracking-wider text-gray-400">
                 Operations Menu
               </p>
-              <Activity size={12} className="text-emerald-400 animate-pulse" />
+              <Activity size={12} className="text-emerald-500 animate-pulse" />
             </div>
 
-            <nav className="space-y-1.5">
+            <nav className="space-y-1">
               {navItems.map((item) => {
                 const Icon = item.icon;
                 return (
@@ -137,29 +133,31 @@ export default function AdminLayout() {
                     key={item.to}
                     to={item.to}
                     className={({ isActive }) =>
-                      `flex items-center justify-between px-3.5 py-2.5 rounded-xl text-sm font-semibold transition-all ${
+                      `flex items-center justify-between px-3 py-2.5 rounded-lg text-sm font-medium transition ${
                         isActive
-                          ? 'bg-[#F84464] text-white shadow-lg shadow-[#F84464]/25 ring-1 ring-white/20'
-                          : 'text-gray-300 hover:bg-[#1A1F2E] hover:text-white'
+                          ? 'bg-[#F84464] text-white shadow-sm'
+                          : 'text-[#333545] hover:bg-gray-100 hover:text-black'
                       }`
                     }
                   >
                     {({ isActive }) => (
                       <>
                         <div className="flex items-center gap-3">
-                          <Icon size={17} className={isActive ? 'text-white' : 'text-gray-400'} />
+                          <Icon size={18} className={isActive ? 'text-white' : 'text-gray-500'} />
                           <span>{item.label}</span>
                         </div>
                         {item.badge ? (
                           <span
-                            className={`text-[9px] font-black uppercase tracking-wider px-1.5 py-0.5 rounded ${
-                              isActive ? 'bg-white text-[#F84464]' : 'bg-amber-500/20 text-amber-400 border border-amber-500/30'
+                            className={`text-[10px] font-bold px-1.5 py-0.5 rounded ${
+                              isActive
+                                ? 'bg-white text-[#F84464]'
+                                : 'bg-amber-100 text-amber-800'
                             }`}
                           >
                             {item.badge}
                           </span>
                         ) : (
-                          <ChevronRight size={14} className={isActive ? 'text-white' : 'text-gray-600'} />
+                          <ChevronRight size={14} className={isActive ? 'text-white' : 'text-gray-400'} />
                         )}
                       </>
                     )}
@@ -169,13 +167,13 @@ export default function AdminLayout() {
             </nav>
 
             {/* Platform Security Badge */}
-            <div className="mt-8 p-3.5 rounded-xl bg-[#161B28] border border-[#252D40]">
-              <div className="flex items-center gap-2 text-xs font-bold text-gray-200">
-                <ShieldCheck className="text-emerald-400" size={15} />
-                <span>Nodal Security Layer</span>
+            <div className="mt-8 p-3 rounded-lg bg-gray-50 border border-gray-200">
+              <div className="flex items-center gap-2 text-xs font-semibold text-gray-800">
+                <ShieldCheck className="text-emerald-600" size={15} />
+                <span>Nodal Escrow Protocol</span>
               </div>
-              <p className="text-[11px] text-gray-400 mt-1 leading-relaxed">
-                PCI-DSS & RBI compliant nodal escrow disburse protocol active.
+              <p className="text-[11px] text-gray-500 mt-1 leading-relaxed">
+                PCI-DSS & RBI compliant nodal wire disbursement ledger active.
               </p>
             </div>
           </div>
@@ -185,22 +183,20 @@ export default function AdminLayout() {
         {sidebarOpen && (
           <div className="fixed inset-0 z-50 lg:hidden flex">
             <div
-              className="fixed inset-0 bg-black/80 backdrop-blur-sm"
+              className="fixed inset-0 bg-black/60 backdrop-blur-sm"
               onClick={() => setSidebarOpen(false)}
             />
-            <div className="relative w-72 max-w-[80vw] bg-[#121620] border-r border-[#222738] h-full shadow-2xl p-4 flex flex-col z-10">
-              <div className="flex items-center justify-between pb-4 border-b border-[#222738]">
-                <div className="flex items-center gap-2">
-                  <span className="font-extrabold text-white text-base tracking-tight">Admin Operations</span>
-                </div>
+            <div className="relative w-72 max-w-[80vw] bg-white h-full shadow-2xl p-4 flex flex-col z-10">
+              <div className="flex items-center justify-between pb-4 border-b border-gray-200">
+                <span className="font-bold text-gray-900 text-sm">Super Admin Operations</span>
                 <button
                   onClick={() => setSidebarOpen(false)}
-                  className="p-1.5 text-gray-400 hover:text-white hover:bg-[#1C2132] rounded-lg"
+                  className="p-1.5 text-gray-500 hover:bg-gray-100 rounded-md"
                 >
                   <X size={20} />
                 </button>
               </div>
-              <nav className="mt-4 space-y-1.5 flex-1 overflow-y-auto">
+              <nav className="mt-4 space-y-1 flex-1 overflow-y-auto">
                 {navItems.map((item) => {
                   const Icon = item.icon;
                   return (
@@ -209,19 +205,19 @@ export default function AdminLayout() {
                       to={item.to}
                       onClick={() => setSidebarOpen(false)}
                       className={({ isActive }) =>
-                        `flex items-center justify-between px-3.5 py-2.5 rounded-xl text-sm font-semibold transition ${
+                        `flex items-center justify-between px-3 py-2.5 rounded-lg text-sm font-medium transition ${
                           isActive
-                            ? 'bg-[#F84464] text-white shadow-lg'
-                            : 'text-gray-300 hover:bg-[#1A1F2E]'
+                            ? 'bg-[#F84464] text-white shadow-sm'
+                            : 'text-[#333545] hover:bg-gray-100'
                         }`
                       }
                     >
                       <div className="flex items-center gap-3">
-                        <Icon size={17} />
+                        <Icon size={18} />
                         <span>{item.label}</span>
                       </div>
                       {item.badge && (
-                        <span className="text-[9px] font-black uppercase px-1.5 py-0.5 rounded bg-amber-500/20 text-amber-400 border border-amber-500/30">
+                        <span className="text-[10px] font-bold px-1.5 py-0.5 rounded bg-amber-100 text-amber-800">
                           {item.badge}
                         </span>
                       )}
@@ -229,13 +225,13 @@ export default function AdminLayout() {
                   );
                 })}
               </nav>
-              <div className="pt-4 border-t border-[#222738]">
+              <div className="pt-4 border-t border-gray-200">
                 <button
                   onClick={handleLogout}
-                  className="w-full flex items-center justify-center gap-2 py-2.5 text-sm font-bold text-rose-400 hover:bg-rose-500/10 rounded-xl transition border border-rose-500/20"
+                  className="w-full flex items-center justify-center gap-2 py-2.5 text-sm font-semibold text-rose-600 hover:bg-rose-50 rounded-lg transition"
                 >
                   <LogOut size={16} />
-                  <span>Terminate Session</span>
+                  <span>Sign Out</span>
                 </button>
               </div>
             </div>

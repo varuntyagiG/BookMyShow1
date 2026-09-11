@@ -77,7 +77,7 @@ export default function AdminVendorsPage() {
       )}
 
       {/* Header */}
-      <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4 bg-[#121622] border border-[#23293C] rounded-2xl p-6 shadow-xl">
+      <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4 bg-white border border-gray-200 rounded-xl p-6 shadow-sm">
         <div>
           <div className="flex items-center gap-2 mb-1">
             <Building2 size={16} className="text-[#F84464]" />
@@ -85,17 +85,17 @@ export default function AdminVendorsPage() {
               Partner Governance & KYC
             </span>
           </div>
-          <h1 className="text-2xl sm:text-3xl font-black text-white tracking-tight">
+          <h1 className="text-2xl sm:text-3xl font-black text-gray-900 tracking-tight">
             Cinema Partner Directory
           </h1>
-          <p className="text-xs sm:text-sm text-gray-400 mt-1">
+          <p className="text-xs sm:text-sm text-gray-600 mt-1">
             Review theatre owner onboarding licenses, verify bank details & enforce compliance
           </p>
         </div>
 
         <button
           onClick={() => fetchVendors()}
-          className="self-start sm:self-auto p-2 bg-[#181D2D] hover:bg-[#22293E] text-gray-300 hover:text-white rounded-xl border border-[#2B344D] transition"
+          className="self-start sm:self-auto p-2 bg-white hover:bg-gray-50 text-gray-600 hover:text-gray-900 rounded-xl border border-gray-300 shadow-sm transition"
           title="Refresh List"
         >
           <RefreshCw size={16} className={loading ? 'animate-spin text-[#F84464]' : ''} />
@@ -105,13 +105,13 @@ export default function AdminVendorsPage() {
       {/* Search & Filter Bar */}
       <div className="flex flex-col sm:flex-row gap-3">
         <div className="flex-1 relative">
-          <Search className="absolute left-3.5 top-1/2 -translate-y-1/2 text-gray-500" size={16} />
+          <Search className="absolute left-3.5 top-1/2 -translate-y-1/2 text-gray-400" size={16} />
           <input
             type="text"
             value={search}
             onChange={(e) => setSearch(e.target.value)}
             placeholder="Search by Partner name, Business name, Email or Phone..."
-            className="w-full bg-[#121622] border border-[#23293C] focus:border-[#F84464] text-white pl-10 pr-4 py-2.5 rounded-xl text-sm placeholder:text-gray-500 outline-none"
+            className="w-full bg-white border border-gray-300 focus:border-[#F84464] focus:ring-1 focus:ring-[#F84464] text-gray-900 pl-10 pr-4 py-2.5 rounded-xl text-sm placeholder:text-gray-400 outline-none shadow-sm"
           />
         </div>
 
@@ -122,8 +122,8 @@ export default function AdminVendorsPage() {
               onClick={() => setStatusFilter(tab)}
               className={`px-3 py-2 rounded-xl text-xs font-bold uppercase tracking-wider transition ${
                 statusFilter === tab
-                  ? 'bg-[#F84464] text-white shadow-md shadow-[#F84464]/20'
-                  : 'bg-[#121622] text-gray-400 hover:text-white border border-[#23293C]'
+                  ? 'bg-[#F84464] text-white shadow-sm'
+                  : 'bg-white text-gray-600 hover:bg-gray-50 border border-gray-200'
               }`}
             >
               {tab}
@@ -136,12 +136,12 @@ export default function AdminVendorsPage() {
       {loading ? (
         <div className="py-20 flex flex-col items-center justify-center gap-3">
           <div className="w-10 h-10 border-4 border-[#F84464] border-t-transparent rounded-full animate-spin" />
-          <p className="text-xs text-gray-400">Loading Cinema Partners Catalog...</p>
+          <p className="text-xs text-gray-500 font-medium">Loading Cinema Partners Catalog...</p>
         </div>
       ) : vendors.length === 0 ? (
-        <div className="bg-[#121622] border border-[#23293C] rounded-2xl p-12 text-center text-gray-400">
-          <Building2 size={36} className="mx-auto text-gray-600 mb-3" />
-          <p className="text-sm font-semibold text-gray-300">No cinema partners found</p>
+        <div className="bg-white border border-gray-200 rounded-xl p-12 text-center text-gray-500 shadow-sm">
+          <Building2 size={36} className="mx-auto text-gray-400 mb-3" />
+          <p className="text-sm font-semibold text-gray-700">No cinema partners found</p>
           <p className="text-xs text-gray-500 mt-1">Try adjusting your search query or status filter.</p>
         </div>
       ) : (
@@ -154,26 +154,26 @@ export default function AdminVendorsPage() {
             return (
               <div
                 key={v._id}
-                className="bg-[#121622] border border-[#23293C] hover:border-[#2F3750] rounded-2xl p-5 shadow-lg transition flex flex-col lg:flex-row lg:items-center lg:justify-between gap-6"
+                className="bg-white border border-gray-200 hover:border-gray-300 rounded-xl p-5 shadow-sm hover:shadow-md transition flex flex-col lg:flex-row lg:items-center lg:justify-between gap-6"
               >
                 {/* Partner Identity */}
                 <div className="flex items-start gap-4">
-                  <div className="w-12 h-12 rounded-2xl bg-gradient-to-tr from-[#1A1F2E] to-[#252D40] border border-[#2F3750] flex items-center justify-center text-[#F84464] shrink-0">
+                  <div className="w-12 h-12 rounded-xl bg-red-50 border border-red-100 flex items-center justify-center text-[#F84464] shrink-0">
                     <Building2 size={24} />
                   </div>
                   <div>
                     <div className="flex items-center gap-2.5 flex-wrap">
-                      <h3 className="text-base font-extrabold text-white">
+                      <h3 className="text-base font-bold text-gray-900">
                         {v.businessName || v.name || 'Cinema Partner'}
                       </h3>
                       {/* Status Badge */}
                       <span
-                        className={`text-[10px] font-black uppercase tracking-wider px-2 py-0.5 rounded-full flex items-center gap-1 ${
+                        className={`text-[10px] font-bold uppercase tracking-wider px-2 py-0.5 rounded-full flex items-center gap-1 ${
                           isApproved
-                            ? 'bg-emerald-500/20 text-emerald-400 border border-emerald-500/30'
+                            ? 'bg-emerald-100 text-emerald-800'
                             : isPending
-                            ? 'bg-amber-500/20 text-amber-400 border border-amber-500/30'
-                            : 'bg-rose-500/20 text-rose-400 border border-rose-500/30'
+                            ? 'bg-amber-100 text-amber-800'
+                            : 'bg-rose-100 text-rose-800'
                         }`}
                       >
                         {isApproved && <CheckCircle2 size={10} />}
@@ -183,19 +183,19 @@ export default function AdminVendorsPage() {
                       </span>
                     </div>
 
-                    <p className="text-xs text-gray-400 mt-0.5">
-                      Operator: <span className="text-gray-300 font-semibold">{v.name}</span>
+                    <p className="text-xs text-gray-500 mt-0.5">
+                      Operator: <span className="text-gray-800 font-semibold">{v.name}</span>
                     </p>
 
                     {/* Contact Pills */}
-                    <div className="flex items-center gap-3 mt-2 flex-wrap text-xs text-gray-400">
-                      <span className="flex items-center gap-1.5 bg-[#181D2D] px-2.5 py-1 rounded-lg border border-[#242C3E]">
-                        <Mail size={12} className="text-gray-500" />
+                    <div className="flex items-center gap-2.5 mt-2 flex-wrap text-xs text-gray-600">
+                      <span className="flex items-center gap-1.5 bg-gray-50 px-2.5 py-1 rounded-lg border border-gray-200">
+                        <Mail size={12} className="text-gray-400" />
                         <span>{v.email}</span>
                       </span>
                       {v.phone && (
-                        <span className="flex items-center gap-1.5 bg-[#181D2D] px-2.5 py-1 rounded-lg border border-[#242C3E]">
-                          <Phone size={12} className="text-gray-500" />
+                        <span className="flex items-center gap-1.5 bg-gray-50 px-2.5 py-1 rounded-lg border border-gray-200">
+                          <Phone size={12} className="text-gray-400" />
                           <span>{v.phone}</span>
                         </span>
                       )}
@@ -204,18 +204,18 @@ export default function AdminVendorsPage() {
                 </div>
 
                 {/* Aggregate Infrastructure Stats */}
-                <div className="grid grid-cols-3 gap-3 sm:gap-4 py-3 lg:py-0 border-y lg:border-y-0 lg:border-x border-[#20273C] lg:px-6">
+                <div className="grid grid-cols-3 gap-3 sm:gap-4 py-3 lg:py-0 border-y lg:border-y-0 lg:border-x border-gray-100 lg:px-6">
                   <div className="text-center">
-                    <div className="text-sm sm:text-base font-black text-white">{v.cinemaCount || 0}</div>
-                    <div className="text-[10px] uppercase font-bold text-gray-500">Venues</div>
+                    <div className="text-sm sm:text-base font-black text-gray-900">{v.cinemaCount || 0}</div>
+                    <div className="text-[10px] uppercase font-bold text-gray-400">Venues</div>
                   </div>
                   <div className="text-center">
-                    <div className="text-sm sm:text-base font-black text-white">{v.screenCount || 0}</div>
-                    <div className="text-[10px] uppercase font-bold text-gray-500">Screens</div>
+                    <div className="text-sm sm:text-base font-black text-gray-900">{v.screenCount || 0}</div>
+                    <div className="text-[10px] uppercase font-bold text-gray-400">Screens</div>
                   </div>
                   <div className="text-center">
-                    <div className="text-sm sm:text-base font-black text-white">{v.showCount || 0}</div>
-                    <div className="text-[10px] uppercase font-bold text-gray-500">Shows</div>
+                    <div className="text-sm sm:text-base font-black text-gray-900">{v.showCount || 0}</div>
+                    <div className="text-[10px] uppercase font-bold text-gray-400">Shows</div>
                   </div>
                 </div>
 
@@ -225,7 +225,7 @@ export default function AdminVendorsPage() {
                     <button
                       onClick={() => handleUpdateStatus(v._id, 'approved')}
                       disabled={actionLoading === v._id}
-                      className="inline-flex items-center gap-1.5 bg-emerald-600 hover:bg-emerald-500 text-white text-xs font-bold px-3.5 py-2 rounded-xl shadow-sm transition disabled:opacity-50"
+                      className="inline-flex items-center gap-1.5 bg-emerald-600 hover:bg-emerald-700 text-white text-xs font-semibold px-3.5 py-2 rounded-lg shadow-sm transition disabled:opacity-50"
                     >
                       <CheckCircle2 size={14} />
                       <span>Approve KYC</span>
@@ -236,7 +236,7 @@ export default function AdminVendorsPage() {
                     <button
                       onClick={() => handleUpdateStatus(v._id, 'suspended')}
                       disabled={actionLoading === v._id}
-                      className="inline-flex items-center gap-1.5 bg-rose-500/15 hover:bg-rose-500 text-rose-400 hover:text-white border border-rose-500/30 text-xs font-bold px-3.5 py-2 rounded-xl transition disabled:opacity-50"
+                      className="inline-flex items-center gap-1.5 bg-rose-50 hover:bg-rose-100 text-rose-700 border border-rose-200 text-xs font-semibold px-3.5 py-2 rounded-lg transition disabled:opacity-50"
                     >
                       <ShieldAlert size={14} />
                       <span>Suspend</span>
@@ -247,7 +247,7 @@ export default function AdminVendorsPage() {
                     <button
                       onClick={() => handleUpdateStatus(v._id, 'approved')}
                       disabled={actionLoading === v._id}
-                      className="inline-flex items-center gap-1.5 bg-blue-600 hover:bg-blue-500 text-white text-xs font-bold px-3.5 py-2 rounded-xl transition disabled:opacity-50"
+                      className="inline-flex items-center gap-1.5 bg-blue-600 hover:bg-blue-700 text-white text-xs font-semibold px-3.5 py-2 rounded-lg transition disabled:opacity-50"
                     >
                       <CheckCircle2 size={14} />
                       <span>Reinstate</span>

@@ -152,7 +152,7 @@ export default function AdminOffersPage() {
       )}
 
       {/* Header */}
-      <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4 bg-[#121622] border border-[#23293C] rounded-2xl p-6 shadow-xl">
+      <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4 bg-white border border-gray-200 rounded-xl p-6 shadow-sm">
         <div>
           <div className="flex items-center gap-2 mb-1">
             <Tag size={16} className="text-[#F84464]" />
@@ -160,10 +160,10 @@ export default function AdminOffersPage() {
               Commercial Alliances Engine
             </span>
           </div>
-          <h1 className="text-2xl sm:text-3xl font-black text-white tracking-tight">
+          <h1 className="text-2xl sm:text-3xl font-black text-gray-900 tracking-tight">
             Bank Deals, B1G1 & Promos
           </h1>
-          <p className="text-xs sm:text-sm text-gray-400 mt-1">
+          <p className="text-xs sm:text-sm text-gray-600 mt-1">
             Configure co-branded credit card concessions, Buy 1 Get 1 Free rules & nationwide coupons
           </p>
         </div>
@@ -171,7 +171,7 @@ export default function AdminOffersPage() {
         <div className="flex items-center gap-2.5">
           <button
             onClick={handleOpenAdd}
-            className="inline-flex items-center gap-2 bg-[#F84464] hover:bg-[#d83552] text-white font-bold text-xs px-4 py-2.5 rounded-xl shadow-md shadow-[#F84464]/25 transition"
+            className="inline-flex items-center gap-2 bg-[#F84464] hover:bg-[#d83552] text-white font-bold text-xs px-4 py-2.5 rounded-xl shadow-sm transition"
           >
             <Plus size={16} />
             <span>Launch Offer</span>
@@ -179,7 +179,7 @@ export default function AdminOffersPage() {
 
           <button
             onClick={() => fetchOffers()}
-            className="p-2 bg-[#181D2D] hover:bg-[#22293E] text-gray-300 hover:text-white rounded-xl border border-[#2B344D] transition"
+            className="p-2 bg-white hover:bg-gray-50 text-gray-600 hover:text-gray-900 rounded-xl border border-gray-300 shadow-sm transition"
             title="Refresh List"
           >
             <RefreshCw size={16} className={loading ? 'animate-spin text-[#F84464]' : ''} />
@@ -191,12 +191,12 @@ export default function AdminOffersPage() {
       {loading ? (
         <div className="py-20 flex flex-col items-center justify-center gap-3">
           <div className="w-10 h-10 border-4 border-[#F84464] border-t-transparent rounded-full animate-spin" />
-          <p className="text-xs text-gray-400">Loading Bank Alliance campaigns...</p>
+          <p className="text-xs text-gray-500 font-medium">Loading Bank Alliance campaigns...</p>
         </div>
       ) : offers.length === 0 ? (
-        <div className="bg-[#121622] border border-[#23293C] rounded-2xl p-12 text-center text-gray-400">
-          <Tag size={36} className="mx-auto text-gray-600 mb-3" />
-          <p className="text-sm font-semibold text-gray-300">No active promotional campaigns</p>
+        <div className="bg-white border border-gray-200 rounded-xl p-12 text-center text-gray-500 shadow-sm">
+          <Tag size={36} className="mx-auto text-gray-400 mb-3" />
+          <p className="text-sm font-semibold text-gray-700">No active promotional campaigns</p>
           <p className="text-xs text-gray-500 mt-1">Launch your first Bank Card Alliance or B1G1 promo.</p>
         </div>
       ) : (
@@ -209,27 +209,27 @@ export default function AdminOffersPage() {
             return (
               <div
                 key={o._id}
-                className="bg-[#121622] border border-[#23293C] hover:border-[#2F3750] rounded-2xl p-5 shadow-xl transition flex flex-col justify-between relative overflow-hidden group"
+                className="bg-white border border-gray-200 hover:border-gray-300 rounded-xl p-5 shadow-sm hover:shadow-md transition flex flex-col justify-between"
               >
                 <div>
                   {/* Top Badge & Code */}
                   <div className="flex items-center justify-between gap-2 mb-3">
-                    <span className="font-mono text-sm font-black text-white bg-[#181D2D] border border-[#2A334A] px-3 py-1 rounded-xl tracking-wider">
+                    <span className="font-mono text-xs font-bold text-gray-900 bg-gray-50 border border-gray-200 px-3 py-1 rounded-lg tracking-wider">
                       {o.code}
                     </span>
 
                     <div className="flex items-center gap-2">
                       <span
-                        className={`text-[10px] font-black uppercase tracking-wider px-2 py-0.5 rounded-full ${
+                        className={`text-[10px] font-bold uppercase tracking-wider px-2 py-0.5 rounded-full ${
                           o.isActive
-                            ? 'bg-emerald-500/20 text-emerald-400 border border-emerald-500/30'
-                            : 'bg-gray-700/40 text-gray-400 border border-gray-600'
+                            ? 'bg-emerald-100 text-emerald-800'
+                            : 'bg-gray-100 text-gray-600'
                         }`}
                       >
                         {o.isActive ? 'Active' : 'Paused'}
                       </span>
                       {o.badgeText && (
-                        <span className="bg-[#F84464] text-white text-[10px] font-black uppercase px-2 py-0.5 rounded-full shadow-sm">
+                        <span className="bg-[#F84464] text-white text-[10px] font-bold uppercase px-2 py-0.5 rounded-full shadow-sm">
                           {o.badgeText}
                         </span>
                       )}
@@ -237,45 +237,45 @@ export default function AdminOffersPage() {
                   </div>
 
                   {/* Title & Desc */}
-                  <h3 className="text-base font-extrabold text-white">{o.title}</h3>
-                  <p className="text-xs text-gray-400 mt-1 line-clamp-2 leading-relaxed">
+                  <h3 className="text-base font-bold text-gray-900">{o.title}</h3>
+                  <p className="text-xs text-gray-500 mt-1 line-clamp-2 leading-relaxed">
                     {o.description}
                   </p>
 
                   {/* Commercial Specifications */}
-                  <div className="mt-4 p-3 rounded-xl bg-[#161B28] border border-[#232B3C] space-y-2 text-xs">
-                    <div className="flex items-center justify-between text-gray-300">
-                      <span className="text-gray-400 flex items-center gap-1.5">
+                  <div className="mt-4 p-3 rounded-xl bg-gray-50 border border-gray-200 space-y-2 text-xs">
+                    <div className="flex items-center justify-between text-gray-700">
+                      <span className="text-gray-500 flex items-center gap-1.5">
                         <CreditCard size={13} className="text-[#F84464]" />
                         <span>Partner Bank:</span>
                       </span>
-                      <span className="font-bold text-white">{o.bankName || 'Universal'}</span>
+                      <span className="font-bold text-gray-900">{o.bankName || 'Universal'}</span>
                     </div>
 
-                    <div className="flex items-center justify-between text-gray-300">
-                      <span className="text-gray-400 flex items-center gap-1.5">
-                        <Sparkles size={13} className="text-amber-400" />
+                    <div className="flex items-center justify-between text-gray-700">
+                      <span className="text-gray-500 flex items-center gap-1.5">
+                        <Sparkles size={13} className="text-amber-500" />
                         <span>Benefit:</span>
                       </span>
-                      <span className="font-bold text-emerald-400">
+                      <span className="font-bold text-emerald-700">
                         {isB1G1 && 'Buy 1 Get 1 Free'}
                         {isFlat && `Flat ₹${o.discountValue} OFF`}
                         {isPercent && `${o.discountValue}% OFF (Max ₹${o.maxDiscountAmount})`}
                       </span>
                     </div>
 
-                    <div className="flex items-center justify-between text-gray-300">
-                      <span className="text-gray-400">Min Cart Value:</span>
-                      <span className="font-semibold text-gray-200">₹{o.minBookingAmount || 0}</span>
+                    <div className="flex items-center justify-between text-gray-700">
+                      <span className="text-gray-500">Min Cart Value:</span>
+                      <span className="font-semibold text-gray-900">₹{o.minBookingAmount || 0}</span>
                     </div>
                   </div>
                 </div>
 
                 {/* Card Footer Actions */}
-                <div className="mt-5 pt-4 border-t border-[#1F2538] flex items-center justify-between gap-2">
+                <div className="mt-5 pt-4 border-t border-gray-100 flex items-center justify-between gap-2">
                   <button
                     onClick={() => handleToggleActive(o)}
-                    className="text-xs font-semibold text-gray-400 hover:text-white transition"
+                    className="text-xs font-semibold text-gray-500 hover:text-gray-800 transition"
                   >
                     {o.isActive ? 'Pause Campaign' : 'Activate Campaign'}
                   </button>
@@ -283,14 +283,14 @@ export default function AdminOffersPage() {
                   <div className="flex items-center gap-1.5">
                     <button
                       onClick={() => handleOpenEdit(o)}
-                      className="p-2 bg-[#181D2D] hover:bg-[#22293E] text-gray-300 hover:text-white rounded-lg border border-[#2B344D] transition"
+                      className="p-2 bg-gray-50 hover:bg-gray-100 text-gray-600 hover:text-gray-900 rounded-lg border border-gray-200 transition"
                       title="Edit Campaign"
                     >
                       <Edit size={14} />
                     </button>
                     <button
                       onClick={() => handleDeleteOffer(o._id, o.code)}
-                      className="p-2 bg-rose-500/10 hover:bg-rose-500 text-rose-400 hover:text-white rounded-lg border border-rose-500/20 transition"
+                      className="p-2 bg-rose-50 hover:bg-rose-100 text-rose-600 rounded-lg border border-rose-200 transition"
                       title="Delete Campaign"
                     >
                       <Trash2 size={14} />
@@ -305,16 +305,16 @@ export default function AdminOffersPage() {
 
       {/* Create / Edit Offer Modal */}
       {showModal && (
-        <div className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-black/80 backdrop-blur-sm overflow-y-auto">
-          <div className="bg-[#121622] border border-[#23293C] rounded-3xl max-w-lg w-full p-6 sm:p-8 shadow-2xl my-8">
-            <div className="flex items-center justify-between pb-4 border-b border-[#23293C]">
-              <h2 className="text-lg font-black text-white flex items-center gap-2">
+        <div className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-black/60 backdrop-blur-sm overflow-y-auto">
+          <div className="bg-white border border-gray-200 rounded-2xl max-w-lg w-full p-6 sm:p-8 shadow-2xl my-8">
+            <div className="flex items-center justify-between pb-4 border-b border-gray-100">
+              <h2 className="text-lg font-bold text-gray-900 flex items-center gap-2">
                 <Gift size={18} className="text-[#F84464]" />
                 <span>{editingOffer ? 'Edit Bank Alliance Promo' : 'Launch Bank Alliance / Offer'}</span>
               </h2>
               <button
                 onClick={() => setShowModal(false)}
-                className="p-1.5 text-gray-400 hover:text-white hover:bg-[#1C2132] rounded-lg"
+                className="p-1.5 text-gray-400 hover:text-gray-700 hover:bg-gray-100 rounded-lg"
               >
                 <X size={18} />
               </button>
@@ -323,7 +323,7 @@ export default function AdminOffersPage() {
             <form onSubmit={handleSubmit} className="mt-5 space-y-4">
               <div className="grid grid-cols-2 gap-3">
                 <div>
-                  <label className="block text-xs font-bold uppercase tracking-wider text-gray-400 mb-1">
+                  <label className="block text-xs font-bold uppercase tracking-wider text-gray-700 mb-1">
                     Coupon Code *
                   </label>
                   <input
@@ -332,11 +332,11 @@ export default function AdminOffersPage() {
                     value={formData.code}
                     onChange={(e) => setFormData({ ...formData, code: e.target.value.toUpperCase() })}
                     placeholder="ICICIB1G1"
-                    className="w-full bg-[#181D2D] border border-[#2B344D] text-white px-3.5 py-2 rounded-xl text-sm outline-none focus:border-[#F84464] font-mono font-bold"
+                    className="w-full bg-white border border-gray-300 text-gray-900 px-3.5 py-2 rounded-xl text-sm outline-none focus:border-[#F84464] font-mono font-bold"
                   />
                 </div>
                 <div>
-                  <label className="block text-xs font-bold uppercase tracking-wider text-gray-400 mb-1">
+                  <label className="block text-xs font-bold uppercase tracking-wider text-gray-700 mb-1">
                     Badge Pill Text
                   </label>
                   <input
@@ -344,13 +344,13 @@ export default function AdminOffersPage() {
                     value={formData.badgeText}
                     onChange={(e) => setFormData({ ...formData, badgeText: e.target.value })}
                     placeholder="B1G1 / 20% OFF"
-                    className="w-full bg-[#181D2D] border border-[#2B344D] text-white px-3.5 py-2 rounded-xl text-sm outline-none focus:border-[#F84464]"
+                    className="w-full bg-white border border-gray-300 text-gray-900 px-3.5 py-2 rounded-xl text-sm outline-none focus:border-[#F84464]"
                   />
                 </div>
               </div>
 
               <div>
-                <label className="block text-xs font-bold uppercase tracking-wider text-gray-400 mb-1">
+                <label className="block text-xs font-bold uppercase tracking-wider text-gray-700 mb-1">
                   Offer Title *
                 </label>
                 <input
@@ -359,12 +359,12 @@ export default function AdminOffersPage() {
                   value={formData.title}
                   onChange={(e) => setFormData({ ...formData, title: e.target.value })}
                   placeholder="ICICI Bank Buy 1 Get 1 Free"
-                  className="w-full bg-[#181D2D] border border-[#2B344D] text-white px-3.5 py-2 rounded-xl text-sm outline-none focus:border-[#F84464]"
+                  className="w-full bg-white border border-gray-300 text-gray-900 px-3.5 py-2 rounded-xl text-sm outline-none focus:border-[#F84464]"
                 />
               </div>
 
               <div>
-                <label className="block text-xs font-bold uppercase tracking-wider text-gray-400 mb-1">
+                <label className="block text-xs font-bold uppercase tracking-wider text-gray-700 mb-1">
                   Terms & Description
                 </label>
                 <textarea
@@ -372,19 +372,19 @@ export default function AdminOffersPage() {
                   value={formData.description}
                   onChange={(e) => setFormData({ ...formData, description: e.target.value })}
                   placeholder="1 complimentary ticket on select credit cards..."
-                  className="w-full bg-[#181D2D] border border-[#2B344D] text-white px-3.5 py-2 rounded-xl text-sm outline-none focus:border-[#F84464] resize-none"
+                  className="w-full bg-white border border-gray-300 text-gray-900 px-3.5 py-2 rounded-xl text-sm outline-none focus:border-[#F84464] resize-none"
                 />
               </div>
 
               <div className="grid grid-cols-2 gap-3">
                 <div>
-                  <label className="block text-xs font-bold uppercase tracking-wider text-gray-400 mb-1">
+                  <label className="block text-xs font-bold uppercase tracking-wider text-gray-700 mb-1">
                     Discount Model
                   </label>
                   <select
                     value={formData.discountType}
                     onChange={(e) => setFormData({ ...formData, discountType: e.target.value })}
-                    className="w-full bg-[#181D2D] border border-[#2B344D] text-white px-3 py-2 rounded-xl text-xs outline-none focus:border-[#F84464]"
+                    className="w-full bg-white border border-gray-300 text-gray-800 px-3 py-2 rounded-xl text-xs outline-none focus:border-[#F84464]"
                   >
                     <option value="b1g1">Buy 1 Get 1 Free (B1G1)</option>
                     <option value="percentage">Percentage Discount (%)</option>
@@ -392,46 +392,46 @@ export default function AdminOffersPage() {
                   </select>
                 </div>
                 <div>
-                  <label className="block text-xs font-bold uppercase tracking-wider text-gray-400 mb-1">
+                  <label className="block text-xs font-bold uppercase tracking-wider text-gray-700 mb-1">
                     Discount Value (% or ₹)
                   </label>
                   <input
                     type="number"
                     value={formData.discountValue}
                     onChange={(e) => setFormData({ ...formData, discountValue: e.target.value })}
-                    className="w-full bg-[#181D2D] border border-[#2B344D] text-white px-3.5 py-2 rounded-xl text-sm outline-none focus:border-[#F84464]"
+                    className="w-full bg-white border border-gray-300 text-gray-900 px-3.5 py-2 rounded-xl text-sm outline-none focus:border-[#F84464]"
                   />
                 </div>
               </div>
 
               <div className="grid grid-cols-2 gap-3">
                 <div>
-                  <label className="block text-xs font-bold uppercase tracking-wider text-gray-400 mb-1">
+                  <label className="block text-xs font-bold uppercase tracking-wider text-gray-700 mb-1">
                     Max Discount Cap (₹)
                   </label>
                   <input
                     type="number"
                     value={formData.maxDiscountAmount}
                     onChange={(e) => setFormData({ ...formData, maxDiscountAmount: e.target.value })}
-                    className="w-full bg-[#181D2D] border border-[#2B344D] text-white px-3.5 py-2 rounded-xl text-sm outline-none focus:border-[#F84464]"
+                    className="w-full bg-white border border-gray-300 text-gray-900 px-3.5 py-2 rounded-xl text-sm outline-none focus:border-[#F84464]"
                   />
                 </div>
                 <div>
-                  <label className="block text-xs font-bold uppercase tracking-wider text-gray-400 mb-1">
+                  <label className="block text-xs font-bold uppercase tracking-wider text-gray-700 mb-1">
                     Min Booking Amount (₹)
                   </label>
                   <input
                     type="number"
                     value={formData.minBookingAmount}
                     onChange={(e) => setFormData({ ...formData, minBookingAmount: e.target.value })}
-                    className="w-full bg-[#181D2D] border border-[#2B344D] text-white px-3.5 py-2 rounded-xl text-sm outline-none focus:border-[#F84464]"
+                    className="w-full bg-white border border-gray-300 text-gray-900 px-3.5 py-2 rounded-xl text-sm outline-none focus:border-[#F84464]"
                   />
                 </div>
               </div>
 
               <div className="grid grid-cols-2 gap-3">
                 <div>
-                  <label className="block text-xs font-bold uppercase tracking-wider text-gray-400 mb-1">
+                  <label className="block text-xs font-bold uppercase tracking-wider text-gray-700 mb-1">
                     Alliance Bank Partner
                   </label>
                   <input
@@ -439,11 +439,11 @@ export default function AdminOffersPage() {
                     value={formData.bankName}
                     onChange={(e) => setFormData({ ...formData, bankName: e.target.value })}
                     placeholder="e.g. ICICI Bank, SBI, HDFC"
-                    className="w-full bg-[#181D2D] border border-[#2B344D] text-white px-3.5 py-2 rounded-xl text-sm outline-none focus:border-[#F84464]"
+                    className="w-full bg-white border border-gray-300 text-gray-900 px-3.5 py-2 rounded-xl text-sm outline-none focus:border-[#F84464]"
                   />
                 </div>
                 <div>
-                  <label className="block text-xs font-bold uppercase tracking-wider text-gray-400 mb-1">
+                  <label className="block text-xs font-bold uppercase tracking-wider text-gray-700 mb-1">
                     Eligible Card Tier
                   </label>
                   <input
@@ -451,23 +451,23 @@ export default function AdminOffersPage() {
                     value={formData.cardType}
                     onChange={(e) => setFormData({ ...formData, cardType: e.target.value })}
                     placeholder="Credit / Debit / Signature"
-                    className="w-full bg-[#181D2D] border border-[#2B344D] text-white px-3.5 py-2 rounded-xl text-sm outline-none focus:border-[#F84464]"
+                    className="w-full bg-white border border-gray-300 text-gray-900 px-3.5 py-2 rounded-xl text-sm outline-none focus:border-[#F84464]"
                   />
                 </div>
               </div>
 
-              <div className="flex items-center justify-end gap-3 pt-4 border-t border-[#23293C]">
+              <div className="flex items-center justify-end gap-3 pt-4 border-t border-gray-100">
                 <button
                   type="button"
                   onClick={() => setShowModal(false)}
-                  className="px-4 py-2 text-xs font-bold text-gray-400 hover:text-white bg-[#181D2D] rounded-xl"
+                  className="px-4 py-2 text-xs font-bold text-gray-600 hover:text-gray-900 bg-gray-100 rounded-xl"
                 >
                   Cancel
                 </button>
                 <button
                   type="submit"
                   disabled={saving}
-                  className="px-5 py-2 text-xs font-bold text-white bg-[#F84464] hover:bg-[#d83552] rounded-xl shadow-lg shadow-[#F84464]/20 disabled:opacity-50"
+                  className="px-5 py-2 text-xs font-bold text-white bg-[#F84464] hover:bg-[#d83552] rounded-xl shadow-sm disabled:opacity-50"
                 >
                   {saving ? 'Saving...' : editingOffer ? 'Update Campaign' : 'Launch Campaign'}
                 </button>
