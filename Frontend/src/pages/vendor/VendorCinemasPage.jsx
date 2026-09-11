@@ -197,13 +197,26 @@ export default function VendorCinemasPage() {
 
   return (
     <div className="space-y-6">
-      <PageHeader
-        title="Cinemas & Multiplexes"
-        description="Manage your cinema properties, venue facilities, and contact details."
-        actionText="Add Multiplex"
-        actionIcon={Plus}
-        onAction={openAddModal}
-      />
+      <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4">
+        <div>
+          <h1 className="text-2xl font-bold text-gray-900 tracking-tight flex items-center gap-2">
+            <MapPin className="text-[#F84464]" size={24} />
+            <span>Cinemas & Multiplexes</span>
+          </h1>
+          <p className="text-sm text-gray-500 mt-1">
+            Manage your cinema properties, venue facilities, and contact details.
+          </p>
+        </div>
+
+        <Button
+          variant="primary"
+          onClick={openAddModal}
+          className="inline-flex items-center gap-2 text-xs font-bold px-4 py-2.5 shadow-sm"
+        >
+          <Plus size={16} />
+          <span>Add Multiplex</span>
+        </Button>
+      </div>
 
       {loading ? (
         <div className="py-16 text-center text-sm text-gray-500">
