@@ -140,11 +140,10 @@ export default function CinemasPage() {
               <button
                 key={fac}
                 onClick={() => setSelectedFacility(fac)}
-                className={`px-3 py-1 rounded-full whitespace-nowrap transition cursor-pointer font-medium ${
-                  selectedFacility === fac
+                className={`px-3 py-1 rounded-full whitespace-nowrap transition cursor-pointer font-medium ${selectedFacility === fac
                     ? 'bg-[#F84464] text-white font-semibold'
                     : 'bg-[#333545] text-gray-300 hover:bg-[#3e4154]'
-                }`}
+                  }`}
               >
                 {fac}
               </button>
@@ -152,11 +151,10 @@ export default function CinemasPage() {
 
             <button
               onClick={() => setOnlyActiveShows(!onlyActiveShows)}
-              className={`px-3 py-1 rounded-full whitespace-nowrap transition cursor-pointer font-medium ml-auto ${
-                onlyActiveShows
+              className={`px-3 py-1 rounded-full whitespace-nowrap transition cursor-pointer font-medium ml-auto ${onlyActiveShows
                   ? 'bg-emerald-600 text-white font-semibold'
                   : 'bg-[#333545] text-gray-300 hover:bg-[#3e4154]'
-              }`}
+                }`}
             >
               ✓ Currently Running Shows Only
             </button>

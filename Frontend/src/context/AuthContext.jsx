@@ -1,4 +1,4 @@
-import React, { createContext, useContext, useState, useEffect } from 'react';
+import React, { createContext, useContext, useState, useEffect, useCallback, useMemo } from 'react';
 import { authApi } from '../services/api';
 
 const AuthContext = createContext(null);
@@ -10,38 +10,50 @@ export function AuthProvider({ children }) {
   const [isAuthModalOpen, setIsAuthModalOpen] = useState(false);
   const [authModalMode, setAuthModalMode] = useState('signin'); // 'signin' | 'signup'
 
+  const logout = useCallback(() => {
+    localStorage.removeItem('bms_token');
+    setToken(null);
+    setUser(null);
+  }, []);
+
   // Verify token on app start
   useEffect(() => {
+    let isMounted = true;
     async function verifyUser() {
       if (token) {
         try {
           const res = await authApi.getMe();
-          if (res.success && res.user) {
-            setUser(res.user);
-          } else {
-            logout();
+          if (isMounted) {
+            if (res.success && res.user) {
+              setUser(res.user);
+            } else {
+              logout();
+            }
           }
         } catch {
           console.warn('Session expired or invalid, logging out.');
-          logout();
+          if (isMounted) logout();
         }
       }
-      setLoading(false);
+      if (isMounted) setLoading(false);
     }
 
     verifyUser();
-  }, [token]);
+    return () => {
+      isMounted = false;
+    };
+  }, [token, logout]);
 
-  const openAuthModal = (mode = 'signin') => {
+  const openAuthModal = useCallback((mode = 'signin') => {
     setAuthModalMode(mode);
     setIsAuthModalOpen(true);
-  };
+  }, []);
 
-  const closeAuthModal = () => {
+  const closeAuthModal = useCallback(() => {
     setIsAuthModalOpen(false);
-  };
+  }, []);
 
-  const login = async (email, password) => {
+  const login = useCallback(async (email, password) => {
     const res = await authApi.login({ email, password });
     if (res.success && res.token) {
       localStorage.setItem('bms_token', res.token);
@@ -51,9 +63,9 @@ export function AuthProvider({ children }) {
       return { success: true, user: res.user };
     }
     return { success: false, message: res.message };
-  };
+  }, [closeAuthModal]);
 
-  const register = async (userData) => {
+  const register = useCallback(async (userData) => {
     const res = await authApi.register(userData);
     if (res.success && res.token) {
       localStorage.setItem('bms_token', res.token);
@@ -63,23 +75,17 @@ export function AuthProvider({ children }) {
       return { success: true, user: res.user };
     }
     return { success: false, message: res.message };
-  };
+  }, [closeAuthModal]);
 
-  const logout = () => {
-    localStorage.removeItem('bms_token');
-    setToken(null);
-    setUser(null);
-  };
-
-  const quickDemoLogin = async () => {
+  const quickDemoLogin = useCallback(async () => {
     return login('demo@bookmyshow.com', 'password123');
-  };
+  }, [login]);
 
-  const updateUser = (updatedUserData) => {
+  const updateUser = useCallback((updatedUserData) => {
     setUser((prev) => ({ ...prev, ...updatedUserData }));
-  };
+  }, []);
 
-  const value = {
+  const value = useMemo(() => ({
     user,
     token,
     loading,
@@ -94,7 +100,20 @@ export function AuthProvider({ children }) {
     logout,
     quickDemoLogin,
     updateUser,
-  };
+  }), [
+    user,
+    token,
+    loading,
+    isAuthModalOpen,
+    authModalMode,
+    openAuthModal,
+    closeAuthModal,
+    login,
+    register,
+    logout,
+    quickDemoLogin,
+    updateUser,
+  ]);
 
   return <AuthContext.Provider value={value}>{children}</AuthContext.Provider>;
 }

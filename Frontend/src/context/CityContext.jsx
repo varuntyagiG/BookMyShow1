@@ -1,4 +1,4 @@
-import React, { createContext, useContext, useState, useEffect } from 'react';
+import React, { createContext, useContext, useState, useEffect, useCallback, useMemo } from 'react';
 import { contentApi } from '../services/api';
 
 const CityContext = createContext(null);
@@ -34,10 +34,11 @@ export function CityProvider({ children }) {
 
   // Fetch active cities from MongoDB (Single Source of Truth)
   useEffect(() => {
+    let isMounted = true;
     async function loadCities() {
       try {
         const res = await contentApi.getCities();
-        if (res.success && Array.isArray(res.cities) && res.cities.length > 0) {
+        if (isMounted && res.success && Array.isArray(res.cities) && res.cities.length > 0) {
           const popular = [];
           const other = [];
 
@@ -55,28 +56,36 @@ export function CityProvider({ children }) {
       } catch (err) {
         console.warn('Could not fetch operational cities from DB, using defaults:', err.message);
       } finally {
-        setLoading(false);
+        if (isMounted) setLoading(false);
       }
     }
 
     loadCities();
+    return () => {
+      isMounted = false;
+    };
   }, []);
 
-  const setSelectedCity = (city) => {
+  const setSelectedCity = useCallback((city) => {
     setSelectedCityState(city);
     localStorage.setItem('bms_city', city);
     setIsCityModalOpen(false);
-  };
+  }, []);
 
-  const value = {
+  const openCityModal = useCallback(() => setIsCityModalOpen(true), []);
+  const closeCityModal = useCallback(() => setIsCityModalOpen(false), []);
+
+  const value = useMemo(() => ({
     selectedCity,
     setSelectedCity,
     isCityModalOpen,
     setIsCityModalOpen,
+    openCityModal,
+    closeCityModal,
     popularCities,
     otherCities,
     loadingCities: loading,
-  };
+  }), [selectedCity, setSelectedCity, isCityModalOpen, openCityModal, closeCityModal, popularCities, otherCities, loading]);
 
   return <CityContext.Provider value={value}>{children}</CityContext.Provider>;
 }

@@ -23,7 +23,7 @@ export default function HomePage({ searchQuery }) {
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState(null);
 
-  const loadHomeContent = async () => {
+  const loadHomeContent = React.useCallback(async () => {
     setLoading(true);
     setError(null);
 
@@ -44,11 +44,11 @@ export default function HomePage({ searchQuery }) {
     } finally {
       setLoading(false);
     }
-  };
+  }, [selectedCity, searchQuery]);
 
   useEffect(() => {
     loadHomeContent();
-  }, [selectedCity, searchQuery]);
+  }, [loadHomeContent]);
 
   /* =========================
      LOADING UI

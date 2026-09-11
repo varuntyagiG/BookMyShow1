@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React, { useState, useCallback } from 'react';
 import { BrowserRouter, Routes, Route, Outlet, Navigate } from 'react-router-dom';
 import { AuthProvider } from './context/AuthContext';
 import { VendorAuthProvider } from './context/VendorAuthContext';
@@ -40,7 +40,7 @@ import VendorScannerPage from './pages/vendor/VendorScannerPage';
 import VendorBookingsPage from './pages/vendor/VendorBookingsPage';
 import VendorRevenuePage from './pages/vendor/VendorRevenuePage';
 
-function CustomerLayout({ searchQuery, onSearch }) {
+const CustomerLayout = React.memo(function CustomerLayout({ onSearch }) {
   return (
     <div className="flex flex-col min-h-screen bg-[#F5F5FA]">
       {/* Top Navbar */}
@@ -62,10 +62,11 @@ function CustomerLayout({ searchQuery, onSearch }) {
       <AuthModal />
     </div>
   );
-}
+});
 
 function AppRoutes() {
   const [searchQuery, setSearchQuery] = useState('');
+  const handleSearch = useCallback((q) => setSearchQuery(q), []);
 
   return (
     <Routes>
@@ -100,8 +101,7 @@ function AppRoutes() {
       <Route
         element={
           <CustomerLayout
-            searchQuery={searchQuery}
-            onSearch={(q) => setSearchQuery(q)}
+            onSearch={handleSearch}
           />
         }
       >

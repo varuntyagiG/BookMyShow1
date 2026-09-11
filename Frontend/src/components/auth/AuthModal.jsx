@@ -92,7 +92,7 @@ export default function AuthModal() {
   return (
     <div className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-black/75 backdrop-blur-xs">
       <div className="relative w-full max-w-md bg-white rounded-2xl shadow-2xl overflow-hidden animate-in fade-in zoom-in-95 duration-200">
-        
+
         {/* Top Header */}
         <div className="px-6 pt-6 pb-4 border-b border-gray-100 flex items-center justify-between">
           <div>
@@ -121,11 +121,10 @@ export default function AuthModal() {
               setError('');
               setAuthModalMode('signin');
             }}
-            className={`flex-1 py-2.5 text-xs font-black transition-all rounded-xl cursor-pointer text-center ${
-              !isSignUp
+            className={`flex-1 py-2.5 text-xs font-black transition-all rounded-xl cursor-pointer text-center ${!isSignUp
                 ? 'bg-white text-[#F84464] shadow-xs'
                 : 'text-gray-500 hover:text-gray-900'
-            }`}
+              }`}
           >
             Sign In
           </button>
@@ -135,11 +134,10 @@ export default function AuthModal() {
               setError('');
               setAuthModalMode('signup');
             }}
-            className={`flex-1 py-2.5 text-xs font-black transition-all rounded-xl cursor-pointer text-center ${
-              isSignUp
+            className={`flex-1 py-2.5 text-xs font-black transition-all rounded-xl cursor-pointer text-center ${isSignUp
                 ? 'bg-white text-[#F84464] shadow-xs'
                 : 'text-gray-500 hover:text-gray-900'
-            }`}
+              }`}
           >
             Create Account
           </button>
@@ -300,8 +298,8 @@ export default function AuthModal() {
               {submitting
                 ? 'Please wait...'
                 : isSignUp
-                ? 'Create Account'
-                : 'Sign In'}
+                  ? 'Create Account'
+                  : 'Sign In'}
             </button>
           </form>
 

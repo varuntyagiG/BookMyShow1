@@ -23,14 +23,13 @@ export default function SubNav() {
     <nav className="bg-[#222432] text-gray-300 text-xs border-t border-[#2d3042] sticky top-16 z-30 shadow-xs">
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
         <div className="flex items-center justify-between h-10">
-          
+
           {/* Main Category Tabs with Horizontal Scroll on Mobile */}
           <div className="flex items-center space-x-6 overflow-x-auto no-scrollbar py-1">
             <Link
               to="/"
-              className={`hover:text-white transition-all cursor-pointer relative py-2 font-medium shrink-0 flex items-center ${
-                currentPath === '/' ? 'text-white font-bold' : 'text-gray-300 hover:text-gray-100'
-              }`}
+              className={`hover:text-white transition-all cursor-pointer relative py-2 font-medium shrink-0 flex items-center ${currentPath === '/' ? 'text-white font-bold' : 'text-gray-300 hover:text-gray-100'
+                }`}
             >
               <span>All</span>
               {currentPath === '/' && (
@@ -44,9 +43,8 @@ export default function SubNav() {
                 <Link
                   key={cat.label}
                   to={cat.path}
-                  className={`hover:text-white transition-all cursor-pointer relative py-2 font-medium shrink-0 flex items-center gap-1.5 ${
-                    isActive ? 'text-white font-bold' : 'text-gray-300 hover:text-gray-100'
-                  }`}
+                  className={`hover:text-white transition-all cursor-pointer relative py-2 font-medium shrink-0 flex items-center gap-1.5 ${isActive ? 'text-white font-bold' : 'text-gray-300 hover:text-gray-100'
+                    }`}
                 >
                   <span>{cat.label}</span>
                   {cat.badge && (
@@ -69,9 +67,8 @@ export default function SubNav() {
                 <Link
                   key={item.label}
                   to={item.path}
-                  className={`hover:text-white transition-colors flex items-center gap-1 font-medium cursor-pointer text-xs ${
-                    currentPath === item.path ? 'text-white font-bold' : 'text-gray-300 hover:text-white'
-                  }`}
+                  className={`hover:text-white transition-colors flex items-center gap-1 font-medium cursor-pointer text-xs ${currentPath === item.path ? 'text-white font-bold' : 'text-gray-300 hover:text-white'
+                    }`}
                 >
                   <span>{item.label}</span>
                   {item.badge && (

@@ -194,11 +194,10 @@ export default function MoviesPage() {
                         <button
                           key={lang}
                           onClick={() => toggleFilter(selectedLanguages, setSelectedLanguages, lang)}
-                          className={`px-3 py-1.5 rounded-lg text-xs font-semibold transition-all duration-150 cursor-pointer focus-visible:outline focus-visible:outline-2 focus-visible:outline-[#F84464] ${
-                            isChecked
+                          className={`px-3 py-1.5 rounded-lg text-xs font-semibold transition-all duration-150 cursor-pointer focus-visible:outline focus-visible:outline-2 focus-visible:outline-[#F84464] ${isChecked
                               ? 'bg-[#F84464] text-white shadow-[0_3px_10px_-3px_rgba(248,68,100,0.5)]'
                               : 'bg-gray-50 border border-gray-200 hover:bg-gray-100 hover:border-gray-300 text-gray-700'
-                          }`}
+                            }`}
                         >
                           {lang}
                         </button>
@@ -231,11 +230,10 @@ export default function MoviesPage() {
                         <button
                           key={genre}
                           onClick={() => toggleFilter(selectedGenres, setSelectedGenres, genre)}
-                          className={`px-3 py-1.5 rounded-lg text-xs font-semibold transition-all duration-150 cursor-pointer focus-visible:outline focus-visible:outline-2 focus-visible:outline-[#F84464] ${
-                            isChecked
+                          className={`px-3 py-1.5 rounded-lg text-xs font-semibold transition-all duration-150 cursor-pointer focus-visible:outline focus-visible:outline-2 focus-visible:outline-[#F84464] ${isChecked
                               ? 'bg-[#F84464] text-white shadow-[0_3px_10px_-3px_rgba(248,68,100,0.5)]'
                               : 'bg-gray-50 border border-gray-200 hover:bg-gray-100 hover:border-gray-300 text-gray-700'
-                          }`}
+                            }`}
                         >
                           {genre}
                         </button>
@@ -268,11 +266,10 @@ export default function MoviesPage() {
                         <button
                           key={fmt}
                           onClick={() => toggleFilter(selectedFormats, setSelectedFormats, fmt)}
-                          className={`px-3 py-1.5 rounded-lg text-xs font-semibold transition-all duration-150 cursor-pointer focus-visible:outline focus-visible:outline-2 focus-visible:outline-[#F84464] ${
-                            isChecked
+                          className={`px-3 py-1.5 rounded-lg text-xs font-semibold transition-all duration-150 cursor-pointer focus-visible:outline focus-visible:outline-2 focus-visible:outline-[#F84464] ${isChecked
                               ? 'bg-[#F84464] text-white shadow-[0_3px_10px_-3px_rgba(248,68,100,0.5)]'
                               : 'bg-gray-50 border border-gray-200 hover:bg-gray-100 hover:border-gray-300 text-gray-700'
-                          }`}
+                            }`}
                         >
                           {fmt}
                         </button>

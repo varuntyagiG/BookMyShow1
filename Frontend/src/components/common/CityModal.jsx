@@ -20,7 +20,7 @@ export default function CityModal() {
   return (
     <div className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-black/75 backdrop-blur-xs">
       <div className="relative w-full max-w-2xl bg-white rounded-2xl shadow-2xl overflow-hidden animate-in fade-in zoom-in-95 duration-200">
-        
+
         {/* Header Search Bar */}
         <div className="p-4 sm:p-5 border-b border-gray-100">
           <div className="relative flex items-center">
@@ -73,11 +73,10 @@ export default function CityModal() {
                   <button
                     key={city.name}
                     onClick={() => handleSelect(city.name)}
-                    className={`flex flex-col items-center p-3 sm:p-4 rounded-xl border transition-all cursor-pointer relative group ${
-                      isSelected
+                    className={`flex flex-col items-center p-3 sm:p-4 rounded-xl border transition-all cursor-pointer relative group ${isSelected
                         ? 'border-[#F84464] bg-red-50/60 text-[#F84464] font-black ring-2 ring-[#F84464]/20 shadow-xs'
                         : 'border-gray-100 hover:border-gray-300 hover:bg-gray-50/80 text-gray-700'
-                    }`}
+                      }`}
                   >
                     {isSelected && (
                       <span className="absolute top-1.5 right-1.5 w-4 h-4 bg-[#F84464] rounded-full flex items-center justify-center text-white">
@@ -106,11 +105,10 @@ export default function CityModal() {
                   <button
                     key={city}
                     onClick={() => handleSelect(city)}
-                    className={`px-3.5 py-1.5 rounded-full text-xs font-bold transition-all cursor-pointer ${
-                      isSelected
+                    className={`px-3.5 py-1.5 rounded-full text-xs font-bold transition-all cursor-pointer ${isSelected
                         ? 'bg-[#F84464] text-white shadow-xs'
                         : 'bg-gray-100 hover:bg-gray-200 text-gray-700'
-                    }`}
+                      }`}
                   >
                     {city}
                   </button>

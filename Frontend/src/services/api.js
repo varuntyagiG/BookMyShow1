@@ -3,33 +3,72 @@ const API_BASE_URL = rawApiUrl
   ? (rawApiUrl.endsWith('/api') ? rawApiUrl : `${rawApiUrl}/api`)
   : '/api';
 
+const inFlightRequests = new Map();
+const staticCache = new Map();
+
 export async function request(endpoint, options = {}) {
+  const method = (options.method || 'GET').toUpperCase();
   const token = localStorage.getItem('bms_token');
 
-  const headers = {
-    'Content-Type': 'application/json',
-    ...(token ? { Authorization: `Bearer ${token}` } : {}),
-    ...options.headers,
-  };
+  // In-flight deduplication & static caching for GET requests
+  const cacheKey = method === 'GET' ? `${endpoint}:${token || 'anon'}` : null;
+  const now = Date.now();
 
-  const config = {
-    ...options,
-    headers,
-  };
-
-  try {
-    const response = await fetch(`${API_BASE_URL}${endpoint}`, config);
-    const data = await response.json();
-
-    if (!response.ok) {
-      throw new Error(data.message || 'Something went wrong');
+  // Return static cached result if still fresh
+  if (cacheKey && staticCache.has(cacheKey)) {
+    const cached = staticCache.get(cacheKey);
+    if (cached.expiresAt > now) {
+      return cached.data;
     }
-
-    return data;
-  } catch (error) {
-    console.error(`API Error on [${options.method || 'GET'}] ${endpoint}:`, error);
-    throw error;
+    staticCache.delete(cacheKey);
   }
+
+  // Deduplicate simultaneous identical in-flight requests
+  if (cacheKey && inFlightRequests.has(cacheKey)) {
+    return inFlightRequests.get(cacheKey);
+  }
+
+  const reqPromise = (async () => {
+    const headers = {
+      'Content-Type': 'application/json',
+      ...(token ? { Authorization: `Bearer ${token}` } : {}),
+      ...options.headers,
+    };
+
+    const config = {
+      ...options,
+      headers,
+    };
+
+    try {
+      const response = await fetch(`${API_BASE_URL}${endpoint}`, config);
+      const data = await response.json();
+
+      if (!response.ok) {
+        throw new Error(data.message || 'Something went wrong');
+      }
+
+      // Cache high-frequency static endpoints for 30s
+      if (cacheKey && (endpoint === '/cities' || endpoint === '/offers')) {
+        staticCache.set(cacheKey, { data, expiresAt: now + 30000 });
+      }
+
+      return data;
+    } catch (error) {
+      console.error(`API Error on [${options.method || 'GET'}] ${endpoint}:`, error);
+      throw error;
+    } finally {
+      if (cacheKey) {
+        inFlightRequests.delete(cacheKey);
+      }
+    }
+  })();
+
+  if (cacheKey) {
+    inFlightRequests.set(cacheKey, reqPromise);
+  }
+
+  return reqPromise;
 }
 
 // Authentication API

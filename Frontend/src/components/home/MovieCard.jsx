@@ -51,9 +51,8 @@ export default function MovieCard({ movie, onSelect }) {
             aria-label="Add to wishlist"
           >
             <Heart
-              className={`w-4 h-4 transition-colors ${
-                isLiked ? 'text-[#F84464] fill-[#F84464]' : 'text-white/90'
-              }`}
+              className={`w-4 h-4 transition-colors ${isLiked ? 'text-[#F84464] fill-[#F84464]' : 'text-white/90'
+                }`}
             />
           </button>
         </div>
@@ -73,7 +72,7 @@ export default function MovieCard({ movie, onSelect }) {
         <h3 className="text-sm sm:text-base font-bold text-gray-900 group-hover:text-[#F84464] transition-colors truncate tracking-tight">
           {title}
         </h3>
-        
+
         <p className="text-xs text-gray-500 truncate mt-0.5 font-medium">
           {Array.isArray(genre) ? genre.join(', ') : genre}
         </p>

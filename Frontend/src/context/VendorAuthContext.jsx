@@ -1,4 +1,4 @@
-import React, { createContext, useContext, useState, useEffect } from 'react';
+import React, { createContext, useContext, useState, useEffect, useCallback, useMemo } from 'react';
 import { vendorApi } from '../services/vendorApi';
 
 const VendorAuthContext = createContext(null);
@@ -9,14 +9,14 @@ export function VendorAuthProvider({ children }) {
   const [token, setToken] = useState(() => localStorage.getItem('bms_vendor_token'));
   const [loading, setLoading] = useState(true);
 
-  const logout = () => {
+  const logout = useCallback(() => {
     localStorage.removeItem('bms_vendor_token');
     setToken(null);
     setPartner(null);
     setPartnerStats(null);
-  };
+  }, []);
 
-  const refreshPartner = async () => {
+  const refreshPartner = useCallback(async () => {
     if (!token) {
       setLoading(false);
       return;
@@ -35,46 +35,44 @@ export function VendorAuthProvider({ children }) {
     } finally {
       setLoading(false);
     }
-  };
+  }, [token, logout]);
 
   useEffect(() => {
     refreshPartner();
-  }, [token]);
+  }, [refreshPartner]);
 
-  const login = async (email, password) => {
+  const login = useCallback(async (email, password) => {
     const res = await vendorApi.login({ email, password });
     if (res.success && res.token) {
       localStorage.setItem('bms_vendor_token', res.token);
       setToken(res.token);
       setPartner(res.user);
-      await refreshPartner();
       return { success: true, partner: res.user };
     }
     return { success: false, message: res.message || 'Login failed' };
-  };
+  }, []);
 
-  const register = async (partnerData) => {
+  const register = useCallback(async (partnerData) => {
     const res = await vendorApi.register(partnerData);
     if (res.success && res.token) {
       localStorage.setItem('bms_vendor_token', res.token);
       setToken(res.token);
       setPartner(res.user);
-      await refreshPartner();
       return { success: true, partner: res.user };
     }
     return { success: false, message: res.message || 'Registration failed' };
-  };
+  }, []);
 
-  const updateProfile = async (updateData) => {
+  const updateProfile = useCallback(async (updateData) => {
     const res = await vendorApi.updateProfile(updateData);
     if (res.success && res.data) {
       setPartner(prev => ({ ...prev, ...res.data }));
       return { success: true, partner: res.data };
     }
     return { success: false, message: res.message || 'Update failed' };
-  };
+  }, []);
 
-  const value = {
+  const value = useMemo(() => ({
     partner,
     partnerStats,
     token,
@@ -85,7 +83,17 @@ export function VendorAuthProvider({ children }) {
     logout,
     updateProfile,
     refreshPartner,
-  };
+  }), [
+    partner,
+    partnerStats,
+    token,
+    loading,
+    login,
+    register,
+    logout,
+    updateProfile,
+    refreshPartner,
+  ]);
 
   return <VendorAuthContext.Provider value={value}>{children}</VendorAuthContext.Provider>;
 }

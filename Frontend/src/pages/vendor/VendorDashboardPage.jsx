@@ -59,8 +59,12 @@ export default function VendorDashboardPage() {
 
   useEffect(() => {
     fetchDashboardData();
-    // Auto refresh every 30 seconds for live box office sync
-    const interval = setInterval(fetchDashboardData, 30000);
+    // Auto refresh every 30 seconds for live box office sync only when tab is active
+    const interval = setInterval(() => {
+      if (typeof document !== 'undefined' && document.visibilityState === 'visible') {
+        fetchDashboardData();
+      }
+    }, 30000);
     return () => clearInterval(interval);
   }, []);
 
