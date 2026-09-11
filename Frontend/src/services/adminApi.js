@@ -19,7 +19,14 @@ export async function adminRequest(endpoint, options = {}) {
 
   try {
     const response = await fetch(`${API_BASE_URL}/admin${endpoint}`, config);
-    const data = await response.json();
+    let data;
+    const contentType = response.headers.get('content-type') || '';
+    if (contentType.includes('application/json')) {
+      data = await response.json();
+    } else {
+      const text = await response.text();
+      data = { success: false, message: text || `HTTP ${response.status} ${response.statusText}` };
+    }
 
     if (!response.ok) {
       const err = new Error(data.message || 'Platform Admin API request failed');
