@@ -57,7 +57,7 @@ const userSchema = new mongoose.Schema(
     },
     partnerStatus: {
       type: String,
-      enum: ['active', 'suspended'],
+      enum: ['active', 'approved', 'suspended', 'pending'],
       default: 'active',
       index: true,
     },

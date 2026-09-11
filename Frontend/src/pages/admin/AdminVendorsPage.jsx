@@ -153,7 +153,7 @@ export default function AdminVendorsPage() {
 
             return (
               <div
-                key={v._id}
+                key={v._id || v.id}
                 className="bg-white border border-gray-200 hover:border-gray-300 rounded-xl p-5 shadow-sm hover:shadow-md transition flex flex-col lg:flex-row lg:items-center lg:justify-between gap-6"
               >
                 {/* Partner Identity */}
@@ -206,15 +206,15 @@ export default function AdminVendorsPage() {
                 {/* Aggregate Infrastructure Stats */}
                 <div className="grid grid-cols-3 gap-3 sm:gap-4 py-3 lg:py-0 border-y lg:border-y-0 lg:border-x border-gray-100 lg:px-6">
                   <div className="text-center">
-                    <div className="text-sm sm:text-base font-black text-gray-900">{v.cinemaCount || 0}</div>
+                    <div className="text-sm sm:text-base font-black text-gray-900">{v.cinemaCount || v.cinemasCount || 0}</div>
                     <div className="text-[10px] uppercase font-bold text-gray-400">Venues</div>
                   </div>
                   <div className="text-center">
-                    <div className="text-sm sm:text-base font-black text-gray-900">{v.screenCount || 0}</div>
+                    <div className="text-sm sm:text-base font-black text-gray-900">{v.screenCount || v.screensCount || 0}</div>
                     <div className="text-[10px] uppercase font-bold text-gray-400">Screens</div>
                   </div>
                   <div className="text-center">
-                    <div className="text-sm sm:text-base font-black text-gray-900">{v.showCount || 0}</div>
+                    <div className="text-sm sm:text-base font-black text-gray-900">{v.showCount || v.activeShowsCount || 0}</div>
                     <div className="text-[10px] uppercase font-bold text-gray-400">Shows</div>
                   </div>
                 </div>
@@ -223,8 +223,8 @@ export default function AdminVendorsPage() {
                 <div className="flex items-center gap-2 self-end lg:self-center">
                   {!isApproved && (
                     <button
-                      onClick={() => handleUpdateStatus(v._id, 'approved')}
-                      disabled={actionLoading === v._id}
+                      onClick={() => handleUpdateStatus(v._id || v.id, 'approved')}
+                      disabled={actionLoading === (v._id || v.id)}
                       className="inline-flex items-center gap-1.5 bg-emerald-600 hover:bg-emerald-700 text-white text-xs font-semibold px-3.5 py-2 rounded-lg shadow-sm transition disabled:opacity-50"
                     >
                       <CheckCircle2 size={14} />
@@ -234,8 +234,8 @@ export default function AdminVendorsPage() {
 
                   {!isSuspended && (
                     <button
-                      onClick={() => handleUpdateStatus(v._id, 'suspended')}
-                      disabled={actionLoading === v._id}
+                      onClick={() => handleUpdateStatus(v._id || v.id, 'suspended')}
+                      disabled={actionLoading === (v._id || v.id)}
                       className="inline-flex items-center gap-1.5 bg-rose-50 hover:bg-rose-100 text-rose-700 border border-rose-200 text-xs font-semibold px-3.5 py-2 rounded-lg transition disabled:opacity-50"
                     >
                       <ShieldAlert size={14} />
@@ -245,8 +245,8 @@ export default function AdminVendorsPage() {
 
                   {isSuspended && (
                     <button
-                      onClick={() => handleUpdateStatus(v._id, 'approved')}
-                      disabled={actionLoading === v._id}
+                      onClick={() => handleUpdateStatus(v._id || v.id, 'approved')}
+                      disabled={actionLoading === (v._id || v.id)}
                       className="inline-flex items-center gap-1.5 bg-blue-600 hover:bg-blue-700 text-white text-xs font-semibold px-3.5 py-2 rounded-lg transition disabled:opacity-50"
                     >
                       <CheckCircle2 size={14} />

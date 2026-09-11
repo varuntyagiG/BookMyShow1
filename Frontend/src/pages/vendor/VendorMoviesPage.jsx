@@ -214,89 +214,99 @@ export default function VendorMoviesPage() {
         />
       ) : (
         <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-6">
-          {filteredMovies.map((movie) => (
-            <Card
-              key={movie.id || movie._id}
-              interactive={true}
-              className="border-slate-200/90 overflow-hidden flex flex-col justify-between group"
-            >
-              {/* Poster Image Container */}
-              <div className="relative aspect-[2/3] bg-slate-900 overflow-hidden">
-                <img
-                  src={movie.posterUrl || DEMO_POSTERS[0].url}
-                  alt={movie.title}
-                  className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-500 ease-out"
-                  loading="lazy"
-                />
-                <div className="absolute inset-0 bg-gradient-to-t from-slate-950/80 via-transparent to-slate-950/40 pointer-events-none" />
+          {filteredMovies.map((movie) => {
+            const movieId = movie.id || movie._id;
+            return (
+              <div
+                key={movieId}
+                className="flex flex-col group w-full transition-all duration-300 transform hover:-translate-y-1.5"
+              >
+                {/* Poster wrapper with Customer Storefront styling */}
+                <div className="relative aspect-[2/3] w-full rounded-2xl overflow-hidden bg-slate-900 shadow-sm border border-slate-200/90 group-hover:shadow-xl group-hover:border-slate-300 transition-all duration-300">
+                  <img
+                    src={movie.posterUrl || DEMO_POSTERS[0].url}
+                    alt={movie.title}
+                    className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-500 ease-out"
+                    loading="lazy"
+                    onError={(e) => {
+                      e.target.src = DEMO_POSTERS[0].url;
+                    }}
+                  />
 
-                {/* Top Badges */}
-                <div className="absolute top-2.5 left-2.5 right-2.5 flex items-start justify-between gap-1 pointer-events-none">
-                  <div className="flex flex-col gap-1">
-                    {movie.isCreatedByYou && (
-                      <span className="bg-[#F84464] text-white text-[9px] font-black uppercase tracking-wider px-2 py-0.5 rounded shadow-md border border-white/20">
+                  {/* Top Badges */}
+                  <div className="absolute top-2.5 inset-x-2.5 flex items-center justify-between pointer-events-none">
+                    {movie.isCreatedByYou ? (
+                      <span className="bg-[#F84464] text-white text-[9px] font-black uppercase tracking-wider px-2 py-0.5 rounded-full shadow-md border border-white/20">
                         Chain Exclusive
                       </span>
-                    )}
-                    <span className="bg-slate-950/70 backdrop-blur-md text-white text-[10px] font-bold px-2 py-0.5 rounded shadow-sm border border-white/10 w-fit">
-                      {movie.certificate || 'UA'}
-                    </span>
-                  </div>
-
-                  <span className="bg-slate-950/70 backdrop-blur-md text-slate-200 text-[10px] font-semibold px-2 py-0.5 rounded shadow-sm border border-white/10">
-                    {movie.language || 'Hindi'}
-                  </span>
-                </div>
-
-                {/* Bottom Overlay Info */}
-                <div className="absolute bottom-2.5 left-2.5 right-2.5 flex items-center justify-between">
-                  <span className="bg-slate-950/80 backdrop-blur-md text-amber-300 text-xs font-black px-2 py-1 rounded-md flex items-center gap-1.5 shadow-sm border border-amber-400/20">
-                    <Star size={12} className="text-amber-400 fill-amber-400" />
-                    <span>{movie.rating || '8.5'}<span className="text-[10px] font-medium text-slate-400">/10</span></span>
-                  </span>
-
-                  <span className="text-[11px] font-medium text-slate-300 bg-black/50 backdrop-blur-xs px-2 py-0.5 rounded">
-                    {movie.duration || '2h 30m'}
-                  </span>
-                </div>
-              </div>
-
-              {/* Card Details */}
-              <div className="p-4 flex-1 flex flex-col justify-between bg-white">
-                <div>
-                  <h3 className="font-bold text-slate-900 text-sm line-clamp-1 group-hover:text-[#F84464] transition-colors">
-                    {movie.title}
-                  </h3>
-                  <div className="flex items-center gap-1.5 text-xs text-slate-500 mt-1">
-                    <span className="line-clamp-1 font-medium text-[11px] text-slate-600">
-                      {(movie.genre || []).slice(0, 2).join(' • ')}
-                    </span>
-                  </div>
-                </div>
-
-                <div className="mt-4 pt-3 border-t border-slate-100 flex items-center justify-between gap-2">
-                  <div className="flex flex-wrap gap-1">
-                    {(movie.formats || ['2D']).slice(0, 2).map((fmt) => (
-                      <span
-                        key={fmt}
-                        className="bg-slate-100 text-slate-700 text-[9px] font-bold px-1.5 py-0.5 rounded border border-slate-200"
-                      >
-                        {fmt}
+                    ) : (
+                      <span className="bg-black/50 backdrop-blur-xs text-white text-[9px] font-bold px-2 py-0.5 rounded-full uppercase tracking-wider border border-white/10">
+                        {movie.certificate || 'UA'}
                       </span>
-                    ))}
+                    )}
+
+                    <span className="bg-black/50 backdrop-blur-xs text-white text-[9px] font-bold px-2 py-0.5 rounded-full uppercase tracking-wider border border-white/10">
+                      {movie.language || 'Hindi'}
+                    </span>
                   </div>
 
-                  <Link
-                    to={`/vendor/shows?movieId=${movie.id || movie._id}`}
-                    className="inline-flex items-center gap-1.5 text-xs font-bold text-[#F84464] hover:text-white bg-rose-50 hover:bg-[#F84464] border border-rose-200/80 px-2.5 py-1.5 rounded-xl transition-all duration-200 shadow-2xs group/btn shrink-0"
-                  >
-                    <Calendar size={12} className="group-hover/btn:scale-110 transition-transform" />
-                    <span>Schedule</span>
-                  </Link>
+                  {/* Rating Overlay at bottom of poster with gradient */}
+                  <div className="absolute bottom-0 inset-x-0 bg-gradient-to-t from-black via-black/90 to-transparent pt-8 pb-2.5 px-3 flex items-center justify-between text-white pointer-events-none">
+                    <div className="flex items-center gap-1.5 font-black text-xs">
+                      <Star className="w-3.5 h-3.5 fill-[#F84464] text-[#F84464]" />
+                      <span className="tracking-wide text-white">{movie.rating || '8.5'}/10</span>
+                    </div>
+                    <span className="text-[11px] text-gray-300 font-medium">
+                      {movie.duration || '2h 30m'}
+                    </span>
+                  </div>
+                </div>
+
+                {/* Details below poster */}
+                <div className="mt-3 px-1 flex-1 flex flex-col justify-between">
+                  <div>
+                    <h3
+                      className="text-sm sm:text-base font-bold text-gray-900 group-hover:text-[#F84464] transition-colors truncate tracking-tight"
+                      title={movie.title}
+                    >
+                      {movie.title}
+                    </h3>
+
+                    <p className="text-xs text-gray-500 truncate mt-0.5 font-medium">
+                      {Array.isArray(movie.genre) ? movie.genre.join(', ') : (movie.genre || 'Action, Thriller')}
+                    </p>
+
+                    {/* Format badges */}
+                    <div className="flex items-center gap-1 mt-2 text-[10px] text-gray-600 font-semibold flex-wrap">
+                      {(movie.formats || ['2D']).slice(0, 3).map((fmt) => (
+                        <span
+                          key={fmt}
+                          className="bg-gray-100 text-gray-700 text-[9px] font-bold px-1.5 py-0.5 rounded border border-gray-200"
+                        >
+                          {fmt}
+                        </span>
+                      ))}
+                    </div>
+                  </div>
+
+                  {/* Vendor Action Row */}
+                  <div className="mt-3 pt-2.5 border-t border-gray-200/70 flex items-center justify-between gap-2">
+                    <span className="text-[11px] text-gray-500 font-medium">
+                      {movie.isCreatedByYou ? 'Your Title' : 'CineData Master'}
+                    </span>
+
+                    <Link
+                      to={`/vendor/shows?movieId=${movieId}`}
+                      className="inline-flex items-center gap-1.5 text-xs font-bold text-white bg-[#F84464] hover:bg-[#d83552] px-3.5 py-1.5 rounded-xl transition-all duration-200 shadow-sm cursor-pointer"
+                    >
+                      <Calendar size={12} />
+                      <span>Schedule Shows</span>
+                    </Link>
+                  </div>
                 </div>
               </div>
-            </Card>
-          ))}
+            );
+          })}
         </div>
       )}
 

@@ -335,21 +335,21 @@ export default function AdminDashboardPage() {
               </thead>
               <tbody className="divide-y divide-gray-100">
                 {recentBookings.map((b) => (
-                  <tr key={b._id} className="hover:bg-gray-50 transition">
+                  <tr key={b._id || b.id} className="hover:bg-gray-50 transition">
                     <td className="px-4 py-3 font-mono font-bold text-gray-900">
-                      #{b.bookingId || b._id.toString().slice(-6).toUpperCase()}
+                      #{b.bookingId || (b._id || b.id || '').toString().slice(-6).toUpperCase()}
                     </td>
                     <td className="px-4 py-3">
                       <div className="font-semibold text-gray-900">
-                        {b.showId?.movieId?.title || 'Unknown Title'}
+                        {b.movieTitle || b.showId?.movieId?.title || 'Unknown Title'}
                       </div>
                       <div className="text-[11px] text-gray-500">
-                        {b.showId?.cinemaId?.name || 'Partner Venue'}
+                        {b.theatreName || b.showId?.cinemaId?.name || 'Partner Venue'}
                       </div>
                     </td>
                     <td className="px-4 py-3">
-                      <div className="text-gray-900">{b.userId?.name || 'Customer'}</div>
-                      <div className="text-[10px] text-gray-400">{b.userId?.email || 'N/A'}</div>
+                      <div className="text-gray-900">{b.customerName || b.user?.name || b.userId?.name || 'Customer'}</div>
+                      <div className="text-[10px] text-gray-400">{b.customerEmail || b.user?.email || b.userId?.email || 'N/A'}</div>
                     </td>
                     <td className="px-4 py-3 font-semibold text-gray-800">
                       {(b.seats || []).map(s => s.seatNumber || s).join(', ') || 'N/A'}

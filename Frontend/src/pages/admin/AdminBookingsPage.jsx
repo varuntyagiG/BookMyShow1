@@ -53,9 +53,10 @@ export default function AdminBookingsPage() {
     if (!refundingBooking) return;
     setSubmittingRefund(true);
     try {
-      const res = await adminApi.refundBooking(refundingBooking._id, { reason: refundReason });
+      const bookingIdentifier = refundingBooking._id || refundingBooking.id || refundingBooking.bookingId;
+      const res = await adminApi.refundBooking(bookingIdentifier, { reason: refundReason });
       if (res.success) {
-        setToastMessage(`Booking #${refundingBooking.bookingId || refundingBooking._id.slice(-6)} refunded successfully`);
+        setToastMessage(`Booking #${refundingBooking.bookingId || String(bookingIdentifier).slice(-6)} refunded successfully`);
         setRefundingBooking(null);
         setTimeout(() => setToastMessage(null), 3000);
         fetchBookings();
@@ -164,29 +165,29 @@ export default function AdminBookingsPage() {
               <tbody className="divide-y divide-gray-100">
                 {bookings.map((b) => {
                   const isCancelled = b.bookingStatus === 'cancelled';
-                  const bookingRef = b.bookingId || b._id.toString().slice(-6).toUpperCase();
+                  const bookingRef = b.bookingId || (b._id || b.id || '').toString().slice(-6).toUpperCase();
                   const seatList = (b.seats || []).map(s => s.seatNumber || s).join(', ') || 'N/A';
 
                   return (
-                    <tr key={b._id} className="hover:bg-gray-50 transition">
+                    <tr key={b._id || b.id} className="hover:bg-gray-50 transition">
                       <td className="px-4 py-3.5 font-mono font-bold text-gray-900">
                         #{bookingRef}
                       </td>
                       <td className="px-4 py-3.5">
                         <div className="font-semibold text-gray-900">
-                          {b.showId?.movieId?.title || 'General Title'}
+                          {b.movieTitle || b.show?.movie?.title || b.showId?.movieId?.title || 'General Title'}
                         </div>
                         <div className="text-[11px] text-gray-500 flex items-center gap-1 mt-0.5">
                           <Building2 size={11} className="text-gray-400" />
-                          <span>{b.showId?.cinemaId?.name || 'Partner Venue'}</span>
+                          <span>{b.theatreName || b.cinema?.name || b.showId?.cinemaId?.name || 'Partner Venue'}</span>
                         </div>
                       </td>
                       <td className="px-4 py-3.5">
                         <div className="text-gray-900 font-medium">
-                          {b.userId?.name || 'Guest User'}
+                          {b.user?.name || b.userId?.name || 'Guest User'}
                         </div>
                         <div className="text-[10px] text-gray-400">
-                          {b.userId?.email || 'N/A'}
+                          {b.user?.email || b.userId?.email || 'N/A'}
                         </div>
                       </td>
                       <td className="px-4 py-3.5 font-semibold text-amber-700">

@@ -103,7 +103,7 @@ export default function AdminMoviesPage() {
       };
 
       if (editingMovie) {
-        await adminApi.updateMovie(editingMovie._id, payload);
+        await adminApi.updateMovie(editingMovie._id || editingMovie.id, payload);
         setToastMessage('Movie updated successfully in registry');
       } else {
         await adminApi.createMovie(payload);
@@ -234,85 +234,123 @@ export default function AdminMoviesPage() {
           <p className="text-xs text-gray-500 mt-1">Try clearing filters or add a new film entry.</p>
         </div>
       ) : (
-        <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-5">
-          {movies.map((m) => (
-            <div
-              key={m._id}
-              className="bg-white border border-gray-200 hover:border-gray-300 rounded-xl overflow-hidden shadow-sm hover:shadow-md transition flex flex-col justify-between group"
-            >
-              <div>
-                {/* Poster Container */}
-                <div className="relative aspect-[2/3] w-full bg-gray-100 overflow-hidden">
+        <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-6">
+          {movies.map((m) => {
+            const movieId = m._id || m.id;
+            return (
+              <div
+                key={movieId}
+                className="flex flex-col group w-full transition-all duration-300 transform hover:-translate-y-1.5"
+              >
+                {/* Poster wrapper with Customer Storefront styling */}
+                <div className="relative aspect-[2/3] w-full rounded-2xl overflow-hidden bg-gray-200 shadow-sm border border-gray-100 group-hover:shadow-xl group-hover:border-gray-200 transition-all duration-300">
                   <img
                     src={m.posterUrl || 'https://images.unsplash.com/photo-1489599849927-2ee91cede3ba?w=500&auto=format&fit=crop'}
                     alt={m.title}
-                    className="w-full h-full object-cover group-hover:scale-105 transition duration-500"
+                    loading="lazy"
+                    className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-500"
                     onError={(e) => {
                       e.target.src = 'https://images.unsplash.com/photo-1489599849927-2ee91cede3ba?w=500&auto=format&fit=crop';
                     }}
                   />
-                  {/* Rating Tag */}
-                  <div className="absolute top-3 left-3 bg-white/95 backdrop-blur-md px-2 py-1 rounded-lg border border-gray-200 flex items-center gap-1 text-xs font-black text-amber-600 shadow-sm">
-                    <Star size={12} className="fill-current text-amber-500" />
-                    <span>{m.rating || '8.0'}</span>
+
+                  {/* Top Badges: Promoted Pill & Spotlight Toggle */}
+                  <div className="absolute top-2.5 inset-x-2.5 flex items-center justify-between pointer-events-none">
+                    {m.isPromoted ? (
+                      <div className="bg-[#F84464] text-white text-[9px] font-black px-2.5 py-0.5 rounded-full uppercase tracking-wider shadow-md pointer-events-auto flex items-center gap-1">
+                        <Sparkles size={10} className="fill-current text-white" />
+                        <span>PROMOTED</span>
+                      </div>
+                    ) : (
+                      <span className="bg-black/40 backdrop-blur-xs text-white text-[9px] font-bold px-2 py-0.5 rounded-full uppercase tracking-wider">
+                        {m.certificate || 'UA'}
+                      </span>
+                    )}
+
+                    <button
+                      type="button"
+                      onClick={(e) => {
+                        e.stopPropagation();
+                        handleTogglePromote(movieId);
+                      }}
+                      className={`px-2.5 py-1 rounded-full text-[10px] font-black uppercase tracking-wider flex items-center gap-1 shadow-md pointer-events-auto transition-all cursor-pointer ${
+                        m.isPromoted
+                          ? 'bg-amber-400 text-amber-950 shadow-amber-400/30'
+                          : 'bg-black/60 hover:bg-black/80 text-white/90 backdrop-blur-xs'
+                      }`}
+                      title="Click to toggle Homepage Spotlight"
+                    >
+                      <Sparkles size={11} className={m.isPromoted ? 'fill-current text-amber-950' : 'text-amber-400'} />
+                      <span>{m.isPromoted ? 'Spotlight ON' : 'Spotlight'}</span>
+                    </button>
                   </div>
 
-                  {/* Spotlight Banner Toggle */}
-                  <button
-                    onClick={() => handleTogglePromote(m._id)}
-                    className={`absolute top-3 right-3 px-2 py-1 rounded-lg border text-[10px] font-black uppercase tracking-wider flex items-center gap-1 shadow-sm transition ${
-                      m.isPromoted
-                        ? 'bg-amber-400 text-amber-950 border-amber-300 font-extrabold shadow-amber-400/20'
-                        : 'bg-white/95 text-gray-700 border-gray-200 hover:text-black'
-                    }`}
-                    title="Click to toggle Homepage Spotlight"
-                  >
-                    <Sparkles size={11} className={m.isPromoted ? 'fill-current' : ''} />
-                    <span>{m.isPromoted ? 'Spotlight ON' : 'Spotlight'}</span>
-                  </button>
-                </div>
-
-                {/* Movie Info */}
-                <div className="p-4">
-                  <h3 className="text-base font-bold text-gray-900 truncate" title={m.title}>
-                    {m.title}
-                  </h3>
-                  <div className="flex items-center gap-2 text-[11px] text-gray-500 mt-1 flex-wrap">
-                    <span className="flex items-center gap-1">
-                      <Clock size={11} />
-                      {m.duration} min
-                    </span>
-                    <span>•</span>
-                    <span className="text-gray-700 font-medium">
-                      {Array.isArray(m.language) ? m.language.join(', ') : m.language}
+                  {/* Rating Overlay at bottom of poster with gradient */}
+                  <div className="absolute bottom-0 inset-x-0 bg-gradient-to-t from-black via-black/90 to-transparent pt-8 pb-2.5 px-3 flex items-center justify-between text-white pointer-events-none">
+                    <div className="flex items-center gap-1.5 font-black text-xs">
+                      <Star className="w-3.5 h-3.5 fill-[#F84464] text-[#F84464]" />
+                      <span className="tracking-wide text-white">{m.rating || '8.0'}/10</span>
+                    </div>
+                    <span className="text-[11px] text-gray-300 font-medium">
+                      {m.voteCount || (m.duration ? `${m.duration} min` : '10K Votes')}
                     </span>
                   </div>
-                  <p className="text-[11px] text-gray-500 mt-2 line-clamp-2 leading-relaxed">
-                    {m.description || 'No description provided.'}
-                  </p>
+                </div>
+
+                {/* Details below poster */}
+                <div className="mt-3 px-1 flex-1 flex flex-col justify-between">
+                  <div>
+                    <h3
+                      className="text-sm sm:text-base font-bold text-gray-900 group-hover:text-[#F84464] transition-colors truncate tracking-tight"
+                      title={m.title}
+                    >
+                      {m.title}
+                    </h3>
+
+                    <p className="text-xs text-gray-500 truncate mt-0.5 font-medium">
+                      {Array.isArray(m.genre) ? m.genre.join(', ') : (m.genre || 'Action, Thriller')}
+                    </p>
+
+                    {/* Format, Certificate, and Language badges */}
+                    <div className="flex items-center gap-1.5 mt-2 text-[10px] text-gray-600 font-semibold flex-wrap">
+                      {m.certificate && (
+                        <span className="border border-gray-300 bg-gray-50 px-1.5 py-0.2 rounded text-[9px] text-gray-700">
+                          {m.certificate}
+                        </span>
+                      )}
+                      <span className="text-gray-500 truncate max-w-[120px]">
+                        {Array.isArray(m.language) ? m.language.join(', ') : (m.language || 'Hindi')}
+                      </span>
+                      {m.formats && m.formats.length > 0 && (
+                        <span className="text-[#F84464] font-bold">
+                          • {m.formats[0]}
+                        </span>
+                      )}
+                    </div>
+                  </div>
+
+                  {/* Administrative Action Row */}
+                  <div className="mt-3 pt-2.5 border-t border-gray-200/70 flex items-center justify-between gap-2">
+                    <button
+                      onClick={() => handleOpenEdit(m)}
+                      className="flex-1 py-1.5 px-3 bg-gray-100 hover:bg-gray-200 text-gray-700 text-xs font-semibold rounded-xl flex items-center justify-center gap-1.5 transition cursor-pointer"
+                    >
+                      <Edit size={13} />
+                      <span>Edit Film</span>
+                    </button>
+
+                    <button
+                      onClick={() => handleDeleteMovie(movieId, m.title)}
+                      className="p-2 bg-rose-50 hover:bg-rose-100 text-rose-600 rounded-xl border border-rose-200 transition cursor-pointer"
+                      title="Delete Film"
+                    >
+                      <Trash2 size={14} />
+                    </button>
+                  </div>
                 </div>
               </div>
-
-              {/* Action Buttons */}
-              <div className="p-4 pt-0 border-t border-gray-100 flex items-center justify-between gap-2 mt-2">
-                <button
-                  onClick={() => handleOpenEdit(m)}
-                  className="flex-1 py-1.5 px-3 bg-gray-50 hover:bg-gray-100 text-gray-700 text-xs font-semibold rounded-lg border border-gray-200 flex items-center justify-center gap-1.5 transition"
-                >
-                  <Edit size={13} />
-                  <span>Edit Metadata</span>
-                </button>
-
-                <button
-                  onClick={() => handleDeleteMovie(m._id, m.title)}
-                  className="p-2 bg-rose-50 hover:bg-rose-100 text-rose-600 rounded-lg border border-rose-200 transition"
-                  title="Delete Movie"
-                >
-                  <Trash2 size={14} />
-                </button>
-              </div>
-            </div>
-          ))}
+            );
+          })}
         </div>
       )}
 

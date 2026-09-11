@@ -21,13 +21,14 @@ const offerSchema = new mongoose.Schema(
     },
     discountType: {
       type: String,
-      enum: ['percentage', 'fixed'],
+      enum: ['percentage', 'fixed', 'flat', 'b1g1'],
       default: 'percentage'
     },
     discountValue: {
       type: Number,
       required: [true, 'Discount value is required'],
-      min: 0
+      min: 0,
+      default: 0
     },
     minBookingAmount: {
       type: Number,
@@ -37,13 +38,42 @@ const offerSchema = new mongoose.Schema(
       type: Number,
       default: 0 // 0 means no cap
     },
+    maxDiscountAmount: {
+      type: Number,
+      default: 0
+    },
+    bankName: {
+      type: String,
+      default: ''
+    },
+    cardType: {
+      type: String,
+      default: 'All'
+    },
+    category: {
+      type: String,
+      default: 'bank'
+    },
+    badgeText: {
+      type: String,
+      default: ''
+    },
+    usageLimitPerUser: {
+      type: Number,
+      default: 1
+    },
+    isActive: {
+      type: Boolean,
+      default: true,
+      index: true
+    },
     validFrom: {
       type: Date,
       default: Date.now
     },
     validUntil: {
       type: Date,
-      required: [true, 'Expiry date is required']
+      default: () => new Date(Date.now() + 365 * 24 * 60 * 60 * 1000)
     },
     usageLimit: {
       type: Number,
@@ -65,8 +95,23 @@ const offerSchema = new mongoose.Schema(
     }
   },
   {
-    timestamps: true
+    timestamps: true,
+    toJSON: { virtuals: true },
+    toObject: { virtuals: true }
   }
 );
 
+// Virtual to synchronize maxDiscount and maxDiscountAmount
+offerSchema.pre('save', function () {
+  if (this.maxDiscountAmount && !this.maxDiscount) {
+    this.maxDiscount = this.maxDiscountAmount;
+  } else if (this.maxDiscount && !this.maxDiscountAmount) {
+    this.maxDiscountAmount = this.maxDiscount;
+  }
+  if (this.isActive !== undefined) {
+    this.status = this.isActive ? 'active' : 'inactive';
+  }
+});
+
 module.exports = mongoose.model('Offer', offerSchema);
+

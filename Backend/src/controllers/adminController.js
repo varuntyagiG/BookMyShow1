@@ -1,3 +1,4 @@
+const mongoose = require('mongoose');
 const jwt = require('jsonwebtoken');
 const User = require('../models/User');
 const Movie = require('../models/Movie');
@@ -43,6 +44,7 @@ exports.loginAdmin = async (req, res) => {
       token,
       user: {
         id: user._id,
+        _id: user._id,
         name: user.name,
         email: user.email,
         role: user.role,
@@ -60,12 +62,26 @@ exports.loginAdmin = async (req, res) => {
  */
 exports.getOverview = async (req, res) => {
   try {
+    const { range = 'all' } = req.query;
+
+    const bookingFilter = {};
+    if (range === 'today') {
+      const startOfDay = new Date();
+      startOfDay.setHours(0, 0, 0, 0);
+      bookingFilter.createdAt = { $gte: startOfDay };
+    } else if (range === 'week') {
+      bookingFilter.createdAt = { $gte: new Date(Date.now() - 7 * 24 * 60 * 60 * 1000) };
+    } else if (range === 'month') {
+      bookingFilter.createdAt = { $gte: new Date(Date.now() - 30 * 24 * 60 * 60 * 1000) };
+    }
+
     const [
       customersCount,
       partnersCount,
       cinemasCount,
       screensCount,
       activeShowsCount,
+      moviesCount,
       bookings
     ] = await Promise.all([
       User.countDocuments({ role: { $in: ['customer', 'user'] } }),
@@ -73,7 +89,8 @@ exports.getOverview = async (req, res) => {
       Cinema.countDocuments(),
       Screen.countDocuments(),
       Show.countDocuments({ status: 'active' }),
-      Booking.find().sort({ createdAt: -1 }).limit(100).populate('user', 'name email phone')
+      Movie.countDocuments(),
+      Booking.find(bookingFilter).sort({ createdAt: -1 }).limit(100).populate('user', 'name email phone')
     ]);
 
     let totalGMV = 0;
@@ -94,6 +111,7 @@ exports.getOverview = async (req, res) => {
 
     const recentBookings = bookings.slice(0, 10).map((b) => ({
       id: b._id,
+      _id: b._id,
       bookingId: b.bookingId,
       movieTitle: b.movieTitle,
       theatreName: b.theatreName,
@@ -124,8 +142,10 @@ exports.getOverview = async (req, res) => {
       totalVendors: partnersCount,
       totalCinemas: cinemasCount,
       totalScreens: screensCount,
-      activeShowsCount,
       totalShows: activeShowsCount,
+      activeShowsCount,
+      totalMovies: moviesCount,
+      moviesCount,
       pendingVendors: 0
     };
 
@@ -148,17 +168,52 @@ exports.getOverview = async (req, res) => {
  */
 exports.getVendors = async (req, res) => {
   try {
-    const partners = await User.find({ role: 'cinema_partner' }).select('-password').sort({ createdAt: -1 });
+    const { search = '', status = 'all' } = req.query;
+
+    const partnerFilter = { role: 'cinema_partner' };
+
+    if (search.trim()) {
+      const q = search.trim();
+      partnerFilter.$or = [
+        { name: { $regex: q, $options: 'i' } },
+        { businessName: { $regex: q, $options: 'i' } },
+        { email: { $regex: q, $options: 'i' } },
+        { phone: { $regex: q, $options: 'i' } }
+      ];
+    }
+
+    if (status && status !== 'all') {
+      if (status === 'approved' || status === 'active') {
+        partnerFilter.$and = [
+          { partnerStatus: { $in: ['active', 'approved'] } },
+          { isDeactivated: { $ne: true } }
+        ];
+      } else if (status === 'suspended') {
+        partnerFilter.$or = [
+          { partnerStatus: 'suspended' },
+          { isDeactivated: true }
+        ];
+      } else if (status === 'pending') {
+        partnerFilter.partnerStatus = 'pending';
+      }
+    }
+
+    const partners = await User.find(partnerFilter).select('-password').sort({ createdAt: -1 });
 
     const partnersWithDetails = await Promise.all(
       partners.map(async (p) => {
         const cinemas = await Cinema.find({ partner: p._id }).lean();
-        const cinemaIds = cinemas.map(c => c._id);
+        const cinemaIds = cinemas.map((c) => c._id);
         const screensCount = await Screen.find({ cinemaId: { $in: cinemaIds } }).countDocuments();
         const showsCount = await Show.find({ cinema: { $in: cinemaIds }, status: 'active' }).countDocuments();
 
+        const isSuspended = p.isDeactivated || p.partnerStatus === 'suspended';
+        const isPending = p.partnerStatus === 'pending';
+        const verificationStatus = isSuspended ? 'suspended' : isPending ? 'pending' : 'approved';
+
         return {
           id: p._id,
+          _id: p._id,
           name: p.name,
           email: p.email,
           phone: p.phone || p.partnerPhone,
@@ -166,11 +221,15 @@ exports.getVendors = async (req, res) => {
           businessAddress: p.businessAddress,
           gstin: p.gstin,
           partnerStatus: p.partnerStatus || 'active',
+          verificationStatus,
           isDeactivated: p.isDeactivated || false,
           cinemasCount: cinemas.length,
+          cinemaCount: cinemas.length,
           screensCount,
+          screenCount: screensCount,
           activeShowsCount: showsCount,
-          cinemas: cinemas.map(c => ({ id: c._id, name: c.name, city: c.city, status: c.status })),
+          showCount: showsCount,
+          cinemas: cinemas.map((c) => ({ id: c._id, _id: c._id, name: c.name, city: c.city, status: c.status })),
           createdAt: p.createdAt
         };
       })
@@ -185,24 +244,43 @@ exports.getVendors = async (req, res) => {
 
 exports.updateVendorStatus = async (req, res) => {
   try {
-    const { id } = req.params;
-    const { status } = req.body; // 'active' | 'suspended'
+    const vendorId = req.params.vendorId || req.params.id;
+    const { status } = req.body; // 'active' | 'approved' | 'suspended' | 'pending'
 
-    if (!['active', 'suspended'].includes(status)) {
+    if (!vendorId) {
+      return res.status(400).json({ success: false, message: 'Vendor ID is required' });
+    }
+
+    const normalized = (status || '').toLowerCase().trim();
+    if (!['active', 'approved', 'suspended', 'pending'].includes(normalized)) {
       return res.status(400).json({ success: false, message: 'Invalid partner status' });
     }
 
+    const isDeactivated = normalized === 'suspended';
+    const partnerStatus = normalized === 'approved' ? 'active' : normalized;
+
     const partner = await User.findByIdAndUpdate(
-      id,
-      { partnerStatus: status },
-      { new: true }
+      vendorId,
+      { partnerStatus, isDeactivated },
+      { returnDocument: 'after' }
     ).select('-password');
 
     if (!partner) {
       return res.status(404).json({ success: false, message: 'Partner not found' });
     }
 
-    res.json({ success: true, message: `Partner status updated to ${status}`, data: partner });
+    const verificationStatus = isDeactivated ? 'suspended' : partnerStatus === 'pending' ? 'pending' : 'approved';
+
+    res.json({
+      success: true,
+      message: `Partner status updated to ${normalized.toUpperCase()}`,
+      data: {
+        ...partner.toObject(),
+        id: partner._id,
+        _id: partner._id,
+        verificationStatus
+      }
+    });
   } catch (err) {
     console.error('Admin updateVendorStatus error:', err);
     res.status(500).json({ success: false, message: 'Failed to update partner status' });
@@ -214,8 +292,38 @@ exports.updateVendorStatus = async (req, res) => {
  */
 exports.getMovies = async (req, res) => {
   try {
-    const movies = await Movie.find().sort({ createdAt: -1 });
-    res.json({ success: true, data: movies });
+    const { search = '', genre = '', status = '' } = req.query;
+    const filter = {};
+
+    if (search.trim()) {
+      const q = search.trim();
+      filter.$or = [
+        { title: { $regex: q, $options: 'i' } },
+        { synopsis: { $regex: q, $options: 'i' } }
+      ];
+    }
+
+    if (genre && genre !== 'all') {
+      filter.genre = { $regex: genre, $options: 'i' };
+    }
+
+    if (status && status !== 'all') {
+      filter.status = status;
+    }
+
+    const movies = await Movie.find(filter).sort({ createdAt: -1 });
+    const formatted = movies.map((m) => {
+      const obj = m.toObject();
+      return {
+        ...obj,
+        id: m._id,
+        _id: m._id,
+        description: obj.synopsis || obj.description || '',
+        bannerUrl: obj.backdropUrl || obj.bannerUrl || ''
+      };
+    });
+
+    res.json({ success: true, data: formatted });
   } catch (err) {
     console.error('Admin getMovies error:', err);
     res.status(500).json({ success: false, message: 'Failed to load movie catalog' });
@@ -225,15 +333,29 @@ exports.getMovies = async (req, res) => {
 exports.createMovie = async (req, res) => {
   try {
     const customId = 'pmov-' + Math.floor(100000 + Math.random() * 900000);
-    const movie = new Movie({
+    const movieData = {
       ...req.body,
       customId,
+      synopsis: req.body.synopsis || req.body.description || '',
+      backdropUrl: req.body.backdropUrl || req.body.bannerUrl || '',
+      duration: String(req.body.duration || '120'),
+      rating: Number(req.body.rating || 8.0),
       status: req.body.status || 'published',
-      addedBy: req.user._id
-    });
+      addedBy: req.user?._id
+    };
 
+    const movie = new Movie(movieData);
     await movie.save();
-    res.status(201).json({ success: true, message: 'Movie created in CineData registry', data: movie });
+
+    res.status(201).json({
+      success: true,
+      message: 'Movie created in CineData registry',
+      data: {
+        ...movie.toObject(),
+        id: movie._id,
+        _id: movie._id
+      }
+    });
   } catch (err) {
     console.error('Admin createMovie error:', err);
     res.status(400).json({ success: false, message: err.message || 'Failed to create movie' });
@@ -242,12 +364,43 @@ exports.createMovie = async (req, res) => {
 
 exports.updateMovie = async (req, res) => {
   try {
-    const { id } = req.params;
-    const updated = await Movie.findByIdAndUpdate(id, req.body, { new: true, runValidators: true });
+    const movieId = req.params.movieId || req.params.id;
+    if (!movieId) {
+      return res.status(400).json({ success: false, message: 'Movie ID is required' });
+    }
+
+    const updateData = { ...req.body };
+    if (updateData.description && !updateData.synopsis) {
+      updateData.synopsis = updateData.description;
+    }
+    if (updateData.bannerUrl && !updateData.backdropUrl) {
+      updateData.backdropUrl = updateData.bannerUrl;
+    }
+    if (updateData.duration !== undefined) {
+      updateData.duration = String(updateData.duration);
+    }
+    if (updateData.rating !== undefined) {
+      updateData.rating = Number(updateData.rating);
+    }
+
+    const updated = await Movie.findByIdAndUpdate(movieId, updateData, {
+      returnDocument: 'after',
+      runValidators: true
+    });
+
     if (!updated) {
       return res.status(404).json({ success: false, message: 'Movie not found' });
     }
-    res.json({ success: true, message: 'Movie updated successfully', data: updated });
+
+    res.json({
+      success: true,
+      message: 'Movie updated successfully',
+      data: {
+        ...updated.toObject(),
+        id: updated._id,
+        _id: updated._id
+      }
+    });
   } catch (err) {
     console.error('Admin updateMovie error:', err);
     res.status(400).json({ success: false, message: err.message || 'Failed to update movie' });
@@ -256,11 +409,16 @@ exports.updateMovie = async (req, res) => {
 
 exports.deleteMovie = async (req, res) => {
   try {
-    const { id } = req.params;
-    const deleted = await Movie.findByIdAndDelete(id);
+    const movieId = req.params.movieId || req.params.id;
+    if (!movieId) {
+      return res.status(400).json({ success: false, message: 'Movie ID is required' });
+    }
+
+    const deleted = await Movie.findByIdAndDelete(movieId);
     if (!deleted) {
       return res.status(404).json({ success: false, message: 'Movie not found' });
     }
+
     res.json({ success: true, message: 'Movie removed from CineData registry' });
   } catch (err) {
     console.error('Admin deleteMovie error:', err);
@@ -270,8 +428,12 @@ exports.deleteMovie = async (req, res) => {
 
 exports.togglePromoteMovie = async (req, res) => {
   try {
-    const { id } = req.params;
-    const movie = await Movie.findById(id);
+    const movieId = req.params.movieId || req.params.id;
+    if (!movieId) {
+      return res.status(400).json({ success: false, message: 'Movie ID is required' });
+    }
+
+    const movie = await Movie.findById(movieId);
     if (!movie) {
       return res.status(404).json({ success: false, message: 'Movie not found' });
     }
@@ -304,10 +466,20 @@ exports.getBookings = async (req, res) => {
 
     if (search.trim()) {
       const q = search.trim();
+      const matchingUsers = await User.find({
+        $or: [
+          { name: { $regex: q, $options: 'i' } },
+          { email: { $regex: q, $options: 'i' } },
+          { phone: { $regex: q, $options: 'i' } }
+        ]
+      }).select('_id');
+      const userIds = matchingUsers.map((u) => u._id);
+
       filter.$or = [
         { bookingId: { $regex: q, $options: 'i' } },
         { movieTitle: { $regex: q, $options: 'i' } },
-        { theatreName: { $regex: q, $options: 'i' } }
+        { theatreName: { $regex: q, $options: 'i' } },
+        ...(userIds.length > 0 ? [{ user: { $in: userIds } }] : [])
       ];
     }
 
@@ -321,9 +493,19 @@ exports.getBookings = async (req, res) => {
         .populate('user', 'name email phone')
     ]);
 
+    const formatted = bookings.map((b) => {
+      const obj = b.toObject();
+      return {
+        ...obj,
+        id: b._id,
+        _id: b._id,
+        userId: obj.user || { name: 'Guest User', email: '' }
+      };
+    });
+
     res.json({
       success: true,
-      data: bookings,
+      data: formatted,
       pagination: {
         total,
         page: Number(page),
@@ -338,10 +520,17 @@ exports.getBookings = async (req, res) => {
 
 exports.refundBooking = async (req, res) => {
   try {
-    const { id } = req.params;
+    const bookingId = req.params.bookingId || req.params.id;
     const { reason = 'Customer Support Refund' } = req.body;
 
-    const booking = await Booking.findById(id);
+    if (!bookingId) {
+      return res.status(400).json({ success: false, message: 'Booking ID is required' });
+    }
+
+    const booking =
+      (mongoose.Types.ObjectId.isValid(bookingId) ? await Booking.findById(bookingId) : null) ||
+      (await Booking.findOne({ bookingId }));
+
     if (!booking) {
       return res.status(404).json({ success: false, message: 'Booking not found' });
     }
@@ -353,11 +542,12 @@ exports.refundBooking = async (req, res) => {
     // 1. Mark as cancelled & refunded
     booking.bookingStatus = 'cancelled';
     booking.paymentStatus = 'refunded';
+    booking.validationHistory = booking.validationHistory || [];
     booking.validationHistory.push({
       action: 'ADMIN_FORCE_REFUND',
       notes: reason,
       validatedAt: new Date(),
-      validatedBy: req.user._id
+      validatedBy: req.user?._id
     });
     await booking.save();
 
@@ -365,15 +555,19 @@ exports.refundBooking = async (req, res) => {
     if (booking.show) {
       const show = await Show.findById(booking.show);
       if (show) {
-        show.bookedSeats = (show.bookedSeats || []).filter(s => !(booking.seats || []).includes(s));
+        show.bookedSeats = (show.bookedSeats || []).filter((s) => !(booking.seats || []).includes(s));
         await show.save();
       }
     }
 
     res.json({
       success: true,
-      message: `Booking ${booking.bookingId} refunded successfully. Allocated seats released.`,
-      data: booking
+      message: `Booking #${booking.bookingId} refunded successfully. Allocated seats released.`,
+      data: {
+        ...booking.toObject(),
+        id: booking._id,
+        _id: booking._id
+      }
     });
   } catch (err) {
     console.error('Admin refundBooking error:', err);
@@ -387,7 +581,18 @@ exports.refundBooking = async (req, res) => {
 exports.getOffers = async (req, res) => {
   try {
     const offers = await Offer.find().sort({ createdAt: -1 });
-    res.json({ success: true, data: offers });
+    const formatted = offers.map((o) => {
+      const obj = o.toObject();
+      return {
+        ...obj,
+        id: o._id,
+        _id: o._id,
+        maxDiscountAmount: obj.maxDiscountAmount || obj.maxDiscount || 0,
+        isActive: obj.isActive !== undefined ? obj.isActive : obj.status === 'active'
+      };
+    });
+
+    res.json({ success: true, data: formatted });
   } catch (err) {
     console.error('Admin getOffers error:', err);
     res.status(500).json({ success: false, message: 'Failed to load offers' });
@@ -396,12 +601,35 @@ exports.getOffers = async (req, res) => {
 
 exports.createOffer = async (req, res) => {
   try {
-    const offer = new Offer({
-      ...req.body,
-      code: req.body.code.trim().toUpperCase()
-    });
+    const offerData = { ...req.body };
+    if (offerData.code) {
+      offerData.code = offerData.code.trim().toUpperCase();
+    }
+    if (offerData.isActive !== undefined) {
+      offerData.status = offerData.isActive ? 'active' : 'inactive';
+    }
+    if (offerData.maxDiscountAmount && !offerData.maxDiscount) {
+      offerData.maxDiscount = Number(offerData.maxDiscountAmount);
+    }
+    if (offerData.maxDiscount && !offerData.maxDiscountAmount) {
+      offerData.maxDiscountAmount = Number(offerData.maxDiscount);
+    }
+    if (!offerData.validUntil) {
+      offerData.validUntil = new Date(Date.now() + 365 * 24 * 60 * 60 * 1000);
+    }
+
+    const offer = new Offer(offerData);
     await offer.save();
-    res.status(201).json({ success: true, message: 'Bank Offer / Coupon created', data: offer });
+
+    res.status(201).json({
+      success: true,
+      message: 'Bank Offer / Coupon created',
+      data: {
+        ...offer.toObject(),
+        id: offer._id,
+        _id: offer._id
+      }
+    });
   } catch (err) {
     console.error('Admin createOffer error:', err);
     res.status(400).json({ success: false, message: err.message || 'Failed to create offer' });
@@ -410,16 +638,45 @@ exports.createOffer = async (req, res) => {
 
 exports.updateOffer = async (req, res) => {
   try {
-    const { id } = req.params;
-    const updated = await Offer.findByIdAndUpdate(
-      id,
-      { ...req.body, code: req.body.code ? req.body.code.trim().toUpperCase() : undefined },
-      { new: true, runValidators: true }
-    );
+    const offerId = req.params.offerId || req.params.id;
+    if (!offerId) {
+      return res.status(400).json({ success: false, message: 'Offer ID is required' });
+    }
+
+    const updateData = { ...req.body };
+    if (updateData.code) {
+      updateData.code = updateData.code.trim().toUpperCase();
+    }
+    if (updateData.isActive !== undefined) {
+      updateData.status = updateData.isActive ? 'active' : 'inactive';
+    }
+    if (updateData.maxDiscountAmount && !updateData.maxDiscount) {
+      updateData.maxDiscount = Number(updateData.maxDiscountAmount);
+    }
+    if (updateData.maxDiscount && !updateData.maxDiscountAmount) {
+      updateData.maxDiscountAmount = Number(updateData.maxDiscount);
+    }
+
+    const updated = await Offer.findByIdAndUpdate(offerId, updateData, {
+      returnDocument: 'after',
+      runValidators: true
+    });
+
     if (!updated) {
       return res.status(404).json({ success: false, message: 'Offer not found' });
     }
-    res.json({ success: true, message: 'Offer updated successfully', data: updated });
+
+    res.json({
+      success: true,
+      message: 'Offer updated successfully',
+      data: {
+        ...updated.toObject(),
+        id: updated._id,
+        _id: updated._id,
+        maxDiscountAmount: updated.maxDiscountAmount || updated.maxDiscount || 0,
+        isActive: updated.isActive !== undefined ? updated.isActive : updated.status === 'active'
+      }
+    });
   } catch (err) {
     console.error('Admin updateOffer error:', err);
     res.status(400).json({ success: false, message: err.message || 'Failed to update offer' });
@@ -428,11 +685,16 @@ exports.updateOffer = async (req, res) => {
 
 exports.deleteOffer = async (req, res) => {
   try {
-    const { id } = req.params;
-    const deleted = await Offer.findByIdAndDelete(id);
+    const offerId = req.params.offerId || req.params.id;
+    if (!offerId) {
+      return res.status(400).json({ success: false, message: 'Offer ID is required' });
+    }
+
+    const deleted = await Offer.findByIdAndDelete(offerId);
     if (!deleted) {
       return res.status(404).json({ success: false, message: 'Offer not found' });
     }
+
     res.json({ success: true, message: 'Offer deleted successfully' });
   } catch (err) {
     console.error('Admin deleteOffer error:', err);
@@ -461,6 +723,8 @@ exports.getSettlements = async (req, res) => {
 
         return {
           partnerId: partner._id,
+          _id: partner._id,
+          id: partner._id,
           partnerName: partner.businessName || partner.name,
           email: partner.email,
           totalBookingsCount: bookings.length,
@@ -484,14 +748,19 @@ exports.getSettlements = async (req, res) => {
 
 exports.disburseSettlement = async (req, res) => {
   try {
-    const { partnerId } = req.params;
+    const partnerId = req.params.partnerId || req.params.id;
     const { utrNumber, amount } = req.body;
+
+    if (!partnerId) {
+      return res.status(400).json({ success: false, message: 'Partner ID is required' });
+    }
 
     res.json({
       success: true,
       message: `Settlement of ₹${amount || 0} successfully authorized and marked disbursed under UTR: ${utrNumber || 'UTR-CLEARED'}`,
       data: {
         partnerId,
+        id: partnerId,
         utrNumber,
         status: 'Disbursed',
         disbursedAt: new Date()

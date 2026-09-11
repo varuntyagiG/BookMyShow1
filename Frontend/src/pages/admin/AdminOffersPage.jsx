@@ -99,7 +99,7 @@ export default function AdminOffersPage() {
       };
 
       if (editingOffer) {
-        await adminApi.updateOffer(editingOffer._id, payload);
+        await adminApi.updateOffer(editingOffer._id || editingOffer.id, payload);
         setToastMessage('Bank Alliance offer updated');
       } else {
         await adminApi.createOffer(payload);
@@ -132,7 +132,7 @@ export default function AdminOffersPage() {
 
   const handleToggleActive = async (offer) => {
     try {
-      await adminApi.updateOffer(offer._id, { isActive: !offer.isActive });
+      await adminApi.updateOffer(offer._id || offer.id, { isActive: !offer.isActive });
       setToastMessage(`Offer ${!offer.isActive ? 'Activated' : 'Paused'}`);
       setTimeout(() => setToastMessage(null), 3000);
       fetchOffers();
@@ -202,13 +202,14 @@ export default function AdminOffersPage() {
       ) : (
         <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-5">
           {offers.map((o) => {
+            const offerId = o._id || o.id;
             const isB1G1 = o.discountType === 'b1g1';
             const isFlat = o.discountType === 'flat';
             const isPercent = o.discountType === 'percentage';
 
             return (
               <div
-                key={o._id}
+                key={offerId}
                 className="bg-white border border-gray-200 hover:border-gray-300 rounded-xl p-5 shadow-sm hover:shadow-md transition flex flex-col justify-between"
               >
                 <div>
@@ -289,7 +290,7 @@ export default function AdminOffersPage() {
                       <Edit size={14} />
                     </button>
                     <button
-                      onClick={() => handleDeleteOffer(o._id, o.code)}
+                      onClick={() => handleDeleteOffer(offerId, o.code)}
                       className="p-2 bg-rose-50 hover:bg-rose-100 text-rose-600 rounded-lg border border-rose-200 transition"
                       title="Delete Campaign"
                     >

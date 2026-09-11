@@ -44,7 +44,8 @@ export default function AdminSettlementsPage() {
 
   const handleOpenDisburse = (s) => {
     setDisbursingPartner(s);
-    setUtrInput(`UTR-BMS-${Date.now().toString().slice(-6)}-${s.partnerId.slice(-4).toUpperCase()}`);
+    const pid = String(s.partnerId || s._id || s.id || '');
+    setUtrInput(`UTR-BMS-${Date.now().toString().slice(-6)}-${pid.slice(-4).toUpperCase()}`);
   };
 
   const handleDisburseSubmit = async (e) => {
@@ -52,7 +53,8 @@ export default function AdminSettlementsPage() {
     if (!disbursingPartner) return;
     setSubmitting(true);
     try {
-      const res = await adminApi.disburseSettlement(disbursingPartner.partnerId, {
+      const pid = disbursingPartner.partnerId || disbursingPartner._id || disbursingPartner.id;
+      const res = await adminApi.disburseSettlement(pid, {
         utrNumber: utrInput,
         amount: disbursingPartner.netDisbursable
       });
@@ -173,7 +175,7 @@ export default function AdminSettlementsPage() {
               </thead>
               <tbody className="divide-y divide-gray-100">
                 {settlements.map((s) => (
-                  <tr key={s.partnerId} className="hover:bg-gray-50 transition">
+                  <tr key={s.partnerId || s._id || s.id} className="hover:bg-gray-50 transition">
                     <td className="px-4 py-3.5">
                       <div className="font-bold text-gray-900 text-sm">{s.partnerName}</div>
                       <div className="text-[11px] text-gray-500">{s.email}</div>
