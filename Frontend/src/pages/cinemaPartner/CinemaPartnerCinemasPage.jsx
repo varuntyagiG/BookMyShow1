@@ -10,13 +10,27 @@ import {
   MapPin,
   Phone,
   Mail,
-  Loader2,
-  CheckCircle2,
-  X,
   Tv,
   Calendar,
-  AlertCircle
+  CheckCircle2,
+  Sparkles
 } from 'lucide-react';
+import {
+  PageHeader,
+  Button,
+  Card,
+  CardHeader,
+  CardTitle,
+  CardDescription,
+  CardContent,
+  Badge,
+  Modal,
+  ConfirmModal,
+  Input,
+  Select,
+  EmptyState,
+  Skeleton
+} from '../../components/ui';
 
 export default function CinemaPartnerCinemasPage() {
   const toast = useCinemaToast();
@@ -26,6 +40,7 @@ export default function CinemaPartnerCinemasPage() {
   const [editingCinema, setEditingCinema] = useState(null);
   const [deleteConfirm, setDeleteConfirm] = useState(null);
   const [saving, setSaving] = useState(false);
+  const [deleting, setDeleting] = useState(false);
 
   const [formData, setFormData] = useState({
     name: '',
@@ -127,11 +142,13 @@ export default function CinemaPartnerCinemasPage() {
     }
   };
 
-  const handleDelete = async (cinema) => {
+  const handleDelete = async () => {
+    if (!deleteConfirm) return;
+    setDeleting(true);
     try {
-      const res = await cinemaPartnerApi.deleteCinema(cinema._id);
+      const res = await cinemaPartnerApi.deleteCinema(deleteConfirm._id);
       if (res.success) {
-        toast.success('Cinema Deleted', `${cinema.name} removed from your network.`);
+        toast.success('Cinema Deleted', `${deleteConfirm.name} removed from your network.`);
         setDeleteConfirm(null);
         fetchCinemas();
       } else {
@@ -139,70 +156,59 @@ export default function CinemaPartnerCinemasPage() {
       }
     } catch (err) {
       toast.error('Delete Error', err.message);
+    } finally {
+      setDeleting(false);
     }
   };
 
-  if (loading) {
-    return (
-      <div className="min-h-[60vh] flex flex-col items-center justify-center">
-        <Loader2 className="w-8 h-8 text-[#F84464] animate-spin mb-3" />
-        <p className="text-xs text-gray-500 font-medium">Loading Cinema Properties...</p>
-      </div>
-    );
-  }
-
   return (
     <div className="space-y-6 max-w-7xl mx-auto text-[#222432]">
-      {/* Page Header */}
-      <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4 pb-4 border-b border-gray-200">
-        <div>
-          <h1 className="text-2xl font-bold text-[#222432] tracking-tight flex items-center gap-2.5">
-            <Building2 className="w-6 h-6 text-[#F84464]" />
-            <span>My Cinemas &amp; Venues</span>
-          </h1>
-          <p className="text-xs text-gray-500 mt-1">
-            Manage your cinema properties, venue addresses, and guest amenities
-          </p>
-        </div>
-
-        <button
-          onClick={handleOpenAdd}
-          className="flex items-center gap-1.5 px-4 py-2 rounded-xl bg-[#F84464] hover:bg-[#E03A58] text-white text-xs font-bold transition shadow-md shadow-[#F84464]/25 cursor-pointer"
-        >
-          <Plus className="w-4 h-4" />
-          <span>Add New Cinema</span>
-        </button>
-      </div>
-
-      {/* Cinema Cards Grid */}
-      {cinemas.length === 0 ? (
-        <div className="bg-white border border-[#EEEEF2] rounded-2xl p-12 text-center shadow-sm">
-          <div className="w-14 h-14 rounded-2xl bg-[#F84464]/10 text-[#F84464] flex items-center justify-center mx-auto mb-3">
-            <Building2 className="w-7 h-7" />
-          </div>
-          <h3 className="text-base font-bold text-[#222432] mb-1">No Cinemas Registered</h3>
-          <p className="text-xs text-gray-500 max-w-sm mx-auto mb-5">
-            Add your first cinema hall or theatre venue to start configuring screens and scheduling shows.
-          </p>
-          <button
+      {/* Header */}
+      <PageHeader
+        title="My Multiplexes & Theatres"
+        subtitle="Manage your circuit venues, street addresses, auditorium screens, and guest amenities."
+        icon={Building2}
+        badge="Circuit Management"
+        actions={
+          <Button
+            variant="primary"
+            icon={Plus}
             onClick={handleOpenAdd}
-            className="px-5 py-2.5 bg-[#F84464] hover:bg-[#E03A58] text-white text-xs font-bold rounded-xl shadow-md shadow-[#F84464]/25 cursor-pointer transition"
           >
-            Add Cinema
-          </button>
+            Add New Cinema
+          </Button>
+        }
+      />
+
+      {/* Cinema Grid */}
+      {loading ? (
+        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+          {[...Array(6)].map((_, i) => (
+            <Skeleton key={i} className="h-64 rounded-3xl" />
+          ))}
         </div>
+      ) : cinemas.length === 0 ? (
+        <Card className="py-12">
+          <EmptyState
+            icon={Building2}
+            title="No Cinemas Registered"
+            description="Add your first cinema hall or multiplex property to start configuring screens and scheduling movie shows."
+            actionLabel="Add Cinema"
+            onAction={handleOpenAdd}
+          />
+        </Card>
       ) : (
         <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
           {cinemas.map((c) => (
-            <div
+            <Card
               key={c._id}
-              className="bg-white border border-[#EEEEF2] rounded-3xl p-6 flex flex-col justify-between hover:border-[#F84464]/40 hover:shadow-lg transition group relative overflow-hidden"
+              className="flex flex-col justify-between hover:shadow-lg transition-all group overflow-hidden"
             >
-              <div>
-                {/* Header Strip */}
+              <div className="p-6 pb-0">
+                {/* Header */}
                 <div className="flex items-start justify-between gap-3 mb-2.5">
-                  <div>
-                    <h3 className="text-base font-bold text-[#222432] group-hover:text-[#F84464] transition-colors line-clamp-1">
+                  <div className="min-w-0">
+                    <h3 className="text-base font-bold text-[#222432] group-hover:text-[#F84464] transition-colors truncate">
                       {c.name}
                     </h3>
                     <div className="flex items-center gap-1.5 text-xs text-gray-500 mt-1">
@@ -210,19 +216,13 @@ export default function CinemaPartnerCinemasPage() {
                       <span className="truncate">{c.address}, {c.city}</span>
                     </div>
                   </div>
-                  <span
-                    className={`px-2.5 py-0.5 rounded-full text-[9px] font-bold uppercase tracking-wider shrink-0 ${
-                      c.status === 'active'
-                        ? 'bg-[#4ABD5D]/10 text-[#4ABD5D] border border-[#4ABD5D]/20'
-                        : 'bg-gray-100 text-gray-500 border border-gray-200'
-                    }`}
-                  >
+                  <Badge variant={c.status === 'active' ? 'approved' : 'neutral'} dot>
                     {c.status}
-                  </span>
+                  </Badge>
                 </div>
 
-                {/* Capacity & Screens Indicators */}
-                <div className="grid grid-cols-2 gap-2.5 my-3.5 p-3.5 rounded-2xl bg-gray-50/80 border border-gray-100">
+                {/* Capacity & Screens Cards */}
+                <div className="grid grid-cols-2 gap-2.5 my-4 p-3.5 rounded-2xl bg-gray-50/80 border border-gray-100">
                   <div className="flex items-center gap-2.5">
                     <div className="w-8 h-8 rounded-xl bg-[#F84464]/10 text-[#F84464] flex items-center justify-center shrink-0">
                       <Tv className="w-4 h-4" />
@@ -243,12 +243,12 @@ export default function CinemaPartnerCinemasPage() {
                   </div>
                 </div>
 
-                {/* Facilities Tags matching BookMyShow venue badges */}
-                <div className="flex flex-wrap gap-1.5 mt-3">
+                {/* Amenities Badges */}
+                <div className="flex flex-wrap gap-1.5 mt-2">
                   {(c.facilities || []).map((fac, idx) => (
                     <span
                       key={idx}
-                      className="px-2 py-0.5 rounded-md bg-gray-100/90 text-gray-700 text-[10px] font-medium border border-gray-200/70"
+                      className="px-2 py-0.5 rounded-md bg-gray-100 text-gray-700 text-[10px] font-medium border border-gray-200/60"
                     >
                       {fac}
                     </span>
@@ -256,230 +256,179 @@ export default function CinemaPartnerCinemasPage() {
                 </div>
               </div>
 
-              {/* Quick Operation Links & Action Buttons */}
-              <div className="pt-4 mt-4 border-t border-gray-100 flex items-center justify-between gap-2">
+              {/* Action Buttons Footer */}
+              <div className="p-4 mt-4 border-t border-[#EEEEF2] bg-gray-50/40 flex items-center justify-between gap-2">
                 <div className="flex items-center gap-2">
-                  <Link
-                    to={`/cinema-partner/screens`}
-                    className="px-2.5 py-1.5 rounded-lg bg-gray-100 hover:bg-gray-200 text-gray-700 text-[11px] font-bold transition"
-                  >
-                    Screens
+                  <Link to="/cinema-partner/screens">
+                    <Button variant="outline" size="sm" className="bg-white">
+                      Screens
+                    </Button>
                   </Link>
-                  <Link
-                    to={`/cinema-partner/shows`}
-                    className="px-2.5 py-1.5 rounded-lg bg-gray-100 hover:bg-gray-200 text-gray-700 text-[11px] font-bold transition"
-                  >
-                    Shows
+                  <Link to="/cinema-partner/shows">
+                    <Button variant="outline" size="sm" className="bg-white">
+                      Shows
+                    </Button>
                   </Link>
                 </div>
 
-                <div className="flex items-center gap-1.5">
-                  <button
+                <div className="flex items-center gap-1">
+                  <Button
+                    variant="ghost"
+                    size="sm"
+                    icon={Edit2}
                     onClick={() => handleOpenEdit(c)}
-                    className="p-1.5 rounded-lg bg-gray-100 hover:bg-gray-200 text-gray-600 hover:text-gray-900 transition cursor-pointer"
-                    title="Edit Cinema"
-                  >
-                    <Edit2 className="w-3.5 h-3.5" />
-                  </button>
-                  <button
+                    title="Edit Venue Details"
+                  />
+                  <Button
+                    variant="ghost"
+                    size="sm"
+                    icon={Trash2}
                     onClick={() => setDeleteConfirm(c)}
-                    className="p-1.5 rounded-lg bg-red-50 hover:bg-red-100 text-red-600 transition cursor-pointer"
-                    title="Delete Cinema"
-                  >
-                    <Trash2 className="w-3.5 h-3.5" />
-                  </button>
+                    className="text-gray-400 hover:text-rose-600 hover:bg-rose-50"
+                    title="Delete Venue"
+                  />
                 </div>
               </div>
-            </div>
+            </Card>
           ))}
         </div>
       )}
 
-      {/* Add / Edit Modal */}
-      {modalOpen && (
-        <div className="fixed inset-0 bg-black/60 backdrop-blur-xs z-50 flex items-center justify-center p-4 overflow-y-auto">
-          <div className="bg-white rounded-2xl w-full max-w-lg my-8 shadow-2xl overflow-hidden animate-in fade-in zoom-in-95 duration-150">
-            {/* Modal Header matching Customer Panel style */}
-            <div className="bg-[#333545] px-6 py-4 flex items-center justify-between text-white">
-              <div className="flex items-center gap-2">
-                <Building2 className="w-5 h-5 text-[#F84464]" />
-                <h3 className="text-sm font-bold">
-                  {editingCinema ? 'Edit Cinema Property' : 'Register New Cinema'}
-                </h3>
-              </div>
-              <button
-                onClick={() => setModalOpen(false)}
-                className="p-1 rounded-full text-gray-300 hover:text-white hover:bg-white/10 transition cursor-pointer"
-              >
-                <X className="w-4 h-4" />
-              </button>
-            </div>
-
-            <form onSubmit={handleSubmit} className="p-6 space-y-4">
-              <div>
-                <label className="block text-xs font-bold text-gray-700 uppercase tracking-wider mb-1">
-                  Cinema Name
-                </label>
-                <input
-                  type="text"
-                  required
-                  value={formData.name}
-                  onChange={(e) => setFormData({ ...formData, name: e.target.value })}
-                  placeholder="e.g. PVR: Vegas Mall, Dwarka"
-                  className="w-full px-3.5 py-2.5 bg-gray-50 border border-gray-200 rounded-xl text-xs text-[#222432] placeholder-gray-400 focus:bg-white focus:outline-none focus:border-[#F84464] focus:ring-2 focus:ring-[#F84464]/20"
-                />
-              </div>
-
-              <div className="grid grid-cols-2 gap-3">
-                <div>
-                  <label className="block text-xs font-bold text-gray-700 uppercase tracking-wider mb-1">
-                    City
-                  </label>
-                  <select
-                    value={formData.city}
-                    onChange={(e) => setFormData({ ...formData, city: e.target.value })}
-                    className="w-full px-3.5 py-2.5 bg-gray-50 border border-gray-200 rounded-xl text-xs text-[#222432] focus:bg-white focus:outline-none focus:border-[#F84464] focus:ring-2 focus:ring-[#F84464]/20"
-                  >
-                    {['Delhi-NCR', 'Mumbai', 'Bengaluru', 'Jaipur', 'Chandigarh', 'Pune', 'Hyderabad', 'Kolkata'].map((city) => (
-                      <option key={city} value={city}>{city}</option>
-                    ))}
-                  </select>
-                </div>
-
-                <div>
-                  <label className="block text-xs font-bold text-gray-700 uppercase tracking-wider mb-1">
-                    Status
-                  </label>
-                  <select
-                    value={formData.status}
-                    onChange={(e) => setFormData({ ...formData, status: e.target.value })}
-                    className="w-full px-3.5 py-2.5 bg-gray-50 border border-gray-200 rounded-xl text-xs text-[#222432] focus:bg-white focus:outline-none focus:border-[#F84464] focus:ring-2 focus:ring-[#F84464]/20"
-                  >
-                    <option value="active">Active</option>
-                    <option value="inactive">Inactive</option>
-                  </select>
-                </div>
-              </div>
-
-              <div>
-                <label className="block text-xs font-bold text-gray-700 uppercase tracking-wider mb-1">
-                  Full Street Address
-                </label>
-                <textarea
-                  required
-                  rows={2}
-                  value={formData.address}
-                  onChange={(e) => setFormData({ ...formData, address: e.target.value })}
-                  placeholder="e.g. Sector 14, Vegas Mall, Dwarka, New Delhi"
-                  className="w-full px-3.5 py-2.5 bg-gray-50 border border-gray-200 rounded-xl text-xs text-[#222432] placeholder-gray-400 focus:bg-white focus:outline-none focus:border-[#F84464] focus:ring-2 focus:ring-[#F84464]/20"
-                />
-              </div>
-
-              <div className="grid grid-cols-2 gap-3">
-                <div>
-                  <label className="block text-xs font-bold text-gray-700 uppercase tracking-wider mb-1">
-                    Contact Phone
-                  </label>
-                  <input
-                    type="text"
-                    value={formData.contactPhone}
-                    onChange={(e) => setFormData({ ...formData, contactPhone: e.target.value })}
-                    placeholder="011-28034567"
-                    className="w-full px-3.5 py-2.5 bg-gray-50 border border-gray-200 rounded-xl text-xs text-[#222432] placeholder-gray-400 focus:bg-white focus:outline-none focus:border-[#F84464] focus:ring-2 focus:ring-[#F84464]/20"
-                  />
-                </div>
-
-                <div>
-                  <label className="block text-xs font-bold text-gray-700 uppercase tracking-wider mb-1">
-                    Contact Email
-                  </label>
-                  <input
-                    type="email"
-                    value={formData.contactEmail}
-                    onChange={(e) => setFormData({ ...formData, contactEmail: e.target.value })}
-                    placeholder="operations@cinema.com"
-                    className="w-full px-3.5 py-2.5 bg-gray-50 border border-gray-200 rounded-xl text-xs text-[#222432] placeholder-gray-400 focus:bg-white focus:outline-none focus:border-[#F84464] focus:ring-2 focus:ring-[#F84464]/20"
-                  />
-                </div>
-              </div>
-
-              {/* Facilities Checklist */}
-              <div>
-                <label className="block text-xs font-bold text-gray-700 uppercase tracking-wider mb-2">
-                  Guest Facilities &amp; Amenities
-                </label>
-                <div className="grid grid-cols-2 gap-2">
-                  {availableFacilities.map((fac) => {
-                    const selected = formData.facilities.includes(fac);
-                    return (
-                      <button
-                        type="button"
-                        key={fac}
-                        onClick={() => handleFacilityToggle(fac)}
-                        className={`px-3 py-2 rounded-xl text-xs font-semibold flex items-center justify-between border transition cursor-pointer ${
-                          selected
-                            ? 'bg-[#F84464]/10 border-[#F84464] text-[#F84464]'
-                            : 'bg-gray-50 border-gray-200 text-gray-600 hover:border-gray-300'
-                        }`}
-                      >
-                        <span>{fac}</span>
-                        {selected && <CheckCircle2 className="w-3.5 h-3.5 text-[#F84464]" />}
-                      </button>
-                    );
-                  })}
-                </div>
-              </div>
-
-              {/* Modal Actions */}
-              <div className="flex items-center justify-end gap-3 pt-4 border-t border-gray-100">
-                <button
-                  type="button"
-                  onClick={() => setModalOpen(false)}
-                  className="px-4 py-2.5 rounded-xl bg-gray-100 hover:bg-gray-200 text-xs font-bold text-gray-700 transition cursor-pointer"
-                >
-                  Cancel
-                </button>
-                <button
-                  type="submit"
-                  disabled={saving}
-                  className="px-5 py-2.5 rounded-xl bg-[#F84464] hover:bg-[#E03A58] text-xs font-bold text-white shadow-md shadow-[#F84464]/25 disabled:opacity-50 transition cursor-pointer"
-                >
-                  {saving ? 'Saving...' : editingCinema ? 'Update Cinema' : 'Create Cinema'}
-                </button>
-              </div>
-            </form>
+      {/* Add / Edit Cinema Modal */}
+      <Modal
+        isOpen={modalOpen}
+        onClose={() => setModalOpen(false)}
+        title={editingCinema ? 'Edit Cinema Property' : 'Register New Cinema Property'}
+        description="Configure theatre venue details, location, and guest amenities."
+        size="lg"
+        footer={
+          <div className="flex items-center justify-end gap-3 w-full">
+            <Button
+              variant="outline"
+              onClick={() => setModalOpen(false)}
+            >
+              Cancel
+            </Button>
+            <Button
+              variant="primary"
+              onClick={handleSubmit}
+              loading={saving}
+            >
+              {editingCinema ? 'Update Cinema' : 'Create Cinema'}
+            </Button>
           </div>
-        </div>
-      )}
+        }
+      >
+        <form onSubmit={handleSubmit} className="space-y-4">
+          <Input
+            label="Cinema / Multiplex Name *"
+            required
+            value={formData.name}
+            onChange={(e) => setFormData({ ...formData, name: e.target.value })}
+            placeholder="e.g. INOX: Vegas Mall, Dwarka"
+          />
+
+          <div className="grid grid-cols-2 gap-3">
+            <Select
+              label="Operational City *"
+              value={formData.city}
+              onChange={(e) => setFormData({ ...formData, city: e.target.value })}
+              options={[
+                { value: 'Delhi-NCR', label: 'Delhi-NCR' },
+                { value: 'Mumbai', label: 'Mumbai' },
+                { value: 'Bengaluru', label: 'Bengaluru' },
+                { value: 'Jaipur', label: 'Jaipur' },
+                { value: 'Chandigarh', label: 'Chandigarh' },
+                { value: 'Pune', label: 'Pune' },
+                { value: 'Hyderabad', label: 'Hyderabad' },
+                { value: 'Kolkata', label: 'Kolkata' }
+              ]}
+            />
+
+            <Select
+              label="Operating Status"
+              value={formData.status}
+              onChange={(e) => setFormData({ ...formData, status: e.target.value })}
+              options={[
+                { value: 'active', label: 'Active & Operational' },
+                { value: 'inactive', label: 'Temporarily Inactive' }
+              ]}
+            />
+          </div>
+
+          <div>
+            <label className="block text-xs font-bold text-gray-700 uppercase tracking-wider mb-1">
+              Full Street Address *
+            </label>
+            <textarea
+              required
+              rows={2}
+              value={formData.address}
+              onChange={(e) => setFormData({ ...formData, address: e.target.value })}
+              placeholder="e.g. Sector 14, Vegas Mall, Dwarka, New Delhi"
+              className="w-full px-3.5 py-2.5 bg-gray-50 border border-gray-200 rounded-xl text-xs text-[#222432] placeholder-gray-400 focus:bg-white focus:outline-none focus:border-[#F84464] focus:ring-2 focus:ring-[#F84464]/20 transition"
+            />
+          </div>
+
+          <div className="grid grid-cols-2 gap-3">
+            <Input
+              label="Venue Desk Contact Phone"
+              value={formData.contactPhone}
+              onChange={(e) => setFormData({ ...formData, contactPhone: e.target.value })}
+              placeholder="011-28034567"
+              icon={Phone}
+            />
+
+            <Input
+              label="Operations Email"
+              type="email"
+              value={formData.contactEmail}
+              onChange={(e) => setFormData({ ...formData, contactEmail: e.target.value })}
+              placeholder="operations@multiplex.com"
+              icon={Mail}
+            />
+          </div>
+
+          {/* Amenities checklist */}
+          <div>
+            <label className="block text-xs font-bold text-gray-700 uppercase tracking-wider mb-2">
+              Guest Facilities &amp; Amenities
+            </label>
+            <div className="grid grid-cols-2 sm:grid-cols-3 gap-2">
+              {availableFacilities.map((fac) => {
+                const selected = formData.facilities.includes(fac);
+                return (
+                  <button
+                    type="button"
+                    key={fac}
+                    onClick={() => handleFacilityToggle(fac)}
+                    className={`px-3 py-2 rounded-xl text-xs font-semibold flex items-center justify-between border transition cursor-pointer ${
+                      selected
+                        ? 'bg-[#F84464]/10 border-[#F84464] text-[#F84464]'
+                        : 'bg-gray-50 border-gray-200 text-gray-600 hover:border-gray-300'
+                    }`}
+                  >
+                    <span>{fac}</span>
+                    {selected && <CheckCircle2 className="w-3.5 h-3.5 text-[#F84464]" />}
+                  </button>
+                );
+              })}
+            </div>
+          </div>
+        </form>
+      </Modal>
 
       {/* Delete Confirmation Modal */}
-      {deleteConfirm && (
-        <div className="fixed inset-0 bg-black/60 backdrop-blur-xs z-50 flex items-center justify-center p-4">
-          <div className="bg-white border border-red-100 rounded-2xl w-full max-w-sm p-6 text-center shadow-2xl">
-            <div className="w-12 h-12 rounded-2xl bg-red-50 text-red-600 flex items-center justify-center mx-auto mb-3">
-              <AlertCircle className="w-6 h-6" />
-            </div>
-            <h3 className="text-base font-bold text-[#222432] mb-1">Delete Cinema?</h3>
-            <p className="text-xs text-gray-500 mb-5">
-              Are you sure you want to delete <strong className="text-gray-900 font-semibold">"{deleteConfirm.name}"</strong>? All associated screens and shows without active bookings will be removed.
-            </p>
-            <div className="flex items-center justify-center gap-3">
-              <button
-                onClick={() => setDeleteConfirm(null)}
-                className="px-4 py-2 rounded-xl bg-gray-100 hover:bg-gray-200 text-xs font-bold text-gray-700 transition cursor-pointer"
-              >
-                Cancel
-              </button>
-              <button
-                onClick={() => handleDelete(deleteConfirm)}
-                className="px-4 py-2 rounded-xl bg-red-600 hover:bg-red-700 text-xs font-bold text-white shadow-md transition cursor-pointer"
-              >
-                Confirm Delete
-              </button>
-            </div>
-          </div>
-        </div>
-      )}
+      <ConfirmModal
+        isOpen={Boolean(deleteConfirm)}
+        onClose={() => setDeleteConfirm(null)}
+        onConfirm={handleDelete}
+        title="Delete Cinema Property?"
+        message={`Are you sure you want to permanently remove "${deleteConfirm?.name}"? All associated screen halls and shows without active bookings will also be deleted.`}
+        confirmText="Confirm Delete"
+        variant="danger"
+        loading={deleting}
+      />
     </div>
   );
 }

@@ -1,6 +1,29 @@
 import React from 'react';
-import { Settings, ShieldCheck, Database, Server, Key, Lock, CheckCircle, Sparkles } from 'lucide-react';
+import {
+  Settings,
+  ShieldCheck,
+  Database,
+  Server,
+  Key,
+  Lock,
+  CheckCircle,
+  Sparkles,
+  Cpu,
+  Layers,
+  Globe,
+  Radio
+} from 'lucide-react';
 import { useAuth } from '../../context/AuthContext';
+import {
+  PageHeader,
+  Card,
+  CardHeader,
+  CardTitle,
+  CardDescription,
+  CardContent,
+  Badge,
+  Button
+} from '../../components/ui';
 
 export default function AdminSettingsPage() {
   const { user } = useAuth();
@@ -8,114 +31,161 @@ export default function AdminSettingsPage() {
   return (
     <div className="space-y-6 max-w-5xl">
       {/* Header */}
-      <div>
-        <h1 className="text-xl sm:text-2xl font-black text-[#222432] tracking-tight flex items-center gap-2">
-          <Settings className="w-6 h-6 text-[#F84464]" />
-          <span>Platform Settings &amp; Architecture</span>
-        </h1>
-        <p className="text-xs text-gray-500 mt-1">
-          System telemetry parameters, fee settlement structures, and platform security policies.
-        </p>
-      </div>
+      <PageHeader
+        title="Platform Architecture & System Configuration"
+        subtitle="Global platform telemetry parameters, database cluster status, fee settlements, and RBAC governance policies."
+        icon={Settings}
+        badge="Platform Telemetry"
+      />
 
       <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
         {/* Core Architecture Settings */}
-        <div className="bg-white border border-[#EEEEF2] rounded-3xl p-6 shadow-sm space-y-4">
-          <h3 className="text-sm font-black text-[#222432] uppercase tracking-wider flex items-center gap-2">
-            <Database className="w-4 h-4 text-[#4ABD5D]" />
-            <span>Shared Database Integration</span>
-          </h3>
+        <Card>
+          <CardHeader className="pb-3 border-b border-[#EEEEF2]">
+            <div className="flex items-center gap-2">
+              <div className="w-8 h-8 rounded-lg bg-emerald-50 border border-emerald-200/60 flex items-center justify-center">
+                <Database className="w-4 h-4 text-emerald-600" />
+              </div>
+              <div>
+                <CardTitle>Distributed Database Architecture</CardTitle>
+                <CardDescription>Primary storage engine & live schema</CardDescription>
+              </div>
+            </div>
+          </CardHeader>
 
-          <div className="divide-y divide-[#EEEEF2] text-xs">
-            <div className="py-3 flex justify-between">
-              <span className="text-gray-500">Database Engine:</span>
-              <span className="font-mono text-[#222432] font-bold">MongoDB Atlas Cloud</span>
+          <CardContent className="p-0">
+            <div className="divide-y divide-[#EEEEF2] text-xs">
+              <div className="p-4 flex items-center justify-between">
+                <span className="text-gray-500 font-medium">Database Cluster:</span>
+                <span className="font-mono text-[#222432] font-bold">MongoDB Atlas (M0 Shared Cloud)</span>
+              </div>
+              <div className="p-4 flex items-center justify-between">
+                <span className="text-gray-500 font-medium">Unified Single Source of Truth:</span>
+                <Badge variant="approved" dot>
+                  Customer + B2B + Admin
+                </Badge>
+              </div>
+              <div className="p-4 flex items-center justify-between">
+                <span className="text-gray-500 font-medium">Base Platform Currency:</span>
+                <span className="font-mono text-[#222432] font-bold">INR (₹) Indian Rupee</span>
+              </div>
+              <div className="p-4 flex items-center justify-between">
+                <span className="text-gray-500 font-medium">Convenience Fee Structure:</span>
+                <span className="font-mono text-[#F84464] font-bold">₹35.40 / Ticket (incl. 18% GST)</span>
+              </div>
+              <div className="p-4 flex items-center justify-between">
+                <span className="text-gray-500 font-medium">Audi Time Slot Overlap Lock:</span>
+                <Badge variant="brand" dot>
+                  Hardware Conflict Guard Active
+                </Badge>
+              </div>
             </div>
-            <div className="py-3 flex justify-between">
-              <span className="text-gray-500">Unified Source of Truth:</span>
-              <span className="text-[#4ABD5D] font-bold flex items-center gap-1">
-                <CheckCircle className="w-3.5 h-3.5" /> Shared Customer + B2B + Admin
-              </span>
-            </div>
-            <div className="py-3 flex justify-between">
-              <span className="text-gray-500">Default Currency:</span>
-              <span className="font-mono text-[#222432] font-bold">INR (₹) Indian Rupee</span>
-            </div>
-            <div className="py-3 flex justify-between">
-              <span className="text-gray-500">Convenience Fee Structure:</span>
-              <span className="font-mono text-[#F84464] font-bold">₹35.40 / Ticket (18% GST incl.)</span>
-            </div>
-            <div className="py-3 flex justify-between">
-              <span className="text-gray-500">Screen Conflict Engine:</span>
-              <span className="text-[#4ABD5D] font-bold">Active (Strict Overlap Lock)</span>
-            </div>
-          </div>
-        </div>
+          </CardContent>
+        </Card>
 
         {/* Security & RBAC Configuration */}
-        <div className="bg-white border border-[#EEEEF2] rounded-3xl p-6 shadow-sm space-y-4">
-          <h3 className="text-sm font-black text-[#222432] uppercase tracking-wider flex items-center gap-2">
-            <ShieldCheck className="w-4 h-4 text-[#F84464]" />
-            <span>Server-Side RBAC Enforcement</span>
-          </h3>
+        <Card>
+          <CardHeader className="pb-3 border-b border-[#EEEEF2]">
+            <div className="flex items-center gap-2">
+              <div className="w-8 h-8 rounded-lg bg-rose-50 border border-rose-200/60 flex items-center justify-center">
+                <ShieldCheck className="w-4 h-4 text-[#F84464]" />
+              </div>
+              <div>
+                <CardTitle>Server-Side RBAC Enforcement</CardTitle>
+                <CardDescription>Role authorization and session security</CardDescription>
+              </div>
+            </div>
+          </CardHeader>
 
-          <div className="divide-y divide-[#EEEEF2] text-xs">
-            <div className="py-3 flex justify-between">
-              <span className="text-gray-500">Authentication Protocol:</span>
-              <span className="font-mono text-[#222432] font-bold">JWT (JSON Web Token) Bearer</span>
+          <CardContent className="p-0">
+            <div className="divide-y divide-[#EEEEF2] text-xs">
+              <div className="p-4 flex items-center justify-between">
+                <span className="text-gray-500 font-medium">Authentication Protocol:</span>
+                <span className="font-mono text-[#222432] font-bold">JWT Bearer Token (Stateless)</span>
+              </div>
+              <div className="p-4 flex items-center justify-between">
+                <span className="text-gray-500 font-medium">Session Token Lifespan:</span>
+                <span className="font-mono text-[#222432] font-bold">7 Days Rolling Expiry</span>
+              </div>
+              <div className="p-4 flex items-center justify-between">
+                <span className="text-gray-500 font-medium">Partner Instant Suspension:</span>
+                <Badge variant="approved" dot>
+                  Real-time Route Interceptor
+                </Badge>
+              </div>
+              <div className="p-4 flex items-center justify-between">
+                <span className="text-gray-500 font-medium">Active Admin Account:</span>
+                <span className="font-mono text-[#F84464] font-bold truncate max-w-[180px]">{user?.email}</span>
+              </div>
+              <div className="p-4 flex items-center justify-between">
+                <span className="text-gray-500 font-medium">Assigned Global Role:</span>
+                <Badge variant="brand" pill>
+                  {user?.role || 'admin'}
+                </Badge>
+              </div>
             </div>
-            <div className="py-3 flex justify-between">
-              <span className="text-gray-500">Token Expiry:</span>
-              <span className="font-mono text-[#222432] font-bold">7 Days Rolling</span>
-            </div>
-            <div className="py-3 flex justify-between">
-              <span className="text-gray-500">Partner Suspension Guard:</span>
-              <span className="text-[#4ABD5D] font-bold">Enforced (Instant API Lock)</span>
-            </div>
-            <div className="py-3 flex justify-between">
-              <span className="text-gray-500">Current Operator Session:</span>
-              <span className="font-mono text-[#F84464] font-bold">{user?.email}</span>
-            </div>
-            <div className="py-3 flex justify-between">
-              <span className="text-gray-500">Operator Role:</span>
-              <span className="uppercase text-[10px] font-black text-amber-600 bg-amber-50 px-2.5 py-1 rounded-full border border-amber-200">
-                {user?.role}
-              </span>
-            </div>
-          </div>
-        </div>
+          </CardContent>
+        </Card>
       </div>
 
-      {/* Test Accounts Reference Card */}
-      <div className="bg-white border border-[#EEEEF2] rounded-3xl p-6 shadow-sm">
-        <h3 className="text-sm font-black text-[#222432] uppercase tracking-wider mb-3 flex items-center gap-2">
-          <Key className="w-4 h-4 text-amber-500" />
-          <span>Platform Multi-Role Test Credentials</span>
-        </h3>
-
-        <div className="grid grid-cols-1 sm:grid-cols-3 gap-4 text-xs">
-          <div className="bg-[#F9F9FB] p-4 rounded-2xl border border-[#EEEEF2]">
-            <div className="font-black text-[#F84464] text-sm mb-1">Platform Admin</div>
-            <div className="font-mono text-[#222432] font-semibold">admin@bookmyshow.com</div>
-            <div className="font-mono text-gray-500">password123</div>
-            <div className="text-[10px] text-gray-400 mt-2">Full Platform Control Center</div>
+      {/* Multi-Role Quick Reference Credentials */}
+      <Card>
+        <CardHeader className="pb-3">
+          <div className="flex items-center gap-2">
+            <Key className="w-4 h-4 text-amber-500" />
+            <CardTitle>Platform Multi-Role Access Reference</CardTitle>
           </div>
+          <CardDescription>
+            System seeded role credentials for instant cross-panel validation
+          </CardDescription>
+        </CardHeader>
 
-          <div className="bg-[#F9F9FB] p-4 rounded-2xl border border-[#EEEEF2]">
-            <div className="font-black text-amber-600 text-sm mb-1">Cinema Partner (B2B)</div>
-            <div className="font-mono text-[#222432] font-semibold">partner@bookmyshow.com</div>
-            <div className="font-mono text-gray-500">password123</div>
-            <div className="text-[10px] text-gray-400 mt-2">INOX Cinecorp Multiplexes Hub</div>
-          </div>
+        <CardContent>
+          <div className="grid grid-cols-1 sm:grid-cols-3 gap-4 text-xs">
+            <div className="p-4 rounded-2xl bg-[#F9F9FB] border border-[#EEEEF2] flex flex-col justify-between">
+              <div>
+                <div className="flex items-center justify-between mb-2">
+                  <Badge variant="brand" pill>Platform Admin</Badge>
+                  <span className="text-[10px] text-gray-400 font-bold">L3 Global</span>
+                </div>
+                <div className="font-mono font-bold text-[#222432] text-xs">admin@bookmyshow.com</div>
+                <div className="font-mono text-gray-500 text-xs">password123</div>
+              </div>
+              <p className="text-[11px] text-gray-400 mt-3 pt-2 border-t border-[#EEEEF2]">
+                Full platform control center, governance & settlements
+              </p>
+            </div>
 
-          <div className="bg-[#F9F9FB] p-4 rounded-2xl border border-[#EEEEF2]">
-            <div className="font-black text-sky-600 text-sm mb-1">Customer (B2C)</div>
-            <div className="font-mono text-[#222432] font-semibold">demo@bookmyshow.com</div>
-            <div className="font-mono text-gray-500">password123</div>
-            <div className="text-[10px] text-gray-400 mt-2">Public Ticket Booking Store</div>
+            <div className="p-4 rounded-2xl bg-[#F9F9FB] border border-[#EEEEF2] flex flex-col justify-between">
+              <div>
+                <div className="flex items-center justify-between mb-2">
+                  <Badge variant="warning" pill>Cinema Partner</Badge>
+                  <span className="text-[10px] text-gray-400 font-bold">L2 B2B</span>
+                </div>
+                <div className="font-mono font-bold text-[#222432] text-xs">partner@bookmyshow.com</div>
+                <div className="font-mono text-gray-500 text-xs">password123</div>
+              </div>
+              <p className="text-[11px] text-gray-400 mt-3 pt-2 border-t border-[#EEEEF2]">
+                Multiplex venue setup, screen audis & show programming
+              </p>
+            </div>
+
+            <div className="p-4 rounded-2xl bg-[#F9F9FB] border border-[#EEEEF2] flex flex-col justify-between">
+              <div>
+                <div className="flex items-center justify-between mb-2">
+                  <Badge variant="neutral" pill>Customer (B2C)</Badge>
+                  <span className="text-[10px] text-gray-400 font-bold">L1 Consumer</span>
+                </div>
+                <div className="font-mono font-bold text-[#222432] text-xs">demo@bookmyshow.com</div>
+                <div className="font-mono text-gray-500 text-xs">password123</div>
+              </div>
+              <p className="text-[11px] text-gray-400 mt-3 pt-2 border-t border-[#EEEEF2]">
+                Public portal for ticket bookings, seats & vouchers
+              </p>
+            </div>
           </div>
-        </div>
-      </div>
+        </CardContent>
+      </Card>
     </div>
   );
 }

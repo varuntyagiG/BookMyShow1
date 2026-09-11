@@ -4,15 +4,29 @@ import {
   Tag,
   Plus,
   Trash2,
-  CheckCircle,
-  XCircle,
-  Loader2,
   Calendar,
-  IndianRupee,
   Percent,
-  X,
-  Sparkles
+  Sparkles,
+  Ticket,
+  Clock,
+  Coins
 } from 'lucide-react';
+import {
+  PageHeader,
+  Button,
+  Card,
+  CardHeader,
+  CardTitle,
+  CardDescription,
+  CardContent,
+  Badge,
+  Modal,
+  ConfirmModal,
+  Input,
+  Select,
+  EmptyState,
+  Skeleton
+} from '../../components/ui';
 
 export default function AdminOffersPage() {
   const [offers, setOffers] = useState([]);
@@ -31,6 +45,11 @@ export default function AdminOffersPage() {
     maxDiscount: 100,
     validUntil: '2026-12-31'
   });
+
+  // Delete Confirm State
+  const [deleteConfirmOpen, setDeleteConfirmOpen] = useState(false);
+  const [offerToDelete, setOfferToDelete] = useState(null);
+  const [deleting, setDeleting] = useState(false);
 
   const fetchOffers = async () => {
     setLoading(true);
@@ -70,217 +89,246 @@ export default function AdminOffersPage() {
         });
       }
     } catch (err) {
-      alert(err.message || 'Failed to create promo code.');
+      console.error('Failed to create offer:', err);
     } finally {
       setSubmitting(false);
     }
   };
 
-  const handleDeleteOffer = async (id) => {
-    if (!window.confirm('Delete this promo coupon?')) return;
+  const openDeleteConfirm = (offer) => {
+    setOfferToDelete(offer);
+    setDeleteConfirmOpen(true);
+  };
+
+  const confirmDeleteOffer = async () => {
+    if (!offerToDelete) return;
+    setDeleting(true);
     try {
-      const res = await adminApi.deleteOffer(id);
+      const res = await adminApi.deleteOffer(offerToDelete._id);
       if (res.success) {
-        setOffers((prev) => prev.filter((o) => o._id !== id));
+        setOffers((prev) => prev.filter((o) => o._id !== offerToDelete._id));
+        setDeleteConfirmOpen(false);
+        setOfferToDelete(null);
       }
     } catch (err) {
-      alert(err.message || 'Failed to remove offer.');
+      console.error('Failed to remove offer:', err);
+    } finally {
+      setDeleting(false);
     }
   };
 
   return (
     <div className="space-y-6">
       {/* Header */}
-      <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4">
-        <div>
-          <h1 className="text-xl sm:text-2xl font-black text-[#222432] tracking-tight flex items-center gap-2">
-            <Tag className="w-6 h-6 text-[#F84464]" />
-            <span>Platform Promotional Offers &amp; Coupons</span>
-          </h1>
-          <p className="text-xs text-gray-500 mt-1">
-            Create global consumer discount vouchers, flash-sale promo codes, and campaign incentives.
-          </p>
-        </div>
+      <PageHeader
+        title="Promotional Offers & Consumer Coupons"
+        subtitle="Configure platform discount vouchers, flash-sale codes, and consumer incentive campaigns."
+        icon={Tag}
+        badge="Marketing Engine"
+        actions={
+          <Button
+            variant="primary"
+            icon={Plus}
+            onClick={() => setModalOpen(true)}
+          >
+            Create Promo Coupon
+          </Button>
+        }
+      />
 
-        <button
-          onClick={() => setModalOpen(true)}
-          className="flex items-center gap-2 px-4 py-2.5 rounded-xl bg-[#F84464] hover:bg-[#E03A58] text-white text-xs font-bold transition shadow-sm cursor-pointer self-start sm:self-auto"
-        >
-          <Plus className="w-4 h-4" />
-          <span>Create Promo Coupon</span>
-        </button>
-      </div>
-
-      {/* Offers List */}
+      {/* Offers Grid */}
       {loading ? (
-        <div className="py-20 text-center text-gray-400">
-          <Loader2 className="w-8 h-8 text-[#F84464] animate-spin mx-auto mb-2" />
-          <p className="text-xs">Loading campaign coupons...</p>
+        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-5">
+          {[...Array(6)].map((_, i) => (
+            <Skeleton key={i} className="h-56 rounded-2xl" />
+          ))}
         </div>
       ) : offers.length > 0 ? (
         <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-5">
           {offers.map((offer) => (
-            <div
-              key={offer._id}
-              className="bg-white border border-[#EEEEF2] rounded-3xl p-5 hover:shadow-md transition flex flex-col justify-between shadow-sm relative overflow-hidden"
-            >
-              <div className="w-full h-1 bg-[#F84464] absolute top-0 left-0" />
-              <div>
-                <div className="flex items-center justify-between mb-3">
-                  <span className="font-mono text-sm font-black text-[#222432] bg-gray-100 border border-gray-200 px-3 py-1 rounded-xl tracking-wider">
-                    {offer.code}
-                  </span>
-                  <span className="text-[10px] font-black uppercase text-emerald-600 bg-emerald-50 border border-emerald-200 px-2 py-0.5 rounded-full">
-                    {offer.status}
-                  </span>
+            <Card key={offer._id} className="relative overflow-hidden flex flex-col justify-between hover:shadow-md transition-shadow">
+              {/* Top Accent Strip */}
+              <div className="absolute top-0 left-0 right-0 h-1 bg-gradient-to-r from-[#F84464] to-[#f76781]" />
+
+              <div className="p-5 pb-0">
+                {/* Coupon Code Header */}
+                <div className="flex items-center justify-between gap-2 mb-3">
+                  <div className="inline-flex items-center gap-1.5 px-3 py-1 rounded-xl bg-gray-100 border border-gray-200 font-mono text-xs font-black text-[#222432] tracking-wider">
+                    <Ticket className="w-3.5 h-3.5 text-[#F84464]" />
+                    <span>{offer.code}</span>
+                  </div>
+                  <Badge variant={offer.status === 'active' ? 'approved' : 'neutral'} dot>
+                    {offer.status || 'Active'}
+                  </Badge>
                 </div>
 
-                <h3 className="text-sm font-bold text-[#222432] mb-1">{offer.title}</h3>
-                <p className="text-xs text-gray-500 mb-4">{offer.description || 'Valid on all movie screenings and live experiences'}</p>
+                {/* Title & Description */}
+                <h3 className="text-sm font-bold text-[#222432] line-clamp-1 mb-1">
+                  {offer.title}
+                </h3>
+                <p className="text-xs text-gray-500 line-clamp-2 min-h-[32px] mb-4">
+                  {offer.description || 'Valid on all movie screenings and multiplex experiences across India.'}
+                </p>
 
-                <div className="grid grid-cols-2 gap-2 text-xs py-3 border border-[#EEEEF2] bg-[#F9F9FB] p-3 rounded-2xl">
+                {/* Offer Metrics Pill Card */}
+                <div className="grid grid-cols-2 gap-2 p-3 bg-[#F9F9FB] rounded-xl border border-[#EEEEF2] text-xs">
                   <div>
-                    <span className="text-[10px] text-gray-400 uppercase font-black block">Discount Value</span>
-                    <strong className="text-[#222432] font-mono text-sm">
+                    <span className="text-[10px] text-gray-400 font-bold uppercase block">Discount Value</span>
+                    <strong className="text-[#222432] font-mono text-sm font-black">
                       {offer.discountType === 'percentage' ? `${offer.discountValue}% OFF` : `₹${offer.discountValue} OFF`}
                     </strong>
                   </div>
                   <div>
-                    <span className="text-[10px] text-gray-400 uppercase font-black block">Min Booking</span>
-                    <strong className="text-gray-700 font-mono text-sm">₹{offer.minBookingAmount || 0}</strong>
+                    <span className="text-[10px] text-gray-400 font-bold uppercase block">Min Booking</span>
+                    <strong className="text-gray-700 font-mono text-sm">
+                      ₹{offer.minBookingAmount || 0}
+                    </strong>
                   </div>
                 </div>
 
-                <div className="flex items-center justify-between text-[11px] text-gray-500 mt-3 pt-2">
-                  <span>Usage: <strong className="text-[#222432] font-mono">{offer.timesUsed || 0}</strong> redeemed</span>
-                  <span>Expires: <strong className="text-[#222432]">{new Date(offer.validUntil).toLocaleDateString('en-IN', { day: 'numeric', month: 'short', year: 'numeric' })}</strong></span>
+                {/* Redemption & Validity Meta */}
+                <div className="flex items-center justify-between text-[11px] text-gray-500 mt-4 pt-2">
+                  <span className="flex items-center gap-1">
+                    <Coins className="w-3 h-3 text-amber-500" />
+                    <span>Usage:</span>
+                    <strong className="font-mono text-[#222432]">{offer.timesUsed || 0}</strong>
+                  </span>
+                  <span className="flex items-center gap-1">
+                    <Clock className="w-3 h-3 text-gray-400" />
+                    <span>Expires:</span>
+                    <strong className="text-[#222432]">
+                      {new Date(offer.validUntil).toLocaleDateString('en-IN', {
+                        day: 'numeric',
+                        month: 'short',
+                        year: 'numeric'
+                      })}
+                    </strong>
+                  </span>
                 </div>
               </div>
 
-              <div className="mt-4 pt-3 border-t border-[#EEEEF2] flex justify-end">
-                <button
-                  onClick={() => handleDeleteOffer(offer._id)}
-                  className="p-1.5 text-gray-400 hover:text-rose-600 hover:bg-rose-50 rounded-lg transition cursor-pointer"
-                  title="Delete Offer"
+              {/* Action Footer */}
+              <div className="p-4 mt-2 border-t border-[#EEEEF2] flex items-center justify-end bg-gray-50/40">
+                <Button
+                  variant="ghost"
+                  size="sm"
+                  icon={Trash2}
+                  onClick={() => openDeleteConfirm(offer)}
+                  className="text-gray-400 hover:text-rose-600 hover:bg-rose-50"
                 >
-                  <Trash2 className="w-4 h-4" />
-                </button>
+                  Delete
+                </Button>
               </div>
-            </div>
+            </Card>
           ))}
         </div>
       ) : (
-        <div className="bg-white border border-[#EEEEF2] rounded-3xl p-12 text-center text-gray-400 shadow-sm">
-          No promotional coupons active. Create your first campaign code above.
-        </div>
+        <Card className="py-12">
+          <EmptyState
+            icon={Tag}
+            title="No Active Promotional Coupons"
+            description="Create your first campaign voucher to offer consumer discounts on ticket bookings."
+            actionLabel="Create Promo Coupon"
+            onAction={() => setModalOpen(true)}
+          />
+        </Card>
       )}
 
-      {/* Create Coupon Modal */}
-      {modalOpen && (
-        <div className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-black/60 backdrop-blur-xs">
-          <div className="w-full max-w-md bg-white border border-[#EEEEF2] rounded-3xl p-6 shadow-2xl text-[#222432]">
-            <div className="flex items-center justify-between pb-4 border-b border-[#EEEEF2] mb-4">
-              <h3 className="text-base font-black text-[#222432]">Create Platform Promotion</h3>
-              <button onClick={() => setModalOpen(false)} className="p-1 text-gray-400 hover:text-gray-700 rounded-lg">
-                <X className="w-5 h-5" />
-              </button>
-            </div>
-
-            <form onSubmit={handleCreateOffer} className="space-y-4 text-xs">
-              <div>
-                <label className="block text-gray-700 font-bold mb-1">Coupon Code * (e.g. BMS50)</label>
-                <input
-                  type="text"
-                  value={formData.code}
-                  onChange={(e) => setFormData((prev) => ({ ...prev, code: e.target.value.toUpperCase() }))}
-                  placeholder="WELCOME100"
-                  className="w-full p-2.5 bg-gray-50 border border-gray-200 rounded-xl text-[#222432] font-mono uppercase focus:bg-white focus:outline-none focus:border-[#F84464] focus:ring-2 focus:ring-[#F84464]/20"
-                  required
-                />
-              </div>
-
-              <div>
-                <label className="block text-gray-700 font-bold mb-1">Campaign Title *</label>
-                <input
-                  type="text"
-                  value={formData.title}
-                  onChange={(e) => setFormData((prev) => ({ ...prev, title: e.target.value }))}
-                  placeholder="e.g. Flat 20% Off Weekend Blockbusters"
-                  className="w-full p-2.5 bg-gray-50 border border-gray-200 rounded-xl text-[#222432] focus:bg-white focus:outline-none focus:border-[#F84464] focus:ring-2 focus:ring-[#F84464]/20"
-                  required
-                />
-              </div>
-
-              <div className="grid grid-cols-2 gap-3">
-                <div>
-                  <label className="block text-gray-700 font-bold mb-1">Discount Type</label>
-                  <select
-                    value={formData.discountType}
-                    onChange={(e) => setFormData((prev) => ({ ...prev, discountType: e.target.value }))}
-                    className="w-full p-2.5 bg-gray-50 border border-gray-200 rounded-xl text-[#222432] focus:bg-white focus:outline-none focus:border-[#F84464] focus:ring-2 focus:ring-[#F84464]/20"
-                  >
-                    <option value="percentage">Percentage (%)</option>
-                    <option value="fixed">Flat Amount (₹)</option>
-                  </select>
-                </div>
-
-                <div>
-                  <label className="block text-gray-700 font-bold mb-1">Discount Value *</label>
-                  <input
-                    type="number"
-                    min="1"
-                    value={formData.discountValue}
-                    onChange={(e) => setFormData((prev) => ({ ...prev, discountValue: Number(e.target.value) }))}
-                    className="w-full p-2.5 bg-gray-50 border border-gray-200 rounded-xl text-[#222432] focus:bg-white focus:outline-none focus:border-[#F84464] focus:ring-2 focus:ring-[#F84464]/20"
-                    required
-                  />
-                </div>
-              </div>
-
-              <div className="grid grid-cols-2 gap-3">
-                <div>
-                  <label className="block text-gray-700 font-bold mb-1">Min Order Value (₹)</label>
-                  <input
-                    type="number"
-                    min="0"
-                    value={formData.minBookingAmount}
-                    onChange={(e) => setFormData((prev) => ({ ...prev, minBookingAmount: Number(e.target.value) }))}
-                    className="w-full p-2.5 bg-gray-50 border border-gray-200 rounded-xl text-[#222432] focus:bg-white focus:outline-none focus:border-[#F84464] focus:ring-2 focus:ring-[#F84464]/20"
-                  />
-                </div>
-
-                <div>
-                  <label className="block text-gray-700 font-bold mb-1">Expiry Date *</label>
-                  <input
-                    type="date"
-                    value={formData.validUntil}
-                    onChange={(e) => setFormData((prev) => ({ ...prev, validUntil: e.target.value }))}
-                    className="w-full p-2.5 bg-gray-50 border border-gray-200 rounded-xl text-[#222432] focus:bg-white focus:outline-none focus:border-[#F84464] focus:ring-2 focus:ring-[#F84464]/20"
-                    required
-                  />
-                </div>
-              </div>
-
-              <div className="flex gap-3 pt-3 border-t border-[#EEEEF2]">
-                <button
-                  type="button"
-                  onClick={() => setModalOpen(false)}
-                  className="flex-1 py-2.5 bg-gray-100 hover:bg-gray-200 text-gray-700 rounded-xl font-bold transition cursor-pointer"
-                >
-                  Cancel
-                </button>
-                <button
-                  type="submit"
-                  disabled={submitting}
-                  className="flex-1 py-2.5 bg-[#F84464] hover:bg-[#E03A58] text-white rounded-xl font-bold transition shadow-sm cursor-pointer"
-                >
-                  {submitting ? 'Creating...' : 'Activate Coupon'}
-                </button>
-              </div>
-            </form>
+      {/* Create Promo Coupon Modal */}
+      <Modal
+        isOpen={modalOpen}
+        onClose={() => setModalOpen(false)}
+        title="Create Platform Promotional Coupon"
+        description="Launch a new promotional voucher code for BookMyTrip customer bookings."
+        size="md"
+        footer={
+          <div className="flex items-center justify-end gap-3 w-full">
+            <Button
+              variant="outline"
+              onClick={() => setModalOpen(false)}
+            >
+              Cancel
+            </Button>
+            <Button
+              variant="primary"
+              onClick={handleCreateOffer}
+              loading={submitting}
+            >
+              Activate Coupon
+            </Button>
           </div>
-        </div>
-      )}
+        }
+      >
+        <form onSubmit={handleCreateOffer} className="space-y-4">
+          <Input
+            label="Coupon Code *"
+            value={formData.code}
+            onChange={(e) => setFormData((prev) => ({ ...prev, code: e.target.value.toUpperCase() }))}
+            placeholder="e.g. BLOCKBUSTER50"
+            helper="Uppercase letters and numbers only"
+            required
+          />
+
+          <Input
+            label="Campaign Title *"
+            value={formData.title}
+            onChange={(e) => setFormData((prev) => ({ ...prev, title: e.target.value }))}
+            placeholder="e.g. Flat 20% Off Weekend Premiere"
+            required
+          />
+
+          <div className="grid grid-cols-2 gap-3">
+            <Select
+              label="Discount Type"
+              value={formData.discountType}
+              onChange={(e) => setFormData((prev) => ({ ...prev, discountType: e.target.value }))}
+              options={[
+                { value: 'percentage', label: 'Percentage (%)' },
+                { value: 'fixed', label: 'Flat Amount (₹)' }
+              ]}
+            />
+
+            <Input
+              label="Discount Value *"
+              type="number"
+              min="1"
+              value={formData.discountValue}
+              onChange={(e) => setFormData((prev) => ({ ...prev, discountValue: Number(e.target.value) }))}
+              required
+            />
+          </div>
+
+          <div className="grid grid-cols-2 gap-3">
+            <Input
+              label="Min Order Value (₹)"
+              type="number"
+              min="0"
+              value={formData.minBookingAmount}
+              onChange={(e) => setFormData((prev) => ({ ...prev, minBookingAmount: Number(e.target.value) }))}
+            />
+
+            <Input
+              label="Expiry Date *"
+              type="date"
+              value={formData.validUntil}
+              onChange={(e) => setFormData((prev) => ({ ...prev, validUntil: e.target.value }))}
+              required
+            />
+          </div>
+        </form>
+      </Modal>
+
+      {/* Delete Confirmation Modal */}
+      <ConfirmModal
+        isOpen={deleteConfirmOpen}
+        onClose={() => setDeleteConfirmOpen(false)}
+        onConfirm={confirmDeleteOffer}
+        title="Delete Promo Coupon?"
+        message={`Are you sure you want to permanently remove coupon "${offerToDelete?.code}"? Customers will no longer be able to apply this discount at checkout.`}
+        confirmText="Delete Coupon"
+        variant="danger"
+        loading={deleting}
+      />
     </div>
   );
 }

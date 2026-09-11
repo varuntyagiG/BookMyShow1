@@ -5,17 +5,32 @@ import {
   Search,
   CheckCircle,
   XCircle,
-  Loader2,
   Calendar,
   Clock,
   IndianRupee,
   X,
   ShieldCheck,
-  AlertTriangle,
-  QrCode,
-  ChevronLeft,
-  ChevronRight
+  RotateCcw,
+  QrCode
 } from 'lucide-react';
+import {
+  Button,
+  Badge,
+  Card,
+  PageHeader,
+  Table,
+  TableHeader,
+  TableHead,
+  TableBody,
+  TableRow,
+  TableCell,
+  TablePagination,
+  Input,
+  Select,
+  Modal,
+  EmptyState,
+  SkeletonTableRows
+} from '../../components/ui';
 
 export default function AdminBookingsPage() {
   const [bookings, setBookings] = useState([]);
@@ -25,10 +40,17 @@ export default function AdminBookingsPage() {
   const [page, setPage] = useState(1);
   const [pagination, setPagination] = useState({ total: 0, pages: 1 });
 
-  // 360-Degree Booking Detail Drawer State
+  // Detail Drawer State
   const [selectedBooking, setSelectedBooking] = useState(null);
   const [drawerLoading, setDrawerLoading] = useState(false);
-  const [actionLoading, setActionLoading] = useState(false);
+
+  // Cancel & Refund Modal State
+  const [refundModal, setRefundModal] = useState({
+    isOpen: false,
+    booking: null,
+    reason: 'Customer requested refund',
+    submitting: false
+  });
 
   const fetchBookings = async () => {
     setLoading(true);
@@ -62,316 +84,321 @@ export default function AdminBookingsPage() {
         setSelectedBooking(res.booking);
       }
     } catch (err) {
-      alert(err.message || 'Failed to retrieve booking.');
+      console.error('Failed to retrieve booking:', err);
     } finally {
       setDrawerLoading(false);
     }
   };
 
-  const handleCancelBooking = async (booking) => {
-    const reason = window.prompt(`Cancel booking ${booking.bookingId} and issue refund of ₹${booking.totalAmount}? Enter cancellation reason:`, 'Customer requested refund');
-    if (!reason) return;
+  const handleConfirmRefund = async (e) => {
+    e.preventDefault();
+    if (!refundModal.booking) return;
 
-    setActionLoading(true);
+    setRefundModal((prev) => ({ ...prev, submitting: true }));
     try {
-      const res = await adminApi.cancelBooking(booking._id, reason);
+      const res = await adminApi.cancelBooking(refundModal.booking._id, refundModal.reason);
       if (res.success) {
         setBookings((prev) =>
-          prev.map((b) => (b._id === booking._id ? { ...b, bookingStatus: 'cancelled', paymentStatus: 'refunded' } : b))
+          prev.map((b) =>
+            b._id === refundModal.booking._id
+              ? { ...b, bookingStatus: 'cancelled', paymentStatus: 'refunded' }
+              : b
+          )
         );
-        if (selectedBooking && selectedBooking._id === booking._id) {
-          setSelectedBooking((prev) => ({ ...prev, bookingStatus: 'cancelled', paymentStatus: 'refunded' }));
+        if (selectedBooking && selectedBooking._id === refundModal.booking._id) {
+          setSelectedBooking((prev) => ({
+            ...prev,
+            bookingStatus: 'cancelled',
+            paymentStatus: 'refunded'
+          }));
         }
-        alert(`Booking ${booking.bookingId} cancelled and refund registered.`);
+        setRefundModal({ isOpen: false, booking: null, reason: '', submitting: false });
       }
     } catch (err) {
-      alert(err.message || 'Failed to cancel booking.');
-    } finally {
-      setActionLoading(false);
+      console.error('Failed to cancel booking:', err);
+      setRefundModal((prev) => ({ ...prev, submitting: false }));
     }
   };
 
   return (
     <div className="space-y-6 max-w-7xl mx-auto text-[#222432]">
-      {/* Header */}
-      <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4">
-        <div>
-          <h1 className="text-xl sm:text-2xl font-black text-[#222432] tracking-tight flex items-center gap-2">
-            <Ticket className="w-6 h-6 text-[#F84464]" />
-            <span>Global Bookings &amp; Transactions Ledger</span>
-          </h1>
-          <p className="text-xs text-gray-500 mt-1">
-            Audit every ticket transaction, seat allocation, payment status, and physical gate turnstile admission.
-          </p>
-        </div>
+      {/* Page Header */}
+      <PageHeader
+        title="Global Bookings Ledger"
+        subtitle="Auditable platform ledger tracking ticket reservations, seat locks, customer admissions, and refunds."
+        icon={Ticket}
+        badge="Ledger"
+      />
 
-        <span className="font-bold text-[#222432] bg-white px-3.5 py-2 rounded-xl border border-[#EEEEF2] shadow-xs text-xs">
-          Total Bookings: {pagination.total}
-        </span>
-      </div>
+      {/* Filter and Search Bar */}
+      <Card className="p-4 sm:p-5">
+        <div className="flex flex-col sm:flex-row items-center justify-between gap-3">
+          <div className="w-full sm:w-80">
+            <Input
+              placeholder="Search by booking ID, movie, or cinema..."
+              icon={Search}
+              value={search}
+              onChange={(e) => {
+                setSearch(e.target.value);
+                setPage(1);
+              }}
+            />
+          </div>
 
-      {/* Filter Bar */}
-      <div className="bg-white border border-[#EEEEF2] p-4 rounded-2xl shadow-sm flex flex-col sm:flex-row items-center justify-between gap-3">
-        <div className="relative w-full sm:w-80">
-          <Search className="absolute left-3.5 top-3 w-4 h-4 text-gray-400" />
-          <input
-            type="text"
-            placeholder="Search by booking ID, movie, or customer..."
-            value={search}
-            onChange={(e) => {
-              setSearch(e.target.value);
-              setPage(1);
-            }}
-            className="w-full pl-10 pr-4 py-2 bg-gray-50 border border-gray-200 rounded-xl text-xs text-[#222432] placeholder-gray-400 focus:bg-white focus:outline-none focus:border-[#F84464] focus:ring-2 focus:ring-[#F84464]/20 transition"
-          />
+          <div className="flex items-center gap-3 w-full sm:w-auto">
+            <Select
+              value={statusFilter}
+              onChange={(e) => {
+                setStatusFilter(e.target.value);
+                setPage(1);
+              }}
+              options={[
+                { value: 'all', label: 'All Booking Statuses' },
+                { value: 'confirmed', label: 'Confirmed Only' },
+                { value: 'cancelled', label: 'Cancelled & Refunded' }
+              ]}
+              wrapperClassName="w-full sm:w-56"
+            />
+          </div>
         </div>
-
-        <div className="flex items-center gap-2 w-full sm:w-auto">
-          <span className="text-xs font-bold text-gray-500">Status:</span>
-          <select
-            value={statusFilter}
-            onChange={(e) => {
-              setStatusFilter(e.target.value);
-              setPage(1);
-            }}
-            className="bg-gray-50 border border-gray-200 text-xs text-[#222432] font-semibold px-3 py-2 rounded-xl focus:bg-white focus:outline-none focus:border-[#F84464] transition"
-          >
-            <option value="all">All Bookings</option>
-            <option value="confirmed">Confirmed</option>
-            <option value="cancelled">Cancelled &amp; Refunded</option>
-          </select>
-        </div>
-      </div>
+      </Card>
 
       {/* Bookings Table */}
-      <div className="bg-white border border-[#EEEEF2] rounded-3xl overflow-hidden shadow-sm">
-        <div className="overflow-x-auto">
-          <table className="w-full text-left text-xs text-[#222432]">
-            <thead className="bg-[#F9F9FB] border-b border-[#EEEEF2] text-gray-400 uppercase text-[10px] font-black tracking-wider">
-              <tr>
-                <th className="px-5 py-3.5">Booking ID</th>
-                <th className="px-5 py-3.5">Customer</th>
-                <th className="px-5 py-3.5">Movie Title</th>
-                <th className="px-5 py-3.5">Cinema Venue</th>
-                <th className="px-5 py-3.5">Seats</th>
-                <th className="px-5 py-3.5 text-right">Total (₹)</th>
-                <th className="px-5 py-3.5 text-center">Gate Turnstile</th>
-                <th className="px-5 py-3.5 text-center">Status</th>
-                <th className="px-5 py-3.5 text-right">Actions</th>
-              </tr>
-            </thead>
-            <tbody className="divide-y divide-[#EEEEF2] font-medium">
-              {loading ? (
-                <tr>
-                  <td colSpan="9" className="py-12 text-center text-gray-400">
-                    <Loader2 className="w-6 h-6 text-[#F84464] animate-spin mx-auto mb-2" />
-                    <span>Loading platform transactions...</span>
-                  </td>
-                </tr>
-              ) : bookings.length > 0 ? (
-                bookings.map((booking) => (
-                  <tr key={booking._id} className="hover:bg-gray-50/80 transition">
-                    <td className="px-5 py-3.5 font-mono font-bold text-[#F84464]">
-                      {booking.bookingId}
-                    </td>
-                    <td className="px-5 py-3.5">
-                      <div className="font-bold text-[#222432]">{booking.user?.name || 'Customer'}</div>
-                      <div className="text-[10px] text-gray-400">{booking.user?.email || '—'}</div>
-                    </td>
-                    <td className="px-5 py-3.5 text-[#222432] font-semibold truncate max-w-xs">
-                      {booking.movieTitle}
-                    </td>
-                    <td className="px-5 py-3.5 text-gray-600 truncate max-w-xs">
-                      {booking.theatreName}
-                    </td>
-                    <td className="px-5 py-3.5">
-                      <span className="font-mono bg-gray-100 text-[#222432] px-2 py-0.5 rounded text-[11px]">
-                        {Array.isArray(booking.seats) ? booking.seats.join(', ') : booking.seats}
-                      </span>
-                    </td>
-                    <td className="px-5 py-3.5 text-right font-mono font-black text-[#222432]">
-                      ₹{(booking.totalAmount || 0).toLocaleString('en-IN')}
-                    </td>
-                    <td className="px-5 py-3.5 text-center">
-                      {booking.ticketValidated ? (
-                        <span className="inline-flex items-center gap-1 text-[10px] font-bold px-2 py-0.5 rounded-full bg-[#4ABD5D]/10 text-[#4ABD5D] border border-[#4ABD5D]/20">
-                          <CheckCircle className="w-3 h-3" /> Admitted
-                        </span>
-                      ) : (
-                        <span className="inline-flex items-center gap-1 text-[10px] font-bold px-2 py-0.5 rounded-full bg-gray-100 text-gray-500">
-                          Pending Gate
-                        </span>
+      <Card className="overflow-hidden p-0">
+        <Table>
+          <TableHeader>
+            <TableRow hover={false}>
+              <TableHead>Booking ID</TableHead>
+              <TableHead>Movie Title</TableHead>
+              <TableHead>Customer</TableHead>
+              <TableHead>Venue Multiplex</TableHead>
+              <TableHead>Seats</TableHead>
+              <TableHead>Gross Amount</TableHead>
+              <TableHead>Status</TableHead>
+              <TableHead className="text-right">Actions</TableHead>
+            </TableRow>
+          </TableHeader>
+          <TableBody>
+            {loading ? (
+              <SkeletonTableRows rows={8} cols={8} />
+            ) : bookings.length > 0 ? (
+              bookings.map((b) => (
+                <TableRow key={b._id}>
+                  <TableCell className="font-mono font-bold text-gray-700">
+                    {b.bookingId || b._id?.substring(0, 8)}
+                  </TableCell>
+
+                  <TableCell className="font-bold text-[#222432] max-w-[160px] truncate">
+                    {b.movieTitle || b.movie?.title || 'Film'}
+                  </TableCell>
+
+                  <TableCell>
+                    <div className="font-bold text-[#222432] truncate">
+                      {b.user?.name || 'Customer'}
+                    </div>
+                    <div className="text-[11px] text-gray-400 truncate">{b.user?.email}</div>
+                  </TableCell>
+
+                  <TableCell className="text-gray-500 max-w-[150px] truncate">
+                    {b.theatreName || b.cinema?.name || 'Cinema'}
+                  </TableCell>
+
+                  <TableCell>
+                    <span className="font-mono bg-gray-100 px-2 py-0.5 rounded text-[11px] font-bold text-gray-700">
+                      {Array.isArray(b.seats) ? b.seats.join(', ') : '1 Seat'}
+                    </span>
+                  </TableCell>
+
+                  <TableCell className="font-black text-[#222432]">
+                    ₹{(b.totalAmount || 0).toLocaleString()}
+                  </TableCell>
+
+                  <TableCell>
+                    <Badge variant={b.bookingStatus === 'confirmed' ? 'active' : 'cancelled'} dot>
+                      {b.bookingStatus}
+                    </Badge>
+                  </TableCell>
+
+                  <TableCell className="text-right">
+                    <div className="flex items-center justify-end gap-2">
+                      <Button
+                        variant="secondary"
+                        size="xs"
+                        onClick={() => handleOpenDetail(b._id)}
+                      >
+                        Receipt
+                      </Button>
+
+                      {b.bookingStatus === 'confirmed' && (
+                        <Button
+                          variant="destructive"
+                          size="xs"
+                          onClick={() => setRefundModal({
+                            isOpen: true,
+                            booking: b,
+                            reason: 'Customer requested cancellation',
+                            submitting: false
+                          })}
+                        >
+                          Refund
+                        </Button>
                       )}
-                    </td>
-                    <td className="px-5 py-3.5 text-center">
-                      <span
-                        className={`inline-block text-[10px] font-black uppercase px-2.5 py-0.5 rounded-full ${
-                          booking.bookingStatus === 'confirmed'
-                            ? 'bg-[#4ABD5D]/10 text-[#4ABD5D] border border-[#4ABD5D]/20'
-                            : 'bg-[#F84464]/10 text-[#F84464] border border-[#F84464]/20'
-                        }`}
-                      >
-                        {booking.bookingStatus}
-                      </span>
-                    </td>
-                    <td className="px-5 py-3.5 text-right space-x-2">
-                      <button
-                        onClick={() => handleOpenDetail(booking._id)}
-                        className="px-3 py-1 bg-[#F84464]/10 hover:bg-[#F84464] text-[#F84464] hover:text-white rounded-lg text-xs font-bold transition cursor-pointer"
-                      >
-                        Audit
-                      </button>
-                    </td>
-                  </tr>
-                ))
-              ) : (
-                <tr>
-                  <td colSpan="9" className="py-10 text-center text-gray-400">
-                    No bookings found matching search criteria.
-                  </td>
-                </tr>
-              )}
-            </tbody>
-          </table>
-        </div>
+                    </div>
+                  </TableCell>
+                </TableRow>
+              ))
+            ) : (
+              <TableRow hover={false}>
+                <TableCell colSpan={8} className="py-12">
+                  <EmptyState
+                    icon={Ticket}
+                    title="No Bookings Recorded"
+                    description="No transaction records match your query."
+                  />
+                </TableCell>
+              </TableRow>
+            )}
+          </TableBody>
+        </Table>
 
-        {/* Pagination */}
-        {pagination.pages > 1 && (
-          <div className="p-4 border-t border-[#EEEEF2] flex items-center justify-between text-xs text-gray-500 bg-white">
-            <span>
-              Page {pagination.page} of {pagination.pages}
-            </span>
-            <div className="flex items-center gap-2">
-              <button
-                disabled={page <= 1}
-                onClick={() => setPage(page - 1)}
-                className="p-1.5 rounded-lg bg-gray-50 border border-gray-200 disabled:opacity-40 hover:bg-gray-100 text-[#222432] cursor-pointer"
-              >
-                <ChevronLeft className="w-4 h-4" />
-              </button>
-              <button
-                disabled={page >= pagination.pages}
-                onClick={() => setPage(page + 1)}
-                className="p-1.5 rounded-lg bg-gray-50 border border-gray-200 disabled:opacity-40 hover:bg-gray-100 text-[#222432] cursor-pointer"
-              >
-                <ChevronRight className="w-4 h-4" />
-              </button>
-            </div>
-          </div>
-        )}
-      </div>
+        <TablePagination
+          page={page}
+          totalPages={pagination.pages}
+          totalItems={pagination.total}
+          onPageChange={setPage}
+        />
+      </Card>
 
-      {/* 360-Degree Booking Audit Drawer */}
+      {/* Booking Detail Slide-over */}
       {selectedBooking && (
-        <div className="fixed inset-0 z-50 flex justify-end bg-black/60 backdrop-blur-xs animate-in fade-in duration-150">
-          <div className="w-full max-w-lg bg-white border-l border-[#EEEEF2] h-full overflow-y-auto p-6 flex flex-col justify-between shadow-2xl text-[#222432]">
-            <div>
-              <div className="flex items-center justify-between pb-4 border-b border-gray-100 mb-6">
+        <div className="fixed inset-0 z-50 flex justify-end">
+          <div
+            className="fixed inset-0 bg-black/75 backdrop-blur-xs transition-opacity"
+            onClick={() => setSelectedBooking(null)}
+          />
+
+          <div className="relative w-full max-w-md bg-white h-full shadow-2xl z-10 flex flex-col overflow-hidden animate-in slide-in-from-right duration-200">
+            {/* Header */}
+            <div className="p-5 border-b border-gray-100 flex items-center justify-between bg-gray-50/50">
+              <div className="flex items-center gap-2">
+                <Ticket className="w-5 h-5 text-[#F84464]" />
                 <div>
-                  <h3 className="text-base font-black text-[#222432]">Transaction 360° Audit</h3>
-                  <p className="text-xs font-mono text-[#F84464]">ID: {selectedBooking.bookingId}</p>
-                </div>
-                <button
-                  onClick={() => setSelectedBooking(null)}
-                  className="p-1.5 text-gray-400 hover:text-[#222432] hover:bg-gray-100 rounded-lg cursor-pointer transition"
-                >
-                  <X className="w-5 h-5" />
-                </button>
-              </div>
-
-              {/* Customer & Venue Strip */}
-              <div className="bg-[#F9F9FB] p-4 rounded-2xl border border-[#EEEEF2] mb-4 space-y-2 text-xs">
-                <div className="flex justify-between">
-                  <span className="text-gray-500">Customer:</span>
-                  <span className="font-bold text-[#222432]">{selectedBooking.user?.name} ({selectedBooking.user?.email})</span>
-                </div>
-                <div className="flex justify-between">
-                  <span className="text-gray-500">Movie Title:</span>
-                  <span className="font-bold text-[#222432]">{selectedBooking.movieTitle}</span>
-                </div>
-                <div className="flex justify-between">
-                  <span className="text-gray-500">Multiplex Property:</span>
-                  <span className="text-gray-700">{selectedBooking.theatreName}</span>
-                </div>
-                <div className="flex justify-between">
-                  <span className="text-gray-500">Auditorium Screen:</span>
-                  <span className="text-[#F84464] font-semibold">{selectedBooking.screenName || 'Audi 1'}</span>
-                </div>
-                <div className="flex justify-between">
-                  <span className="text-gray-500">Show Date &amp; Time:</span>
-                  <span className="font-mono text-[#222432]">{selectedBooking.showDate} • {selectedBooking.showtime}</span>
-                </div>
-                <div className="flex justify-between">
-                  <span className="text-gray-500">Booked Seats:</span>
-                  <span className="font-mono font-bold text-amber-600">
-                    {Array.isArray(selectedBooking.seats) ? selectedBooking.seats.join(', ') : selectedBooking.seats}
-                  </span>
+                  <h3 className="text-sm font-black text-[#222432]">Receipt #{selectedBooking.bookingId}</h3>
+                  <p className="text-[11px] text-gray-500">M-Ticket Digital Confirmation</p>
                 </div>
               </div>
 
-              {/* Commercial Breakdown */}
-              <div className="bg-[#F9F9FB] p-4 rounded-2xl border border-[#EEEEF2] mb-4 space-y-2 text-xs">
-                <div className="flex justify-between text-gray-500">
-                  <span>Base Ticket Price:</span>
-                  <span className="font-mono text-[#222432]">₹{selectedBooking.ticketPrice}</span>
-                </div>
-                <div className="flex justify-between text-gray-500">
-                  <span>Platform Convenience Fee:</span>
-                  <span className="font-mono text-[#F84464] font-semibold">₹{selectedBooking.convenienceFee || 45}</span>
-                </div>
-                {selectedBooking.snacksFee > 0 && (
-                  <div className="flex justify-between text-gray-500">
-                    <span>F&amp;B Snacks Addon:</span>
-                    <span className="font-mono text-[#222432]">₹{selectedBooking.snacksFee}</span>
-                  </div>
-                )}
-                <div className="flex justify-between pt-2 border-t border-gray-200/70 text-sm font-bold text-[#222432]">
-                  <span>Gross Charged:</span>
-                  <span className="font-mono text-[#4ABD5D] font-black">₹{selectedBooking.totalAmount}</span>
-                </div>
-              </div>
-
-              {/* Gate Scanner Status */}
-              <div className="bg-[#F9F9FB] p-4 rounded-2xl border border-[#EEEEF2] mb-4 text-xs">
-                <h4 className="font-bold text-[#222432] mb-2 flex items-center gap-1.5">
-                  <QrCode className="w-4 h-4 text-[#F84464]" />
-                  <span>Turnstile Gate Admission Status</span>
-                </h4>
-                {selectedBooking.ticketValidated ? (
-                  <div className="text-[#4ABD5D] font-bold flex items-center gap-1.5">
-                    <CheckCircle className="w-4 h-4" />
-                    <span>Admitted through gate turnstile</span>
-                  </div>
-                ) : (
-                  <div className="text-gray-500 flex items-center gap-1.5">
-                    <Clock className="w-4 h-4 text-gray-400" />
-                    <span>Ticket not yet presented at cinema gate turnstile</span>
-                  </div>
-                )}
-              </div>
+              <button
+                type="button"
+                onClick={() => setSelectedBooking(null)}
+                className="p-1.5 text-gray-400 hover:text-gray-700 hover:bg-gray-100 rounded-full transition cursor-pointer"
+              >
+                <X className="w-5 h-5" />
+              </button>
             </div>
 
-            {/* Cancel Booking Action */}
-            <div className="pt-4 border-t border-gray-100">
-              {selectedBooking.bookingStatus === 'confirmed' ? (
-                <button
-                  onClick={() => handleCancelBooking(selectedBooking)}
-                  disabled={actionLoading}
-                  className="w-full py-2.5 bg-[#F84464]/10 hover:bg-[#F84464] text-[#F84464] hover:text-white rounded-xl text-xs font-bold transition border border-[#F84464]/20 cursor-pointer flex items-center justify-center gap-1.5"
-                >
-                  <XCircle className="w-4 h-4" />
-                  <span>Cancel Booking &amp; Process Full Refund</span>
-                </button>
-              ) : (
-                <div className="text-center text-xs text-[#F84464] font-bold py-2">
-                  This transaction is cancelled and marked as refunded.
+            {/* Body */}
+            <div className="flex-1 overflow-y-auto p-6 space-y-6">
+              {/* Ticket Card Style matching Customer M-Ticket */}
+              <div className="p-5 rounded-2xl bg-gray-50 border border-gray-200 space-y-4">
+                <div>
+                  <div className="text-base font-black text-[#222432]">
+                    {selectedBooking.movieTitle}
+                  </div>
+                  <div className="text-xs text-gray-500 mt-0.5">
+                    {selectedBooking.theatreName}
+                  </div>
                 </div>
+
+                <div className="grid grid-cols-2 gap-3 pt-3 border-t border-gray-200 text-xs">
+                  <div>
+                    <div className="text-[10px] uppercase font-bold text-gray-400">Date &amp; Time</div>
+                    <div className="font-bold text-[#222432]">{selectedBooking.showDate} • {selectedBooking.showTime}</div>
+                  </div>
+
+                  <div>
+                    <div className="text-[10px] uppercase font-bold text-gray-400">Seats</div>
+                    <div className="font-bold text-[#F84464]">
+                      {Array.isArray(selectedBooking.seats) ? selectedBooking.seats.join(', ') : '1 Seat'}
+                    </div>
+                  </div>
+                </div>
+
+                <div className="pt-3 border-t border-gray-200 flex items-center justify-between">
+                  <span className="text-xs font-bold text-gray-500">Total Price Paid</span>
+                  <span className="text-base font-black text-[#222432]">₹{(selectedBooking.totalAmount || 0).toLocaleString()}</span>
+                </div>
+              </div>
+
+              {/* Status Section */}
+              <div className="p-4 rounded-xl border flex items-center justify-between">
+                <div>
+                  <div className="text-xs font-bold text-[#222432]">Admission Status</div>
+                  <div className="text-[11px] text-gray-400">Payment: {selectedBooking.paymentStatus || 'Paid'}</div>
+                </div>
+                <Badge variant={selectedBooking.bookingStatus === 'confirmed' ? 'active' : 'cancelled'}>
+                  {selectedBooking.bookingStatus}
+                </Badge>
+              </div>
+
+              {selectedBooking.bookingStatus === 'confirmed' && (
+                <Button
+                  variant="destructive"
+                  className="w-full"
+                  onClick={() => setRefundModal({
+                    isOpen: true,
+                    booking: selectedBooking,
+                    reason: 'Administrative refund',
+                    submitting: false
+                  })}
+                >
+                  Cancel Booking &amp; Issue Full Refund
+                </Button>
               )}
             </div>
           </div>
         </div>
       )}
+
+      {/* Refund Modal */}
+      <Modal
+        isOpen={refundModal.isOpen}
+        onClose={() => setRefundModal({ isOpen: false, booking: null, reason: '', submitting: false })}
+        title="Cancel Booking &amp; Issue Refund"
+        subtitle={`Cancel booking #${refundModal.booking?.bookingId} for ₹${refundModal.booking?.totalAmount}?`}
+        maxWidth="max-w-md"
+      >
+        <form onSubmit={handleConfirmRefund} className="space-y-4">
+          <Input
+            label="Cancellation &amp; Refund Reason"
+            placeholder="Reason for audit log..."
+            value={refundModal.reason}
+            onChange={(e) => setRefundModal((prev) => ({ ...prev, reason: e.target.value }))}
+            required
+          />
+
+          <p className="text-[11px] text-gray-500">
+            Cancelling this booking will immediately free up seats{' '}
+            <span className="font-bold text-[#222432]">
+              {Array.isArray(refundModal.booking?.seats) ? refundModal.booking.seats.join(', ') : ''}
+            </span>{' '}
+            on the auditorium show schedule.
+          </p>
+
+          <div className="flex items-center justify-end gap-3 pt-2">
+            <Button
+              variant="secondary"
+              onClick={() => setRefundModal({ isOpen: false, booking: null, reason: '', submitting: false })}
+            >
+              Back
+            </Button>
+
+            <Button type="submit" variant="destructive" loading={refundModal.submitting}>
+              Confirm Refund
+            </Button>
+          </div>
+        </form>
+      </Modal>
     </div>
   );
 }
-

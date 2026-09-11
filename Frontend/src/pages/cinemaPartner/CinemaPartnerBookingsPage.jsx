@@ -4,22 +4,39 @@ import { useCinemaToast } from '../../components/cinemaPartner/CinemaPartnerToas
 import {
   Ticket,
   Search,
-  Filter,
-  Calendar,
   CheckCircle2,
-  XCircle,
   Clock,
   Eye,
-  X,
   User,
   Phone,
   Mail,
   Building2,
   Tv,
   Film,
-  Loader2,
+  Sparkles,
   QrCode
 } from 'lucide-react';
+import {
+  PageHeader,
+  Button,
+  Card,
+  CardHeader,
+  CardTitle,
+  CardDescription,
+  CardContent,
+  Table,
+  TableHeader,
+  TableHead,
+  TableBody,
+  TableRow,
+  TableCell,
+  Badge,
+  Modal,
+  Input,
+  Select,
+  EmptyState,
+  Skeleton
+} from '../../components/ui';
 
 export default function CinemaPartnerBookingsPage() {
   const toast = useCinemaToast();
@@ -57,232 +74,232 @@ export default function CinemaPartnerBookingsPage() {
     fetchBookings();
   };
 
-  if (loading) {
-    return (
-      <div className="min-h-[60vh] flex flex-col items-center justify-center">
-        <Loader2 className="w-8 h-8 text-[#F84464] animate-spin mb-3" />
-        <p className="text-xs text-gray-500 font-medium">Loading Cinema Bookings...</p>
-      </div>
-    );
-  }
-
   return (
     <div className="space-y-6 max-w-7xl mx-auto text-[#222432]">
       {/* Header */}
-      <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4 pb-4 border-b border-gray-200">
-        <div>
-          <h1 className="text-2xl font-bold text-[#222432] tracking-tight flex items-center gap-2.5">
-            <Ticket className="w-6 h-6 text-[#F84464]" />
-            <span>Cinema Admissions &amp; Bookings</span>
-          </h1>
-          <p className="text-xs text-gray-500 mt-1">
-            Real-time customer admissions and ticket reservations across your cinemas
-          </p>
-        </div>
+      <PageHeader
+        title="Cinema Admissions & Ticket Manifest"
+        subtitle="Real-time guest reservations, seat inventories, and turnstile check-in verification records."
+        icon={Ticket}
+        badge="Auditorium Admissions"
+        actions={
+          <div className="flex flex-wrap items-center gap-2.5">
+            <form onSubmit={handleSearchSubmit} className="w-56">
+              <Input
+                value={search}
+                onChange={(e) => setSearch(e.target.value)}
+                placeholder="Search ID, movie..."
+                icon={Search}
+              />
+            </form>
 
-        {/* Search & Filters */}
-        <div className="flex flex-wrap items-center gap-2.5">
-          <form onSubmit={handleSearchSubmit} className="relative">
-            <Search className="w-3.5 h-3.5 absolute left-3 top-3 text-gray-400" />
-            <input
-              type="text"
-              value={search}
-              onChange={(e) => setSearch(e.target.value)}
-              placeholder="Search ID, movie..."
-              className="pl-8 pr-3 py-2 bg-white border border-gray-200 rounded-xl text-xs text-[#222432] placeholder-gray-400 focus:outline-none focus:border-[#F84464] w-44 sm:w-56 shadow-xs"
-            />
-          </form>
-
-          <select
-            value={statusFilter}
-            onChange={(e) => setStatusFilter(e.target.value)}
-            className="px-3.5 py-2 bg-white border border-gray-200 rounded-xl text-xs text-[#222432] focus:outline-none focus:border-[#F84464] shadow-xs"
-          >
-            <option value="all">All Statuses</option>
-            <option value="confirmed">Confirmed</option>
-            <option value="cancelled">Cancelled</option>
-          </select>
-        </div>
-      </div>
+            <div className="w-40">
+              <Select
+                value={statusFilter}
+                onChange={(e) => setStatusFilter(e.target.value)}
+                options={[
+                  { value: 'all', label: 'All Statuses' },
+                  { value: 'confirmed', label: 'Confirmed' },
+                  { value: 'cancelled', label: 'Cancelled' }
+                ]}
+              />
+            </div>
+          </div>
+        }
+      />
 
       {/* Bookings Table */}
-      {bookings.length === 0 ? (
-        <div className="bg-white border border-[#EEEEF2] rounded-2xl p-12 text-center text-gray-500 text-xs shadow-sm">
-          No customer bookings found matching the selected filter.
-        </div>
-      ) : (
-        <div className="bg-white border border-[#EEEEF2] rounded-2xl overflow-hidden shadow-sm">
-          <div className="overflow-x-auto">
-            <table className="w-full text-left text-xs text-[#222432]">
-              <thead className="bg-gray-50/80 text-[10px] uppercase font-bold text-gray-500 border-b border-gray-100">
-                <tr>
-                  <th className="px-5 py-3.5">Booking ID</th>
-                  <th className="px-5 py-3.5">Customer</th>
-                  <th className="px-5 py-3.5">Movie &amp; Show</th>
-                  <th className="px-5 py-3.5">Seats</th>
-                  <th className="px-5 py-3.5 text-right">Amount</th>
-                  <th className="px-5 py-3.5 text-center">Gate Status</th>
-                  <th className="px-5 py-3.5 text-right">Actions</th>
-                </tr>
-              </thead>
-              <tbody className="divide-y divide-gray-100">
+      <Card>
+        <CardHeader className="py-4 flex flex-row items-center justify-between">
+          <div>
+            <CardTitle>Admissions Register</CardTitle>
+            <CardDescription>Confirmed ticket holders across your circuit</CardDescription>
+          </div>
+          <Badge variant="neutral" pill>
+            {bookings.length} Bookings
+          </Badge>
+        </CardHeader>
+
+        <CardContent className="p-0">
+          {loading ? (
+            <div className="p-6 space-y-3">
+              {[...Array(6)].map((_, i) => (
+                <Skeleton key={i} className="h-12 w-full rounded-xl" />
+              ))}
+            </div>
+          ) : bookings.length === 0 ? (
+            <div className="py-12">
+              <EmptyState
+                icon={Ticket}
+                title="No Customer Bookings Found"
+                description="No reservations match the selected search or filter criteria."
+              />
+            </div>
+          ) : (
+            <Table>
+              <TableHeader>
+                <TableRow>
+                  <TableHead>Booking ID</TableHead>
+                  <TableHead>Customer</TableHead>
+                  <TableHead>Movie &amp; Show</TableHead>
+                  <TableHead>Seats</TableHead>
+                  <TableHead className="text-right">Amount</TableHead>
+                  <TableHead className="text-center">Gate Status</TableHead>
+                  <TableHead className="text-right">Actions</TableHead>
+                </TableRow>
+              </TableHeader>
+              <TableBody>
                 {bookings.map((b) => {
                   const customerName = b.user?.name || 'Customer';
                   const isValidated = b.ticketValidated;
 
                   return (
-                    <tr key={b._id} className="hover:bg-gray-50/50 transition">
-                      <td className="px-5 py-3.5 font-bold text-[#F84464] whitespace-nowrap">
+                    <TableRow key={b._id} hover>
+                      <TableCell className="font-mono font-bold text-[#F84464] whitespace-nowrap">
                         {b.bookingId}
-                      </td>
+                      </TableCell>
 
-                      <td className="px-5 py-3.5 whitespace-nowrap">
+                      <TableCell className="whitespace-nowrap">
                         <div className="font-semibold text-[#222432]">{customerName}</div>
-                        <div className="text-[10px] text-gray-500">{b.user?.email || b.user?.phone || 'Guest'}</div>
-                      </td>
+                        <div className="text-[11px] text-gray-400 font-mono">{b.user?.email || b.user?.phone || 'Guest'}</div>
+                      </TableCell>
 
-                      <td className="px-5 py-3.5">
+                      <TableCell>
                         <div className="font-bold text-[#222432] line-clamp-1">{b.movieTitle}</div>
-                        <div className="text-[10px] text-gray-500 mt-0.5">
+                        <div className="text-[11px] text-gray-500 mt-0.5">
                           {b.theatreName} • {b.showtime} ({b.showDate})
                         </div>
-                      </td>
+                      </TableCell>
 
-                      <td className="px-5 py-3.5 whitespace-nowrap">
-                        <span className="font-bold text-[#222432] bg-gray-100 px-2 py-0.5 rounded text-[11px]">
+                      <TableCell className="whitespace-nowrap">
+                        <span className="font-mono font-bold text-[#222432] bg-gray-100 px-2 py-0.5 rounded text-[11px]">
                           {b.seats?.join(', ')}
                         </span>
-                        <span className="text-[10px] text-gray-400 block mt-0.5">({b.seatsCount || b.seats?.length} seats)</span>
-                      </td>
+                        <span className="text-[10px] text-gray-400 block mt-0.5 font-medium">({b.seatsCount || b.seats?.length} seats)</span>
+                      </TableCell>
 
-                      <td className="px-5 py-3.5 text-right font-bold text-[#4ABD5D] whitespace-nowrap">
+                      <TableCell className="text-right font-mono font-bold text-[#4ABD5D] whitespace-nowrap">
                         ₹{b.totalAmount}
-                      </td>
+                      </TableCell>
 
-                      <td className="px-5 py-3.5 text-center whitespace-nowrap">
+                      <TableCell className="text-center whitespace-nowrap">
                         {isValidated ? (
-                          <span className="px-2.5 py-0.5 rounded-full text-[10px] font-bold bg-[#4ABD5D]/10 text-[#4ABD5D] border border-[#4ABD5D]/20">
-                            ✓ Checked In
-                          </span>
+                          <Badge variant="approved" dot>
+                            Checked In
+                          </Badge>
                         ) : (
-                          <span className="px-2.5 py-0.5 rounded-full text-[10px] font-bold bg-amber-50 text-amber-700 border border-amber-200">
-                            Pending
-                          </span>
+                          <Badge variant="warning" dot>
+                            Gate Pending
+                          </Badge>
                         )}
-                      </td>
+                      </TableCell>
 
-                      <td className="px-5 py-3.5 text-right whitespace-nowrap">
-                        <button
+                      <TableCell className="text-right whitespace-nowrap">
+                        <Button
+                          variant="ghost"
+                          size="sm"
+                          icon={Eye}
                           onClick={() => setSelectedBooking(b)}
-                          className="p-1.5 rounded-lg bg-gray-100 hover:bg-gray-200 text-gray-600 hover:text-gray-900 transition cursor-pointer"
-                          title="View Digital Ticket"
-                        >
-                          <Eye className="w-3.5 h-3.5" />
-                        </button>
-                      </td>
-                    </tr>
+                          title="View Digital Ticket Manifest"
+                        />
+                      </TableCell>
+                    </TableRow>
                   );
                 })}
-              </tbody>
-            </table>
-          </div>
-        </div>
-      )}
+              </TableBody>
+            </Table>
+          )}
+        </CardContent>
+      </Card>
 
-      {/* Digital M-Ticket Inspection Modal matching Customer Panel */}
+      {/* Digital M-Ticket Inspection Modal */}
       {selectedBooking && (
-        <div className="fixed inset-0 bg-black/60 backdrop-blur-xs z-50 flex items-center justify-center p-4">
-          <div className="bg-white rounded-2xl w-full max-w-md my-8 shadow-2xl overflow-hidden animate-in fade-in zoom-in-95 duration-150">
-            {/* Modal Header */}
-            <div className="bg-[#333545] px-6 py-4 flex items-center justify-between text-white">
-              <div>
-                <h3 className="text-sm font-bold flex items-center gap-1.5">
-                  <Ticket className="w-4 h-4 text-[#F84464]" />
-                  <span>Digital Ticket Audit</span>
-                </h3>
-                <p className="text-[10px] text-gray-300 font-mono mt-0.5">{selectedBooking.bookingId}</p>
+        <Modal
+          isOpen={Boolean(selectedBooking)}
+          onClose={() => setSelectedBooking(null)}
+          title="Digital M-Ticket Inspection"
+          description={`Order Ref: ${selectedBooking.bookingId}`}
+          size="md"
+          footer={
+            <div className="flex justify-end w-full">
+              <Button variant="outline" onClick={() => setSelectedBooking(null)}>
+                Close Manifest
+              </Button>
+            </div>
+          }
+        >
+          <div className="space-y-4">
+            {/* Movie Info Card */}
+            <div className="p-4 bg-gray-50 rounded-2xl border border-gray-200 space-y-1">
+              <div className="text-sm font-bold text-[#222432]">{selectedBooking.movieTitle}</div>
+              <div className="text-xs text-gray-600">
+                {selectedBooking.theatreName} • {selectedBooking.screenName || 'Screen 1'}
               </div>
-              <button
-                onClick={() => setSelectedBooking(null)}
-                className="p-1 rounded-full text-gray-300 hover:text-white hover:bg-white/10 transition cursor-pointer"
-              >
-                <X className="w-4 h-4" />
-              </button>
+              <div className="text-xs text-[#F84464] font-bold pt-1">
+                {selectedBooking.showDate} at {selectedBooking.showtime}
+              </div>
             </div>
 
-            <div className="p-6 space-y-4">
-              {/* Movie Info Card */}
-              <div className="p-4 bg-gray-50 rounded-xl border border-gray-200 space-y-1">
-                <div className="text-sm font-bold text-[#222432]">{selectedBooking.movieTitle}</div>
-                <div className="text-xs text-gray-600">
-                  {selectedBooking.theatreName} • {selectedBooking.screenName || 'Screen 1'}
-                </div>
-                <div className="text-xs text-[#F84464] font-bold pt-1">
-                  {selectedBooking.showDate} at {selectedBooking.showtime}
-                </div>
+            {/* Customer Contact */}
+            <div className="text-xs space-y-2 pt-1 border-b border-gray-100 pb-3">
+              <div className="flex items-center justify-between text-gray-500">
+                <span className="flex items-center gap-1.5"><User className="w-3.5 h-3.5 text-gray-400" /> Customer</span>
+                <span className="font-bold text-[#222432]">{selectedBooking.user?.name || 'Customer'}</span>
               </div>
-
-              {/* Customer Contact */}
-              <div className="text-xs space-y-2 pt-1 border-b border-gray-100 pb-3">
-                <div className="flex items-center justify-between text-gray-500">
-                  <span className="flex items-center gap-1.5"><User className="w-3.5 h-3.5 text-gray-400" /> Customer</span>
-                  <span className="font-bold text-[#222432]">{selectedBooking.user?.name || 'Customer'}</span>
-                </div>
-                <div className="flex items-center justify-between text-gray-500">
-                  <span className="flex items-center gap-1.5"><Mail className="w-3.5 h-3.5 text-gray-400" /> Email</span>
-                  <span className="text-[#222432]">{selectedBooking.user?.email || 'N/A'}</span>
-                </div>
-                <div className="flex items-center justify-between text-gray-500">
-                  <span className="flex items-center gap-1.5"><Phone className="w-3.5 h-3.5 text-gray-400" /> Phone</span>
-                  <span className="text-[#222432]">{selectedBooking.user?.phone || 'N/A'}</span>
-                </div>
+              <div className="flex items-center justify-between text-gray-500">
+                <span className="flex items-center gap-1.5"><Mail className="w-3.5 h-3.5 text-gray-400" /> Email</span>
+                <span className="text-[#222432] font-mono">{selectedBooking.user?.email || 'N/A'}</span>
               </div>
+              <div className="flex items-center justify-between text-gray-500">
+                <span className="flex items-center gap-1.5"><Phone className="w-3.5 h-3.5 text-gray-400" /> Phone</span>
+                <span className="text-[#222432] font-mono">{selectedBooking.user?.phone || 'N/A'}</span>
+              </div>
+            </div>
 
-              {/* Seats & Financial Breakdown */}
-              <div className="p-4 bg-gray-50 rounded-xl border border-gray-200 text-xs space-y-2">
-                <div className="flex items-center justify-between">
-                  <span className="text-gray-500">Assigned Seats</span>
-                  <span className="font-bold text-[#F84464] bg-[#F84464]/10 px-2 py-0.5 rounded">
-                    {selectedBooking.seats?.join(', ')}
+            {/* Seats & Financial Breakdown */}
+            <div className="p-4 bg-gray-50 rounded-2xl border border-gray-200 text-xs space-y-2">
+              <div className="flex items-center justify-between">
+                <span className="text-gray-500">Assigned Seats</span>
+                <span className="font-mono font-bold text-[#F84464] bg-[#F84464]/10 px-2 py-0.5 rounded">
+                  {selectedBooking.seats?.join(', ')}
+                </span>
+              </div>
+              <div className="flex items-center justify-between">
+                <span className="text-gray-500">Base Tickets</span>
+                <span className="font-semibold text-[#222432]">₹{selectedBooking.ticketPrice}</span>
+              </div>
+              <div className="flex items-center justify-between">
+                <span className="text-gray-500">Convenience Fee</span>
+                <span className="text-[#222432]">₹{selectedBooking.convenienceFee || 0}</span>
+              </div>
+              <div className="flex items-center justify-between pt-2 border-t border-gray-200 font-bold">
+                <span className="text-[#222432]">Total Paid</span>
+                <span className="text-[#4ABD5D] text-base font-mono">₹{selectedBooking.totalAmount}</span>
+              </div>
+            </div>
+
+            {/* Validation Audit */}
+            <div className="text-xs pt-1">
+              <div className="text-[10px] uppercase font-bold text-gray-400 mb-1.5">Turnstile Verification Status</div>
+              {selectedBooking.ticketValidated ? (
+                <div className="p-3 rounded-xl bg-[#4ABD5D]/10 border border-[#4ABD5D]/30 text-[#4ABD5D] text-xs flex items-center justify-between">
+                  <span className="font-bold flex items-center gap-1.5">
+                    <CheckCircle2 className="w-4 h-4" />
+                    Admitted at Gate
+                  </span>
+                  <span className="text-[10px] text-gray-500 font-mono">
+                    {selectedBooking.validatedAt ? new Date(selectedBooking.validatedAt).toLocaleTimeString() : ''}
                   </span>
                 </div>
-                <div className="flex items-center justify-between">
-                  <span className="text-gray-500">Base Tickets</span>
-                  <span className="font-semibold text-[#222432]">₹{selectedBooking.ticketPrice}</span>
+              ) : (
+                <div className="p-3 rounded-xl bg-amber-50 border border-amber-200 text-amber-700 text-xs font-semibold flex items-center gap-1.5">
+                  <Clock className="w-4 h-4" />
+                  Awaiting Turnstile Check-In
                 </div>
-                <div className="flex items-center justify-between">
-                  <span className="text-gray-500">Convenience Fee</span>
-                  <span className="text-[#222432]">₹{selectedBooking.convenienceFee || 0}</span>
-                </div>
-                <div className="flex items-center justify-between pt-2 border-t border-gray-200 font-bold">
-                  <span className="text-[#222432]">Total Paid</span>
-                  <span className="text-[#4ABD5D] text-base">₹{selectedBooking.totalAmount}</span>
-                </div>
-              </div>
-
-              {/* Validation Audit */}
-              <div className="text-xs pt-1">
-                <div className="text-[10px] uppercase font-bold text-gray-400 mb-1.5">Gate Verification Status</div>
-                {selectedBooking.ticketValidated ? (
-                  <div className="p-3 rounded-xl bg-[#4ABD5D]/10 border border-[#4ABD5D]/30 text-[#4ABD5D] text-xs flex items-center justify-between">
-                    <span className="font-bold flex items-center gap-1.5">
-                      <CheckCircle2 className="w-4 h-4" />
-                      Checked In at Gate
-                    </span>
-                    <span className="text-[10px] text-gray-500">
-                      {selectedBooking.validatedAt ? new Date(selectedBooking.validatedAt).toLocaleTimeString() : ''}
-                    </span>
-                  </div>
-                ) : (
-                  <div className="p-3 rounded-xl bg-amber-50 border border-amber-200 text-amber-700 text-xs font-semibold flex items-center gap-1.5">
-                    <Clock className="w-4 h-4" />
-                    Pending Gate Check-In
-                  </div>
-                )}
-              </div>
+              )}
             </div>
           </div>
-        </div>
+        </Modal>
       )}
     </div>
   );

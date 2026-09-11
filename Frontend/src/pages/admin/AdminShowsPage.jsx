@@ -6,7 +6,6 @@ import {
   Store,
   Tv,
   Film,
-  Loader2,
   Clock,
   IndianRupee,
   AlertTriangle,
@@ -14,6 +13,23 @@ import {
   CheckCircle,
   X
 } from 'lucide-react';
+import {
+  Button,
+  Badge,
+  Card,
+  PageHeader,
+  Table,
+  TableHeader,
+  TableHead,
+  TableBody,
+  TableRow,
+  TableCell,
+  Input,
+  Select,
+  Modal,
+  EmptyState,
+  SkeletonTableRows
+} from '../../components/ui';
 
 export default function AdminShowsPage() {
   const [shows, setShows] = useState([]);
@@ -71,199 +87,195 @@ export default function AdminShowsPage() {
         setCancelModal({ isOpen: false, show: null, reason: '', submitting: false });
       }
     } catch (err) {
-      alert(err.message || 'Failed to cancel show.');
+      console.error('Failed to cancel show:', err);
       setCancelModal((prev) => ({ ...prev, submitting: false }));
     }
   };
 
   return (
     <div className="space-y-6 max-w-7xl mx-auto text-[#222432]">
-      {/* Header */}
-      <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4">
-        <div>
-          <h1 className="text-xl sm:text-2xl font-black text-[#222432] tracking-tight flex items-center gap-2">
-            <Calendar className="w-6 h-6 text-[#F84464]" />
-            <span>Screening Schedule &amp; Inventory Monitor</span>
-          </h1>
-          <p className="text-xs text-gray-500 mt-1">
-            Global monitoring of auditorium schedules, occupancy rates, and conflict prevention across all circuits.
-          </p>
-        </div>
+      {/* Page Header */}
+      <PageHeader
+        title="Screening Schedules Monitor"
+        subtitle="Global monitoring of auditorium showtimes, booked seats, occupancy rates, and operational cancellations."
+        icon={Calendar}
+        badge="Screenings"
+      />
 
-        <span className="font-bold text-[#222432] bg-white px-3.5 py-2 rounded-xl border border-[#EEEEF2] shadow-xs text-xs">
-          Active Screenings: {filteredShows.length}
-        </span>
-      </div>
+      {/* Filter and Search Bar */}
+      <Card className="p-4 sm:p-5">
+        <div className="flex flex-col sm:flex-row items-center justify-between gap-3">
+          <div className="w-full sm:w-80">
+            <Input
+              placeholder="Search by movie title, cinema, or city..."
+              icon={Search}
+              value={search}
+              onChange={(e) => setSearch(e.target.value)}
+            />
+          </div>
 
-      {/* Filter Bar */}
-      <div className="bg-white border border-[#EEEEF2] p-4 rounded-2xl shadow-sm flex flex-col sm:flex-row items-center justify-between gap-3">
-        <div className="relative w-full sm:w-80">
-          <Search className="absolute left-3.5 top-3 w-4 h-4 text-gray-400" />
-          <input
-            type="text"
-            placeholder="Search movie title or cinema venue..."
-            value={search}
-            onChange={(e) => setSearch(e.target.value)}
-            className="w-full pl-10 pr-4 py-2 bg-gray-50 border border-gray-200 rounded-xl text-xs text-[#222432] placeholder-gray-400 focus:bg-white focus:outline-none focus:border-[#F84464] focus:ring-2 focus:ring-[#F84464]/20 transition"
-          />
-        </div>
-
-        <div className="flex items-center gap-2 w-full sm:w-auto">
-          <span className="text-xs font-bold text-gray-500">Show Status:</span>
-          <select
-            value={statusFilter}
-            onChange={(e) => setStatusFilter(e.target.value)}
-            className="bg-gray-50 border border-gray-200 text-xs text-[#222432] font-semibold px-3 py-2 rounded-xl focus:bg-white focus:outline-none focus:border-[#F84464] transition"
-          >
-            <option value="all">All Shows</option>
-            <option value="active">Active Screenings</option>
-            <option value="cancelled">Cancelled</option>
-          </select>
-        </div>
-      </div>
-
-      {/* Shows Grid */}
-      {loading ? (
-        <div className="py-20 text-center text-gray-400">
-          <Loader2 className="w-8 h-8 text-[#F84464] animate-spin mx-auto mb-2" />
-          <p className="text-xs">Loading screening schedule...</p>
-        </div>
-      ) : filteredShows.length > 0 ? (
-        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-5">
-          {filteredShows.map((show) => (
-            <div
-              key={show._id}
-              className="bg-white border border-[#EEEEF2] rounded-3xl p-5 hover:shadow-md transition flex flex-col justify-between shadow-sm relative overflow-hidden group"
-            >
-              <div>
-                <div className="flex items-start justify-between gap-3 mb-2">
-                  <div>
-                    <span className="text-[10px] font-black uppercase text-[#F84464] tracking-wider">
-                      {show.format || '2D'} • {show.showDate}
-                    </span>
-                    <h3 className="text-sm font-bold text-[#222432] leading-snug">{show.movieTitle}</h3>
-                  </div>
-
-                  <span
-                    className={`text-[10px] font-black uppercase px-2.5 py-0.5 rounded-full shrink-0 ${
-                      show.status === 'active'
-                        ? 'bg-[#4ABD5D]/10 text-[#4ABD5D] border border-[#4ABD5D]/20'
-                        : 'bg-[#F84464]/10 text-[#F84464] border border-[#F84464]/20'
-                    }`}
-                  >
-                    {show.status}
-                  </span>
-                </div>
-
-                <div className="flex items-center gap-1.5 text-xs text-[#222432] mb-1">
-                  <Store className="w-3.5 h-3.5 text-amber-500 shrink-0" />
-                  <span className="font-semibold">{show.cinema?.name || 'Multiplex Venue'}</span>
-                  <span className="text-gray-400">({show.cinema?.city})</span>
-                </div>
-
-                <div className="flex items-center gap-1.5 text-xs text-gray-500 mb-4">
-                  <Tv className="w-3.5 h-3.5 text-gray-400 shrink-0" />
-                  <span>{show.screen?.name || 'Screen 1'}</span>
-                  <span className="text-gray-300">•</span>
-                  <Clock className="w-3.5 h-3.5 text-gray-400 shrink-0" />
-                  <span className="font-mono text-[#222432] font-bold">{show.startTime} - {show.endTime}</span>
-                </div>
-
-                {/* Occupancy Rate Bar */}
-                <div className="bg-[#F9F9FB] p-3 rounded-2xl border border-[#EEEEF2] mb-3">
-                  <div className="flex justify-between text-xs mb-1">
-                    <span className="text-gray-500">Auditorium Occupancy:</span>
-                    <span className="font-mono font-bold text-[#222432]">{show.occupancyRate || 0}%</span>
-                  </div>
-                  <div className="w-full bg-gray-200 rounded-full h-2 overflow-hidden mb-1">
-                    <div
-                      className={`h-full rounded-full transition-all duration-500 ${
-                        (show.occupancyRate || 0) > 75
-                          ? 'bg-[#F84464]'
-                          : (show.occupancyRate || 0) > 40
-                          ? 'bg-amber-500'
-                          : 'bg-[#4ABD5D]'
-                      }`}
-                      style={{ width: `${Math.min(show.occupancyRate || 0, 100)}%` }}
-                    />
-                  </div>
-                  <div className="text-[10px] text-gray-400 text-right">
-                    {show.bookedSeats?.length || 0} seats booked of {show.capacity || 120} capacity
-                  </div>
-                </div>
-              </div>
-
-              <div className="mt-2 pt-3 border-t border-gray-100 flex items-center justify-between text-xs">
-                <span className="font-mono font-bold text-[#222432]">
-                  Base: ₹{show.ticketPrice || 200}
-                </span>
-
-                {show.status === 'active' && (
-                  <button
-                    onClick={() => setCancelModal({ isOpen: true, show, reason: '', submitting: false })}
-                    className="px-3 py-1 bg-[#F84464]/10 hover:bg-[#F84464] text-[#F84464] hover:text-white rounded-lg font-bold text-xs transition cursor-pointer"
-                  >
-                    Cancel Show
-                  </button>
-                )}
-              </div>
-            </div>
-          ))}
-        </div>
-      ) : (
-        <div className="bg-white border border-[#EEEEF2] rounded-3xl p-12 text-center text-gray-400 shadow-sm">
-          No scheduled shows found.
-        </div>
-      )}
-
-      {/* Cancel Show Confirmation Modal */}
-      {cancelModal.isOpen && (
-        <div className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-black/60 backdrop-blur-xs">
-          <div className="w-full max-w-md bg-white border border-[#EEEEF2] rounded-3xl p-6 shadow-2xl text-[#222432]">
-            <h3 className="text-base font-black text-[#222432] mb-1">
-              Cancel Scheduled Screening
-            </h3>
-            <p className="text-xs text-gray-500 mb-4">
-              Cancelling <strong className="text-[#222432]">{cancelModal.show?.movieTitle}</strong> at{' '}
-              {cancelModal.show?.cinema?.name} ({cancelModal.show?.startTime}).
-            </p>
-
-            <form onSubmit={handleCancelSubmit} className="space-y-4">
-              <div>
-                <label className="block text-xs font-bold text-gray-700 uppercase tracking-wider mb-1.5">
-                  Cancellation Reason
-                </label>
-                <textarea
-                  rows="3"
-                  value={cancelModal.reason}
-                  onChange={(e) => setCancelModal((prev) => ({ ...prev, reason: e.target.value }))}
-                  placeholder="e.g. Auditorium projector failure, special event booking..."
-                  className="w-full p-3 bg-gray-50 border border-gray-200 rounded-xl text-xs text-[#222432] placeholder-gray-400 focus:bg-white focus:outline-none focus:border-[#F84464] focus:ring-2 focus:ring-[#F84464]/20 transition"
-                  required
-                />
-              </div>
-
-              <div className="flex gap-3">
-                <button
-                  type="button"
-                  onClick={() => setCancelModal({ isOpen: false, show: null, reason: '', submitting: false })}
-                  className="flex-1 py-2.5 bg-gray-100 hover:bg-gray-200 text-[#222432] rounded-xl text-xs font-bold transition cursor-pointer"
-                >
-                  Close
-                </button>
-                <button
-                  type="submit"
-                  disabled={cancelModal.submitting}
-                  className="flex-1 py-2.5 bg-[#F84464] hover:bg-[#E03A58] text-white rounded-xl text-xs font-bold transition shadow-lg shadow-[#F84464]/30 cursor-pointer"
-                >
-                  {cancelModal.submitting ? 'Cancelling...' : 'Confirm Cancellation'}
-                </button>
-              </div>
-            </form>
+          <div className="flex items-center gap-3 w-full sm:w-auto">
+            <Select
+              value={statusFilter}
+              onChange={(e) => setStatusFilter(e.target.value)}
+              options={[
+                { value: 'all', label: 'All Show Statuses' },
+                { value: 'active', label: 'Active Screenings' },
+                { value: 'cancelled', label: 'Cancelled Screenings' }
+              ]}
+              wrapperClassName="w-full sm:w-56"
+            />
           </div>
         </div>
-      )}
+      </Card>
+
+      {/* Shows Table */}
+      <Card className="overflow-hidden p-0">
+        <Table>
+          <TableHeader>
+            <TableRow hover={false}>
+              <TableHead>Movie Title</TableHead>
+              <TableHead>Cinema Multiplex</TableHead>
+              <TableHead>Auditorium</TableHead>
+              <TableHead>Date &amp; Time</TableHead>
+              <TableHead>Format &amp; Price</TableHead>
+              <TableHead>Occupancy</TableHead>
+              <TableHead>Status</TableHead>
+              <TableHead className="text-right">Action</TableHead>
+            </TableRow>
+          </TableHeader>
+          <TableBody>
+            {loading ? (
+              <SkeletonTableRows rows={6} cols={8} />
+            ) : filteredShows.length > 0 ? (
+              filteredShows.map((s) => {
+                const bookedCount = s.bookedSeats?.length || 0;
+                const capacity = s.capacity || s.screen?.totalCapacity || 120;
+                const occupancyRate = s.occupancyRate || Math.round((bookedCount / capacity) * 100);
+
+                return (
+                  <TableRow key={s._id}>
+                    <TableCell>
+                      <div className="flex items-center gap-2.5">
+                        <div className="w-8 h-8 rounded-xl bg-purple-50 text-purple-600 font-black text-xs flex items-center justify-center shrink-0 border border-purple-100">
+                          <Film className="w-4 h-4" />
+                        </div>
+                        <div className="min-w-0 font-bold text-[#222432] truncate">
+                          {s.movieTitle || s.movie?.title || 'Screening Film'}
+                        </div>
+                      </div>
+                    </TableCell>
+
+                    <TableCell>
+                      <div className="font-bold text-[#222432] truncate max-w-[160px]">
+                        {s.cinema?.name || 'Multiplex'}
+                      </div>
+                      <div className="text-[11px] text-gray-400">{s.cinema?.city}</div>
+                    </TableCell>
+
+                    <TableCell>
+                      <span className="font-mono text-gray-700 font-bold text-[11px] bg-gray-100 px-2 py-0.5 rounded">
+                        {s.screen?.name || s.screenNumber || 'Audi 1'}
+                      </span>
+                    </TableCell>
+
+                    <TableCell>
+                      <div className="font-bold text-[#222432]">{s.showDate}</div>
+                      <div className="text-[11px] text-gray-500 font-mono">{s.startTime}</div>
+                    </TableCell>
+
+                    <TableCell>
+                      <div className="font-bold text-[#222432]">{s.format || '2D'}</div>
+                      <div className="text-[11px] font-black text-[#F84464]">₹{s.ticketPrice || 250}</div>
+                    </TableCell>
+
+                    <TableCell>
+                      <div className="space-y-1 w-24">
+                        <div className="flex justify-between text-[10px] font-bold text-gray-500">
+                          <span>{bookedCount}/{capacity}</span>
+                          <span>{occupancyRate}%</span>
+                        </div>
+                        <div className="w-full bg-gray-100 h-1.5 rounded-full overflow-hidden">
+                          <div
+                            className={`h-full rounded-full ${
+                              occupancyRate > 80
+                                ? 'bg-rose-500'
+                                : occupancyRate > 50
+                                ? 'bg-amber-500'
+                                : 'bg-[#4ABD5D]'
+                            }`}
+                            style={{ width: `${Math.min(100, occupancyRate)}%` }}
+                          />
+                        </div>
+                      </div>
+                    </TableCell>
+
+                    <TableCell>
+                      <Badge variant={s.status === 'active' ? 'active' : 'cancelled'} dot>
+                        {s.status === 'active' ? 'Active' : 'Cancelled'}
+                      </Badge>
+                    </TableCell>
+
+                    <TableCell className="text-right">
+                      {s.status === 'active' && (
+                        <Button
+                          variant="destructive"
+                          size="xs"
+                          onClick={() => setCancelModal({ isOpen: true, show: s, reason: '', submitting: false })}
+                        >
+                          Cancel Show
+                        </Button>
+                      )}
+                    </TableCell>
+                  </TableRow>
+                );
+              })
+            ) : (
+              <TableRow hover={false}>
+                <TableCell colSpan={8} className="py-12">
+                  <EmptyState
+                    icon={Calendar}
+                    title="No Screenings Scheduled"
+                    description="No show schedules match your filter criteria."
+                  />
+                </TableCell>
+              </TableRow>
+            )}
+          </TableBody>
+        </Table>
+      </Card>
+
+      {/* Show Cancellation Modal */}
+      <Modal
+        isOpen={cancelModal.isOpen}
+        onClose={() => setCancelModal({ isOpen: false, show: null, reason: '', submitting: false })}
+        title="Cancel Show Screening"
+        subtitle={`Cancel show for "${cancelModal.show?.movieTitle}" at ${cancelModal.show?.cinema?.name}?`}
+        maxWidth="max-w-md"
+      >
+        <form onSubmit={handleCancelSubmit} className="space-y-4">
+          <Input
+            label="Cancellation Reason"
+            placeholder="E.g. Technical projector failure, distributor request."
+            value={cancelModal.reason}
+            onChange={(e) => setCancelModal((prev) => ({ ...prev, reason: e.target.value }))}
+            required
+          />
+
+          <div className="flex items-center justify-end gap-3 pt-2">
+            <Button
+              variant="secondary"
+              onClick={() => setCancelModal({ isOpen: false, show: null, reason: '', submitting: false })}
+            >
+              Back
+            </Button>
+
+            <Button type="submit" variant="destructive" loading={cancelModal.submitting}>
+              Confirm Cancellation
+            </Button>
+          </div>
+        </form>
+      </Modal>
     </div>
   );
 }
-

@@ -5,12 +5,33 @@ import {
   Download,
   Calendar,
   Filter,
-  Loader2,
   FileText,
-  Table,
   CheckCircle,
-  Sparkles
+  Sparkles,
+  Ticket,
+  Building2,
+  Clapperboard,
+  Users
 } from 'lucide-react';
+import {
+  PageHeader,
+  Button,
+  Card,
+  CardHeader,
+  CardTitle,
+  CardDescription,
+  CardContent,
+  Table,
+  TableHeader,
+  TableHead,
+  TableBody,
+  TableRow,
+  TableCell,
+  Badge,
+  Input,
+  EmptyState,
+  Skeleton
+} from '../../components/ui';
 
 export default function AdminReportsPage() {
   const [reportType, setReportType] = useState('bookings');
@@ -100,188 +121,229 @@ export default function AdminReportsPage() {
     document.body.removeChild(link);
   };
 
+  const reportTabs = [
+    { id: 'bookings', label: 'Ticket Bookings', icon: Ticket },
+    { id: 'partners', label: 'Cinema Partners', icon: Users },
+    { id: 'cinemas', label: 'Multiplex Venues', icon: Building2 },
+    { id: 'movies', label: 'Movie Catalog', icon: Clapperboard }
+  ];
+
   return (
     <div className="space-y-6">
       {/* Header */}
-      <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4">
-        <div>
-          <h1 className="text-xl sm:text-2xl font-black text-[#222432] tracking-tight flex items-center gap-2">
-            <BarChart3 className="w-6 h-6 text-[#F84464]" />
-            <span>Compliance, Distributor &amp; Tax Audits</span>
-          </h1>
-          <p className="text-xs text-gray-500 mt-1">
-            Generate official reporting ledgers and export CSV files for distributor settlements, accounting, and tax filing.
-          </p>
-        </div>
+      <PageHeader
+        title="Distributor Settlement, Compliance & Tax Audits"
+        subtitle="Generate official reporting ledgers and export CSV files for distributor settlements, accounting, and tax filing."
+        icon={BarChart3}
+        badge="Audit Engine"
+        actions={
+          <Button
+            variant="primary"
+            icon={Download}
+            onClick={handleExportCSV}
+            disabled={!records.length}
+          >
+            Export CSV Audit File ({records.length})
+          </Button>
+        }
+      />
 
-        <button
-          onClick={handleExportCSV}
-          disabled={!records.length}
-          className="flex items-center gap-2 px-4 py-2.5 rounded-xl bg-[#F84464] hover:bg-[#E03A58] text-white text-xs font-bold transition shadow-sm disabled:opacity-40 cursor-pointer self-start sm:self-auto"
-        >
-          <Download className="w-4 h-4" />
-          <span>Export CSV Audit File ({records.length})</span>
-        </button>
-      </div>
+      {/* Filter & Selector Bar */}
+      <Card>
+        <CardContent className="p-4 flex flex-col md:flex-row md:items-center justify-between gap-4">
+          {/* Segment Pills */}
+          <div className="flex flex-wrap items-center gap-2">
+            {reportTabs.map((tab) => {
+              const Icon = tab.icon;
+              const isActive = reportType === tab.id;
+              return (
+                <button
+                  key={tab.id}
+                  onClick={() => setReportType(tab.id)}
+                  className={`flex items-center gap-2 px-3.5 py-2 rounded-xl text-xs font-bold transition-all cursor-pointer ${
+                    isActive
+                      ? 'bg-[#F84464] text-white shadow-sm shadow-[#F84464]/30'
+                      : 'bg-gray-100 text-gray-600 hover:bg-gray-200 border border-gray-200/60'
+                  }`}
+                >
+                  <Icon className="w-3.5 h-3.5" />
+                  <span>{tab.label}</span>
+                </button>
+              );
+            })}
+          </div>
 
-      {/* Report Controls Bar */}
-      <div className="bg-white border border-[#EEEEF2] p-4 rounded-2xl flex flex-wrap items-center justify-between gap-4 shadow-sm">
-        {/* Report Type Selector */}
-        <div className="flex flex-wrap items-center gap-2">
-          {[
-            { id: 'bookings', label: 'Ticket Bookings' },
-            { id: 'partners', label: 'Cinema Partners' },
-            { id: 'cinemas', label: 'Multiplex Properties' },
-            { id: 'movies', label: 'Movie Catalog' }
-          ].map((t) => (
-            <button
-              key={t.id}
-              onClick={() => setReportType(t.id)}
-              className={`px-3.5 py-1.5 rounded-xl text-xs font-bold transition cursor-pointer ${
-                reportType === t.id
-                  ? 'bg-[#F84464] text-white shadow-sm'
-                  : 'bg-gray-100 text-gray-600 hover:bg-gray-200 border border-gray-200'
-              }`}
-            >
-              {t.label}
-            </button>
-          ))}
-        </div>
+          {/* Date Filter */}
+          <div className="flex items-center gap-2 text-xs text-gray-500">
+            <span className="font-semibold text-gray-600">From:</span>
+            <input
+              type="date"
+              value={startDate}
+              onChange={(e) => setStartDate(e.target.value)}
+              className="bg-gray-50 border border-gray-200 text-[#222432] px-3 py-1.5 rounded-xl text-xs focus:bg-white focus:outline-none focus:border-[#F84464] font-medium"
+            />
+            <span className="font-semibold text-gray-600">To:</span>
+            <input
+              type="date"
+              value={endDate}
+              onChange={(e) => setEndDate(e.target.value)}
+              className="bg-gray-50 border border-gray-200 text-[#222432] px-3 py-1.5 rounded-xl text-xs focus:bg-white focus:outline-none focus:border-[#F84464] font-medium"
+            />
+          </div>
+        </CardContent>
+      </Card>
 
-        {/* Date Filter */}
-        <div className="flex items-center gap-2 text-xs text-gray-500">
-          <span>Date From:</span>
-          <input
-            type="date"
-            value={startDate}
-            onChange={(e) => setStartDate(e.target.value)}
-            className="bg-gray-50 border border-gray-200 text-[#222432] px-2.5 py-1.5 rounded-xl focus:bg-white focus:outline-none focus:border-[#F84464] text-xs"
-          />
-          <span>To:</span>
-          <input
-            type="date"
-            value={endDate}
-            onChange={(e) => setEndDate(e.target.value)}
-            className="bg-gray-50 border border-gray-200 text-[#222432] px-2.5 py-1.5 rounded-xl focus:bg-white focus:outline-none focus:border-[#F84464] text-xs"
-          />
-        </div>
-      </div>
+      {/* Report Records Table */}
+      <Card>
+        <CardHeader className="flex flex-row items-center justify-between py-4">
+          <div>
+            <CardTitle>Audit Records Preview</CardTitle>
+            <CardDescription>
+              Showing {records.length} real-time verified records from MongoDB Atlas
+            </CardDescription>
+          </div>
+          <Badge variant="neutral" pill>
+            Live Query
+          </Badge>
+        </CardHeader>
 
-      {/* Report Preview Table */}
-      <div className="bg-white border border-[#EEEEF2] rounded-3xl overflow-hidden shadow-sm">
-        <div className="p-4 border-b border-[#EEEEF2] flex items-center justify-between text-xs">
-          <span className="font-bold text-[#222432] uppercase tracking-wider">
-            Audit Records Preview ({records.length} items)
-          </span>
-          <span className="text-gray-400 font-mono">Real-time DB query</span>
-        </div>
-
-        <div className="overflow-x-auto max-h-[500px]">
-          <table className="w-full text-left text-xs text-[#222432]">
-            <thead className="bg-[#F9F9FB] text-gray-400 uppercase text-[10px] font-black tracking-wider sticky top-0 z-10 border-b border-[#EEEEF2]">
-              {reportType === 'bookings' && (
-                <tr>
-                  <th className="px-4 py-3">Booking Ref</th>
-                  <th className="px-4 py-3">Customer</th>
-                  <th className="px-4 py-3">Movie &amp; Venue</th>
-                  <th className="px-4 py-3">Seats</th>
-                  <th className="px-4 py-3 text-right">Amount (₹)</th>
-                  <th className="px-4 py-3 text-center">Status</th>
-                  <th className="px-4 py-3">Date</th>
-                </tr>
-              )}
-              {reportType === 'partners' && (
-                <tr>
-                  <th className="px-4 py-3">Circuit Organization</th>
-                  <th className="px-4 py-3">Operator Name</th>
-                  <th className="px-4 py-3">Email</th>
-                  <th className="px-4 py-3">Phone</th>
-                  <th className="px-4 py-3 text-center">Lifecycle Status</th>
-                </tr>
-              )}
-              {reportType === 'cinemas' && (
-                <tr>
-                  <th className="px-4 py-3">Multiplex Venue</th>
-                  <th className="px-4 py-3">City</th>
-                  <th className="px-4 py-3">State</th>
-                  <th className="px-4 py-3">Address</th>
-                  <th className="px-4 py-3 text-center">Status</th>
-                </tr>
-              )}
-              {reportType === 'movies' && (
-                <tr>
-                  <th className="px-4 py-3">Title</th>
-                  <th className="px-4 py-3">Language</th>
-                  <th className="px-4 py-3">Cert</th>
-                  <th className="px-4 py-3">Duration</th>
-                  <th className="px-4 py-3">Rating</th>
-                  <th className="px-4 py-3 text-center">Status</th>
-                </tr>
-              )}
-            </thead>
-            <tbody className="divide-y divide-[#EEEEF2] font-medium">
-              {loading ? (
-                <tr>
-                  <td colSpan="7" className="py-12 text-center text-gray-400">
-                    <Loader2 className="w-6 h-6 text-[#F84464] animate-spin mx-auto mb-2" />
-                    <span>Compiling audit report...</span>
-                  </td>
-                </tr>
-              ) : records.length > 0 ? (
-                records.map((r, idx) => (
-                  <tr key={idx} className="hover:bg-gray-50/80 transition">
+        <CardContent className="p-0">
+          {loading ? (
+            <div className="p-6 space-y-3">
+              {[...Array(6)].map((_, i) => (
+                <Skeleton key={i} className="h-10 w-full rounded-xl" />
+              ))}
+            </div>
+          ) : records.length > 0 ? (
+            <Table>
+              <TableHeader>
+                {reportType === 'bookings' && (
+                  <TableRow>
+                    <TableHead>Booking Ref</TableHead>
+                    <TableHead>Customer</TableHead>
+                    <TableHead>Movie &amp; Venue</TableHead>
+                    <TableHead>Seats</TableHead>
+                    <TableHead className="text-right">Amount</TableHead>
+                    <TableHead className="text-center">Status</TableHead>
+                    <TableHead>Date</TableHead>
+                  </TableRow>
+                )}
+                {reportType === 'partners' && (
+                  <TableRow>
+                    <TableHead>Circuit Organization</TableHead>
+                    <TableHead>Operator Name</TableHead>
+                    <TableHead>Email</TableHead>
+                    <TableHead>Phone</TableHead>
+                    <TableHead className="text-center">Status</TableHead>
+                  </TableRow>
+                )}
+                {reportType === 'cinemas' && (
+                  <TableRow>
+                    <TableHead>Multiplex Venue</TableHead>
+                    <TableHead>City</TableHead>
+                    <TableHead>State</TableHead>
+                    <TableHead>Address</TableHead>
+                    <TableHead className="text-center">Status</TableHead>
+                  </TableRow>
+                )}
+                {reportType === 'movies' && (
+                  <TableRow>
+                    <TableHead>Title</TableHead>
+                    <TableHead>Language</TableHead>
+                    <TableHead>Cert</TableHead>
+                    <TableHead>Duration</TableHead>
+                    <TableHead>Rating</TableHead>
+                    <TableHead className="text-center">Status</TableHead>
+                  </TableRow>
+                )}
+              </TableHeader>
+              <TableBody>
+                {records.map((r, idx) => (
+                  <TableRow key={idx} hover>
                     {reportType === 'bookings' && (
                       <>
-                        <td className="px-4 py-3 font-mono text-[#F84464] font-bold">{r.bookingId}</td>
-                        <td className="px-4 py-3 text-[#222432] font-semibold">{r.user?.name || 'Customer'}</td>
-                        <td className="px-4 py-3 truncate max-w-xs text-gray-600">{r.movieTitle} • {r.theatreName}</td>
-                        <td className="px-4 py-3 font-mono">{Array.isArray(r.seats) ? r.seats.join(', ') : r.seats}</td>
-                        <td className="px-4 py-3 text-right font-mono font-bold text-[#222432]">₹{r.totalAmount}</td>
-                        <td className="px-4 py-3 text-center capitalize">{r.bookingStatus}</td>
-                        <td className="px-4 py-3 text-gray-400 text-[10px]">{new Date(r.createdAt).toLocaleDateString('en-IN')}</td>
+                        <TableCell className="font-mono text-[#F84464] font-bold">
+                          {r.bookingId}
+                        </TableCell>
+                        <TableCell className="font-bold text-[#222432]">
+                          {r.user?.name || 'Customer'}
+                        </TableCell>
+                        <TableCell className="truncate max-w-xs text-gray-600">
+                          {r.movieTitle} • {r.theatreName}
+                        </TableCell>
+                        <TableCell className="font-mono">
+                          {Array.isArray(r.seats) ? r.seats.join(', ') : r.seats}
+                        </TableCell>
+                        <TableCell className="text-right font-mono font-bold text-[#222432]">
+                          ₹{r.totalAmount}
+                        </TableCell>
+                        <TableCell className="text-center">
+                          <Badge variant={r.bookingStatus === 'confirmed' ? 'approved' : 'cancelled'}>
+                            {r.bookingStatus}
+                          </Badge>
+                        </TableCell>
+                        <TableCell className="text-gray-400 text-[11px] font-mono">
+                          {new Date(r.createdAt).toLocaleDateString('en-IN')}
+                        </TableCell>
                       </>
                     )}
                     {reportType === 'partners' && (
                       <>
-                        <td className="px-4 py-3 font-bold text-[#222432]">{r.businessName || '—'}</td>
-                        <td className="px-4 py-3">{r.name}</td>
-                        <td className="px-4 py-3 font-mono text-gray-500">{r.email}</td>
-                        <td className="px-4 py-3 font-mono">{r.phone || '—'}</td>
-                        <td className="px-4 py-3 text-center uppercase text-[10px] font-bold text-amber-600">{r.partnerStatus || 'active'}</td>
+                        <TableCell className="font-bold text-[#222432]">
+                          {r.businessName || '—'}
+                        </TableCell>
+                        <TableCell>{r.name}</TableCell>
+                        <TableCell className="font-mono text-gray-500">{r.email}</TableCell>
+                        <TableCell className="font-mono">{r.phone || '—'}</TableCell>
+                        <TableCell className="text-center">
+                          <Badge variant={r.partnerStatus === 'active' ? 'approved' : 'pending'}>
+                            {r.partnerStatus || 'active'}
+                          </Badge>
+                        </TableCell>
                       </>
                     )}
                     {reportType === 'cinemas' && (
                       <>
-                        <td className="px-4 py-3 font-bold text-[#222432]">{r.name}</td>
-                        <td className="px-4 py-3 text-[#F84464] font-semibold">{r.city}</td>
-                        <td className="px-4 py-3 text-gray-500">{r.state || '—'}</td>
-                        <td className="px-4 py-3 text-gray-500 truncate max-w-xs">{r.address}</td>
-                        <td className="px-4 py-3 text-center uppercase text-[10px] font-bold text-emerald-600">{r.status}</td>
+                        <TableCell className="font-bold text-[#222432]">{r.name}</TableCell>
+                        <TableCell className="text-[#F84464] font-semibold">{r.city}</TableCell>
+                        <TableCell className="text-gray-500">{r.state || '—'}</TableCell>
+                        <TableCell className="text-gray-500 truncate max-w-xs">{r.address}</TableCell>
+                        <TableCell className="text-center">
+                          <Badge variant={r.status === 'active' ? 'approved' : 'neutral'}>
+                            {r.status}
+                          </Badge>
+                        </TableCell>
                       </>
                     )}
                     {reportType === 'movies' && (
                       <>
-                        <td className="px-4 py-3 font-bold text-[#222432]">{r.title}</td>
-                        <td className="px-4 py-3">{r.language}</td>
-                        <td className="px-4 py-3">{r.certificate}</td>
-                        <td className="px-4 py-3 font-mono">{r.duration}</td>
-                        <td className="px-4 py-3 font-bold text-emerald-600">{r.rating}/10</td>
-                        <td className="px-4 py-3 text-center uppercase text-[10px] font-bold text-[#F84464]">{r.status}</td>
+                        <TableCell className="font-bold text-[#222432]">{r.title}</TableCell>
+                        <TableCell>{r.language}</TableCell>
+                        <TableCell className="font-mono">{r.certificate}</TableCell>
+                        <TableCell className="font-mono">{r.duration}</TableCell>
+                        <TableCell className="font-bold text-[#4ABD5D]">★ {r.rating}/10</TableCell>
+                        <TableCell className="text-center">
+                          <Badge variant={r.status === 'released' ? 'approved' : 'neutral'}>
+                            {r.status}
+                          </Badge>
+                        </TableCell>
                       </>
                     )}
-                  </tr>
-                ))
-              ) : (
-                <tr>
-                  <td colSpan="7" className="py-10 text-center text-gray-400">
-                    No records found for the chosen date range and criteria.
-                  </td>
-                </tr>
-              )}
-            </tbody>
-          </table>
-        </div>
-      </div>
+                  </TableRow>
+                ))}
+              </TableBody>
+            </Table>
+          ) : (
+            <div className="py-12">
+              <EmptyState
+                icon={BarChart3}
+                title="No Audit Records Found"
+                description="Try adjusting your date range filter or select another report category."
+              />
+            </div>
+          )}
+        </CardContent>
+      </Card>
     </div>
   );
 }

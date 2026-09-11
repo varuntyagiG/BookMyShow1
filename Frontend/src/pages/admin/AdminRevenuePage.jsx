@@ -2,15 +2,33 @@ import React, { useState, useEffect } from 'react';
 import { adminApi } from '../../services/adminApi';
 import {
   TrendingUp,
-  IndianRupee,
   Building2,
   CheckCircle,
-  Loader2,
   Download,
-  Percent,
-  Calendar,
-  Sparkles
+  IndianRupee,
+  Receipt,
+  Wallet,
+  ArrowUpRight
 } from 'lucide-react';
+import {
+  PageHeader,
+  MetricCard,
+  Card,
+  CardHeader,
+  CardTitle,
+  CardDescription,
+  CardContent,
+  Table,
+  TableHeader,
+  TableHead,
+  TableBody,
+  TableRow,
+  TableCell,
+  Badge,
+  Button,
+  EmptyState,
+  Skeleton
+} from '../../components/ui';
 
 export default function AdminRevenuePage() {
   const [revenueData, setRevenueData] = useState(null);
@@ -60,151 +78,139 @@ export default function AdminRevenuePage() {
 
   return (
     <div className="space-y-6">
-      {/* Header */}
-      <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4">
-        <div>
-          <h1 className="text-xl sm:text-2xl font-black text-[#222432] tracking-tight flex items-center gap-2">
-            <TrendingUp className="w-6 h-6 text-[#F84464]" />
-            <span>Commercial Revenue &amp; Partner Settlements</span>
-          </h1>
-          <p className="text-xs text-gray-500 mt-1">
-            Platform convenience fee earnings, box office revenue splits, and cinema partner payout reconciliations.
-          </p>
-        </div>
+      {/* Page Header */}
+      <PageHeader
+        title="Commercial Revenue & Partner Settlements"
+        subtitle="Platform convenience fee earnings, box office revenue splits, and cinema partner payout reconciliations."
+        icon={TrendingUp}
+        badge="Financial Telemetry"
+        actions={
+          <Button
+            variant="outline"
+            icon={Download}
+            onClick={handleExportCSV}
+            disabled={!partnerSettlements.length}
+          >
+            Export Settlements CSV
+          </Button>
+        }
+      />
 
-        <button
-          onClick={handleExportCSV}
-          className="flex items-center gap-2 px-4 py-2.5 rounded-xl bg-white hover:bg-gray-50 text-[#222432] text-xs font-bold transition border border-[#EEEEF2] shadow-sm cursor-pointer self-start sm:self-auto"
-        >
-          <Download className="w-4 h-4 text-[#F84464]" />
-          <span>Export Settlements CSV</span>
-        </button>
-      </div>
-
-      {/* KPI Cards */}
+      {/* Financial KPIs */}
       {loading ? (
-        <div className="py-20 text-center text-gray-400">
-          <Loader2 className="w-8 h-8 text-[#F84464] animate-spin mx-auto mb-2" />
-          <p className="text-xs">Computing platform financial statements...</p>
+        <div className="grid grid-cols-1 sm:grid-cols-3 gap-5">
+          <Skeleton className="h-32 rounded-2xl" />
+          <Skeleton className="h-32 rounded-2xl" />
+          <Skeleton className="h-32 rounded-2xl" />
         </div>
       ) : (
-        <>
-          <div className="grid grid-cols-1 sm:grid-cols-3 gap-5">
-            {/* Total Gross Collections */}
-            <div className="bg-white border border-[#EEEEF2] p-6 rounded-3xl shadow-sm hover:shadow-md transition relative overflow-hidden">
-              <div className="w-full h-1.5 bg-slate-400 absolute top-0 left-0" />
-              <span className="text-[10px] font-black text-gray-400 uppercase tracking-wider block mb-1">
-                Gross Booking Value (GBV)
-              </span>
-              <div className="text-3xl font-black text-[#222432] tracking-tight font-mono">
-                ₹{(revenueData?.totalGross || 0).toLocaleString('en-IN')}
-              </div>
-              <p className="text-xs text-gray-500 mt-2">
-                Accumulated across {revenueData?.totalBookings || 0} confirmed ticket bookings
-              </p>
-            </div>
+        <div className="grid grid-cols-1 sm:grid-cols-3 gap-5">
+          <MetricCard
+            title="Gross Booking Value (GBV)"
+            value={`₹${(revenueData?.totalGross || 0).toLocaleString('en-IN')}`}
+            subtitle={`Accumulated across ${revenueData?.totalBookings || 0} confirmed ticket bookings`}
+            icon={Receipt}
+            variant="default"
+          />
 
-            {/* Platform Revenue */}
-            <div className="bg-white border border-[#EEEEF2] p-6 rounded-3xl shadow-sm hover:shadow-md transition relative overflow-hidden">
-              <div className="w-full h-1.5 bg-[#F84464] absolute top-0 left-0" />
-              <span className="text-[10px] font-black text-[#F84464] uppercase tracking-wider block mb-1">
-                Platform Revenue (Convenience Fees)
-              </span>
-              <div className="text-3xl font-black text-[#F84464] tracking-tight font-mono">
-                ₹{(revenueData?.platformFee || 0).toLocaleString('en-IN')}
-              </div>
-              <p className="text-xs text-gray-500 mt-2">
-                Platform service margin retained from booking transactions
-              </p>
-            </div>
+          <MetricCard
+            title="Platform Net Earnings"
+            value={`₹${(revenueData?.platformFee || 0).toLocaleString('en-IN')}`}
+            subtitle="Convenience margin retained from booking transactions"
+            icon={TrendingUp}
+            variant="brand"
+          />
 
-            {/* Partner Box Office Share */}
-            <div className="bg-white border border-[#EEEEF2] p-6 rounded-3xl shadow-sm hover:shadow-md transition relative overflow-hidden">
-              <div className="w-full h-1.5 bg-[#4ABD5D] absolute top-0 left-0" />
-              <span className="text-[10px] font-black text-[#4ABD5D] uppercase tracking-wider block mb-1">
-                Partner Box Office Share
-              </span>
-              <div className="text-3xl font-black text-[#4ABD5D] tracking-tight font-mono">
-                ₹{(revenueData?.partnerShare || 0).toLocaleString('en-IN')}
-              </div>
-              <p className="text-xs text-gray-500 mt-2">
-                Accredited box office earnings due to multiplex operators
-              </p>
-            </div>
-          </div>
-
-          {/* Partner Settlement Ledger */}
-          <div className="bg-white border border-[#EEEEF2] rounded-3xl overflow-hidden shadow-sm">
-            <div className="p-5 border-b border-[#EEEEF2] flex items-center justify-between">
-              <div>
-                <h3 className="text-sm font-bold text-[#222432] uppercase tracking-wider">
-                  Partner Settlement &amp; Payout Audit Ledger
-                </h3>
-                <p className="text-xs text-gray-500 mt-0.5">Calculated net remittances owed to cinema operators</p>
-              </div>
-              <span className="text-xs font-bold text-gray-600 bg-gray-100 px-3 py-1 rounded-full">
-                {partnerSettlements.length} Cinema Partners
-              </span>
-            </div>
-
-            <div className="overflow-x-auto">
-              <table className="w-full text-left text-xs text-[#222432]">
-                <thead className="bg-[#F9F9FB] text-gray-400 uppercase text-[10px] font-black tracking-wider border-b border-[#EEEEF2]">
-                  <tr>
-                    <th className="px-5 py-3.5">Cinema Operator Circuit</th>
-                    <th className="px-5 py-3.5">Billing Email</th>
-                    <th className="px-5 py-3.5 text-center">Transactions</th>
-                    <th className="px-5 py-3.5 text-right">Gross Collections</th>
-                    <th className="px-5 py-3.5 text-right">Platform Fee Share</th>
-                    <th className="px-5 py-3.5 text-right font-black text-[#4ABD5D]">Net Payable</th>
-                    <th className="px-5 py-3.5 text-center">Settlement Status</th>
-                  </tr>
-                </thead>
-                <tbody className="divide-y divide-[#EEEEF2] font-medium">
-                  {partnerSettlements.length > 0 ? (
-                    partnerSettlements.map((p, idx) => (
-                      <tr key={idx} className="hover:bg-gray-50/80 transition">
-                        <td className="px-5 py-3.5">
-                          <div className="font-bold text-[#222432] flex items-center gap-2">
-                            <Building2 className="w-4 h-4 text-amber-500 shrink-0" />
-                            <span>{p.partnerName}</span>
-                          </div>
-                        </td>
-                        <td className="px-5 py-3.5 text-gray-500 font-mono text-xs">
-                          {p.partnerEmail || '—'}
-                        </td>
-                        <td className="px-5 py-3.5 text-center font-mono">
-                          {p.bookingsCount}
-                        </td>
-                        <td className="px-5 py-3.5 text-right font-mono font-bold text-[#222432]">
-                          ₹{p.grossRevenue.toLocaleString('en-IN')}
-                        </td>
-                        <td className="px-5 py-3.5 text-right font-mono text-[#F84464] font-semibold">
-                          ₹{p.convenienceFee.toLocaleString('en-IN')}
-                        </td>
-                        <td className="px-5 py-3.5 text-right font-mono font-black text-[#4ABD5D] text-sm">
-                          ₹{p.netPayable.toLocaleString('en-IN')}
-                        </td>
-                        <td className="px-5 py-3.5 text-center">
-                          <span className="inline-flex items-center gap-1 text-[10px] font-bold px-2.5 py-1 rounded-full bg-emerald-50 text-emerald-600 border border-emerald-200">
-                            <CheckCircle className="w-3 h-3" /> Reconciled
-                          </span>
-                        </td>
-                      </tr>
-                    ))
-                  ) : (
-                    <tr>
-                      <td colSpan="7" className="py-10 text-center text-gray-400">
-                        No partner settlements recorded.
-                      </td>
-                    </tr>
-                  )}
-                </tbody>
-              </table>
-            </div>
-          </div>
-        </>
+          <MetricCard
+            title="Partner Box Office Share"
+            value={`₹${(revenueData?.partnerShare || 0).toLocaleString('en-IN')}`}
+            subtitle="Box office admissions remittances due to multiplex partners"
+            icon={Wallet}
+            variant="success"
+          />
+        </div>
       )}
+
+      {/* Partner Settlement Ledger */}
+      <Card>
+        <CardHeader className="flex flex-col sm:flex-row sm:items-center justify-between gap-3 pb-4">
+          <div>
+            <CardTitle>Partner Settlement & Payout Audit Ledger</CardTitle>
+            <CardDescription>
+              Calculated net remittances owed to cinema operator circuits based on confirmed admissions
+            </CardDescription>
+          </div>
+          <Badge variant="neutral" pill>
+            {partnerSettlements.length} Cinema Partners
+          </Badge>
+        </CardHeader>
+
+        <CardContent className="p-0">
+          {loading ? (
+            <div className="p-6 space-y-3">
+              {[...Array(5)].map((_, i) => (
+                <Skeleton key={i} className="h-12 w-full rounded-xl" />
+              ))}
+            </div>
+          ) : partnerSettlements.length > 0 ? (
+            <Table>
+              <TableHeader>
+                <TableRow>
+                  <TableHead>Cinema Operator Circuit</TableHead>
+                  <TableHead>Billing Email</TableHead>
+                  <TableHead className="text-center">Transactions</TableHead>
+                  <TableHead className="text-right">Gross Collections</TableHead>
+                  <TableHead className="text-right">Platform Fee Share</TableHead>
+                  <TableHead className="text-right text-[#4ABD5D]">Net Remittance</TableHead>
+                  <TableHead className="text-center">Audit Status</TableHead>
+                </TableRow>
+              </TableHeader>
+              <TableBody>
+                {partnerSettlements.map((p, idx) => (
+                  <TableRow key={idx} hover>
+                    <TableCell>
+                      <div className="flex items-center gap-2.5">
+                        <div className="w-8 h-8 rounded-lg bg-amber-50 border border-amber-200/60 flex items-center justify-center shrink-0">
+                          <Building2 className="w-4 h-4 text-amber-600" />
+                        </div>
+                        <span className="font-bold text-[#222432]">{p.partnerName}</span>
+                      </div>
+                    </TableCell>
+                    <TableCell className="font-mono text-xs text-gray-500">
+                      {p.partnerEmail || '—'}
+                    </TableCell>
+                    <TableCell className="text-center font-mono font-medium">
+                      {p.bookingsCount}
+                    </TableCell>
+                    <TableCell className="text-right font-mono font-bold text-[#222432]">
+                      ₹{p.grossRevenue.toLocaleString('en-IN')}
+                    </TableCell>
+                    <TableCell className="text-right font-mono text-[#F84464] font-semibold">
+                      ₹{p.convenienceFee.toLocaleString('en-IN')}
+                    </TableCell>
+                    <TableCell className="text-right font-mono font-black text-[#4ABD5D] text-sm">
+                      ₹{p.netPayable.toLocaleString('en-IN')}
+                    </TableCell>
+                    <TableCell className="text-center">
+                      <Badge variant="approved" dot>
+                        Reconciled
+                      </Badge>
+                    </TableCell>
+                  </TableRow>
+                ))}
+              </TableBody>
+            </Table>
+          ) : (
+            <div className="py-12">
+              <EmptyState
+                icon={TrendingUp}
+                title="No Partner Settlements Yet"
+                description="When customer bookings are finalized, partner payout ledgers and platform fee calculations will populate here."
+              />
+            </div>
+          )}
+        </CardContent>
+      </Card>
     </div>
   );
 }

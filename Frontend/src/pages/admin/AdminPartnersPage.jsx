@@ -6,16 +6,31 @@ import {
   CheckCircle,
   XCircle,
   AlertTriangle,
-  Loader2,
-  Tv,
   Store,
   Calendar,
   IndianRupee,
   X,
   ShieldCheck,
-  ShieldAlert,
-  ArrowUpRight
+  Tv,
+  ArrowRight
 } from 'lucide-react';
+import {
+  Button,
+  Badge,
+  Card,
+  PageHeader,
+  Table,
+  TableHeader,
+  TableHead,
+  TableBody,
+  TableRow,
+  TableCell,
+  Input,
+  Select,
+  Modal,
+  EmptyState,
+  SkeletonTableRows
+} from '../../components/ui';
 
 export default function AdminPartnersPage() {
   const [partners, setPartners] = useState([]);
@@ -64,7 +79,7 @@ export default function AdminPartnersPage() {
         setPartnerCinemas(res.cinemas || []);
       }
     } catch (err) {
-      alert(err.message || 'Failed to load partner details.');
+      console.error('Failed to load partner details:', err);
     } finally {
       setDrawerLoading(false);
     }
@@ -98,317 +113,299 @@ export default function AdminPartnersPage() {
         setStatusModal({ isOpen: false, partner: null, nextStatus: '', reason: '', submitting: false });
       }
     } catch (err) {
-      alert(err.message || 'Failed to update partner status.');
+      console.error('Failed to update partner status:', err);
       setStatusModal((prev) => ({ ...prev, submitting: false }));
     }
   };
 
   return (
     <div className="space-y-6 max-w-7xl mx-auto text-[#222432]">
-      {/* Header */}
-      <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4">
-        <div>
-          <h1 className="text-xl sm:text-2xl font-black text-[#222432] tracking-tight flex items-center gap-2">
-            <Building2 className="w-6 h-6 text-amber-500" />
-            <span>Cinema Partners &amp; Multiplex Operators</span>
-          </h1>
-          <p className="text-xs text-gray-500 mt-1">
-            Review operator applications, enforce partner suspension policies, and audit multiplex circuits.
-          </p>
-        </div>
+      {/* Page Header */}
+      <PageHeader
+        title="Cinema Partners &amp; Vendors"
+        subtitle="Review commercial theatre partners, onboarding lifecycle approvals, and active multiplex footprints."
+        icon={Building2}
+        badge="B2B Network"
+      />
 
-        <div className="flex items-center gap-2 text-xs">
-          <span className="font-bold text-[#222432] bg-white px-3.5 py-2 rounded-xl border border-[#EEEEF2] shadow-xs">
-            Total Partners: {partners.length}
-          </span>
-        </div>
-      </div>
+      {/* Filter and Search Bar */}
+      <Card className="p-4 sm:p-5">
+        <div className="flex flex-col sm:flex-row items-center justify-between gap-3">
+          <div className="w-full sm:w-80">
+            <Input
+              placeholder="Search partner, business name, or email..."
+              icon={Search}
+              value={search}
+              onChange={(e) => setSearch(e.target.value)}
+            />
+          </div>
 
-      {/* Filter Bar */}
-      <div className="bg-white border border-[#EEEEF2] p-4 rounded-2xl shadow-sm flex flex-col sm:flex-row items-center justify-between gap-3">
-        <div className="relative w-full sm:w-80">
-          <Search className="absolute left-3.5 top-3 w-4 h-4 text-gray-400" />
-          <input
-            type="text"
-            placeholder="Search by business name or email..."
-            value={search}
-            onChange={(e) => setSearch(e.target.value)}
-            className="w-full pl-10 pr-4 py-2 bg-gray-50 border border-gray-200 rounded-xl text-xs text-[#222432] placeholder-gray-400 focus:bg-white focus:outline-none focus:border-[#F84464] focus:ring-2 focus:ring-[#F84464]/20 transition"
-          />
+          <div className="flex items-center gap-3 w-full sm:w-auto">
+            <Select
+              value={statusFilter}
+              onChange={(e) => setStatusFilter(e.target.value)}
+              options={[
+                { value: 'all', label: 'All Partner Statuses' },
+                { value: 'approved', label: 'Approved & Active' },
+                { value: 'pending', label: 'Pending Onboarding' },
+                { value: 'suspended', label: 'Suspended' }
+              ]}
+              wrapperClassName="w-full sm:w-56"
+            />
+          </div>
         </div>
-
-        <div className="flex items-center gap-2 w-full sm:w-auto">
-          <span className="text-xs font-bold text-gray-500">Lifecycle:</span>
-          <select
-            value={statusFilter}
-            onChange={(e) => setStatusFilter(e.target.value)}
-            className="bg-gray-50 border border-gray-200 text-xs text-[#222432] font-semibold px-3 py-2 rounded-xl focus:bg-white focus:outline-none focus:border-[#F84464] transition"
-          >
-            <option value="all">All Lifecycle States</option>
-            <option value="active">Active Operators</option>
-            <option value="pending">Pending Approval</option>
-            <option value="approved">Approved</option>
-            <option value="suspended">Suspended Operators</option>
-          </select>
-        </div>
-      </div>
+      </Card>
 
       {/* Partners Table */}
-      <div className="bg-white border border-[#EEEEF2] rounded-3xl overflow-hidden shadow-sm">
-        <div className="overflow-x-auto">
-          <table className="w-full text-left text-xs text-[#222432]">
-            <thead className="bg-[#F9F9FB] border-b border-[#EEEEF2] text-gray-400 uppercase text-[10px] font-black tracking-wider">
-              <tr>
-                <th className="px-5 py-3.5">Cinema Operator / Circuit</th>
-                <th className="px-5 py-3.5">Official Contact</th>
-                <th className="px-5 py-3.5 text-center">Cinemas</th>
-                <th className="px-5 py-3.5 text-center">Screens</th>
-                <th className="px-5 py-3.5 text-right">Gross Box Office</th>
-                <th className="px-5 py-3.5 text-center">Lifecycle Status</th>
-                <th className="px-5 py-3.5 text-right">Actions</th>
-              </tr>
-            </thead>
-            <tbody className="divide-y divide-[#EEEEF2] font-medium">
-              {loading ? (
-                <tr>
-                  <td colSpan="7" className="py-12 text-center text-gray-400">
-                    <Loader2 className="w-6 h-6 text-[#F84464] animate-spin mx-auto mb-2" />
-                    <span>Loading cinema partner network...</span>
-                  </td>
-                </tr>
-              ) : partners.length > 0 ? (
-                partners.map((partner) => {
-                  const status = partner.partnerStatus || 'active';
-                  return (
-                    <tr key={partner._id} className="hover:bg-gray-50/80 transition">
-                      <td className="px-5 py-3.5">
-                        <div className="font-bold text-[#222432] flex items-center gap-2.5">
-                          <div className="w-8 h-8 rounded-xl bg-amber-50 text-amber-600 flex items-center justify-center font-black text-xs border border-amber-200">
-                            <Building2 className="w-4 h-4" />
-                          </div>
-                          <div>
-                            <div className="font-bold text-[#222432] leading-tight">
-                              {partner.businessName || partner.name}
-                            </div>
-                            <div className="text-[10px] text-gray-500 font-normal">{partner.name}</div>
-                          </div>
+      <Card className="overflow-hidden p-0">
+        <Table>
+          <TableHeader>
+            <TableRow hover={false}>
+              <TableHead>Partner Company</TableHead>
+              <TableHead>Representative</TableHead>
+              <TableHead>Cinemas</TableHead>
+              <TableHead>Total Screens</TableHead>
+              <TableHead>Gross Box Office</TableHead>
+              <TableHead>Verification Status</TableHead>
+              <TableHead className="text-right">Actions</TableHead>
+            </TableRow>
+          </TableHeader>
+          <TableBody>
+            {loading ? (
+              <SkeletonTableRows rows={6} cols={7} />
+            ) : partners.length > 0 ? (
+              partners.map((p) => {
+                const isPending = p.partnerStatus === 'pending';
+                const isSuspended = p.partnerStatus === 'suspended';
+                const isApproved = p.partnerStatus === 'approved' || p.partnerStatus === 'active';
+
+                return (
+                  <TableRow key={p._id || p.id}>
+                    <TableCell>
+                      <div className="flex items-center gap-2.5">
+                        <div className="w-8 h-8 rounded-xl bg-amber-50 text-amber-600 font-black text-xs flex items-center justify-center shrink-0 border border-amber-100">
+                          {p.businessName?.[0]?.toUpperCase() || p.name?.[0]?.toUpperCase() || 'P'}
                         </div>
-                      </td>
-                      <td className="px-5 py-3.5">
-                        <div className="text-[#222432] font-medium">{partner.email}</div>
-                        <div className="text-[10px] text-gray-400 font-mono">{partner.phone || partner.partnerPhone || '—'}</div>
-                      </td>
-                      <td className="px-5 py-3.5 text-center">
-                        <span className="font-mono font-bold text-[#222432] bg-gray-100 px-2.5 py-0.5 rounded-md">
-                          {partner.cinemasCount || 0}
-                        </span>
-                      </td>
-                      <td className="px-5 py-3.5 text-center">
-                        <span className="font-mono font-bold text-sky-600 bg-sky-50 px-2.5 py-0.5 rounded-md">
-                          {partner.screensCount || 0}
-                        </span>
-                      </td>
-                      <td className="px-5 py-3.5 text-right font-mono font-bold text-[#222432]">
-                        ₹{(partner.grossRevenue || 0).toLocaleString('en-IN')}
-                      </td>
-                      <td className="px-5 py-3.5 text-center">
-                        <span
-                          className={`inline-flex items-center gap-1 text-[10px] font-black uppercase tracking-wider px-2.5 py-0.5 rounded-full ${
-                            status === 'active' || status === 'approved'
-                              ? 'bg-[#4ABD5D]/10 text-[#4ABD5D] border border-[#4ABD5D]/20'
-                              : status === 'suspended'
-                              ? 'bg-[#F84464]/10 text-[#F84464] border border-[#F84464]/20'
-                              : 'bg-amber-50 text-amber-600 border border-amber-200'
-                          }`}
+                        <div className="min-w-0">
+                          <div className="font-bold text-[#222432] truncate">
+                            {p.businessName || p.name}
+                          </div>
+                          <div className="text-[11px] text-gray-400 truncate">{p.email}</div>
+                        </div>
+                      </div>
+                    </TableCell>
+
+                    <TableCell className="text-gray-600">
+                      {p.name || '—'}
+                    </TableCell>
+
+                    <TableCell>
+                      <span className="font-bold text-[#222432]">{p.cinemasCount || 0}</span>
+                    </TableCell>
+
+                    <TableCell>
+                      <span className="font-bold text-[#222432]">{p.screensCount || 0}</span>
+                    </TableCell>
+
+                    <TableCell className="font-black text-[#222432]">
+                      ₹{(p.grossRevenue || 0).toLocaleString('en-IN')}
+                    </TableCell>
+
+                    <TableCell>
+                      <Badge
+                        variant={isApproved ? 'approved' : isPending ? 'pending' : 'suspended'}
+                        dot
+                      >
+                        {p.partnerStatus || 'Pending'}
+                      </Badge>
+                    </TableCell>
+
+                    <TableCell className="text-right">
+                      <div className="flex items-center justify-end gap-2">
+                        <Button
+                          variant="secondary"
+                          size="xs"
+                          onClick={() => handleOpenDetail(p._id || p.id)}
                         >
-                          {status}
-                        </span>
-                      </td>
-                      <td className="px-5 py-3.5 text-right space-x-2">
-                        <button
-                          onClick={() => handleOpenDetail(partner._id)}
-                          className="px-2.5 py-1 bg-gray-100 hover:bg-gray-200 text-[#222432] rounded-lg text-xs font-bold transition cursor-pointer"
-                        >
-                          Properties
-                        </button>
-                        {status === 'suspended' ? (
-                          <button
+                          Audit
+                        </Button>
+
+                        {isPending && (
+                          <Button
+                            variant="primary"
+                            size="xs"
                             onClick={() =>
                               setStatusModal({
                                 isOpen: true,
-                                partner,
-                                nextStatus: 'active',
-                                reason: 'Restoration of operations',
+                                partner: p,
+                                nextStatus: 'approved',
+                                reason: '',
                                 submitting: false
                               })
                             }
-                            className="px-2.5 py-1 bg-[#4ABD5D]/10 hover:bg-[#4ABD5D] text-[#4ABD5D] hover:text-white rounded-lg text-xs font-bold transition cursor-pointer"
                           >
-                            Reactivate
-                          </button>
-                        ) : (
-                          <button
+                            Approve
+                          </Button>
+                        )}
+
+                        {isApproved && (
+                          <Button
+                            variant="destructive"
+                            size="xs"
                             onClick={() =>
                               setStatusModal({
                                 isOpen: true,
-                                partner,
+                                partner: p,
                                 nextStatus: 'suspended',
                                 reason: '',
                                 submitting: false
                               })
                             }
-                            className="px-2.5 py-1 bg-[#F84464]/10 hover:bg-[#F84464] text-[#F84464] hover:text-white rounded-lg text-xs font-bold transition cursor-pointer"
                           >
                             Suspend
-                          </button>
+                          </Button>
                         )}
-                      </td>
-                    </tr>
-                  );
-                })
-              ) : (
-                <tr>
-                  <td colSpan="7" className="py-10 text-center text-gray-400">
-                    No cinema partners found matching filter criteria.
-                  </td>
-                </tr>
-              )}
-            </tbody>
-          </table>
-        </div>
-      </div>
 
-      {/* Partner Inspection Slide-Over */}
+                        {isSuspended && (
+                          <Button
+                            variant="secondary"
+                            size="xs"
+                            onClick={() =>
+                              setStatusModal({
+                                isOpen: true,
+                                partner: p,
+                                nextStatus: 'approved',
+                                reason: '',
+                                submitting: false
+                              })
+                            }
+                          >
+                            Reactivate
+                          </Button>
+                        )}
+                      </div>
+                    </TableCell>
+                  </TableRow>
+                );
+              })
+            ) : (
+              <TableRow hover={false}>
+                <TableCell colSpan={7} className="py-12">
+                  <EmptyState
+                    icon={Building2}
+                    title="No Cinema Partners Found"
+                    description="No partner records match your filter criteria."
+                  />
+                </TableCell>
+              </TableRow>
+            )}
+          </TableBody>
+        </Table>
+      </Card>
+
+      {/* Detail Slide-Over Drawer */}
       {selectedPartner && (
-        <div className="fixed inset-0 z-50 flex justify-end bg-black/60 backdrop-blur-xs animate-in fade-in duration-150">
-          <div className="w-full max-w-lg bg-white border-l border-[#EEEEF2] h-full overflow-y-auto p-6 flex flex-col justify-between shadow-2xl">
-            <div>
-              <div className="flex items-center justify-between pb-4 border-b border-gray-100 mb-6">
+        <div className="fixed inset-0 z-50 flex justify-end">
+          <div
+            className="fixed inset-0 bg-black/75 backdrop-blur-xs transition-opacity"
+            onClick={() => setSelectedPartner(null)}
+          />
+
+          <div className="relative w-full max-w-md bg-white h-full shadow-2xl z-10 flex flex-col overflow-hidden animate-in slide-in-from-right duration-200">
+            <div className="p-5 border-b border-gray-100 flex items-center justify-between bg-gray-50/50">
+              <div className="flex items-center gap-2.5">
+                <div className="w-10 h-10 rounded-xl bg-linear-to-br from-amber-500 to-amber-600 text-white flex items-center justify-center font-black text-sm shadow-xs">
+                  {selectedPartner.businessName?.[0]?.toUpperCase() || 'P'}
+                </div>
                 <div>
-                  <h3 className="text-base font-black text-[#222432]">Partner Multiplex Portfolio</h3>
-                  <p className="text-xs text-gray-400">{selectedPartner.businessName}</p>
-                </div>
-                <button
-                  onClick={() => setSelectedPartner(null)}
-                  className="p-1.5 text-gray-400 hover:text-[#222432] hover:bg-gray-100 rounded-lg cursor-pointer transition"
-                >
-                  <X className="w-5 h-5" />
-                </button>
-              </div>
-
-              {/* Partner Summary Card */}
-              <div className="bg-[#F9F9FB] p-4 rounded-2xl border border-[#EEEEF2] mb-6 space-y-3 text-xs">
-                <div className="flex items-center justify-between">
-                  <span className="text-gray-500">Account Owner:</span>
-                  <strong className="text-[#222432]">{selectedPartner.name}</strong>
-                </div>
-                <div className="flex items-center justify-between">
-                  <span className="text-gray-500">Email:</span>
-                  <span className="font-mono text-[#222432]">{selectedPartner.email}</span>
-                </div>
-                <div className="flex items-center justify-between">
-                  <span className="text-gray-500">Business Address:</span>
-                  <span className="text-right text-gray-600 max-w-xs">{selectedPartner.businessAddress || 'Not provided'}</span>
-                </div>
-                <div className="flex items-center justify-between pt-2 border-t border-gray-200/70">
-                  <span className="text-gray-500">Gross Collections:</span>
-                  <span className="font-mono font-black text-[#4ABD5D] text-sm">
-                    ₹{(selectedPartner.grossRevenue || 0).toLocaleString('en-IN')}
-                  </span>
+                  <h3 className="text-sm font-black text-[#222432]">{selectedPartner.businessName || selectedPartner.name}</h3>
+                  <p className="text-[11px] text-gray-500">{selectedPartner.email}</p>
                 </div>
               </div>
 
-              {/* Managed Venues */}
-              <h4 className="text-xs font-black text-gray-400 uppercase tracking-wider mb-3">
-                Managed Cinema Multiplexes ({partnerCinemas.length})
-              </h4>
+              <button
+                type="button"
+                onClick={() => setSelectedPartner(null)}
+                className="p-1.5 text-gray-400 hover:text-gray-700 hover:bg-gray-100 rounded-full transition cursor-pointer"
+              >
+                <X className="w-5 h-5" />
+              </button>
+            </div>
+
+            <div className="flex-1 overflow-y-auto p-5 space-y-5">
+              <div className="grid grid-cols-2 gap-3">
+                <div className="p-3.5 rounded-xl bg-gray-50 border border-gray-100">
+                  <div className="text-[10px] font-bold text-gray-400 uppercase tracking-wider">Multiplexes</div>
+                  <div className="text-lg font-black text-[#222432] mt-0.5">{selectedPartner.cinemasCount || 0}</div>
+                </div>
+
+                <div className="p-3.5 rounded-xl bg-gray-50 border border-gray-100">
+                  <div className="text-[10px] font-bold text-gray-400 uppercase tracking-wider">Managed Screens</div>
+                  <div className="text-lg font-black text-[#222432] mt-0.5">{selectedPartner.screensCount || 0}</div>
+                </div>
+              </div>
 
               <div className="space-y-3">
+                <h4 className="text-xs font-black uppercase tracking-wider text-gray-400">
+                  Venues Under Management ({partnerCinemas.length})
+                </h4>
+
                 {partnerCinemas.length > 0 ? (
                   partnerCinemas.map((c) => (
-                    <div key={c._id} className="p-4 rounded-2xl bg-white border border-[#EEEEF2] text-xs shadow-xs">
-                      <div className="flex items-center justify-between mb-1">
-                        <span className="font-bold text-[#222432] text-sm">{c.name}</span>
-                        <span className="text-[10px] font-bold text-[#F84464] bg-[#F84464]/10 px-2 py-0.5 rounded">
-                          {c.city}
-                        </span>
+                    <div key={c._id} className="p-3 rounded-xl border border-gray-100 bg-gray-50/50 flex items-center justify-between">
+                      <div>
+                        <div className="text-xs font-bold text-[#222432]">{c.name}</div>
+                        <div className="text-[11px] text-gray-500">{c.city} • {c.address}</div>
                       </div>
-                      <p className="text-gray-500 text-xs mt-1">{c.address}</p>
-                      <div className="flex items-center gap-2 mt-3 pt-2 border-t border-gray-100 text-[11px] text-gray-400">
-                        <span>Facilities: {c.facilities?.join(', ') || 'Standard'}</span>
-                      </div>
+                      <Badge variant={c.status === 'active' ? 'active' : 'inactive'} size="xs">
+                        {c.status}
+                      </Badge>
                     </div>
                   ))
                 ) : (
-                  <p className="text-xs text-gray-400 py-6 text-center">No cinemas added yet by this partner.</p>
+                  <p className="text-xs text-gray-400 italic">No cinemas registered by this partner yet.</p>
                 )}
               </div>
             </div>
-
-            <div className="pt-6 border-t border-gray-100">
-              <button
-                onClick={() => setSelectedPartner(null)}
-                className="w-full py-2.5 bg-[#333545] hover:bg-[#222432] text-white rounded-xl text-xs font-bold transition cursor-pointer"
-              >
-                Close Portfolio Inspector
-              </button>
-            </div>
           </div>
         </div>
       )}
 
-      {/* Lifecycle Status Modification Modal */}
-      {statusModal.isOpen && (
-        <div className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-black/60 backdrop-blur-xs">
-          <div className="w-full max-w-md bg-white border border-[#EEEEF2] rounded-3xl p-6 shadow-2xl">
-            <h3 className="text-base font-black text-[#222432] mb-1">
-              Confirm Partner Lifecycle Transition
-            </h3>
-            <p className="text-xs text-gray-500 mb-4">
-              Setting partner status to <strong className="text-[#F84464] uppercase">{statusModal.nextStatus}</strong> for{' '}
-              <span className="text-[#222432] font-bold">{statusModal.partner?.businessName}</span>.
-            </p>
+      {/* Partner Status Modal */}
+      <Modal
+        isOpen={statusModal.isOpen}
+        onClose={() => setStatusModal({ isOpen: false, partner: null, nextStatus: '', reason: '', submitting: false })}
+        title={statusModal.nextStatus === 'approved' ? 'Approve Cinema Partner' : 'Suspend Cinema Partner'}
+        subtitle={`Update operational authorization for "${statusModal.partner?.businessName || statusModal.partner?.name}"`}
+        maxWidth="max-w-md"
+      >
+        <form onSubmit={handleStatusSubmit} className="space-y-4">
+          <Input
+            label="Administrative Reason / Notes"
+            placeholder="E.g. Document verification completed, commercial terms accepted."
+            value={statusModal.reason}
+            onChange={(e) => setStatusModal((prev) => ({ ...prev, reason: e.target.value }))}
+            required
+          />
 
-            <form onSubmit={handleStatusSubmit} className="space-y-4">
-              <div>
-                <label className="block text-xs font-bold text-gray-700 uppercase tracking-wider mb-1.5">
-                  Administrative Reason / Compliance Notes
-                </label>
-                <textarea
-                  rows="3"
-                  value={statusModal.reason}
-                  onChange={(e) => setStatusModal((prev) => ({ ...prev, reason: e.target.value }))}
-                  placeholder="Provide audit reason (e.g. routine audit passed, policy violation, maintenance)..."
-                  className="w-full p-3 bg-gray-50 border border-gray-200 rounded-xl text-xs text-[#222432] placeholder-gray-400 focus:bg-white focus:outline-none focus:border-[#F84464] focus:ring-2 focus:ring-[#F84464]/20 transition"
-                  required
-                />
-              </div>
+          <div className="flex items-center justify-end gap-3 pt-2">
+            <Button
+              variant="secondary"
+              onClick={() => setStatusModal({ isOpen: false, partner: null, nextStatus: '', reason: '', submitting: false })}
+            >
+              Cancel
+            </Button>
 
-              <div className="flex gap-3 pt-2">
-                <button
-                  type="button"
-                  onClick={() => setStatusModal({ isOpen: false, partner: null, nextStatus: '', reason: '', submitting: false })}
-                  className="flex-1 py-2.5 bg-gray-100 hover:bg-gray-200 text-[#222432] rounded-xl text-xs font-bold transition cursor-pointer"
-                >
-                  Cancel
-                </button>
-                <button
-                  type="submit"
-                  disabled={statusModal.submitting}
-                  className={`flex-1 py-2.5 rounded-xl text-xs font-bold transition text-white shadow-lg cursor-pointer ${
-                    statusModal.nextStatus === 'suspended'
-                      ? 'bg-[#F84464] hover:bg-[#E03A58] shadow-[#F84464]/30'
-                      : 'bg-[#4ABD5D] hover:bg-[#3ea14f] shadow-[#4ABD5D]/30'
-                  }`}
-                >
-                  {statusModal.submitting ? 'Applying...' : 'Confirm Status Change'}
-                </button>
-              </div>
-            </form>
+            <Button
+              type="submit"
+              variant={statusModal.nextStatus === 'approved' ? 'primary' : 'destructive'}
+              loading={statusModal.submitting}
+            >
+              Confirm {statusModal.nextStatus === 'approved' ? 'Approval' : 'Suspension'}
+            </Button>
           </div>
-        </div>
-      )}
+        </form>
+      </Modal>
     </div>
   );
 }
-
