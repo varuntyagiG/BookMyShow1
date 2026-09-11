@@ -7,6 +7,7 @@ export default function SubNav() {
 
   const categories = [
     { label: 'Movies', path: '/movies' },
+    { label: 'Cinemas', path: '/cinemas' },
     { label: 'Stream', path: '/stream', badge: 'NEW' },
     { label: 'Events', path: '/events' },
     { label: 'Plays', path: '/plays' },

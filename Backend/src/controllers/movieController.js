@@ -226,14 +226,87 @@ async function getCategoryItems(req, res) {
   }
 }
 
-// Public endpoints for Cities and Offers
+// Public endpoints for Cities, Cinemas, and Offers
 async function getPublicCities(req, res) {
   try {
-    const cities = await City.find({ status: 'active' }).sort({ isPopular: -1, name: 1 });
-    return res.json({ success: true, cities });
+    const defaultCities = await City.find({ status: 'active' }).sort({ isPopular: -1, name: 1 });
+    const cinemaCities = await Cinema.distinct('city', { status: 'active' });
+
+    // Deduplicate and merge cinema cities into the city list so any partner city shows up
+    const cityMap = new Map();
+    defaultCities.forEach(c => {
+      cityMap.set(c.name.toLowerCase().trim(), c.toObject ? c.toObject() : c);
+    });
+
+    cinemaCities.forEach(cityName => {
+      if (cityName && !cityMap.has(cityName.toLowerCase().trim())) {
+        cityMap.set(cityName.toLowerCase().trim(), {
+          _id: cityName,
+          name: cityName.trim(),
+          isPopular: false,
+          status: 'active'
+        });
+      }
+    });
+
+    return res.json({ success: true, cities: Array.from(cityMap.values()) });
   } catch (error) {
     console.error('Error fetching public cities:', error);
     return res.status(500).json({ success: false, message: 'Failed to fetch cities.' });
+  }
+}
+
+async function getPublicCinemas(req, res) {
+  try {
+    const { city, search } = req.query;
+    const filter = { status: 'active' };
+
+    if (city && city !== 'All') {
+      filter.city = { $regex: `^${city.trim()}$`, $options: 'i' };
+    }
+
+    if (search) {
+      filter.$or = [
+        { name: { $regex: search.trim(), $options: 'i' } },
+        { address: { $regex: search.trim(), $options: 'i' } },
+        { city: { $regex: search.trim(), $options: 'i' } }
+      ];
+    }
+
+    const cinemas = await Cinema.find(filter).sort({ name: 1 });
+
+    // For each cinema, attach active shows currently running with populated movie data
+    const enrichedCinemas = await Promise.all(
+      cinemas.map(async (cinema) => {
+        const shows = await Show.find({ cinema: cinema._id, status: 'active' })
+          .populate('movie', 'title posterUrl duration certificate formats rating customId')
+          .populate('screen', 'name screenNumber screenType')
+          .sort({ startTime: 1 });
+
+        const obj = cinema.toObject();
+        obj.id = cinema._id.toString();
+        obj.activeShows = shows.map(s => ({
+          showId: s._id.toString(),
+          movieId: s.movie ? (s.movie.customId || s.movie._id?.toString() || s.movie.toString()) : '',
+          movieTitle: s.movieTitle,
+          posterUrl: s.movie?.posterUrl || '',
+          duration: s.movie?.duration || '',
+          rating: s.movie?.rating || 8.5,
+          format: s.format,
+          startTime: s.startTime,
+          endTime: s.endTime,
+          showDate: s.showDate,
+          ticketPrice: s.ticketPrice,
+          screenName: s.screen ? (s.screen.name || s.screen.screenNumber) : 'Screen 1'
+        }));
+        return obj;
+      })
+    );
+
+    return res.json({ success: true, data: enrichedCinemas });
+  } catch (error) {
+    console.error('Error fetching public cinemas:', error);
+    return res.status(500).json({ success: false, message: 'Failed to fetch cinemas.' });
   }
 }
 
@@ -252,5 +325,6 @@ module.exports = {
   getMovieById,
   getCategoryItems,
   getPublicCities,
+  getPublicCinemas,
   getPublicOffers
 };

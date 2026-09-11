@@ -5,6 +5,7 @@ const {
   getMovieById,
   getCategoryItems,
   getPublicCities,
+  getPublicCinemas,
   getPublicOffers
 } = require('../controllers/movieController');
 
@@ -16,6 +17,7 @@ router.get('/movies', (req, res, next) => {
 router.get('/movies/:id', getMovieById);
 router.get('/categories/:category', getCategoryItems);
 router.get('/cities', getPublicCities);
+router.get('/cinemas', getPublicCinemas);
 router.get('/offers', getPublicOffers);
 
 module.exports = router;

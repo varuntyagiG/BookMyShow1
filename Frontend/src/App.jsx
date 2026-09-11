@@ -14,6 +14,7 @@ import AuthModal from './components/auth/AuthModal';
 // Customer Pages
 import HomePage from './pages/HomePage';
 import MoviesPage from './pages/MoviesPage';
+import CinemasPage from './pages/CinemasPage';
 import MovieDetailsPage from './pages/MovieDetailsPage';
 import StreamPage from './pages/StreamPage';
 import EventsPage from './pages/EventsPage';
@@ -106,6 +107,7 @@ function AppRoutes() {
       >
         <Route path="/" element={<HomePage searchQuery={searchQuery} />} />
         <Route path="/movies" element={<MoviesPage />} />
+        <Route path="/cinemas" element={<CinemasPage />} />
         <Route path="/movies/:id" element={<MovieDetailsPage />} />
         <Route path="/movie/:id" element={<MovieDetailsPage />} />
         <Route path="/stream" element={<StreamPage />} />

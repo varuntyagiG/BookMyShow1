@@ -760,6 +760,13 @@ async function createShow(req, res) {
       status: 'active'
     });
 
+    // Automatically ensure the movie has the cinema's city in its cities array for customer home filtering
+    if (cinema.city) {
+      await Movie.findByIdAndUpdate(movie._id, {
+        $addToSet: { cities: cinema.city }
+      });
+    }
+
     const populated = await Show.findById(show._id)
       .populate('cinema', 'name city')
       .populate('screen', 'name screenNumber totalCapacity')

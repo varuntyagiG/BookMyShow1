@@ -64,6 +64,10 @@ export const contentApi = {
     return request(`/categories/${category}${query ? `?${query}` : ''}`);
   },
   getCities: () => request('/cities'),
+  getCinemas: (params = {}) => {
+    const query = new URLSearchParams(params).toString();
+    return request(`/cinemas${query ? `?${query}` : ''}`);
+  },
   getOffers: () => request('/offers'),
 };
 
