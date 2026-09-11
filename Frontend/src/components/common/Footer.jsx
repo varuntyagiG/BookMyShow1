@@ -86,6 +86,12 @@ export default function Footer() {
               <li><a href="#" className="hover:text-white transition-colors">Contact Support</a></li>
               <li><a href="#" className="hover:text-white transition-colors">Terms &amp; Conditions</a></li>
               <li><a href="#" className="hover:text-white transition-colors">Privacy Policy</a></li>
+              <li className="pt-1">
+                <Link to="/vendor/login" className="text-[#F84464] hover:text-[#ff6b85] font-semibold flex items-center gap-1.5">
+                  <span>Cinema Partner Portal</span>
+                  <span className="text-[9px] bg-[#F84464] text-white font-bold px-1.5 py-0.5 rounded">Partner</span>
+                </Link>
+              </li>
             </ul>
           </div>
         </div>

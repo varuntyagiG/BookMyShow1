@@ -36,6 +36,11 @@ const screenSchema = new mongoose.Schema(
       required: true,
       index: true
     },
+    partner: {
+      type: mongoose.Schema.Types.ObjectId,
+      ref: 'User',
+      index: true
+    },
     screenNumber: {
       type: String,
       required: [true, 'Screen number/identifier is required'],

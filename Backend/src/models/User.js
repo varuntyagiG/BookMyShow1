@@ -27,8 +27,34 @@ const userSchema = new mongoose.Schema(
     },
     role: {
       type: String,
-      enum: ['customer', 'user'],
+      enum: ['customer', 'user', 'cinema_partner'],
       default: 'customer',
+    },
+    businessName: {
+      type: String,
+      trim: true,
+      default: '',
+    },
+    partnerPhone: {
+      type: String,
+      trim: true,
+      default: '',
+    },
+    businessAddress: {
+      type: String,
+      trim: true,
+      default: '',
+    },
+    gstin: {
+      type: String,
+      trim: true,
+      default: '',
+    },
+    partnerStatus: {
+      type: String,
+      enum: ['active', 'suspended'],
+      default: 'active',
+      index: true,
     },
     avatar: {
       type: String,

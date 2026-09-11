@@ -9,6 +9,7 @@ const cors = require('cors');
 const authRoutes = require('./routes/authRoutes');
 const movieRoutes = require('./routes/movieRoutes');
 const bookingRoutes = require('./routes/bookingRoutes');
+const vendorRoutes = require('./routes/vendorRoutes');
 const { connectDB, isDBConnected, closeDB } = require('./config/db');
 
 // 1. Environment Variable Validation
@@ -91,10 +92,11 @@ const healthHandler = (req, res) => {
 app.get('/health', healthHandler);
 app.get('/api/health', healthHandler);
 
-// 4. API Routes (Customer-Only Platform)
+// 4. API Routes (Customer & Cinema Partner Platform)
 app.use('/api/auth', authRoutes);
 app.use('/api', movieRoutes);
 app.use('/api/bookings', bookingRoutes);
+app.use('/api/vendor', vendorRoutes);
 
 // Fallback 404 route
 app.use((req, res) => {

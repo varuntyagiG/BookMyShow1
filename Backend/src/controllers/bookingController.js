@@ -182,6 +182,12 @@ async function createBooking(req, res) {
       ? matchedShow._id
       : (mongoose.Types.ObjectId.isValid(showId) ? showId : null);
 
+    const safePartnerId = (matchedShow?.partner && mongoose.Types.ObjectId.isValid(matchedShow.partner))
+      ? matchedShow.partner
+      : ((matchedCinema?.partner && mongoose.Types.ObjectId.isValid(matchedCinema.partner))
+          ? matchedCinema.partner
+          : null);
+
     // 5. Create Booking Document in MongoDB
     const booking = await Booking.create({
       bookingId,
@@ -203,6 +209,7 @@ async function createBooking(req, res) {
       paymentStatus: 'paid',
       bookingStatus: 'confirmed',
       cinema: safeCinemaId,
+      partner: safePartnerId,
       screen: safeScreenId,
       screenName: matchedScreen ? (matchedScreen.name || matchedScreen.screenNumber || 'Screen 1') : 'Screen 1',
       show: safeShowId,

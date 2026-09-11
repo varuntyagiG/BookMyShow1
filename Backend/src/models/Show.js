@@ -11,6 +11,11 @@ const pricingTiersSchema = new mongoose.Schema(
 
 const showSchema = new mongoose.Schema(
   {
+    partner: {
+      type: mongoose.Schema.Types.ObjectId,
+      ref: 'User',
+      index: true
+    },
     cinema: {
       type: mongoose.Schema.Types.ObjectId,
       ref: 'Cinema',

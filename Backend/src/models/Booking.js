@@ -93,6 +93,11 @@ const bookingSchema = new mongoose.Schema(
       ref: 'Cinema',
       index: true
     },
+    partner: {
+      type: mongoose.Schema.Types.ObjectId,
+      ref: 'User',
+      index: true
+    },
     screen: {
       type: mongoose.Schema.Types.ObjectId,
       ref: 'Screen'

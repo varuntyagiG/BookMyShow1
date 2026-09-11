@@ -94,6 +94,10 @@ const movieSchema = new mongoose.Schema(
       enum: ['published', 'draft', 'archived'],
       default: 'published',
       index: true
+    },
+    addedBy: {
+      type: mongoose.Schema.Types.ObjectId,
+      ref: 'User'
     }
   },
   {

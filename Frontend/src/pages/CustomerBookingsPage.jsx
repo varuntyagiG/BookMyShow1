@@ -218,10 +218,12 @@ export default function CustomerBookingsPage() {
                           className={`text-[10px] font-extrabold uppercase px-2 py-0.5 rounded-full ${
                             isCancelled
                               ? 'bg-gray-100 text-gray-500'
+                              : b.ticketValidated
+                              ? 'bg-emerald-100 text-emerald-800 border border-emerald-300'
                               : 'bg-emerald-50 text-emerald-600 border border-emerald-200'
                           }`}
                         >
-                          {isCancelled ? 'Cancelled' : 'Confirmed'}
+                          {isCancelled ? 'Cancelled' : (b.ticketValidated ? '✓ Checked In' : 'Confirmed')}
                         </span>
                       </div>
                       <span className="text-xs font-black text-[#222432]">
@@ -356,10 +358,16 @@ export default function CustomerBookingsPage() {
                   className={`inline-block mt-1.5 text-[10px] font-extrabold uppercase px-2.5 py-0.5 rounded-full ${
                     activeTicketModal.status === 'cancelled'
                       ? 'bg-gray-200 text-gray-600'
+                      : activeTicketModal.ticketValidated
+                      ? 'bg-emerald-100 text-emerald-800 border border-emerald-300'
                       : 'bg-emerald-100 text-emerald-700'
                   }`}
                 >
-                  {activeTicketModal.status === 'cancelled' ? 'VOID / REFUNDED' : 'GATE TURNSTILE ACTIVE'}
+                  {activeTicketModal.status === 'cancelled'
+                    ? 'VOID / REFUNDED'
+                    : activeTicketModal.ticketValidated
+                    ? '✓ ADMITTED & CHECKED IN AT GATE'
+                    : 'GATE TURNSTILE ACTIVE'}
                 </span>
               </div>
 

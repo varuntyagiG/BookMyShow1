@@ -1,6 +1,7 @@
 import React, { useState } from 'react';
 import { BrowserRouter, Routes, Route, Outlet, Navigate } from 'react-router-dom';
 import { AuthProvider } from './context/AuthContext';
+import { VendorAuthProvider } from './context/VendorAuthContext';
 import { CityProvider } from './context/CityContext';
 
 // Customer Components
@@ -23,6 +24,20 @@ import GiftCardsPage from './pages/GiftCardsPage';
 import OffersPage from './pages/OffersPage';
 import CustomerBookingsPage from './pages/CustomerBookingsPage';
 import CustomerProfilePage from './pages/CustomerProfilePage';
+
+// Cinema Partner (Vendor) Subsystem
+import VendorProtectedRoute from './components/vendor/VendorProtectedRoute';
+import VendorLayout from './components/vendor/VendorLayout';
+import VendorLoginPage from './pages/vendor/VendorLoginPage';
+import VendorSignUpPage from './pages/vendor/VendorSignUpPage';
+import VendorDashboardPage from './pages/vendor/VendorDashboardPage';
+import VendorCinemasPage from './pages/vendor/VendorCinemasPage';
+import VendorScreensPage from './pages/vendor/VendorScreensPage';
+import VendorMoviesPage from './pages/vendor/VendorMoviesPage';
+import VendorShowsPage from './pages/vendor/VendorShowsPage';
+import VendorScannerPage from './pages/vendor/VendorScannerPage';
+import VendorBookingsPage from './pages/vendor/VendorBookingsPage';
+import VendorRevenuePage from './pages/vendor/VendorRevenuePage';
 
 function CustomerLayout({ searchQuery, onSearch }) {
   return (
@@ -54,6 +69,31 @@ function AppRoutes() {
   return (
     <Routes>
       {/* =========================================
+          CINEMA PARTNER (VENDOR) PORTAL
+      ========================================= */}
+      <Route path="/vendor/login" element={<VendorLoginPage />} />
+      <Route path="/vendor/signup" element={<VendorSignUpPage />} />
+
+      <Route
+        path="/vendor"
+        element={
+          <VendorProtectedRoute>
+            <VendorLayout />
+          </VendorProtectedRoute>
+        }
+      >
+        <Route index element={<Navigate to="/vendor/dashboard" replace />} />
+        <Route path="dashboard" element={<VendorDashboardPage />} />
+        <Route path="cinemas" element={<VendorCinemasPage />} />
+        <Route path="screens" element={<VendorScreensPage />} />
+        <Route path="movies" element={<VendorMoviesPage />} />
+        <Route path="shows" element={<VendorShowsPage />} />
+        <Route path="scanner" element={<VendorScannerPage />} />
+        <Route path="bookings" element={<VendorBookingsPage />} />
+        <Route path="revenue" element={<VendorRevenuePage />} />
+      </Route>
+
+      {/* =========================================
           BOOKMYTRIP CUSTOMER PLATFORM
       ========================================= */}
       <Route
@@ -81,7 +121,7 @@ function AppRoutes() {
         <Route path="/signin" element={<SignInPage />} />
         <Route path="/signup" element={<SignUpPage />} />
 
-        {/* Catch-all route safely redirects any disabled/legacy admin or vendor routes to Customer Home */}
+        {/* Catch-all fallback */}
         <Route path="*" element={<Navigate to="/" replace />} />
       </Route>
     </Routes>
@@ -92,11 +132,12 @@ export default function App() {
   return (
     <BrowserRouter>
       <AuthProvider>
-        <CityProvider>
-          <AppRoutes />
-        </CityProvider>
+        <VendorAuthProvider>
+          <CityProvider>
+            <AppRoutes />
+          </CityProvider>
+        </VendorAuthProvider>
       </AuthProvider>
     </BrowserRouter>
   );
 }
-
