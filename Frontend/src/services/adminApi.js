@@ -17,29 +17,64 @@ export async function adminRequest(endpoint, options = {}) {
     headers,
   };
 
-  try {
-    const response = await fetch(`${API_BASE_URL}/admin${endpoint}`, config);
-    let data;
-    const contentType = response.headers.get('content-type') || '';
-    if (contentType.includes('application/json')) {
-      data = await response.json();
-    } else {
-      const text = await response.text();
-      data = { success: false, message: text || `HTTP ${response.status} ${response.statusText}` };
-    }
+  const candidateUrls = [];
+  // 1. Primary relative or configured URL
+  candidateUrls.push(`${API_BASE_URL}/admin${endpoint}`);
 
-    if (!response.ok) {
-      const err = new Error(data.message || 'Platform Admin API request failed');
-      err.data = data;
-      err.status = response.status;
+  // 2. If on localhost and no explicit VITE_API_URL, add direct localhost:5000 and clean /admin paths
+  if (typeof window !== 'undefined' && window.location.hostname === 'localhost' && !rawApiUrl) {
+    candidateUrls.push(`http://localhost:5000/api/admin${endpoint}`);
+    candidateUrls.push(`http://localhost:5000/admin${endpoint}`);
+  }
+
+  // 3. Fallback to production cloud if local backend is not reachable
+  if (typeof window !== 'undefined' && window.location.hostname === 'localhost') {
+    candidateUrls.push(`https://bookmytrip-seven.vercel.app/api/admin${endpoint}`);
+  }
+
+  let lastError = null;
+
+  for (const url of candidateUrls) {
+    try {
+      const response = await fetch(url, config);
+
+      // If 404 or 502/503 and we have other candidates, try next candidate
+      if ((response.status === 404 || response.status === 502 || response.status === 503) && url !== candidateUrls[candidateUrls.length - 1]) {
+        continue;
+      }
+
+      let data;
+      const contentType = response.headers.get('content-type') || '';
+      if (contentType.includes('application/json')) {
+        data = await response.json();
+      } else {
+        const text = await response.text();
+        data = { success: false, message: text || `HTTP ${response.status} ${response.statusText}` };
+      }
+
+      if (!response.ok) {
+        const err = new Error(data.message || 'Platform Admin API request failed');
+        err.data = data;
+        err.status = response.status;
+        throw err;
+      }
+
+      return data;
+    } catch (err) {
+      lastError = err;
+      // If it's a 401/403 credentials error, don't fallback to other servers - rethrow immediately
+      if (err.status === 401 || err.status === 403) {
+        throw err;
+      }
+      // If we have more candidates, continue trying
+      if (url !== candidateUrls[candidateUrls.length - 1]) {
+        continue;
+      }
       throw err;
     }
-
-    return data;
-  } catch (error) {
-    console.error(`Admin API Error on [${options.method || 'GET'}] ${endpoint}:`, error);
-    throw error;
   }
+
+  throw lastError || new Error('All candidate API endpoints failed');
 }
 
 export const adminApi = {

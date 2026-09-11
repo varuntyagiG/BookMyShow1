@@ -36,31 +36,9 @@ const allowedOrigins = [
 ];
 
 app.use(cors({
-  origin: (origin, callback) => {
-    // Allow server-to-server or tools without origin header (e.g. curl, postman, mobile apps)
-    if (!origin) return callback(null, true);
-
-    // Allow if FRONTEND_URL is '*' or in development mode
-    if (allowedOrigins.includes('*') || process.env.FRONTEND_URL === '*' || NODE_ENV === 'development') {
-      return callback(null, true);
-    }
-
-    // Allow explicitly matched origins or any *.vercel.app domain
-    try {
-      const parsedUrl = new URL(origin);
-      if (allowedOrigins.includes(origin) || /\.vercel\.app$/.test(parsedUrl.hostname)) {
-        return callback(null, true);
-      }
-    } catch {
-      if (allowedOrigins.includes(origin)) {
-        return callback(null, true);
-      }
-    }
-
-    return callback(new Error(`Origin ${origin} is not allowed by CORS policy.`));
-  },
+  origin: true,
   credentials: true,
-  methods: ['GET', 'POST', 'PUT', 'DELETE', 'OPTIONS'],
+  methods: ['GET', 'POST', 'PUT', 'DELETE', 'OPTIONS', 'PATCH'],
   allowedHeaders: ['Content-Type', 'Authorization']
 }));
 
@@ -93,16 +71,24 @@ const healthHandler = (req, res) => {
 app.get('/health', healthHandler);
 app.get('/api/health', healthHandler);
 
-// 4. API Routes (Customer & Cinema Partner Platform)
+// 4. API Routes (Customer, Cinema Partner & Platform Super Admin)
 app.use('/api/auth', authRoutes);
-app.use('/api', movieRoutes);
+app.use('/auth', authRoutes);
 app.use('/api/bookings', bookingRoutes);
+app.use('/bookings', bookingRoutes);
 app.use('/api/vendor', vendorRoutes);
+app.use('/vendor', vendorRoutes);
 app.use('/api/admin', adminRoutes);
+app.use('/admin', adminRoutes);
+app.use('/api', movieRoutes);
 
 // Fallback 404 route
 app.use((req, res) => {
-  res.status(404).json({ success: false, message: 'API route not found' });
+  console.warn(`[404 Not Found] ${req.method} ${req.originalUrl || req.url}`);
+  res.status(404).json({
+    success: false,
+    message: `API route not found: ${req.method} ${req.originalUrl || req.url}`
+  });
 });
 
 // Centralized error handler

@@ -51,10 +51,14 @@ app.get('/api/health', (req, res) => {
 
 // Routes
 app.use('/api/auth', authRoutes);
+app.use('/auth', authRoutes);
 app.use('/api', movieRoutes);
 app.use('/api/bookings', bookingRoutes);
+app.use('/bookings', bookingRoutes);
 app.use('/api/vendor', vendorRoutes);
+app.use('/vendor', vendorRoutes);
 app.use('/api/admin', adminRoutes);
+app.use('/admin', adminRoutes);
 
 // Export for Vercel Serverless Function
 module.exports = app;
