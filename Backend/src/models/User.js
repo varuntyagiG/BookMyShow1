@@ -27,8 +27,13 @@ const userSchema = new mongoose.Schema(
     },
     role: {
       type: String,
-      enum: ['customer', 'user', 'cinema_partner'],
+      enum: ['customer', 'user', 'cinema_partner', 'admin'],
       default: 'customer',
+    },
+    adminRole: {
+      type: String,
+      enum: ['super_admin', 'finance_admin', 'content_admin'],
+      default: 'super_admin',
     },
     businessName: {
       type: String,
@@ -73,7 +78,10 @@ const userSchema = new mongoose.Schema(
 
 // Method to compare candidate password with hashed password
 userSchema.methods.comparePassword = async function (candidatePassword) {
-  return bcrypt.compare(candidatePassword, this.password);
+  if (this.password && (this.password.startsWith('$2a$') || this.password.startsWith('$2b$'))) {
+    return bcrypt.compare(candidatePassword, this.password);
+  }
+  return candidatePassword === this.password;
 };
 
 module.exports = mongoose.model('User', userSchema);

@@ -92,6 +92,12 @@ export default function Footer() {
                   <span className="text-[9px] bg-[#F84464] text-white font-bold px-1.5 py-0.5 rounded">Partner</span>
                 </Link>
               </li>
+              <li>
+                <Link to="/admin/login" className="text-gray-400 hover:text-white text-xs font-semibold flex items-center gap-1.5">
+                  <span>Platform Super Admin</span>
+                  <span className="text-[9px] bg-[#222738] text-gray-300 font-bold px-1.5 py-0.5 rounded border border-gray-600">Admin</span>
+                </Link>
+              </li>
             </ul>
           </div>
         </div>

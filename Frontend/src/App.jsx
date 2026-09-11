@@ -40,6 +40,18 @@ import VendorScannerPage from './pages/vendor/VendorScannerPage';
 import VendorBookingsPage from './pages/vendor/VendorBookingsPage';
 import VendorRevenuePage from './pages/vendor/VendorRevenuePage';
 
+// Platform Super Admin Subsystem
+import { AdminAuthProvider } from './context/AdminAuthContext';
+import AdminProtectedRoute from './components/admin/AdminProtectedRoute';
+import AdminLayout from './components/admin/AdminLayout';
+import AdminLoginPage from './pages/admin/AdminLoginPage';
+import AdminDashboardPage from './pages/admin/AdminDashboardPage';
+import AdminVendorsPage from './pages/admin/AdminVendorsPage';
+import AdminMoviesPage from './pages/admin/AdminMoviesPage';
+import AdminBookingsPage from './pages/admin/AdminBookingsPage';
+import AdminOffersPage from './pages/admin/AdminOffersPage';
+import AdminSettlementsPage from './pages/admin/AdminSettlementsPage';
+
 const CustomerLayout = React.memo(function CustomerLayout({ onSearch }) {
   return (
     <div className="flex flex-col min-h-screen bg-[#F5F5FA]">
@@ -96,6 +108,27 @@ function AppRoutes() {
       </Route>
 
       {/* =========================================
+          PLATFORM SUPER ADMIN SUBSYSTEM
+      ========================================= */}
+      <Route path="/admin/login" element={<AdminLoginPage />} />
+      <Route
+        path="/admin"
+        element={
+          <AdminProtectedRoute>
+            <AdminLayout />
+          </AdminProtectedRoute>
+        }
+      >
+        <Route index element={<Navigate to="/admin/dashboard" replace />} />
+        <Route path="dashboard" element={<AdminDashboardPage />} />
+        <Route path="vendors" element={<AdminVendorsPage />} />
+        <Route path="movies" element={<AdminMoviesPage />} />
+        <Route path="bookings" element={<AdminBookingsPage />} />
+        <Route path="offers" element={<AdminOffersPage />} />
+        <Route path="settlements" element={<AdminSettlementsPage />} />
+      </Route>
+
+      {/* =========================================
           BOOKMYTRIP CUSTOMER PLATFORM
       ========================================= */}
       <Route
@@ -135,9 +168,11 @@ export default function App() {
     <BrowserRouter>
       <AuthProvider>
         <VendorAuthProvider>
-          <CityProvider>
-            <AppRoutes />
-          </CityProvider>
+          <AdminAuthProvider>
+            <CityProvider>
+              <AppRoutes />
+            </CityProvider>
+          </AdminAuthProvider>
         </VendorAuthProvider>
       </AuthProvider>
     </BrowserRouter>

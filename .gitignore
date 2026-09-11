@@ -11,3 +11,5 @@ dist/
 
 # Database backups
 Backend/backups/
+
+.vercel

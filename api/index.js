@@ -16,6 +16,7 @@ const authRoutes = require('../Backend/src/routes/authRoutes');
 const movieRoutes = require('../Backend/src/routes/movieRoutes');
 const bookingRoutes = require('../Backend/src/routes/bookingRoutes');
 const vendorRoutes = require('../Backend/src/routes/vendorRoutes');
+const adminRoutes = require('../Backend/src/routes/adminRoutes');
 const { connectDB } = require('../Backend/src/config/db');
 
 const app = express();
@@ -53,6 +54,7 @@ app.use('/api/auth', authRoutes);
 app.use('/api', movieRoutes);
 app.use('/api/bookings', bookingRoutes);
 app.use('/api/vendor', vendorRoutes);
+app.use('/api/admin', adminRoutes);
 
 // Export for Vercel Serverless Function
 module.exports = app;
