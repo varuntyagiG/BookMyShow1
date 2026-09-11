@@ -27,39 +27,10 @@ const userSchema = new mongoose.Schema(
     },
     role: {
       type: String,
-      enum: ['customer', 'cinema_partner', 'user', 'admin'],
+      enum: ['customer', 'user'],
       default: 'customer',
     },
-    businessName: {
-      type: String,
-      trim: true,
-      default: '',
-    },
-    partnerPhone: {
-      type: String,
-      trim: true,
-      default: '',
-    },
-    businessAddress: {
-      type: String,
-      trim: true,
-      default: '',
-    },
     avatar: {
-      type: String,
-      default: '',
-    },
-    partnerStatus: {
-      type: String,
-      enum: ['pending', 'approved', 'active', 'suspended'],
-      default: 'active',
-      index: true,
-    },
-    approvalNotes: {
-      type: String,
-      default: '',
-    },
-    suspendedReason: {
       type: String,
       default: '',
     },

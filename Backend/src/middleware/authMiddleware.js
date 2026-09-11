@@ -33,17 +33,8 @@ async function authenticateToken(req, res, next) {
     if (user.isDeactivated) {
       return res.status(403).json({
         success: false,
-        message: 'Your account has been deactivated. Please contact platform administration.'
+        message: 'Your account has been deactivated. Please contact customer support.'
       });
-    }
-
-    // Preserve exact RBAC roles: 'admin', 'cinema_partner', 'customer'
-    const rawRole = (user.role || '').toLowerCase();
-    let normalizedRole = 'customer';
-    if (rawRole === 'admin') {
-      normalizedRole = 'admin';
-    } else if (rawRole === 'cinema_partner' || rawRole === 'partner') {
-      normalizedRole = 'cinema_partner';
     }
 
     req.user = {
@@ -52,11 +43,8 @@ async function authenticateToken(req, res, next) {
       name: user.name,
       email: user.email,
       phone: user.phone || '',
-      role: normalizedRole,
-      partnerStatus: user.partnerStatus || 'active',
-      isDeactivated: !!user.isDeactivated,
-      businessName: user.businessName || '',
-      partnerPhone: user.partnerPhone || ''
+      role: 'customer',
+      isDeactivated: !!user.isDeactivated
     };
     next();
   } catch (_err) {
@@ -64,56 +52,7 @@ async function authenticateToken(req, res, next) {
   }
 }
 
-// Ensure caller is a verified Platform Administrator
-function requireAdmin(req, res, next) {
-  if (!req.user || req.user.role !== 'admin') {
-    return res.status(403).json({
-      success: false,
-      message: 'Access denied. Platform Administrator privileges required.'
-    });
-  }
-  next();
-}
-
-// Ensure caller is an active Cinema Partner
-function requireCinemaPartner(req, res, next) {
-  if (!req.user || req.user.role !== 'cinema_partner') {
-    return res.status(403).json({
-      success: false,
-      message: 'Access denied. Cinema Partner privileges required.'
-    });
-  }
-
-  // Enforce administrative partner suspension
-  if (req.user.partnerStatus === 'suspended') {
-    return res.status(403).json({
-      success: false,
-      message: 'Your Cinema Partner account has been suspended by platform administration. Contact support.'
-    });
-  }
-
-  next();
-}
-
-// Universal role authorization helper
-function authorizeRoles(...roles) {
-  return (req, res, next) => {
-    if (!req.user || !roles.includes(req.user.role)) {
-      return res.status(403).json({
-        success: false,
-        message: `Access denied. Requires one of: ${roles.join(', ')}`
-      });
-    }
-    next();
-  };
-}
-
 module.exports = {
   authenticateToken,
-  requireAdmin,
-  requireCinemaPartner,
-  authorizeRoles,
   JWT_SECRET
 };
-
-

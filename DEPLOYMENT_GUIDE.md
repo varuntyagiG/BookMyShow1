@@ -85,10 +85,10 @@ git push origin main
 
 ---
 
-## Step 5: Test All Panels in Production
+## Step 5: Test in Production
 
 | Panel | Production URL | Credentials |
 | :--- | :--- | :--- |
 | **Customer App** | `https://your-app.vercel.app` | `demo@bookmyshow.com` / `password123` |
-| **Cinema Partner Portal** | `https://your-app.vercel.app/cinema-partner/login` | `partner@bookmyshow.com` / `password123` |
-| **Platform Admin Hub** | `https://your-app.vercel.app/admin/login` | `admin@bookmyshow.com` / `password123` |
+| **New Customer Signup** | `https://your-app.vercel.app/signup` | Instant self-registration |
+| **My Bookings & M-Tickets**| `https://your-app.vercel.app/my-bookings` | Accessible after customer login |

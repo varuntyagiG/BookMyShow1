@@ -2,12 +2,6 @@ const mongoose = require('mongoose');
 
 const cinemaSchema = new mongoose.Schema(
   {
-    partner: {
-      type: mongoose.Schema.Types.ObjectId,
-      ref: 'User',
-      required: true,
-      index: true
-    },
     name: {
       type: String,
       required: [true, 'Cinema name is required'],

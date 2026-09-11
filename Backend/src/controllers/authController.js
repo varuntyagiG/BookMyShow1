@@ -15,7 +15,7 @@ function generateToken(user) {
   );
 }
 
-// User Registration
+// Customer Registration
 async function register(req, res) {
   try {
     const { name, email, password, phone } = req.body;
@@ -48,36 +48,26 @@ async function register(req, res) {
     const salt = await bcrypt.genSalt(10);
     const hashedPassword = await bcrypt.hash(password, salt);
 
-    const isPartner = req.body.role === 'cinema_partner' || req.body.role === 'partner';
-    const assignedRole = isPartner ? 'cinema_partner' : 'customer';
-    // Partners require admin verification; default status pending
-    const partnerStatus = isPartner ? 'pending' : 'active';
-
     const newUser = await User.create({
       name: name.trim(),
       email: trimmedEmail,
       phone: phone ? phone.trim() : '',
       password: hashedPassword,
-      role: assignedRole,
-      partnerStatus,
-      businessName: req.body.businessName ? req.body.businessName.trim() : '',
-      partnerPhone: req.body.partnerPhone ? req.body.partnerPhone.trim() : ''
+      role: 'customer'
     });
 
     const token = generateToken(newUser);
 
     return res.status(201).json({
       success: true,
-      message: isPartner ? 'Partner account created! Awaiting administrator approval.' : 'Account created successfully!',
+      message: 'Account created successfully!',
       token,
       user: {
         id: newUser._id.toString(),
         name: newUser.name,
         email: newUser.email,
         phone: newUser.phone,
-        role: newUser.role,
-        partnerStatus: newUser.partnerStatus,
-        businessName: newUser.businessName || ''
+        role: 'customer'
       }
     });
   } catch (error) {
@@ -89,7 +79,7 @@ async function register(req, res) {
   }
 }
 
-// User Sign In / Login
+// Customer Sign In / Login
 async function login(req, res) {
   try {
     const { email, password } = req.body;
@@ -124,20 +114,11 @@ async function login(req, res) {
     if (user.isDeactivated) {
       return res.status(403).json({
         success: false,
-        message: 'Your account has been deactivated. Please contact platform administration.'
+        message: 'Your account has been deactivated. Please contact customer support.'
       });
     }
 
     const token = generateToken(user);
-
-    // Normalize role: strictly 'admin', 'cinema_partner', or 'customer'
-    const rawRole = (user.role || '').toLowerCase();
-    let normalizedRole = 'customer';
-    if (rawRole === 'admin') {
-      normalizedRole = 'admin';
-    } else if (rawRole === 'cinema_partner' || rawRole === 'partner') {
-      normalizedRole = 'cinema_partner';
-    }
 
     return res.json({
       success: true,
@@ -147,10 +128,8 @@ async function login(req, res) {
         id: user._id.toString(),
         name: user.name,
         email: user.email,
-        phone: user.phone,
-        role: normalizedRole,
-        partnerStatus: user.partnerStatus || 'active',
-        businessName: user.businessName || ''
+        phone: user.phone || '',
+        role: 'customer'
       }
     });
   } catch (error) {
@@ -162,7 +141,7 @@ async function login(req, res) {
   }
 }
 
-// Get current user profile
+// Get current customer profile
 async function getMe(req, res) {
   try {
     const Booking = require('../models/Booking');
@@ -189,7 +168,7 @@ async function getMe(req, res) {
   }
 }
 
-// Update current user profile
+// Update current customer profile
 async function updateMe(req, res) {
   try {
     const { name, phone } = req.body;

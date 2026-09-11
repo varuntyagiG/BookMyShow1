@@ -87,15 +87,10 @@ const bookingSchema = new mongoose.Schema(
       enum: ['confirmed', 'cancelled'],
       default: 'confirmed'
     },
-    // B2B Cinema Partner linkage
+    // Cinema Venue & Show linkage
     cinema: {
       type: mongoose.Schema.Types.ObjectId,
       ref: 'Cinema',
-      index: true
-    },
-    partner: {
-      type: mongoose.Schema.Types.ObjectId,
-      ref: 'User',
       index: true
     },
     screen: {

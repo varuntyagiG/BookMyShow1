@@ -174,12 +174,6 @@ async function createBooking(req, res) {
       ? matchedCinema._id
       : (mongoose.Types.ObjectId.isValid(cinemaId) ? cinemaId : null);
 
-    const safePartnerId = (matchedCinema?.partner && mongoose.Types.ObjectId.isValid(matchedCinema.partner))
-      ? matchedCinema.partner
-      : ((matchedShow?.partner && mongoose.Types.ObjectId.isValid(matchedShow.partner))
-          ? matchedShow.partner
-          : null);
-
     const safeScreenId = (matchedScreen && mongoose.Types.ObjectId.isValid(matchedScreen._id))
       ? matchedScreen._id
       : (mongoose.Types.ObjectId.isValid(screenId) ? screenId : null);
@@ -208,9 +202,7 @@ async function createBooking(req, res) {
       totalAmount,
       paymentStatus: 'paid',
       bookingStatus: 'confirmed',
-      // Strict B2B partner linkage (only valid ObjectIds or null)
       cinema: safeCinemaId,
-      partner: safePartnerId,
       screen: safeScreenId,
       screenName: matchedScreen ? (matchedScreen.name || matchedScreen.screenNumber || 'Screen 1') : 'Screen 1',
       show: safeShowId,
