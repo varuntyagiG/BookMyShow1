@@ -82,7 +82,17 @@ export const bookingApi = {
       body: JSON.stringify({ reason }),
     }),
   getShowSeats: (params = {}) => {
-    const query = new URLSearchParams(params).toString();
+    let queryObj = {};
+    if (typeof params === 'string') {
+      queryObj = { showId: params };
+    } else if (params && typeof params === 'object') {
+      for (const [k, v] of Object.entries(params)) {
+        if (v !== undefined && v !== null && v !== '') {
+          queryObj[k] = v;
+        }
+      }
+    }
+    const query = new URLSearchParams(queryObj).toString();
     return request(`/bookings/seats${query ? `?${query}` : ''}`);
   },
 };

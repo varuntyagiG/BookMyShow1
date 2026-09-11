@@ -434,6 +434,25 @@ async function getShowSeats(req, res) {
       }
     }
 
+    // 1b. If not found by showId, query Show by cinema theatreName & showtime
+    if (bookedSeats.length === 0 && theatreName && showtime) {
+      try {
+        const cinema = await Cinema.findOne({ name: { $regex: `^${theatreName.trim()}$`, $options: 'i' } });
+        if (cinema) {
+          const matchedShow = await Show.findOne({
+            cinema: cinema._id,
+            startTime: showtime,
+            status: 'active'
+          });
+          if (matchedShow && Array.isArray(matchedShow.bookedSeats)) {
+            bookedSeats = Array.from(new Set([...bookedSeats, ...matchedShow.bookedSeats]));
+          }
+        }
+      } catch (_lookupErr) {
+        // ignore fallback lookup errors
+      }
+    }
+
     // 2. Also query confirmed Bookings for this showtime
     const query = {
       theatreName,

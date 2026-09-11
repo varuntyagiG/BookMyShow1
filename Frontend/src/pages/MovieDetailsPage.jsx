@@ -155,21 +155,36 @@ export default function MovieDetailsPage() {
     setBookingError('');
     let occupied = Array.isArray(showtime.bookedSeats) ? [...showtime.bookedSeats] : [];
 
-    if (showtime.showId) {
-      try {
-        const seatRes = await bookingApi.getShowSeats(showtime.showId);
-        if (seatRes.success && Array.isArray(seatRes.bookedSeats)) {
-          occupied = seatRes.bookedSeats;
-        }
-      } catch (e) {
-        console.warn('Could not fetch real-time seats from backend, using cached showtime seats', e);
+    const rawShowId = showtime.showId || showtime.id || showtime._id;
+    try {
+      const seatRes = await bookingApi.getShowSeats({
+        showId: rawShowId,
+        theatreName: theatre?.name,
+        showtime: showtime.time,
+        showDate: showtime.showDate || dates[selectedDateIndex]?.date || 'Today',
+        movieId: movie?._id || movie?.customId,
+        movieTitle: movie?.title
+      });
+      if (seatRes.success && Array.isArray(seatRes.bookedSeats)) {
+        occupied = Array.from(new Set([...occupied, ...seatRes.bookedSeats]));
       }
+    } catch (e) {
+      console.warn('Could not fetch real-time seats from backend, using cached showtime seats', e);
     }
 
-    const availableRowB = [1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12]
-      .map((n) => `B${n}`)
-      .filter((s) => !occupied.includes(s));
-    const initialSeats = availableRowB.slice(0, 2);
+    // Automatically pick the first 2 genuinely available seats that are NOT occupied
+    const rowPrefixes = ['B', 'C', 'D', 'E', 'A', 'F', 'G', 'H', 'J', 'K'];
+    let initialSeats = [];
+    for (const r of rowPrefixes) {
+      for (let i = 1; i <= 12; i++) {
+        const seatId = `${r}${i}`;
+        if (!occupied.includes(seatId)) {
+          initialSeats.push(seatId);
+          if (initialSeats.length >= 2) break;
+        }
+      }
+      if (initialSeats.length >= 2) break;
+    }
 
     setBookingModal({
       isOpen: true,
@@ -189,7 +204,7 @@ export default function MovieDetailsPage() {
     setBookingError('');
     const occupied = bookingModal.occupiedSeats || [];
     const availableSeats = [];
-    const rowPrefixes = ['B', 'C', 'D', 'E'];
+    const rowPrefixes = ['B', 'C', 'D', 'E', 'A', 'F', 'G', 'H', 'J', 'K'];
     for (const r of rowPrefixes) {
       for (let i = 1; i <= 12; i++) {
         const seatId = `${r}${i}`;
@@ -279,7 +294,29 @@ export default function MovieDetailsPage() {
         setBookingError(res.message || 'Unable to confirm booking. Please try again.');
       }
     } catch (err) {
-      setBookingError(err.message || 'Seat conflict or connection issue. Please try different seats.');
+      // Refresh latest booked seats immediately so occupied seats turn red and conflict clears
+      try {
+        const seatRes = await bookingApi.getShowSeats({
+          showId: isObjectId(rawShowId) ? rawShowId : undefined,
+          theatreName: bookingModal.theatre?.name,
+          showtime: bookingModal.showtime?.time,
+          showDate: selectedDate
+        });
+        if (seatRes.success && Array.isArray(seatRes.bookedSeats)) {
+          setBookingModal((prev) => {
+            const freshOccupied = Array.from(new Set([...(prev.occupiedSeats || []), ...seatRes.bookedSeats]));
+            const remainingSelected = (prev.selectedSeats || []).filter((s) => !freshOccupied.includes(s));
+            return {
+              ...prev,
+              occupiedSeats: freshOccupied,
+              selectedSeats: remainingSelected,
+            };
+          });
+        }
+      } catch (_refreshErr) {
+        // Ignore background refresh errors
+      }
+      setBookingError(err.message || 'Seat conflict: One or more selected seats were already booked. Please choose other available seats.');
     } finally {
       setBookingLoading(false);
     }
