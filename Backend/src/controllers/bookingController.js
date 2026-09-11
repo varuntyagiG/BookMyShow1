@@ -163,11 +163,36 @@ async function createBooking(req, res) {
 
     const bookingId = 'BMS-' + Date.now().toString().slice(-6);
 
+    // Safeguard all Mongoose ObjectId fields against invalid strings (e.g. "th-4", "scr-1")
+    const safeMovieId = (movie && mongoose.Types.ObjectId.isValid(movie._id))
+      ? movie._id
+      : ((matchedShow?.movie && mongoose.Types.ObjectId.isValid(matchedShow.movie))
+          ? matchedShow.movie
+          : (mongoose.Types.ObjectId.isValid(movieId) ? movieId : null));
+
+    const safeCinemaId = (matchedCinema && mongoose.Types.ObjectId.isValid(matchedCinema._id))
+      ? matchedCinema._id
+      : (mongoose.Types.ObjectId.isValid(cinemaId) ? cinemaId : null);
+
+    const safePartnerId = (matchedCinema?.partner && mongoose.Types.ObjectId.isValid(matchedCinema.partner))
+      ? matchedCinema.partner
+      : ((matchedShow?.partner && mongoose.Types.ObjectId.isValid(matchedShow.partner))
+          ? matchedShow.partner
+          : null);
+
+    const safeScreenId = (matchedScreen && mongoose.Types.ObjectId.isValid(matchedScreen._id))
+      ? matchedScreen._id
+      : (mongoose.Types.ObjectId.isValid(screenId) ? screenId : null);
+
+    const safeShowId = (matchedShow && mongoose.Types.ObjectId.isValid(matchedShow._id))
+      ? matchedShow._id
+      : (mongoose.Types.ObjectId.isValid(showId) ? showId : null);
+
     // 5. Create Booking Document in MongoDB
     const booking = await Booking.create({
       bookingId,
       user: req.user._id,
-      movie: movie ? movie._id : (matchedShow?.movie || null),
+      movie: safeMovieId,
       movieCustomId: movie ? movie.customId : (movieId || ''),
       movieTitle: resolvedMovieTitle,
       categoryType,
@@ -183,12 +208,12 @@ async function createBooking(req, res) {
       totalAmount,
       paymentStatus: 'paid',
       bookingStatus: 'confirmed',
-      // Strict B2B partner linkage
-      cinema: matchedCinema ? matchedCinema._id : (cinemaId || null),
-      partner: matchedCinema ? matchedCinema.partner : (matchedShow?.partner || null),
-      screen: matchedScreen ? matchedScreen._id : (screenId || null),
+      // Strict B2B partner linkage (only valid ObjectIds or null)
+      cinema: safeCinemaId,
+      partner: safePartnerId,
+      screen: safeScreenId,
       screenName: matchedScreen ? (matchedScreen.name || matchedScreen.screenNumber || 'Screen 1') : 'Screen 1',
-      show: matchedShow ? matchedShow._id : null,
+      show: safeShowId,
       ticketValidated: false
     });
 

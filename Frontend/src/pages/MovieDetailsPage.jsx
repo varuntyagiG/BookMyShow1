@@ -249,6 +249,11 @@ export default function MovieDetailsPage() {
 
     try {
       const selectedDate = dates[selectedDateIndex]?.date || 'Today';
+      const isObjectId = (val) => typeof val === 'string' && /^[0-9a-fA-F]{24}$/.test(val);
+      const rawCinemaId = bookingModal.showtime?.cinemaId || bookingModal.theatre?.cinemaId || bookingModal.theatre?.id;
+      const rawScreenId = bookingModal.showtime?.screenId;
+      const rawShowId = bookingModal.showtime?.showId;
+
       const res = await bookingApi.createBooking({
         movieId: movie ? (movie._id || movie.customId || movie.id) : id,
         movieTitle: movie ? movie.title : 'Movie',
@@ -257,9 +262,9 @@ export default function MovieDetailsPage() {
         showDate: selectedDate,
         seats: bookingModal.selectedSeats,
         includeSnacks: bookingModal.includeSnacks,
-        showId: bookingModal.showtime?.showId,
-        screenId: bookingModal.showtime?.screenId,
-        cinemaId: bookingModal.showtime?.cinemaId || bookingModal.theatre?.cinemaId || bookingModal.theatre?.id,
+        showId: isObjectId(rawShowId) ? rawShowId : undefined,
+        screenId: isObjectId(rawScreenId) ? rawScreenId : undefined,
+        cinemaId: isObjectId(rawCinemaId) ? rawCinemaId : undefined,
       });
 
       if (res.success && res.booking) {
