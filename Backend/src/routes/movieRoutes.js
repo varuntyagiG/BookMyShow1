@@ -9,6 +9,10 @@ const {
 } = require('../controllers/movieController');
 
 router.get('/home', getAllHomeData);
+router.get('/movies', (req, res, next) => {
+  req.params.category = 'movies';
+  return getCategoryItems(req, res, next);
+});
 router.get('/movies/:id', getMovieById);
 router.get('/categories/:category', getCategoryItems);
 router.get('/cities', getPublicCities);

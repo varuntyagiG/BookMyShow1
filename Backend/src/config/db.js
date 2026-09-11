@@ -1,4 +1,12 @@
 const mongoose = require('mongoose');
+const dns = require('dns');
+
+// Configure reliable DNS servers to avoid querySrv EBADRESP errors on Windows/custom ISPs
+try {
+  dns.setServers(['8.8.8.8', '1.1.1.1']);
+} catch (dnsErr) {
+  // Ignore in environments where setting DNS servers is restricted
+}
 
 let isConnected = false;
 
