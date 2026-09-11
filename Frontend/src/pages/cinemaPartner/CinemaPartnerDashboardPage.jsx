@@ -31,7 +31,9 @@ import {
   Badge,
   Button,
   EmptyState,
-  Skeleton
+  Skeleton,
+  CopyBadge,
+  CopyButton
 } from '../../components/ui';
 
 export default function CinemaPartnerDashboardPage() {
@@ -412,15 +414,20 @@ export default function CinemaPartnerDashboardPage() {
                   {d.recentBookings.map((b) => (
                     <div
                       key={b._id}
-                      className="p-3.5 bg-gray-50/80 border border-gray-200/80 rounded-2xl text-xs space-y-1 hover:bg-white transition"
+                      className="p-3.5 bg-gray-50/80 border border-gray-200/80 rounded-2xl text-xs space-y-1.5 hover:bg-white hover:border-[#F84464]/30 hover:shadow-sm transition"
                     >
                       <div className="flex items-center justify-between">
-                        <span className="font-mono font-bold text-[#F84464]">{b.bookingId}</span>
+                        <CopyBadge text={b.bookingId} size="xs" />
                         <span className="font-black text-[#4ABD5D]">₹{b.totalAmount}</span>
                       </div>
                       <div className="text-xs font-semibold text-[#222432] truncate">{b.movieTitle}</div>
                       <div className="flex items-center justify-between text-[11px] text-gray-400 pt-0.5">
-                        <span>Seats: <strong className="text-gray-700">{b.seats?.join(', ')}</strong></span>
+                        <span className="flex items-center gap-1">
+                          Seats: <strong className="text-gray-700 font-mono">{b.seats?.join(', ')}</strong>
+                          {b.seats?.length > 0 && (
+                            <CopyButton text={b.seats.join(', ')} size="xs" variant="ghost" title="Copy seats" />
+                          )}
+                        </span>
                         <span>{b.showtime}</span>
                       </div>
                     </div>

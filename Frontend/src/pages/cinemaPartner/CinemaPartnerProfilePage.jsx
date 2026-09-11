@@ -21,7 +21,9 @@ import {
   CardContent,
   Badge,
   Input,
-  Skeleton
+  Skeleton,
+  CopyButton,
+  CopyBadge
 } from '../../components/ui';
 
 export default function CinemaPartnerProfilePage() {
@@ -111,6 +113,12 @@ export default function CinemaPartnerProfilePage() {
                 <div>
                   <div className="text-sm font-bold text-[#222432]">Verified BookMyTrip Cinema Operator</div>
                   <div className="text-xs text-[#4ABD5D] font-semibold mt-0.5">Account Status: Active Multiplex Circuit Network</div>
+                  {profile?._id && (
+                    <div className="flex items-center gap-1.5 mt-1.5">
+                      <span className="text-[10px] text-gray-500 font-bold">Partner Ref:</span>
+                      <CopyBadge text={`PTR-${profile._id.slice(-6).toUpperCase()}`} size="xs" variant="brand" />
+                    </div>
+                  )}
                 </div>
               </div>
               <div className="text-left sm:text-right border-t sm:border-t-0 pt-2 sm:pt-0 border-emerald-200">
@@ -128,13 +136,20 @@ export default function CinemaPartnerProfilePage() {
                 icon={UserCheck}
               />
 
-              <Input
-                label="Account Email (Read-Only)"
-                type="email"
-                disabled
-                value={formData.email}
-                icon={Mail}
-              />
+              <div>
+                <div className="flex items-center justify-between mb-1.5">
+                  <span className="text-xs font-semibold text-gray-700">Account Email (Read-Only)</span>
+                  {formData.email && (
+                    <CopyButton text={formData.email} size="xs" variant="ghost" title="Copy account email" />
+                  )}
+                </div>
+                <Input
+                  type="email"
+                  disabled
+                  value={formData.email}
+                  icon={Mail}
+                />
+              </div>
             </div>
 
             <div className="grid grid-cols-1 sm:grid-cols-2 gap-4 sm:gap-5">

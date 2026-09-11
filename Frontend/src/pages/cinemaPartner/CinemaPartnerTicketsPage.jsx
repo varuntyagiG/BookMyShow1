@@ -24,7 +24,9 @@ import {
   MetricCard,
   Input,
   EmptyState,
-  Skeleton
+  Skeleton,
+  CopyBadge,
+  CopyButton
 } from '../../components/ui';
 
 export default function CinemaPartnerTicketsPage() {
@@ -183,11 +185,11 @@ export default function CinemaPartnerTicketsPage() {
           {filteredTickets.map((t) => (
             <Card
               key={t._id}
-              className="flex flex-col justify-between hover:border-[#F84464]/40 hover:shadow-md transition group overflow-hidden"
+              className="flex flex-col justify-between hover:border-[#F84464]/40 hover:shadow-xl hover:-translate-y-1 transition-all duration-200 group overflow-hidden"
             >
               <div className="p-5 pb-0">
                 <div className="flex items-center justify-between pb-2 mb-2 border-b border-[#EEEEF2]">
-                  <span className="font-mono text-xs font-bold text-[#F84464]">{t.bookingId}</span>
+                  <CopyBadge text={t.bookingId} size="xs" />
                   {t.ticketValidated ? (
                     <Badge variant="approved" dot>
                       Checked In
@@ -210,13 +212,34 @@ export default function CinemaPartnerTicketsPage() {
                 </div>
 
                 <div className="mt-3 p-3 bg-gray-50 rounded-xl border border-[#EEEEF2] flex items-center justify-between text-xs">
-                  <span className="text-gray-500">Seats: <strong className="text-[#222432] font-mono">{t.seats?.join(', ')}</strong></span>
-                  <span className="font-mono font-bold text-[#4ABD5D]">₹{t.totalAmount}</span>
+                  <div className="flex items-center gap-1.5 min-w-0">
+                    <span className="text-gray-500 shrink-0">Seats:</span>
+                    <strong className="text-[#222432] font-mono truncate">{t.seats?.join(', ')}</strong>
+                    {t.seats?.length > 0 && (
+                      <CopyButton
+                        text={t.seats.join(', ')}
+                        size="xs"
+                        variant="ghost"
+                        title="Copy seats"
+                      />
+                    )}
+                  </div>
+                  <span className="font-mono font-bold text-[#4ABD5D] shrink-0">₹{t.totalAmount}</span>
                 </div>
               </div>
 
               <div className="p-4 mt-3 border-t border-[#EEEEF2] bg-gray-50/40 text-[10px] text-gray-400 flex items-center justify-between">
-                <span>Guest: <strong className="text-gray-600">{t.user?.name || 'Customer'}</strong></span>
+                <div className="flex items-center gap-1.5">
+                  <span>Guest: <strong className="text-gray-600">{t.user?.name || 'Customer'}</strong></span>
+                  {(t.user?.email || t.user?.phone) && (
+                    <CopyButton
+                      text={t.user?.email || t.user?.phone}
+                      size="xs"
+                      variant="ghost"
+                      title="Copy guest contact"
+                    />
+                  )}
+                </div>
                 <span className="font-mono">{t.ticketValidated && t.validatedAt ? new Date(t.validatedAt).toLocaleTimeString() : ''}</span>
               </div>
             </Card>

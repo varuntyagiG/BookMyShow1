@@ -29,8 +29,27 @@ import {
   Input,
   Select,
   EmptyState,
-  Skeleton
+  Skeleton,
+  CopyButton,
+  CopyBadge
 } from '../../components/ui';
+
+function getTimeOfDayBadge(timeStr) {
+  if (!timeStr) return null;
+  const lower = timeStr.toLowerCase();
+  const isPM = lower.includes('pm');
+  const hour = parseInt(timeStr, 10) || 0;
+  if (!isPM || (hour === 12 && !isPM)) {
+    return { label: 'Morning Show', style: 'bg-amber-50 text-amber-700 border-amber-200' };
+  }
+  if (isPM && (hour === 12 || hour < 4)) {
+    return { label: 'Matinee', style: 'bg-sky-50 text-sky-700 border-sky-200' };
+  }
+  if (isPM && hour < 8) {
+    return { label: 'Evening Prime', style: 'bg-emerald-50 text-emerald-700 border-emerald-200' };
+  }
+  return { label: 'Night Show', style: 'bg-indigo-50 text-indigo-700 border-indigo-200' };
+}
 
 export default function CinemaPartnerShowsPage() {
   const toast = useCinemaToast();
@@ -258,10 +277,13 @@ export default function CinemaPartnerShowsPage() {
             const bookedCount = s.bookedSeats?.length || 0;
             const occupancyPct = capacity > 0 ? Math.round((bookedCount / capacity) * 100) : 0;
 
+            const timeBadge = getTimeOfDayBadge(s.startTime);
+            const showRef = `SHOW-${s._id.slice(-6).toUpperCase()}`;
+
             return (
               <Card
                 key={s._id}
-                className="p-5 sm:p-6 flex flex-col lg:flex-row lg:items-center justify-between gap-5 hover:border-[#F84464]/40 hover:shadow-md transition group overflow-hidden"
+                className="p-5 sm:p-6 flex flex-col lg:flex-row lg:items-center justify-between gap-5 hover:border-[#F84464]/40 hover:shadow-xl hover:-translate-y-1 transition-all duration-200 group overflow-hidden"
               >
                 {/* Left: Poster & Info */}
                 <div className="flex items-center gap-4 min-w-0">
@@ -287,6 +309,12 @@ export default function CinemaPartnerShowsPage() {
                       <Badge variant="brand" className="text-[9px] uppercase px-1.5 py-0.5">
                         {s.format || '2D'}
                       </Badge>
+                      {timeBadge && (
+                        <span className={`text-[9px] font-bold px-2 py-0.5 rounded-md border ${timeBadge.style}`}>
+                          {timeBadge.label}
+                        </span>
+                      )}
+                      <CopyBadge text={showRef} size="xs" variant="neutral" />
                     </div>
 
                     <div className="flex flex-wrap items-center gap-x-3 gap-y-1 text-xs text-gray-500">
@@ -304,7 +332,7 @@ export default function CinemaPartnerShowsPage() {
                     </div>
 
                     {/* Showtime Pill with Real-time Occupancy Indicator */}
-                    <div className="pt-1">
+                    <div className="pt-1 flex items-center gap-2">
                       <div className={`inline-flex items-center gap-2 px-3 py-1 rounded-xl border text-xs font-black ${
                         occupancyPct >= 80
                           ? 'bg-rose-50 border-rose-200 text-rose-700'
@@ -319,6 +347,12 @@ export default function CinemaPartnerShowsPage() {
                         <span className="text-gray-400 font-normal text-[10px]">to</span>
                         <span className="text-gray-600 font-semibold text-[11px]">{s.endTime}</span>
                       </div>
+                      <CopyButton
+                        text={`${s.movieTitle} | ${s.showDate} at ${s.startTime} | ${cinemaName}`}
+                        size="xs"
+                        variant="ghost"
+                        title="Copy show summary"
+                      />
                     </div>
                   </div>
                 </div>

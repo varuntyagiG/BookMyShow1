@@ -29,7 +29,9 @@ import {
   Input,
   Select,
   EmptyState,
-  Skeleton
+  Skeleton,
+  CopyButton,
+  CopyBadge
 } from '../../components/ui';
 
 export default function CinemaPartnerCinemasPage() {
@@ -202,7 +204,7 @@ export default function CinemaPartnerCinemasPage() {
           {cinemas.map((c) => (
             <Card
               key={c._id}
-              className="flex flex-col justify-between hover:shadow-lg transition-all group overflow-hidden"
+              className="flex flex-col justify-between hover:shadow-xl hover:-translate-y-1 hover:border-[#F84464]/30 transition-all duration-200 group overflow-hidden"
             >
               <div className="p-6 pb-0">
                 {/* Header */}
@@ -214,6 +216,12 @@ export default function CinemaPartnerCinemasPage() {
                     <div className="flex items-center gap-1.5 text-xs text-gray-500 mt-1">
                       <MapPin className="w-3.5 h-3.5 text-[#F84464] shrink-0" />
                       <span className="truncate">{c.address}, {c.city}</span>
+                      <CopyButton
+                        text={`${c.address}, ${c.city}`}
+                        size="xs"
+                        variant="ghost"
+                        title="Copy cinema address"
+                      />
                     </div>
                   </div>
                   <Badge variant={c.status === 'active' ? 'approved' : 'neutral'} dot>
@@ -221,8 +229,28 @@ export default function CinemaPartnerCinemasPage() {
                   </Badge>
                 </div>
 
+                {/* Optional Contact info strip if present */}
+                {(c.contactPhone || c.contactEmail) && (
+                  <div className="flex flex-wrap items-center gap-3 text-[11px] text-gray-400 py-1.5 px-2 bg-gray-50 rounded-xl mb-3">
+                    {c.contactPhone && (
+                      <div className="flex items-center gap-1">
+                        <Phone className="w-3 h-3 text-gray-400" />
+                        <span className="font-mono text-gray-700">{c.contactPhone}</span>
+                        <CopyButton text={c.contactPhone} size="xs" variant="ghost" title="Copy phone" />
+                      </div>
+                    )}
+                    {c.contactEmail && (
+                      <div className="flex items-center gap-1">
+                        <Mail className="w-3 h-3 text-gray-400" />
+                        <span className="font-mono text-gray-700 truncate max-w-[140px]">{c.contactEmail}</span>
+                        <CopyButton text={c.contactEmail} size="xs" variant="ghost" title="Copy email" />
+                      </div>
+                    )}
+                  </div>
+                )}
+
                 {/* Capacity & Screens Cards */}
-                <div className="grid grid-cols-2 gap-2.5 my-4 p-3.5 rounded-2xl bg-gray-50/80 border border-gray-100">
+                <div className="grid grid-cols-2 gap-2.5 my-3 p-3.5 rounded-2xl bg-gray-50/80 border border-gray-100">
                   <div className="flex items-center gap-2.5">
                     <div className="w-8 h-8 rounded-xl bg-[#F84464]/10 text-[#F84464] flex items-center justify-center shrink-0">
                       <Tv className="w-4 h-4" />

@@ -28,7 +28,9 @@ import {
   Input,
   Select,
   EmptyState,
-  Skeleton
+  Skeleton,
+  CopyButton,
+  CopyBadge
 } from '../../components/ui';
 
 export default function CinemaPartnerScreensPage() {
@@ -273,14 +275,17 @@ export default function CinemaPartnerScreensPage() {
             return (
               <Card
                 key={s._id}
-                className="flex flex-col justify-between hover:shadow-lg transition-all group overflow-hidden"
+                className="flex flex-col justify-between hover:shadow-xl hover:-translate-y-1 hover:border-[#F84464]/30 transition-all duration-200 group overflow-hidden"
               >
                 <div className="p-6 pb-0">
                   <div className="flex items-start justify-between gap-3 mb-1.5">
                     <div>
-                      <span className="text-[10px] font-black uppercase text-[#F84464] tracking-wider block">
-                        {s.screenNumber}
-                      </span>
+                      <div className="flex items-center gap-1.5">
+                        <span className="text-[10px] font-black uppercase text-[#F84464] tracking-wider block">
+                          {s.screenNumber}
+                        </span>
+                        <CopyButton text={s.screenNumber} size="xs" variant="ghost" title="Copy screen number" />
+                      </div>
                       <h3 className="text-base font-bold text-[#222432] group-hover:text-[#F84464] transition-colors mt-0.5">
                         {s.name}
                       </h3>
@@ -524,10 +529,13 @@ export default function CinemaPartnerScreensPage() {
           }
         >
           <div className="py-2">
-            {/* Curved Screen Banner */}
-            <div className="my-3 text-center">
-              <div className="cinema-screen-curve" />
-              <p className="text-[10px] uppercase font-bold tracking-widest text-gray-400 mt-2">
+            {/* Curved Screen Banner with Ambient Projector Glow */}
+            <div className="my-4 text-center relative">
+              <div className="mx-auto w-3/4 h-1.5 bg-gradient-to-r from-transparent via-[#F84464] to-transparent rounded-full blur-[1px] opacity-80 mb-1" />
+              <div className="cinema-screen-curve relative shadow-[0_8px_25px_rgba(248,68,100,0.22)]" />
+              <div className="h-4 w-3/4 mx-auto bg-gradient-to-b from-[#F84464]/10 to-transparent pointer-events-none rounded-b-2xl" />
+              <p className="text-[10px] uppercase font-black tracking-widest text-gray-400 mt-1.5 flex items-center justify-center gap-1.5">
+                <Sparkles className="w-3 h-3 text-[#F84464]" />
                 All eyes this way please (Screen)
               </p>
             </div>

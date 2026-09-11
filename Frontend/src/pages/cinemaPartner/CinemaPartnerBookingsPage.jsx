@@ -35,7 +35,9 @@ import {
   Input,
   Select,
   EmptyState,
-  Skeleton
+  Skeleton,
+  CopyButton,
+  CopyBadge
 } from '../../components/ui';
 
 export default function CinemaPartnerBookingsPage() {
@@ -154,14 +156,24 @@ export default function CinemaPartnerBookingsPage() {
                   const isValidated = b.ticketValidated;
 
                   return (
-                    <TableRow key={b._id} hover>
-                      <TableCell className="font-mono font-bold text-[#F84464] whitespace-nowrap">
-                        {b.bookingId}
+                    <TableRow key={b._id} hover className="transition-colors hover:bg-[#F84464]/5">
+                      <TableCell className="whitespace-nowrap">
+                        <CopyBadge text={b.bookingId} />
                       </TableCell>
 
                       <TableCell className="whitespace-nowrap">
                         <div className="font-semibold text-[#222432]">{customerName}</div>
-                        <div className="text-[11px] text-gray-400 font-mono">{b.user?.email || b.user?.phone || 'Guest'}</div>
+                        <div className="text-[11px] text-gray-400 font-mono flex items-center gap-1.5 mt-0.5">
+                          <span>{b.user?.email || b.user?.phone || 'Guest'}</span>
+                          {(b.user?.email || b.user?.phone) && (
+                            <CopyButton
+                              text={b.user?.email || b.user?.phone}
+                              size="xs"
+                              variant="ghost"
+                              title="Copy contact details"
+                            />
+                          )}
+                        </div>
                       </TableCell>
 
                       <TableCell>
@@ -172,9 +184,19 @@ export default function CinemaPartnerBookingsPage() {
                       </TableCell>
 
                       <TableCell className="whitespace-nowrap">
-                        <span className="font-mono font-bold text-[#222432] bg-gray-100 px-2 py-0.5 rounded text-[11px]">
-                          {b.seats?.join(', ')}
-                        </span>
+                        <div className="flex items-center gap-1">
+                          <span className="font-mono font-bold text-[#222432] bg-gray-100 px-2 py-0.5 rounded text-[11px]">
+                            {b.seats?.join(', ')}
+                          </span>
+                          {b.seats?.length > 0 && (
+                            <CopyButton
+                              text={b.seats.join(', ')}
+                              size="xs"
+                              variant="ghost"
+                              title="Copy seat numbers"
+                            />
+                          )}
+                        </div>
                         <span className="text-[10px] text-gray-400 block mt-0.5 font-medium">({b.seatsCount || b.seats?.length} seats)</span>
                       </TableCell>
 
@@ -218,7 +240,12 @@ export default function CinemaPartnerBookingsPage() {
           isOpen={Boolean(selectedBooking)}
           onClose={() => setSelectedBooking(null)}
           title="Digital M-Ticket Inspection"
-          description={`Order Ref: ${selectedBooking.bookingId}`}
+          description={
+            <span className="inline-flex items-center gap-2 mt-1">
+              <span>Order Reference:</span>
+              <CopyBadge text={selectedBooking.bookingId} size="xs" />
+            </span>
+          }
           size="md"
           footer={
             <div className="flex justify-end w-full">
@@ -248,11 +275,21 @@ export default function CinemaPartnerBookingsPage() {
               </div>
               <div className="flex items-center justify-between text-gray-500">
                 <span className="flex items-center gap-1.5"><Mail className="w-3.5 h-3.5 text-gray-400" /> Email</span>
-                <span className="text-[#222432] font-mono">{selectedBooking.user?.email || 'N/A'}</span>
+                <div className="flex items-center gap-1">
+                  <span className="text-[#222432] font-mono">{selectedBooking.user?.email || 'N/A'}</span>
+                  {selectedBooking.user?.email && (
+                    <CopyButton text={selectedBooking.user.email} size="xs" variant="ghost" />
+                  )}
+                </div>
               </div>
               <div className="flex items-center justify-between text-gray-500">
                 <span className="flex items-center gap-1.5"><Phone className="w-3.5 h-3.5 text-gray-400" /> Phone</span>
-                <span className="text-[#222432] font-mono">{selectedBooking.user?.phone || 'N/A'}</span>
+                <div className="flex items-center gap-1">
+                  <span className="text-[#222432] font-mono">{selectedBooking.user?.phone || 'N/A'}</span>
+                  {selectedBooking.user?.phone && (
+                    <CopyButton text={selectedBooking.user.phone} size="xs" variant="ghost" />
+                  )}
+                </div>
               </div>
             </div>
 
@@ -260,9 +297,14 @@ export default function CinemaPartnerBookingsPage() {
             <div className="p-4 bg-gray-50 rounded-2xl border border-gray-200 text-xs space-y-2">
               <div className="flex items-center justify-between">
                 <span className="text-gray-500">Assigned Seats</span>
-                <span className="font-mono font-bold text-[#F84464] bg-[#F84464]/10 px-2 py-0.5 rounded">
-                  {selectedBooking.seats?.join(', ')}
-                </span>
+                <div className="flex items-center gap-1.5">
+                  <span className="font-mono font-bold text-[#F84464] bg-[#F84464]/10 px-2 py-0.5 rounded">
+                    {selectedBooking.seats?.join(', ')}
+                  </span>
+                  {selectedBooking.seats?.length > 0 && (
+                    <CopyButton text={selectedBooking.seats.join(', ')} size="xs" variant="ghost" />
+                  )}
+                </div>
               </div>
               <div className="flex items-center justify-between">
                 <span className="text-gray-500">Base Tickets</span>

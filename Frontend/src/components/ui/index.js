@@ -11,3 +11,4 @@ export { default as PageHeader } from './PageHeader';
 export { default as EmptyState } from './EmptyState';
 export { default as ErrorState } from './ErrorState';
 export { Skeleton, SkeletonMetric, SkeletonTableRows } from './Skeleton';
+export { default as CopyButton, CopyBadge, PasteButton, copyToClipboard } from './CopyButton';

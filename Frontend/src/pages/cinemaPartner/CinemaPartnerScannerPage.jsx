@@ -27,7 +27,10 @@ import {
   CardContent,
   Badge,
   Input,
-  EmptyState
+  EmptyState,
+  PasteButton,
+  CopyButton,
+  CopyBadge
 } from '../../components/ui';
 
 export default function CinemaPartnerScannerPage() {
@@ -134,7 +137,7 @@ export default function CinemaPartnerScannerPage() {
               {/* Simulated Scanner Viewfinder */}
               <div className="relative my-2 p-4 bg-[#222432] rounded-2xl overflow-hidden border border-gray-800 shadow-inner">
                 <div className="w-full h-0.5 bg-[#F84464] shadow-[0_0_12px_#F84464] animate-pulse mb-3" />
-                <div className="flex gap-2">
+                <div className="flex gap-2 items-center">
                   <div className="relative flex-1">
                     <QrCode className="w-4 h-4 text-gray-400 absolute left-3.5 top-3.5" />
                     <input
@@ -144,8 +147,15 @@ export default function CinemaPartnerScannerPage() {
                       onKeyDown={handleKeyDown}
                       placeholder="e.g. BMS-849201"
                       autoFocus
-                      className="w-full pl-10 pr-3 py-3 bg-gray-800/90 border border-gray-700 rounded-xl text-sm font-mono text-white placeholder-gray-500 focus:outline-none focus:border-[#F84464] focus:ring-2 focus:ring-[#F84464]/30"
+                      className="w-full pl-10 pr-24 py-3 bg-gray-800/90 border border-gray-700 rounded-xl text-sm font-mono text-white placeholder-gray-500 focus:outline-none focus:border-[#F84464] focus:ring-2 focus:ring-[#F84464]/30"
                     />
+                    <div className="absolute right-2 top-2">
+                      <PasteButton
+                        onPaste={(val) => setBookingIdInput(val)}
+                        size="xs"
+                        label="Paste"
+                      />
+                    </div>
                   </div>
 
                   <Button
@@ -213,7 +223,12 @@ export default function CinemaPartnerScannerPage() {
 
                   <div className="grid grid-cols-2 gap-2.5 text-xs">
                     <div className="p-3 bg-white/80 rounded-xl border border-black/5">
-                      <span className="text-[10px] opacity-70 block font-bold">Assigned Seats</span>
+                      <div className="flex items-center justify-between mb-1">
+                        <span className="text-[10px] opacity-70 block font-bold">Assigned Seats</span>
+                        {b.seats?.length > 0 && (
+                          <CopyButton text={b.seats.join(', ')} size="xs" variant="ghost" />
+                        )}
+                      </div>
                       <strong className="text-[#F84464] font-mono text-sm font-black">{b.seats?.join(', ')}</strong>
                     </div>
 
@@ -223,13 +238,18 @@ export default function CinemaPartnerScannerPage() {
                     </div>
 
                     <div className="p-3 bg-white/80 rounded-xl border border-black/5">
-                      <span className="text-[10px] opacity-70 block font-bold">Customer Name</span>
+                      <div className="flex items-center justify-between mb-1">
+                        <span className="text-[10px] opacity-70 block font-bold">Customer Name</span>
+                        {b.customerName && (
+                          <CopyButton text={b.customerName} size="xs" variant="ghost" />
+                        )}
+                      </div>
                       <strong className="text-[#222432] text-xs">{b.customerName}</strong>
                     </div>
 
                     <div className="p-3 bg-white/80 rounded-xl border border-black/5">
-                      <span className="text-[10px] opacity-70 block font-bold">Booking Reference</span>
-                      <strong className="text-[#222432] font-mono text-xs">{b.bookingId}</strong>
+                      <span className="text-[10px] opacity-70 block font-bold mb-1">Booking Reference</span>
+                      <CopyBadge text={b.bookingId} size="xs" />
                     </div>
                   </div>
                 </div>
@@ -261,10 +281,19 @@ export default function CinemaPartnerScannerPage() {
                   {scanHistory.map((h, idx) => (
                     <div
                       key={idx}
-                      className="p-3 bg-gray-50 border border-gray-200 rounded-xl text-xs space-y-1 hover:bg-white transition"
+                      className="p-3 bg-gray-50 border border-gray-200 rounded-xl text-xs space-y-1 hover:bg-white hover:border-[#F84464]/30 hover:shadow-sm transition"
                     >
                       <div className="flex items-center justify-between">
-                        <span className="font-mono font-bold text-[#222432]">{h.id}</span>
+                        <div className="flex items-center gap-1.5">
+                          <CopyBadge text={h.id} size="xs" />
+                          <button
+                            type="button"
+                            onClick={() => handleValidate(h.id)}
+                            className="text-[10px] text-gray-500 hover:text-[#F84464] underline ml-1 cursor-pointer font-medium"
+                          >
+                            Re-verify
+                          </button>
+                        </div>
                         <Badge variant={h.status === 'VALID' ? 'approved' : 'cancelled'}>
                           {h.status}
                         </Badge>
