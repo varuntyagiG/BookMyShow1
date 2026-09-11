@@ -2,12 +2,10 @@ import React, { useState, useEffect } from 'react';
 import { useSearchParams } from 'react-router-dom';
 import { vendorApi } from '../../services/vendorApi';
 import {
-  PageHeader,
   Button,
   Card,
   CardHeader,
   CardTitle,
-  CardDescription,
   CardContent,
   CardFooter,
   Badge,
@@ -21,14 +19,10 @@ import {
   Tv,
   Plus,
   Trash2,
-  Edit2,
   Armchair,
-  Layers,
   MapPin,
   AlertCircle,
-  Sliders,
-  CheckCircle,
-  Eye
+  Sliders
 } from 'lucide-react';
 
 const SCREEN_TYPES = [
@@ -383,112 +377,160 @@ export default function VendorScreensPage() {
         />
       ) : (
         <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
-          {screens.map((screen) => (
-            <Card key={screen.id || screen._id} className="shadow-sm border-gray-200 flex flex-col justify-between">
-              <div>
-                <CardHeader className="pb-3">
-                  <div className="flex items-start justify-between gap-2">
-                    <div>
-                      <div className="flex items-center gap-2">
-                        <span className="text-xs font-mono font-bold text-gray-500 uppercase">
-                          {screen.screenNumber}
-                        </span>
-                        <Badge variant="info" className="text-[10px]">
-                          {screen.screenType}
-                        </Badge>
-                      </div>
-                      <CardTitle className="text-base text-gray-900 mt-1">
-                        {screen.name}
-                      </CardTitle>
-                      <p className="text-xs text-gray-500 mt-0.5">
-                        {screen.cinema?.name || 'Cinema Venue'}
-                      </p>
-                    </div>
+          {screens.map((screen) => {
+            const reclinerCount = (screen.seatingLayout || [])
+              .filter(r => r.tier === 'Recliner')
+              .reduce((sum, r) => sum + r.seatsCount, 0);
+            const premiumCount = (screen.seatingLayout || [])
+              .filter(r => r.tier === 'Premium')
+              .reduce((sum, r) => sum + r.seatsCount, 0);
+            const normalCount = (screen.seatingLayout || [])
+              .filter(r => r.tier !== 'Recliner' && r.tier !== 'Premium')
+              .reduce((sum, r) => sum + r.seatsCount, 0);
 
-                    <button
-                      onClick={() => openDeleteModal(screen)}
-                      className="p-1.5 text-gray-400 hover:text-rose-600 rounded-md transition"
-                      title="Delete Screen"
-                    >
-                      <Trash2 size={15} />
-                    </button>
-                  </div>
-                </CardHeader>
-
-                <CardContent className="space-y-4">
-                  <div className="flex items-center justify-between p-3 bg-gray-50 rounded-lg border border-gray-100">
-                    <div className="flex items-center gap-2 text-xs text-gray-600">
-                      <Armchair size={16} className="text-[#F84464]" />
-                      <span className="font-medium">Total Seating Capacity</span>
-                    </div>
-                    <span className="font-bold text-sm text-gray-900">
-                      {screen.totalCapacity} Seats
-                    </span>
-                  </div>
-
-                  {/* Visual Layout Representation */}
-                  <div>
-                    <div className="flex items-center justify-between text-[11px] font-semibold text-gray-500 uppercase mb-2">
-                      <span>Configured Seating Rows</span>
-                      <span className="text-emerald-600">
-                        {(screen.seatingLayout || []).length} Rows
-                      </span>
-                    </div>
-
-                    <div className="space-y-1.5 max-h-48 overflow-y-auto pr-1">
-                      {(screen.seatingLayout || []).map((row) => (
-                        <div
-                          key={row.row}
-                          className="flex items-center justify-between px-2.5 py-1.5 rounded-md bg-white border border-gray-200 text-xs"
-                        >
-                          <div className="flex items-center gap-2">
-                            <span className="w-5 h-5 rounded bg-gray-100 font-mono font-bold flex items-center justify-center text-gray-700 text-[11px]">
-                              {row.row}
-                            </span>
-                            <span
-                              className={`text-[10px] font-bold px-1.5 py-0.5 rounded ${
-                                row.tier === 'Recliner'
-                                  ? 'bg-rose-100 text-[#F84464]'
-                                  : row.tier === 'Premium'
-                                  ? 'bg-indigo-100 text-indigo-700'
-                                  : 'bg-gray-100 text-gray-700'
-                              }`}
-                            >
-                              {row.tier}
-                            </span>
-                          </div>
-
-                          <div className="flex items-center gap-3">
-                            <span className="text-gray-500 text-[11px]">
-                              {row.seatsCount} seats
-                            </span>
-                            <span className="font-semibold text-gray-800 text-[11px]">
-                              ₹{row.basePrice}
-                            </span>
-                          </div>
+            return (
+              <Card
+                key={screen.id || screen._id}
+                interactive={true}
+                accent="indigo"
+                className="flex flex-col justify-between border-slate-200/90 group"
+              >
+                <div>
+                  <CardHeader className="pb-3 border-b border-slate-100 bg-gradient-to-b from-slate-50/50 to-white">
+                    <div className="flex items-start justify-between gap-2 w-full">
+                      <div className="min-w-0 flex-1">
+                        <div className="flex items-center gap-2 mb-1.5 flex-wrap">
+                          <span className="text-[11px] font-mono font-bold tracking-wider uppercase px-2 py-0.5 rounded-md bg-slate-900 text-white shadow-2xs">
+                            {screen.screenNumber}
+                          </span>
+                          <span className="text-[10px] font-bold px-2 py-0.5 rounded-full bg-indigo-50 text-indigo-700 border border-indigo-200/70">
+                            {screen.screenType}
+                          </span>
                         </div>
-                      ))}
+                        <CardTitle className="text-base sm:text-lg text-slate-900 mt-1 line-clamp-1 group-hover:text-indigo-600 transition-colors">
+                          {screen.name}
+                        </CardTitle>
+                        <p className="text-xs text-slate-500 mt-0.5 truncate flex items-center gap-1">
+                          <MapPin size={11} className="text-[#F84464] shrink-0" />
+                          <span>{screen.cinema?.name || 'Cinema Venue'}</span>
+                        </p>
+                      </div>
+
+                      <button
+                        onClick={() => openDeleteModal(screen)}
+                        className="p-2 text-slate-400 hover:text-rose-600 hover:bg-rose-50 rounded-lg border border-transparent hover:border-rose-200 transition shadow-2xs shrink-0"
+                        title="Delete Screen"
+                      >
+                        <Trash2 size={15} />
+                      </button>
                     </div>
-                  </div>
-                </CardContent>
-              </div>
+                  </CardHeader>
 
-              <CardFooter className="pt-3 border-t border-gray-100 bg-gray-50/50 flex items-center justify-between">
-                <button
-                  type="button"
-                  onClick={() => openEditLayoutModal(screen)}
-                  className="inline-flex items-center gap-1.5 text-xs font-bold text-indigo-600 hover:text-indigo-800 bg-indigo-50 hover:bg-indigo-100 px-3 py-1.5 rounded-lg transition"
-                >
-                  <Sliders size={13} />
-                  <span>Configure Seats & Prices</span>
-                </button>
+                  <CardContent className="space-y-4 pt-4">
+                    {/* Capacity Hero Box with Tier Distribution */}
+                    <div className="p-3.5 rounded-xl bg-gradient-to-br from-slate-50 to-indigo-50/30 border border-slate-200/80 shadow-2xs">
+                      <div className="flex items-center justify-between mb-2">
+                        <div className="flex items-center gap-2 text-xs text-slate-700">
+                          <div className="w-7 h-7 rounded-lg bg-rose-50 text-[#F84464] flex items-center justify-center font-bold">
+                            <Armchair size={15} />
+                          </div>
+                          <span className="font-bold">Total Capacity</span>
+                        </div>
+                        <span className="font-black text-base text-slate-900 font-mono">
+                          {screen.totalCapacity} <span className="text-xs font-medium text-slate-500 font-sans">Seats</span>
+                        </span>
+                      </div>
 
-                <Badge variant="success" className="text-[10px]">
-                  Operational
-                </Badge>
-              </CardFooter>
-            </Card>
-          ))}
+                      {/* Tier Distribution Bar */}
+                      <div className="flex items-center gap-1 text-[11px] text-slate-600 pt-2 border-t border-slate-200/60 flex-wrap">
+                        {reclinerCount > 0 && (
+                          <span className="inline-flex items-center gap-1 font-semibold text-[#F84464]">
+                            <span className="w-2 h-2 rounded-full bg-[#F84464]" />
+                            {reclinerCount} Recliner
+                          </span>
+                        )}
+                        {reclinerCount > 0 && premiumCount > 0 && <span className="text-slate-300">•</span>}
+                        {premiumCount > 0 && (
+                          <span className="inline-flex items-center gap-1 font-semibold text-indigo-700">
+                            <span className="w-2 h-2 rounded-full bg-indigo-600" />
+                            {premiumCount} Premium
+                          </span>
+                        )}
+                        {(reclinerCount > 0 || premiumCount > 0) && normalCount > 0 && <span className="text-slate-300">•</span>}
+                        {normalCount > 0 && (
+                          <span className="inline-flex items-center gap-1 font-semibold text-slate-600">
+                            <span className="w-2 h-2 rounded-full bg-slate-400" />
+                            {normalCount} Normal
+                          </span>
+                        )}
+                      </div>
+                    </div>
+
+                    {/* Visual Layout Representation */}
+                    <div>
+                      <div className="flex items-center justify-between text-[10px] font-bold text-slate-400 uppercase tracking-wider mb-2">
+                        <span>Configured Rows & Base Fares</span>
+                        <span className="text-indigo-600 font-bold">
+                          {(screen.seatingLayout || []).length} Rows
+                        </span>
+                      </div>
+
+                      <div className="space-y-1.5 max-h-44 overflow-y-auto pr-1">
+                        {(screen.seatingLayout || []).map((row) => (
+                          <div
+                            key={row.row}
+                            className="flex items-center justify-between px-2.5 py-1.5 rounded-lg bg-white border border-slate-200/80 text-xs hover:border-slate-300 transition shadow-2xs"
+                          >
+                            <div className="flex items-center gap-2">
+                              <span className="w-5 h-5 rounded bg-slate-100 font-mono font-bold flex items-center justify-center text-slate-800 text-[11px] border border-slate-200">
+                                {row.row}
+                              </span>
+                              <span
+                                className={`text-[10px] font-bold px-1.5 py-0.5 rounded border ${
+                                  row.tier === 'Recliner'
+                                    ? 'bg-rose-50 text-[#F84464] border-rose-200/70'
+                                    : row.tier === 'Premium'
+                                    ? 'bg-indigo-50 text-indigo-700 border-indigo-200/70'
+                                    : 'bg-slate-50 text-slate-700 border-slate-200'
+                                }`}
+                              >
+                                {row.tier}
+                              </span>
+                            </div>
+
+                            <div className="flex items-center gap-3 font-mono">
+                              <span className="text-slate-500 text-[11px]">
+                                {row.seatsCount} seats
+                              </span>
+                              <span className="font-bold text-slate-900 text-xs bg-slate-50 px-1.5 py-0.5 rounded border border-slate-200/60">
+                                ₹{row.basePrice}
+                              </span>
+                            </div>
+                          </div>
+                        ))}
+                      </div>
+                    </div>
+                  </CardContent>
+                </div>
+
+                <CardFooter className="pt-3 pb-3 border-t border-slate-100 bg-slate-50/50 flex items-center justify-between">
+                  <button
+                    type="button"
+                    onClick={() => openEditLayoutModal(screen)}
+                    className="inline-flex items-center gap-1.5 text-xs font-bold text-indigo-700 bg-indigo-50 hover:bg-indigo-100 border border-indigo-200/80 px-3.5 py-2 rounded-xl transition shadow-2xs"
+                  >
+                    <Sliders size={13} className="text-indigo-600" />
+                    <span>Configure Seats & Prices</span>
+                  </button>
+
+                  <span className="inline-flex items-center gap-1.5 text-[11px] font-bold px-2 py-0.5 rounded-full bg-emerald-50 text-emerald-700 border border-emerald-200/70">
+                    <span className="w-1.5 h-1.5 rounded-full bg-emerald-500" />
+                    <span>Active</span>
+                  </span>
+                </CardFooter>
+              </Card>
+            );
+          })}
         </div>
       )}
 

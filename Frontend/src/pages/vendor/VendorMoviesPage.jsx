@@ -215,60 +215,71 @@ export default function VendorMoviesPage() {
       ) : (
         <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-6">
           {filteredMovies.map((movie) => (
-            <div
+            <Card
               key={movie.id || movie._id}
-              className="bg-white rounded-xl border border-gray-200 shadow-sm overflow-hidden flex flex-col justify-between hover:shadow-md transition"
+              interactive={true}
+              className="border-slate-200/90 overflow-hidden flex flex-col justify-between group"
             >
-              {/* Poster Image */}
-              <div className="relative aspect-[2/3] bg-gray-100 overflow-hidden group">
+              {/* Poster Image Container */}
+              <div className="relative aspect-[2/3] bg-slate-900 overflow-hidden">
                 <img
                   src={movie.posterUrl || DEMO_POSTERS[0].url}
                   alt={movie.title}
-                  className="w-full h-full object-cover group-hover:scale-105 transition duration-300"
+                  className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-500 ease-out"
                   loading="lazy"
                 />
-                <div className="absolute top-2.5 left-2.5 flex flex-col gap-1">
-                  {movie.isCreatedByYou && (
-                    <span className="bg-[#F84464] text-white text-[10px] font-bold uppercase tracking-wider px-2 py-0.5 rounded shadow">
-                      Your Release
+                <div className="absolute inset-0 bg-gradient-to-t from-slate-950/80 via-transparent to-slate-950/40 pointer-events-none" />
+
+                {/* Top Badges */}
+                <div className="absolute top-2.5 left-2.5 right-2.5 flex items-start justify-between gap-1 pointer-events-none">
+                  <div className="flex flex-col gap-1">
+                    {movie.isCreatedByYou && (
+                      <span className="bg-[#F84464] text-white text-[9px] font-black uppercase tracking-wider px-2 py-0.5 rounded shadow-md border border-white/20">
+                        Chain Exclusive
+                      </span>
+                    )}
+                    <span className="bg-slate-950/70 backdrop-blur-md text-white text-[10px] font-bold px-2 py-0.5 rounded shadow-sm border border-white/10 w-fit">
+                      {movie.certificate || 'UA'}
                     </span>
-                  )}
-                  <span className="bg-black/70 backdrop-blur-sm text-white text-[10px] font-semibold px-2 py-0.5 rounded shadow">
-                    {movie.certificate || 'UA'}
+                  </div>
+
+                  <span className="bg-slate-950/70 backdrop-blur-md text-slate-200 text-[10px] font-semibold px-2 py-0.5 rounded shadow-sm border border-white/10">
+                    {movie.language || 'Hindi'}
                   </span>
                 </div>
 
-                <div className="absolute bottom-2 left-2 right-2 flex items-center justify-between">
-                  <span className="bg-black/80 backdrop-blur-sm text-amber-400 text-xs font-bold px-2 py-1 rounded flex items-center gap-1 shadow">
-                    <Star size={12} fill="currentColor" />
-                    <span>{movie.rating || '8.5'}/10</span>
+                {/* Bottom Overlay Info */}
+                <div className="absolute bottom-2.5 left-2.5 right-2.5 flex items-center justify-between">
+                  <span className="bg-slate-950/80 backdrop-blur-md text-amber-300 text-xs font-black px-2 py-1 rounded-md flex items-center gap-1.5 shadow-sm border border-amber-400/20">
+                    <Star size={12} className="text-amber-400 fill-amber-400" />
+                    <span>{movie.rating || '8.5'}<span className="text-[10px] font-medium text-slate-400">/10</span></span>
                   </span>
-                  <span className="bg-black/80 backdrop-blur-sm text-white text-[10px] font-medium px-2 py-1 rounded shadow">
-                    {movie.language || 'Hindi'}
+
+                  <span className="text-[11px] font-medium text-slate-300 bg-black/50 backdrop-blur-xs px-2 py-0.5 rounded">
+                    {movie.duration || '2h 30m'}
                   </span>
                 </div>
               </div>
 
               {/* Card Details */}
-              <div className="p-4 flex-1 flex flex-col justify-between">
+              <div className="p-4 flex-1 flex flex-col justify-between bg-white">
                 <div>
-                  <h3 className="font-bold text-gray-900 text-sm line-clamp-1">
+                  <h3 className="font-bold text-slate-900 text-sm line-clamp-1 group-hover:text-[#F84464] transition-colors">
                     {movie.title}
                   </h3>
-                  <div className="flex items-center gap-2 text-xs text-gray-500 mt-1">
-                    <Clock size={12} />
-                    <span>{movie.duration || '2h 30m'}</span>
-                    <span>•</span>
-                    <span className="line-clamp-1">{(movie.genre || []).join(', ')}</span>
+                  <div className="flex items-center gap-1.5 text-xs text-slate-500 mt-1">
+                    <span className="line-clamp-1 font-medium text-[11px] text-slate-600">
+                      {(movie.genre || []).slice(0, 2).join(' • ')}
+                    </span>
                   </div>
                 </div>
 
-                <div className="mt-4 pt-3 border-t border-gray-100 flex items-center justify-between">
+                <div className="mt-4 pt-3 border-t border-slate-100 flex items-center justify-between gap-2">
                   <div className="flex flex-wrap gap-1">
                     {(movie.formats || ['2D']).slice(0, 2).map((fmt) => (
                       <span
                         key={fmt}
-                        className="bg-gray-100 text-gray-700 text-[10px] font-semibold px-1.5 py-0.5 rounded"
+                        className="bg-slate-100 text-slate-700 text-[9px] font-bold px-1.5 py-0.5 rounded border border-slate-200"
                       >
                         {fmt}
                       </span>
@@ -277,14 +288,14 @@ export default function VendorMoviesPage() {
 
                   <Link
                     to={`/vendor/shows?movieId=${movie.id || movie._id}`}
-                    className="inline-flex items-center gap-1 text-xs font-bold text-[#F84464] hover:underline"
+                    className="inline-flex items-center gap-1.5 text-xs font-bold text-[#F84464] hover:text-white bg-rose-50 hover:bg-[#F84464] border border-rose-200/80 px-2.5 py-1.5 rounded-xl transition-all duration-200 shadow-2xs group/btn shrink-0"
                   >
-                    <Calendar size={13} />
-                    <span>Schedule Show</span>
+                    <Calendar size={12} className="group-hover/btn:scale-110 transition-transform" />
+                    <span>Schedule</span>
                   </Link>
                 </div>
               </div>
-            </div>
+            </Card>
           ))}
         </div>
       )}

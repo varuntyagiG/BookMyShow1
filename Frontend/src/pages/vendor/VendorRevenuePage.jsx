@@ -106,6 +106,7 @@ export default function VendorRevenuePage() {
           isPositive={true}
           icon={IndianRupee}
           loading={loading}
+          variant="brand"
         />
 
         <MetricCard
@@ -124,13 +125,14 @@ export default function VendorRevenuePage() {
           isPositive={true}
           icon={ShieldCheck}
           loading={loading}
+          variant="emerald"
         />
       </div>
 
       {/* Revenue By Movie Breakdown */}
       <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
-        <Card className="shadow-sm border-gray-200">
-          <CardHeader className="pb-3">
+        <Card className="shadow-none border-slate-200/90 overflow-hidden">
+          <CardHeader className="pb-3 border-b border-slate-100 bg-slate-50/50">
             <CardTitle className="text-base flex items-center gap-2">
               <PieChart size={18} className="text-[#F84464]" />
               <span>Movie Box Office Performance</span>
@@ -140,24 +142,24 @@ export default function VendorRevenuePage() {
             </CardDescription>
           </CardHeader>
 
-          <CardContent className="space-y-4">
+          <CardContent className="space-y-4 pt-4">
             {moviePerformance.length === 0 ? (
-              <p className="text-xs text-gray-500 py-6 text-center">
+              <p className="text-xs text-slate-400 py-8 text-center font-medium">
                 No movie revenue recorded yet.
               </p>
             ) : (
               moviePerformance.map((movie) => (
-                <div key={movie.movieTitle} className="space-y-1.5">
+                <div key={movie.movieTitle} className="space-y-2 p-3 rounded-xl bg-slate-50/70 border border-slate-100">
                   <div className="flex items-center justify-between text-xs">
-                    <span className="font-semibold text-gray-900">{movie.movieTitle}</span>
-                    <span className="font-bold text-gray-900">
+                    <span className="font-bold text-slate-900">{movie.movieTitle}</span>
+                    <span className="font-mono font-bold text-slate-900">
                       ₹{movie.revenue.toLocaleString('en-IN')}{' '}
-                      <span className="text-gray-400 font-normal">({movie.sharePercentage}%)</span>
+                      <span className="text-slate-400 font-sans font-normal text-[11px]">({movie.sharePercentage}%)</span>
                     </span>
                   </div>
-                  <div className="w-full h-2 bg-gray-100 rounded-full overflow-hidden">
+                  <div className="w-full h-2 bg-slate-200 rounded-full overflow-hidden shadow-inner">
                     <div
-                      className="h-full bg-[#F84464] rounded-full transition-all duration-300"
+                      className="h-full bg-gradient-to-r from-[#F84464] to-rose-400 rounded-full transition-all duration-500"
                       style={{ width: `${movie.sharePercentage}%` }}
                     />
                   </div>
@@ -168,8 +170,8 @@ export default function VendorRevenuePage() {
         </Card>
 
         {/* Payout Banking Information */}
-        <Card className="shadow-sm border-gray-200">
-          <CardHeader className="pb-3">
+        <Card className="shadow-none border-slate-200/90 overflow-hidden">
+          <CardHeader className="pb-3 border-b border-slate-100 bg-slate-50/50">
             <CardTitle className="text-base flex items-center gap-2">
               <Building2 size={18} className="text-indigo-600" />
               <span>Direct Deposit Bank Details</span>
@@ -179,37 +181,40 @@ export default function VendorRevenuePage() {
             </CardDescription>
           </CardHeader>
 
-          <CardContent className="space-y-3 text-xs">
-            <div className="p-3 bg-gray-50 rounded-lg border border-gray-200 space-y-2">
+          <CardContent className="space-y-3.5 text-xs pt-4">
+            <div className="p-4 bg-slate-50/80 rounded-xl border border-slate-200/80 space-y-2.5 shadow-2xs">
               <div className="flex items-center justify-between">
-                <span className="text-gray-500">Beneficiary Name:</span>
-                <span className="font-semibold text-gray-900">CineWorld Multiplexes Ltd.</span>
+                <span className="text-slate-500">Beneficiary Name:</span>
+                <span className="font-bold text-slate-900">CineWorld Multiplexes Ltd.</span>
               </div>
               <div className="flex items-center justify-between">
-                <span className="text-gray-500">Bank Account:</span>
-                <span className="font-mono font-semibold text-gray-900">•••• •••• 9821</span>
+                <span className="text-slate-500">Bank Account:</span>
+                <span className="font-mono font-bold text-slate-900 bg-white px-2 py-0.5 rounded border border-slate-200">•••• •••• 9821</span>
               </div>
               <div className="flex items-center justify-between">
-                <span className="text-gray-500">IFSC Code:</span>
-                <span className="font-mono font-semibold text-gray-900">HDFC0001234</span>
+                <span className="text-slate-500">IFSC Code:</span>
+                <span className="font-mono font-bold text-slate-900 bg-white px-2 py-0.5 rounded border border-slate-200">HDFC0001234</span>
               </div>
-              <div className="flex items-center justify-between">
-                <span className="text-gray-500">Payout Status:</span>
-                <Badge variant="success" className="text-[10px]">Active & Verified</Badge>
+              <div className="flex items-center justify-between pt-1 border-t border-slate-200/60">
+                <span className="text-slate-500">Payout Status:</span>
+                <span className="inline-flex items-center gap-1.5 text-[11px] font-bold px-2 py-0.5 rounded-full bg-emerald-50 text-emerald-700 border border-emerald-200">
+                  <span className="w-1.5 h-1.5 rounded-full bg-emerald-500" />
+                  Active & Verified
+                </span>
               </div>
             </div>
 
-            <p className="text-[11px] text-gray-400">
-              Payments are automatically credited to your verified nodal bank account via NEFT/RTGS.
+            <p className="text-[11px] text-slate-400 leading-relaxed">
+              Payments are automatically credited to your verified nodal bank account via NEFT/RTGS settlement clearing.
             </p>
           </CardContent>
         </Card>
       </div>
 
-      {/* Settlement History Table */}
-      <Card className="shadow-sm border-gray-200">
-        <CardHeader className="py-3.5 border-b border-gray-100">
-          <CardTitle className="text-sm font-bold text-gray-900">
+      {/* Settlement History Table Card */}
+      <Card className="shadow-none border-slate-200/90 overflow-hidden">
+        <CardHeader className="py-4 border-b border-slate-100 bg-slate-50/50">
+          <CardTitle className="text-sm font-bold text-slate-900">
             Recent Settlement Statements
           </CardTitle>
         </CardHeader>

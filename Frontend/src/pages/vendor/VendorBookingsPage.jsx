@@ -124,61 +124,68 @@ export default function VendorBookingsPage() {
         </div>
       </div>
 
-      {/* Filter and Search Bar */}
-      <Card className="shadow-sm border-gray-200">
-        <CardContent className="p-4">
+      {/* Filter and Search Bar Card */}
+      <Card className="shadow-none border-slate-200/90 overflow-hidden">
+        <CardContent className="p-4 sm:p-5">
           <div className="flex flex-col md:flex-row items-center justify-between gap-4">
-            <form onSubmit={handleSearchSubmit} className="w-full md:w-80 flex gap-2">
+            <form onSubmit={handleSearchSubmit} className="w-full md:w-96 flex gap-2">
               <div className="relative flex-1">
-                <Search size={16} className="absolute left-3 top-1/2 -translate-y-1/2 text-gray-400" />
+                <Search size={16} className="absolute left-3.5 top-1/2 -translate-y-1/2 text-slate-400" />
                 <input
                   type="text"
                   placeholder="Search Booking ID, Customer, Movie..."
                   value={search}
                   onChange={(e) => setSearch(e.target.value)}
-                  className="w-full text-xs pl-9 pr-3 py-2 border border-gray-300 rounded-lg focus:ring-1 focus:ring-[#F84464] focus:border-[#F84464]"
+                  className="w-full text-xs pl-10 pr-3 py-2.5 border border-slate-200 rounded-xl focus:ring-2 focus:ring-[#F84464] focus:border-[#F84464] shadow-2xs placeholder:text-slate-400"
                 />
               </div>
-              <Button type="submit" size="sm" variant="secondary" className="text-xs">
+              <Button type="submit" size="sm" variant="secondary" className="text-xs px-4 rounded-xl font-bold">
                 Search
               </Button>
             </form>
 
             <div className="flex items-center gap-2 w-full md:w-auto justify-end">
-              <span className="text-xs text-gray-500 font-medium">Date Filter:</span>
-              {['All', 'Today', 'Tomorrow'].map((d) => (
-                <button
-                  key={d}
-                  onClick={() => { setSelectedDate(d); setPage(1); }}
-                  className={`text-xs px-3 py-1.5 rounded-lg font-semibold transition ${
-                    selectedDate === d
-                      ? 'bg-[#333545] text-white'
-                      : 'bg-gray-100 text-gray-600 hover:bg-gray-200'
-                  }`}
-                >
-                  {d}
-                </button>
-              ))}
+              <span className="text-xs text-slate-500 font-bold uppercase tracking-wider text-[10px]">Filter:</span>
+              <div className="flex items-center gap-1 bg-slate-100/80 p-1 rounded-xl border border-slate-200/60">
+                {['All', 'Today', 'Tomorrow'].map((d) => (
+                  <button
+                    key={d}
+                    onClick={() => { setSelectedDate(d); setPage(1); }}
+                    className={`text-xs px-3 py-1.5 rounded-lg font-bold transition ${
+                      selectedDate === d
+                        ? 'bg-[#F84464] text-white shadow-2xs'
+                        : 'text-slate-600 hover:text-slate-900 hover:bg-white/80'
+                    }`}
+                  >
+                    {d}
+                  </button>
+                ))}
+              </div>
 
               <button
                 onClick={fetchBookings}
-                className="p-2 text-gray-400 hover:text-gray-700 rounded-lg hover:bg-gray-100 transition ml-2"
+                className="p-2 text-slate-400 hover:text-slate-700 rounded-xl hover:bg-slate-100 transition ml-1"
                 title="Refresh Manifest"
               >
-                <RefreshCw size={15} className={loading ? 'animate-spin' : ''} />
+                <RefreshCw size={15} className={loading ? 'animate-spin text-[#F84464]' : ''} />
               </button>
             </div>
           </div>
         </CardContent>
       </Card>
 
-      {/* Manifest Table */}
-      <Card className="shadow-sm border-gray-200">
-        <CardHeader className="py-3.5 border-b border-gray-100 flex flex-row items-center justify-between">
-          <CardTitle className="text-sm font-bold text-gray-800">
-            Confirmed Admissions Manifest ({totalCount})
-          </CardTitle>
-          <span className="text-xs text-gray-400">Page {page} of {totalPages}</span>
+      {/* Manifest Table Card */}
+      <Card className="shadow-none border-slate-200/90 overflow-hidden">
+        <CardHeader className="py-4 border-b border-slate-100 bg-slate-50/50 flex flex-row items-center justify-between">
+          <div className="flex items-center gap-2.5">
+            <CardTitle className="text-sm font-bold text-slate-900">
+              Confirmed Admissions Manifest
+            </CardTitle>
+            <span className="text-[11px] font-bold px-2 py-0.5 rounded-full bg-slate-100 text-slate-700 border border-slate-200">
+              {totalCount} Total
+            </span>
+          </div>
+          <span className="text-xs text-slate-400 font-mono">Page {page} of {totalPages}</span>
         </CardHeader>
 
         <CardContent className="p-0">

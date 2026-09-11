@@ -298,105 +298,135 @@ export default function VendorShowsPage() {
         />
       ) : (
         <div className="space-y-4">
-          {shows.map((show) => (
-            <Card key={show.id || show._id} className="shadow-sm border-gray-200 overflow-hidden">
-              <div className="p-4 sm:p-5 flex flex-col md:flex-row md:items-center justify-between gap-4">
-                {/* Movie & Venue Info */}
-                <div className="flex items-start gap-4">
-                  <div className="w-16 h-22 rounded-lg overflow-hidden bg-gray-100 shrink-0 border border-gray-200">
-                    <img
-                      src={show.movie?.posterUrl || 'https://images.unsplash.com/photo-1489599849927-2ee91cede3ba?auto=format&fit=crop&w=400&q=80'}
-                      alt={show.movieTitle}
-                      className="w-full h-full object-cover"
-                    />
-                  </div>
+          {shows.map((show) => {
+            const isCancelled = show.status === 'cancelled';
+            const isFillingFast = show.occupancyRate > 70;
 
-                  <div>
-                    <div className="flex items-center gap-2">
-                      <span className="text-base font-bold text-gray-900">
-                        {show.movieTitle}
-                      </span>
-                      <Badge variant="info" className="text-[10px]">
-                        {show.format || '2D'}
-                      </Badge>
-                      {show.status === 'cancelled' && (
-                        <Badge variant="danger" className="text-[10px]">
-                          Cancelled
-                        </Badge>
-                      )}
-                    </div>
-
-                    <div className="flex items-center gap-1.5 text-xs text-gray-600 mt-1">
-                      <MapPin size={13} className="text-[#F84464]" />
-                      <span>{show.cinema?.name || 'Multiplex'}</span>
-                      <span>•</span>
-                      <span className="font-medium text-indigo-600">{show.screen?.name || 'Screen 1'}</span>
-                    </div>
-
-                    <div className="flex items-center gap-3 text-xs text-gray-500 mt-2">
-                      <div className="flex items-center gap-1">
-                        <Clock size={12} />
-                        <span className="font-semibold text-gray-800">{show.startTime}</span>
-                        <span>- {show.endTime}</span>
+            return (
+              <Card
+                key={show.id || show._id}
+                interactive={true}
+                accent={isCancelled ? 'primary' : isFillingFast ? 'amber' : 'emerald'}
+                className="border-slate-200/90 overflow-hidden group hover:border-slate-300"
+              >
+                <div className="p-4 sm:p-5 flex flex-col md:flex-row md:items-center justify-between gap-5">
+                  {/* Movie & Venue Info */}
+                  <div className="flex items-start gap-4 min-w-0">
+                    <div className="relative w-16 h-22 rounded-xl overflow-hidden bg-slate-100 shrink-0 border border-slate-200 shadow-2xs group-hover:scale-105 transition-transform duration-300">
+                      <img
+                        src={show.movie?.posterUrl || 'https://images.unsplash.com/photo-1489599849927-2ee91cede3ba?auto=format&fit=crop&w=400&q=80'}
+                        alt={show.movieTitle}
+                        className="w-full h-full object-cover"
+                      />
+                      <div className="absolute top-1 left-1">
+                        <span className="bg-black/75 backdrop-blur-xs text-white text-[9px] font-bold px-1.5 py-0.5 rounded shadow-2xs">
+                          {show.format || '2D'}
+                        </span>
                       </div>
-                      <span>•</span>
-                      <span className="bg-gray-100 px-2 py-0.5 rounded text-[11px] font-medium text-gray-700">
-                        {show.showDate}
-                      </span>
+                    </div>
+
+                    <div className="min-w-0 flex-1">
+                      <div className="flex items-center gap-2 flex-wrap">
+                        <h3 className="text-base font-bold text-slate-900 leading-tight group-hover:text-[#F84464] transition-colors">
+                          {show.movieTitle}
+                        </h3>
+                        {isCancelled ? (
+                          <span className="text-[10px] font-bold px-2 py-0.5 rounded-full bg-rose-50 text-rose-700 border border-rose-200">
+                            Cancelled
+                          </span>
+                        ) : isFillingFast ? (
+                          <span className="text-[10px] font-bold px-2 py-0.5 rounded-full bg-amber-50 text-amber-800 border border-amber-200 flex items-center gap-1">
+                            <span className="w-1.5 h-1.5 rounded-full bg-amber-500 animate-pulse" />
+                            Filling Fast
+                          </span>
+                        ) : (
+                          <span className="text-[10px] font-bold px-2 py-0.5 rounded-full bg-emerald-50 text-emerald-700 border border-emerald-200">
+                            Live on BMS
+                          </span>
+                        )}
+                      </div>
+
+                      <div className="flex items-center gap-2 text-xs text-slate-600 mt-1.5 flex-wrap">
+                        <span className="flex items-center gap-1 font-medium">
+                          <MapPin size={12} className="text-[#F84464] shrink-0" />
+                          <span>{show.cinema?.name || 'Multiplex'}</span>
+                        </span>
+                        <span className="text-slate-300">•</span>
+                        <span className="font-semibold text-indigo-700 bg-indigo-50 px-2 py-0.5 rounded border border-indigo-100 text-[11px]">
+                          {show.screen?.name || 'Screen 1'}
+                        </span>
+                      </div>
+
+                      <div className="flex items-center gap-2.5 text-xs text-slate-500 mt-2 flex-wrap">
+                        <div className="flex items-center gap-1.5 bg-slate-50 border border-slate-200/60 px-2 py-0.5 rounded-md font-mono text-[11px]">
+                          <Clock size={12} className="text-slate-400" />
+                          <span className="font-bold text-slate-900">{show.startTime}</span>
+                          <span className="text-slate-400">-</span>
+                          <span>{show.endTime}</span>
+                        </div>
+                        <span className="text-slate-300">•</span>
+                        <span className="bg-slate-100 px-2 py-0.5 rounded text-[11px] font-semibold text-slate-700">
+                          {show.showDate}
+                        </span>
+                      </div>
                     </div>
                   </div>
-                </div>
 
-                {/* Capacity & Occupancy Progress */}
-                <div className="md:w-56 flex flex-col justify-center">
-                  <div className="flex items-center justify-between text-xs mb-1">
-                    <span className="text-gray-500 font-medium">Occupancy</span>
-                    <span className="font-bold text-gray-900">
-                      {show.bookedSeatsCount} / {show.totalCapacity} Seats ({show.occupancyRate}%)
-                    </span>
-                  </div>
-                  <div className="w-full h-2 bg-gray-100 rounded-full overflow-hidden">
-                    <div
-                      className={`h-full transition-all duration-300 ${
-                        show.occupancyRate > 80
-                          ? 'bg-rose-500'
-                          : show.occupancyRate > 40
-                          ? 'bg-amber-500'
-                          : 'bg-emerald-500'
-                      }`}
-                      style={{ width: `${Math.min(show.occupancyRate, 100)}%` }}
-                    />
-                  </div>
-                  <div className="flex items-center justify-between text-[11px] text-gray-400 mt-1">
-                    <span>From ₹{show.pricingTiers?.normal || show.ticketPrice}</span>
-                    <span className="text-emerald-600 font-medium">Live for Booking</span>
-                  </div>
-                </div>
+                  {/* Capacity & Occupancy Progress */}
+                  <div className="md:w-60 flex flex-col justify-center bg-slate-50/70 p-3 rounded-xl border border-slate-200/60">
+                    <div className="flex items-center justify-between text-xs mb-1.5">
+                      <span className="text-slate-500 font-medium text-[11px] uppercase tracking-wider">
+                        Hall Occupancy
+                      </span>
+                      <span className="font-bold text-slate-900 font-mono text-xs">
+                        {show.bookedSeatsCount} / {show.totalCapacity} ({show.occupancyRate}%)
+                      </span>
+                    </div>
 
-                {/* Show Actions */}
-                <div className="flex items-center gap-2 pt-2 md:pt-0 border-t md:border-t-0 border-gray-100">
-                  <button
-                    onClick={() => openSeatMapModal(show)}
-                    className="inline-flex items-center gap-1.5 text-xs font-semibold text-indigo-600 bg-indigo-50 hover:bg-indigo-100 px-3 py-2 rounded-lg transition"
-                    title="View Live Seat Layout & Heatmap"
-                  >
-                    <Eye size={14} />
-                    <span>Live Seat Map</span>
-                  </button>
+                    <div className="w-full h-2 bg-slate-200 rounded-full overflow-hidden shadow-inner">
+                      <div
+                        className={`h-full transition-all duration-500 rounded-full ${
+                          show.occupancyRate > 80
+                            ? 'bg-gradient-to-r from-amber-500 to-rose-500'
+                            : show.occupancyRate > 40
+                            ? 'bg-gradient-to-r from-emerald-500 to-amber-500'
+                            : 'bg-emerald-500'
+                        }`}
+                        style={{ width: `${Math.min(show.occupancyRate, 100)}%` }}
+                      />
+                    </div>
 
-                  {show.status !== 'cancelled' && (
+                    <div className="flex items-center justify-between text-[11px] text-slate-500 mt-2 font-mono">
+                      <span>Tickets from <strong className="text-slate-900 font-bold">₹{show.pricingTiers?.normal || show.ticketPrice}</strong></span>
+                      <span className="text-emerald-700 font-bold font-sans text-[10px]">Open</span>
+                    </div>
+                  </div>
+
+                  {/* Show Actions */}
+                  <div className="flex items-center gap-2 pt-3 md:pt-0 border-t md:border-t-0 border-slate-100 justify-end">
                     <button
-                      onClick={() => openCancelModal(show)}
-                      className="p-2 text-gray-400 hover:text-rose-600 rounded-lg hover:bg-rose-50 transition"
-                      title="Cancel Show"
+                      onClick={() => openSeatMapModal(show)}
+                      className="inline-flex items-center gap-1.5 text-xs font-bold text-indigo-700 bg-indigo-50 hover:bg-indigo-100 border border-indigo-200/80 px-3.5 py-2 rounded-xl transition shadow-2xs"
+                      title="View Live Seat Layout & Heatmap"
                     >
-                      <Ban size={15} />
+                      <Eye size={14} className="text-indigo-600" />
+                      <span>Seat Map</span>
                     </button>
-                  )}
+
+                    {show.status !== 'cancelled' && (
+                      <button
+                        onClick={() => openCancelModal(show)}
+                        className="p-2 text-slate-400 hover:text-rose-600 hover:bg-rose-50 rounded-xl border border-transparent hover:border-rose-200 transition shadow-2xs"
+                        title="Cancel Show"
+                      >
+                        <Ban size={15} />
+                      </button>
+                    )}
+                  </div>
                 </div>
-              </div>
-            </Card>
-          ))}
+              </Card>
+            );
+          })}
         </div>
       )}
 
