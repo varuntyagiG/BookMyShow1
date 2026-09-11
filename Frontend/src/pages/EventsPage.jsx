@@ -1,5 +1,6 @@
 import React, { useState, useEffect } from 'react';
-import { contentApi } from '../services/api';
+import { Link } from 'react-router-dom';
+import { contentApi, bookingApi } from '../services/api';
 import { useCity } from '../context/CityContext';
 import { Calendar, MapPin, Sparkles, CheckCircle, X, Loader2, Ticket } from 'lucide-react';
 import { useAuth } from '../context/AuthContext';
@@ -17,6 +18,8 @@ export default function EventsPage() {
   const [ticketCount, setTicketCount] = useState(2);
   const [bookingConfirmed, setBookingConfirmed] = useState(false);
   const [bookingId, setBookingId] = useState('');
+  const [bookingLoading, setBookingLoading] = useState(false);
+  const [bookingError, setBookingError] = useState('');
 
   const categories = ['All', 'Music Shows', 'Comedy Shows', 'Music Festival', 'Sports'];
 
@@ -49,7 +52,40 @@ export default function EventsPage() {
     setSelectedEvent(event);
     setTicketCount(2);
     setBookingConfirmed(false);
+    setBookingError('');
     setBookingId(generateEventBookingId());
+  };
+
+  const handleConfirmBooking = async () => {
+    if (!isAuthenticated) {
+      openAuthModal('signin');
+      return;
+    }
+    setBookingLoading(true);
+    setBookingError('');
+    try {
+      const passes = Array.from({ length: ticketCount }, (_, i) => `PASS-${i + 1}`);
+      const res = await bookingApi.createBooking({
+        movieId: selectedEvent.id || selectedEvent._id || `event-${Date.now()}`,
+        movieTitle: selectedEvent.title,
+        theatreName: selectedEvent.venue || 'Live Concert Arena',
+        showtime: '07:00 PM',
+        showDate: selectedEvent.date || 'Upcoming',
+        seats: passes,
+        includeSnacks: false,
+      });
+
+      if (res.success && res.booking) {
+        setBookingId(res.booking.bookingId);
+        setBookingConfirmed(true);
+      } else {
+        setBookingError(res.message || 'Failed to confirm booking.');
+      }
+    } catch (err) {
+      setBookingError(err.message || 'Unable to book passes. Please try again.');
+    } finally {
+      setBookingLoading(false);
+    }
   };
 
   return (
@@ -216,12 +252,28 @@ export default function EventsPage() {
                   </div>
                 </div>
 
+                {bookingError && (
+                  <div className="mb-4 p-3 bg-red-50 text-red-600 rounded-xl text-xs font-semibold text-center">
+                    {bookingError}
+                  </div>
+                )}
+
                 <button
-                  onClick={() => setBookingConfirmed(true)}
-                  className="w-full py-3 bg-[#F84464] hover:bg-[#e03a58] text-white text-xs sm:text-sm font-extrabold rounded-xl transition-all shadow-lg shadow-red-500/25 cursor-pointer flex items-center justify-center gap-2"
+                  onClick={handleConfirmBooking}
+                  disabled={bookingLoading}
+                  className="w-full py-3 bg-[#F84464] hover:bg-[#e03a58] disabled:opacity-60 text-white text-xs sm:text-sm font-extrabold rounded-xl transition-all shadow-lg shadow-red-500/25 cursor-pointer flex items-center justify-center gap-2"
                 >
-                  <Ticket className="w-4 h-4" />
-                  <span>Confirm &amp; Book Passes</span>
+                  {bookingLoading ? (
+                    <>
+                      <Loader2 className="w-4 h-4 animate-spin" />
+                      <span>Reserving your passes...</span>
+                    </>
+                  ) : (
+                    <>
+                      <Ticket className="w-4 h-4" />
+                      <span>Confirm &amp; Book Passes</span>
+                    </>
+                  )}
                 </button>
               </div>
             ) : (
@@ -238,12 +290,21 @@ export default function EventsPage() {
                   <p><strong>Date &amp; Time:</strong> {selectedEvent.date}</p>
                   <p><strong>Booking ID:</strong> <span className="font-mono text-[#F84464] font-bold">{bookingId}</span></p>
                 </div>
-                <button
-                  onClick={() => setSelectedEvent(null)}
-                  className="w-full py-2.5 bg-[#F84464] hover:bg-[#e03a58] text-white text-xs font-bold rounded-xl transition-colors cursor-pointer"
-                >
-                  Done
-                </button>
+                <div className="flex items-center gap-3">
+                  <Link
+                    to="/my-bookings"
+                    onClick={() => setSelectedEvent(null)}
+                    className="flex-1 py-2.5 bg-gray-100 hover:bg-gray-200 text-gray-800 text-xs font-bold rounded-xl transition-colors cursor-pointer text-center"
+                  >
+                    View in My Bookings
+                  </Link>
+                  <button
+                    onClick={() => setSelectedEvent(null)}
+                    className="flex-1 py-2.5 bg-[#F84464] hover:bg-[#e03a58] text-white text-xs font-bold rounded-xl transition-colors cursor-pointer"
+                  >
+                    Done
+                  </button>
+                </div>
               </div>
             )}
           </div>

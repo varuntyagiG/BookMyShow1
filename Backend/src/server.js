@@ -9,6 +9,7 @@ const cors = require('cors');
 const authRoutes = require('./routes/authRoutes');
 const movieRoutes = require('./routes/movieRoutes');
 const bookingRoutes = require('./routes/bookingRoutes');
+const cinemaPartnerRoutes = require('./routes/cinemaPartnerRoutes');
 const adminRoutes = require('./routes/adminRoutes');
 const { connectDB, isDBConnected, closeDB } = require('./config/db');
 
@@ -80,6 +81,7 @@ app.get('/api/health', healthHandler);
 app.use('/api/auth', authRoutes);
 app.use('/api', movieRoutes);
 app.use('/api/bookings', bookingRoutes);
+app.use('/api/cinema-partner', cinemaPartnerRoutes);
 app.use('/api/admin', adminRoutes);
 
 // Fallback 404 route

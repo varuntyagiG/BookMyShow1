@@ -21,7 +21,13 @@ export default function SignInPage() {
     try {
       const res = await login(email, password);
       if (res.success) {
-        navigate('/');
+        if (res.user?.role === 'admin') {
+          navigate('/admin/dashboard');
+        } else if (res.user?.role === 'cinema_partner') {
+          navigate('/cinema-partner');
+        } else {
+          navigate('/');
+        }
       } else {
         setError(res.message || 'Invalid credentials');
       }
@@ -37,7 +43,13 @@ export default function SignInPage() {
     setLoading(true);
     try {
       const res = await quickDemoLogin();
-      if (res.success) navigate('/');
+      if (res.success) {
+        if (res.user?.role === 'cinema_partner') {
+          navigate('/cinema-partner');
+        } else {
+          navigate('/');
+        }
+      }
     } catch {
       setError('Demo login error');
     } finally {
@@ -145,11 +157,19 @@ export default function SignInPage() {
           </form>
 
           {/* Switch to Sign Up */}
-          <div className="mt-6 text-center text-xs text-gray-600">
-            Don't have an account?{' '}
-            <Link to="/signup" className="text-[#F84464] font-bold hover:underline">
-              Create an Account
-            </Link>
+          <div className="mt-6 text-center text-xs text-gray-600 space-y-2">
+            <div>
+              Don't have an account?{' '}
+              <Link to="/signup" className="text-[#F84464] font-bold hover:underline">
+                Create an Account
+              </Link>
+            </div>
+            <div className="pt-2 border-t border-gray-100">
+              <span className="text-gray-400">Cinema / Theatre Operator? </span>
+              <Link to="/cinema-partner/login" className="text-amber-600 font-bold hover:underline">
+                Go to Cinema Partner Portal &rarr;
+              </Link>
+            </div>
           </div>
         </div>
 

@@ -48,26 +48,36 @@ async function register(req, res) {
     const salt = await bcrypt.genSalt(10);
     const hashedPassword = await bcrypt.hash(password, salt);
 
+    const isPartner = req.body.role === 'cinema_partner' || req.body.role === 'partner';
+    const assignedRole = isPartner ? 'cinema_partner' : 'customer';
+    // Partners require admin verification; default status pending
+    const partnerStatus = isPartner ? 'pending' : 'active';
+
     const newUser = await User.create({
       name: name.trim(),
       email: trimmedEmail,
       phone: phone ? phone.trim() : '',
       password: hashedPassword,
-      role: 'user'
+      role: assignedRole,
+      partnerStatus,
+      businessName: req.body.businessName ? req.body.businessName.trim() : '',
+      partnerPhone: req.body.partnerPhone ? req.body.partnerPhone.trim() : ''
     });
 
     const token = generateToken(newUser);
 
     return res.status(201).json({
       success: true,
-      message: 'Account created successfully!',
+      message: isPartner ? 'Partner account created! Awaiting administrator approval.' : 'Account created successfully!',
       token,
       user: {
         id: newUser._id.toString(),
         name: newUser.name,
         email: newUser.email,
         phone: newUser.phone,
-        role: newUser.role
+        role: newUser.role,
+        partnerStatus: newUser.partnerStatus,
+        businessName: newUser.businessName || ''
       }
     });
   } catch (error) {
@@ -111,7 +121,23 @@ async function login(req, res) {
       });
     }
 
+    if (user.isDeactivated) {
+      return res.status(403).json({
+        success: false,
+        message: 'Your account has been deactivated. Please contact platform administration.'
+      });
+    }
+
     const token = generateToken(user);
+
+    // Normalize role: strictly 'admin', 'cinema_partner', or 'customer'
+    const rawRole = (user.role || '').toLowerCase();
+    let normalizedRole = 'customer';
+    if (rawRole === 'admin') {
+      normalizedRole = 'admin';
+    } else if (rawRole === 'cinema_partner' || rawRole === 'partner') {
+      normalizedRole = 'cinema_partner';
+    }
 
     return res.json({
       success: true,
@@ -122,7 +148,9 @@ async function login(req, res) {
         name: user.name,
         email: user.email,
         phone: user.phone,
-        role: user.role
+        role: normalizedRole,
+        partnerStatus: user.partnerStatus || 'active',
+        businessName: user.businessName || ''
       }
     });
   } catch (error) {
@@ -137,9 +165,21 @@ async function login(req, res) {
 // Get current user profile
 async function getMe(req, res) {
   try {
+    const Booking = require('../models/Booking');
+    const [freshUser, totalBookings] = await Promise.all([
+      User.findById(req.user._id).select('-password'),
+      Booking.countDocuments({ user: req.user._id })
+    ]);
+
     return res.json({
       success: true,
-      user: req.user
+      user: {
+        ...req.user,
+        name: freshUser?.name || req.user.name,
+        phone: freshUser?.phone || req.user.phone,
+        createdAt: freshUser?.createdAt,
+        totalBookings
+      }
     });
   } catch (error) {
     return res.status(500).json({
@@ -149,9 +189,41 @@ async function getMe(req, res) {
   }
 }
 
+// Update current user profile
+async function updateMe(req, res) {
+  try {
+    const { name, phone } = req.body;
+    const updates = {};
+    if (name && name.trim()) updates.name = name.trim();
+    if (phone !== undefined) updates.phone = phone.trim();
+
+    const updatedUser = await User.findByIdAndUpdate(
+      req.user._id,
+      { $set: updates },
+      { returnDocument: 'after' }
+    ).select('-password');
+
+    return res.json({
+      success: true,
+      message: 'Profile updated successfully!',
+      user: {
+        ...req.user,
+        name: updatedUser.name,
+        phone: updatedUser.phone
+      }
+    });
+  } catch (error) {
+    console.error('Error updating profile:', error);
+    return res.status(500).json({
+      success: false,
+      message: 'Failed to update profile.'
+    });
+  }
+}
+
 module.exports = {
   register,
   login,
-  getMe
+  getMe,
+  updateMe
 };
-

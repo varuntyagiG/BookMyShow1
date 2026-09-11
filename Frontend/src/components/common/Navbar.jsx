@@ -58,7 +58,7 @@ export default function Navbar({ onSearch }) {
     <header className="sticky top-0 z-40 bg-[#333545] text-white shadow-md border-b border-[#2b2d3c]">
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
         <div className="flex items-center justify-between h-16 gap-3 sm:gap-6">
-          
+
           {/* Brand Logo & Search */}
           <div className="flex items-center gap-4 sm:gap-8 flex-1 max-w-2xl">
             {/* BookMyShow Logo */}
@@ -133,7 +133,7 @@ export default function Navbar({ onSearch }) {
 
           {/* Right Actions: City Selector & Auth */}
           <div className="flex items-center gap-3 sm:gap-4 shrink-0">
-            
+
             {/* City Selector Button with Pin Icon */}
             <button
               onClick={() => setIsCityModalOpen(true)}
@@ -173,35 +173,41 @@ export default function Navbar({ onSearch }) {
                     <div className="py-1.5">
                       {user?.role === 'admin' && (
                         <Link
-                          to="/admin"
+                          to="/admin/dashboard"
                           onClick={() => setUserDropdownOpen(false)}
-                          className="w-full flex items-center gap-3 px-4 py-2 text-xs font-bold text-[#F84464] bg-[#F84464]/5 hover:bg-[#F84464]/10 cursor-pointer transition-colors"
+                          className="w-full flex items-center gap-3 px-4 py-2 text-xs font-bold text-indigo-600 bg-indigo-50 hover:bg-indigo-100 cursor-pointer transition-colors"
                         >
-                          <ShieldCheck className="w-4 h-4 text-[#F84464]" />
-                          <span>Super Admin Console</span>
+                          <ShieldCheck className="w-4 h-4 text-indigo-600" />
+                          <span>Platform Admin Control</span>
                         </Link>
                       )}
-                      <button
-                        onClick={() => {
-                          setUserDropdownOpen(false);
-                          alert('Bookings history: You have no active bookings yet.');
-                        }}
+                      {user?.role === 'cinema_partner' && (
+                        <Link
+                          to="/cinema-partner"
+                          onClick={() => setUserDropdownOpen(false)}
+                          className="w-full flex items-center gap-3 px-4 py-2 text-xs font-bold text-amber-600 bg-amber-500/10 hover:bg-amber-500/15 cursor-pointer transition-colors"
+                        >
+                          <ShieldCheck className="w-4 h-4 text-amber-600" />
+                          <span>Cinema Partner Portal</span>
+                        </Link>
+                      )}
+                      <Link
+                        to="/my-bookings"
+                        onClick={() => setUserDropdownOpen(false)}
                         className="w-full flex items-center gap-3 px-4 py-2 text-xs font-medium text-gray-700 hover:bg-gray-50 hover:text-[#F84464] cursor-pointer transition-colors"
                       >
                         <Ticket className="w-4 h-4 text-gray-400" />
                         <span>Your Orders &amp; Bookings</span>
-                      </button>
+                      </Link>
 
-                      <button
-                        onClick={() => {
-                          setUserDropdownOpen(false);
-                          alert('Account profile: ' + (user?.email || ''));
-                        }}
+                      <Link
+                        to="/profile"
+                        onClick={() => setUserDropdownOpen(false)}
                         className="w-full flex items-center gap-3 px-4 py-2 text-xs font-medium text-gray-700 hover:bg-gray-50 hover:text-[#F84464] cursor-pointer transition-colors"
                       >
                         <Settings className="w-4 h-4 text-gray-400" />
                         <span>Accounts &amp; Settings</span>
-                      </button>
+                      </Link>
                     </div>
 
                     <div className="border-t border-gray-100 pt-1">

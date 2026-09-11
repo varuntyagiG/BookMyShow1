@@ -1,4 +1,4 @@
-﻿const mongoose = require('mongoose');
+const mongoose = require('mongoose');
 const bcrypt = require('bcryptjs');
 
 const userSchema = new mongoose.Schema(
@@ -27,12 +27,46 @@ const userSchema = new mongoose.Schema(
     },
     role: {
       type: String,
-      enum: ['user', 'admin'],
-      default: 'user',
+      enum: ['customer', 'cinema_partner', 'user', 'admin'],
+      default: 'customer',
+    },
+    businessName: {
+      type: String,
+      trim: true,
+      default: '',
+    },
+    partnerPhone: {
+      type: String,
+      trim: true,
+      default: '',
+    },
+    businessAddress: {
+      type: String,
+      trim: true,
+      default: '',
     },
     avatar: {
       type: String,
       default: '',
+    },
+    partnerStatus: {
+      type: String,
+      enum: ['pending', 'approved', 'active', 'suspended'],
+      default: 'active',
+      index: true,
+    },
+    approvalNotes: {
+      type: String,
+      default: '',
+    },
+    suspendedReason: {
+      type: String,
+      default: '',
+    },
+    isDeactivated: {
+      type: Boolean,
+      default: false,
+      index: true,
     },
   },
   {

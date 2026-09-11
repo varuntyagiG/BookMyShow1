@@ -1,5 +1,6 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
+import { contentApi } from '../services/api';
 import {
   CreditCard,
   Sparkles,
@@ -16,7 +17,8 @@ import {
   Zap,
   Info,
   SlidersHorizontal,
-  RotateCcw
+  RotateCcw,
+  Loader2
 } from 'lucide-react';
 
 const offerCategories = [
@@ -226,14 +228,89 @@ const offersData = [
 export default function OffersPage() {
   const navigate = useNavigate();
 
+  const [offersList, setOffersList] = useState(offersData);
+  const [loading, setLoading] = useState(false);
   const [activeCategory, setActiveCategory] = useState('all');
   const [selectedBank, setSelectedBank] = useState('All');
   const [searchQuery, setSearchQuery] = useState('');
   const [copiedCode, setCopiedCode] = useState(null);
   const [activeModalOffer, setActiveModalOffer] = useState(null);
 
+  useEffect(() => {
+    async function fetchOffers() {
+      try {
+        setLoading(true);
+        const res = await contentApi.getOffers();
+        if (res.data?.success && res.data.offers && res.data.offers.length > 0) {
+          const gradients = [
+            'from-orange-600 to-amber-700',
+            'from-blue-700 to-indigo-900',
+            'from-[#97144D] to-[#5C0A2E]',
+            'from-zinc-900 to-black',
+            'from-red-700 to-rose-900',
+            'from-emerald-700 to-teal-900'
+          ];
+          const dynamicOffers = res.data.offers.map((o, idx) => {
+            let bank = 'Exclusive';
+            const lowerTitle = (o.title || '').toLowerCase();
+            if (lowerTitle.includes('icici')) bank = 'ICICI Bank';
+            else if (lowerTitle.includes('hdfc')) bank = 'HDFC Bank';
+            else if (lowerTitle.includes('axis')) bank = 'Axis Bank';
+            else if (lowerTitle.includes('sbi')) bank = 'SBI Card';
+            else if (lowerTitle.includes('kotak')) bank = 'Kotak';
+            else if (lowerTitle.includes('cred')) bank = 'CRED';
+            else if (lowerTitle.includes('paytm')) bank = 'Paytm';
+
+            let category = 'credit';
+            const lowerCode = (o.code || '').toLowerCase();
+            if (lowerCode.includes('paytm') || lowerCode.includes('cred') || lowerCode.includes('upi')) category = 'upi';
+            else if (lowerCode.includes('pass') || lowerCode.includes('pvr')) category = 'cinemas';
+
+            const discountTag = o.discountType === 'percentage'
+              ? `${o.discountValue}% OFF`
+              : `₹${o.discountValue} FLAT OFF`;
+
+            const dateStr = o.validUntil ? new Date(o.validUntil).toLocaleDateString('en-GB', { day: '2-digit', month: 'short', year: 'numeric' }) : '31 Dec 2026';
+
+            return {
+              id: o._id,
+              title: o.title,
+              subtitle: o.description || `${o.discountValue}% off up to ₹${o.maxDiscount || o.discountValue}`,
+              category,
+              bank,
+              tag: discountTag,
+              tagColor: 'bg-[#F84464]',
+              code: o.code,
+              validTill: dateStr,
+              brandBg: gradients[idx % gradients.length],
+              maxDiscount: o.maxDiscount ? `Up to ₹${o.maxDiscount}` : `₹${o.discountValue}`,
+              minBooking: o.minBookingAmount ? `₹${o.minBookingAmount} min spend` : 'No minimum',
+              eligibleDays: 'All days of the week',
+              description: o.description || o.title,
+              terms: [
+                `Offer code ${o.code} gives ${o.discountType === 'percentage' ? o.discountValue + '%' : '₹' + o.discountValue} discount.`,
+                o.maxDiscount ? `Maximum discount capped at ₹${o.maxDiscount}.` : 'No upper discount cap.',
+                o.minBookingAmount ? `Valid on minimum booking of ₹${o.minBookingAmount}.` : 'No minimum booking required.',
+                'Applicable on BookMyTrip website and app.'
+              ]
+            };
+          });
+
+          // Prepend dynamic DB offers before fallback offers for maximum freshness
+          const combined = [...dynamicOffers, ...offersData.filter(d => !dynamicOffers.some(dy => dy.code === d.code))];
+          setOffersList(combined);
+        }
+      } catch (err) {
+        console.error('Failed to load DB offers, using catalogue fallback', err);
+      } finally {
+        setLoading(false);
+      }
+    }
+    fetchOffers();
+  }, []);
+
   // Filter offers
-  const filteredOffers = offersData.filter((item) => {
+  const filteredOffers = offersList.filter((item) => {
     // Category check
     if (activeCategory !== 'all' && item.category !== activeCategory) {
       return false;

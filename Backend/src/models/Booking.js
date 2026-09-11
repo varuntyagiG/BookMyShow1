@@ -86,12 +86,68 @@ const bookingSchema = new mongoose.Schema(
       type: String,
       enum: ['confirmed', 'cancelled'],
       default: 'confirmed'
-    }
+    },
+    // B2B Cinema Partner linkage
+    cinema: {
+      type: mongoose.Schema.Types.ObjectId,
+      ref: 'Cinema',
+      index: true
+    },
+    partner: {
+      type: mongoose.Schema.Types.ObjectId,
+      ref: 'User',
+      index: true
+    },
+    screen: {
+      type: mongoose.Schema.Types.ObjectId,
+      ref: 'Screen'
+    },
+    screenName: {
+      type: String,
+      default: 'Screen 1'
+    },
+    show: {
+      type: mongoose.Schema.Types.ObjectId,
+      ref: 'Show',
+      index: true
+    },
+    // Ticket Check-in & Gate Validation
+    ticketValidated: {
+      type: Boolean,
+      default: false,
+      index: true
+    },
+    validatedAt: {
+      type: Date
+    },
+    validatedBy: {
+      type: mongoose.Schema.Types.ObjectId,
+      ref: 'User'
+    },
+    validationHistory: [
+      {
+        validatedAt: { type: Date, default: Date.now },
+        validatedBy: { type: mongoose.Schema.Types.ObjectId, ref: 'User' },
+        action: { type: String, default: 'CHECK_IN' },
+        notes: { type: String, default: '' }
+      }
+    ]
   },
   {
-    timestamps: true
+    timestamps: true,
+    toJSON: { virtuals: true },
+    toObject: { virtuals: true }
   }
 );
+
+// Virtuals for unified cross-panel compatibility
+bookingSchema.virtual('status').get(function () {
+  return this.bookingStatus;
+});
+
+bookingSchema.virtual('amount').get(function () {
+  return this.totalAmount;
+});
 
 // Compound index to quickly look up bookings by movie, theatre, showtime and date
 bookingSchema.index({ movieTitle: 1, theatreName: 1, showtime: 1, showDate: 1 });

@@ -57,13 +57,21 @@ export default function MovieDetailsPage() {
 
   const showtimesRef = useRef(null);
 
-  const dates = [
-    { day: 'TODAY', date: '08 SEP' },
-    { day: 'TOM', date: '09 SEP' },
-    { day: 'WED', date: '10 SEP' },
-    { day: 'THU', date: '11 SEP' },
-    { day: 'FRI', date: '12 SEP' },
-  ];
+  const dates = React.useMemo(() => {
+    const days = ['SUN', 'MON', 'TUE', 'WED', 'THU', 'FRI', 'SAT'];
+    const months = ['JAN', 'FEB', 'MAR', 'APR', 'MAY', 'JUN', 'JUL', 'AUG', 'SEP', 'OCT', 'NOV', 'DEC'];
+    const list = [];
+    const now = new Date();
+    for (let i = 0; i < 7; i++) {
+      const d = new Date(now);
+      d.setDate(now.getDate() + i);
+      const dayLabel = i === 0 ? 'TODAY' : i === 1 ? 'TOM' : days[d.getDay()];
+      const dateLabel = `${d.getDate().toString().padStart(2, '0')} ${months[d.getMonth()]}`;
+      const isoDate = d.toISOString().split('T')[0];
+      list.push({ day: dayLabel, date: dateLabel, isoDate });
+    }
+    return list;
+  }, []);
 
   const transportIcons = [
     { count: 1, name: 'Bicycle', emoji: '🚲' },
@@ -76,19 +84,38 @@ export default function MovieDetailsPage() {
     { count: 8, name: 'Bus', emoji: '🚍' },
   ];
 
-  // Pre-configured seat layout rows
-  const seatLayout = [
-    { row: 'A', tier: 'Recliner VIP', price: 750, seats: [1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12], occupied: ['A1', 'A2', 'A11', 'A12'] },
-    { row: 'B', tier: 'Prime Plus', price: 450, seats: [1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12], occupied: ['B1', 'B2', 'B7', 'B8'] },
-    { row: 'C', tier: 'Prime Plus', price: 450, seats: [1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12], occupied: ['C5', 'C6'] },
-    { row: 'D', tier: 'Classic', price: 280, seats: [1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12], occupied: ['D3', 'D4'] },
-    { row: 'E', tier: 'Classic', price: 280, seats: [1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12], occupied: ['E7', 'E8'] },
-    { row: 'F', tier: 'Classic', price: 280, seats: [1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12], occupied: [] },
-    { row: 'G', tier: 'Classic', price: 280, seats: [1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12], occupied: ['G1', 'G2'] },
-    { row: 'H', tier: 'Classic', price: 280, seats: [1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12], occupied: ['H11', 'H12'] },
-    { row: 'J', tier: 'Classic', price: 280, seats: [1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12], occupied: [] },
-    { row: 'K', tier: 'Classic', price: 280, seats: [1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12], occupied: [] },
-  ];
+  // Dynamic layout derived from partner screen or fallback
+  const activeSeatLayout = React.useMemo(() => {
+    const screenLayout = bookingModal.showtime?.seatingLayout;
+    const booked = bookingModal.occupiedSeats || [];
+    if (screenLayout && Array.isArray(screenLayout) && screenLayout.length > 0) {
+      return screenLayout.map((r) => {
+        const count = r.seatsCount || 12;
+        const seats = Array.from({ length: count }, (_, i) => i + 1);
+        const disabled = r.disabledSeats || [];
+        const rowOccupied = [...new Set([...booked.filter((s) => s.startsWith(r.row)), ...disabled])];
+        return {
+          row: r.row,
+          tier: r.tier || 'Classic',
+          price: r.basePrice || bookingModal.showtime?.basePrice || 250,
+          seats,
+          occupied: rowOccupied,
+        };
+      });
+    }
+    return [
+      { row: 'A', tier: 'Recliner VIP', price: 750, seats: [1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12], occupied: booked.filter((s) => s.startsWith('A')) },
+      { row: 'B', tier: 'Prime Plus', price: 450, seats: [1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12], occupied: booked.filter((s) => s.startsWith('B')) },
+      { row: 'C', tier: 'Prime Plus', price: 450, seats: [1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12], occupied: booked.filter((s) => s.startsWith('C')) },
+      { row: 'D', tier: 'Classic', price: 280, seats: [1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12], occupied: booked.filter((s) => s.startsWith('D')) },
+      { row: 'E', tier: 'Classic', price: 280, seats: [1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12], occupied: booked.filter((s) => s.startsWith('E')) },
+      { row: 'F', tier: 'Classic', price: 280, seats: [1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12], occupied: booked.filter((s) => s.startsWith('F')) },
+      { row: 'G', tier: 'Classic', price: 280, seats: [1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12], occupied: booked.filter((s) => s.startsWith('G')) },
+      { row: 'H', tier: 'Classic', price: 280, seats: [1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12], occupied: booked.filter((s) => s.startsWith('H')) },
+      { row: 'J', tier: 'Classic', price: 280, seats: [1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12], occupied: booked.filter((s) => s.startsWith('J')) },
+      { row: 'K', tier: 'Classic', price: 280, seats: [1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12], occupied: booked.filter((s) => s.startsWith('K')) },
+    ];
+  }, [bookingModal.showtime, bookingModal.occupiedSeats]);
 
   useEffect(() => {
     async function fetchMovieDetails() {
@@ -123,32 +150,61 @@ export default function MovieDetailsPage() {
     setFavoriteTheatres((prev) => ({ ...prev, [theatreId]: !prev[theatreId] }));
   };
 
-  const handleShowtimeClick = (theatre, showtime) => {
-    const basePrice = parseInt(showtime.price?.replace('₹', '') || '450', 10);
+  const handleShowtimeClick = async (theatre, showtime) => {
+    const basePrice = parseInt(showtime.price?.toString().replace('₹', '') || '450', 10);
     setBookingError('');
+    let occupied = Array.isArray(showtime.bookedSeats) ? [...showtime.bookedSeats] : [];
+
+    if (showtime.showId) {
+      try {
+        const seatRes = await bookingApi.getShowSeats(showtime.showId);
+        if (seatRes.success && Array.isArray(seatRes.bookedSeats)) {
+          occupied = seatRes.bookedSeats;
+        }
+      } catch (e) {
+        console.warn('Could not fetch real-time seats from backend, using cached showtime seats', e);
+      }
+    }
+
+    const availableRowB = [1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12]
+      .map((n) => `B${n}`)
+      .filter((s) => !occupied.includes(s));
+    const initialSeats = availableRowB.slice(0, 2);
+
     setBookingModal({
       isOpen: true,
       theatre,
       showtime: { ...showtime, basePrice },
-      seatsCount: 2,
-      selectedSeats: ['B5', 'B6'],
+      occupiedSeats: occupied,
+      seatsCount: initialSeats.length || 2,
+      selectedSeats: initialSeats,
       includeSnacks: false,
       confirmed: false,
       bookingId: generateBookingId(),
+      bookingData: null,
     });
   };
 
   const handleSeatsCountChange = (count) => {
     setBookingError('');
-    // Auto reselect default contiguous seats based on count
-    const defaultSeats = [];
-    for (let i = 1; i <= count; i++) {
-      defaultSeats.push(`B${i + 2}`);
+    const occupied = bookingModal.occupiedSeats || [];
+    const availableSeats = [];
+    const rowPrefixes = ['B', 'C', 'D', 'E'];
+    for (const r of rowPrefixes) {
+      for (let i = 1; i <= 12; i++) {
+        const seatId = `${r}${i}`;
+        if (!occupied.includes(seatId)) {
+          availableSeats.push(seatId);
+          if (availableSeats.length >= count) break;
+        }
+      }
+      if (availableSeats.length >= count) break;
     }
+
     setBookingModal((prev) => ({
       ...prev,
       seatsCount: count,
-      selectedSeats: defaultSeats,
+      selectedSeats: availableSeats.length > 0 ? availableSeats : prev.selectedSeats,
     }));
   };
 
@@ -164,7 +220,6 @@ export default function MovieDetailsPage() {
         nextSeats = prev.selectedSeats.filter((s) => s !== seatId);
       } else {
         if (prev.selectedSeats.length >= prev.seatsCount) {
-          // Replace first seat to keep length consistent
           nextSeats = [...prev.selectedSeats.slice(1), seatId];
         } else {
           nextSeats = [...prev.selectedSeats, seatId];
@@ -193,14 +248,18 @@ export default function MovieDetailsPage() {
     setBookingError('');
 
     try {
+      const selectedDate = dates[selectedDateIndex]?.date || 'Today';
       const res = await bookingApi.createBooking({
-        movieId: movie ? (movie.customId || movie._id || movie.id) : id,
+        movieId: movie ? (movie._id || movie.customId || movie.id) : id,
         movieTitle: movie ? movie.title : 'Movie',
         theatreName: bookingModal.theatre?.name || 'PVR Cinemas',
         showtime: bookingModal.showtime?.time || '10:00 AM',
-        showDate: dates[selectedDateIndex]?.date || 'Today',
+        showDate: selectedDate,
         seats: bookingModal.selectedSeats,
-        includeSnacks: bookingModal.includeSnacks
+        includeSnacks: bookingModal.includeSnacks,
+        showId: bookingModal.showtime?.showId,
+        screenId: bookingModal.showtime?.screenId,
+        cinemaId: bookingModal.showtime?.cinemaId || bookingModal.theatre?.cinemaId || bookingModal.theatre?.id,
       });
 
       if (res.success && res.booking) {
@@ -208,6 +267,8 @@ export default function MovieDetailsPage() {
           ...prev,
           confirmed: true,
           bookingId: res.booking.bookingId,
+          bookingData: res.booking,
+          occupiedSeats: [...(prev.occupiedSeats || []), ...prev.selectedSeats],
         }));
       } else {
         setBookingError(res.message || 'Unable to confirm booking. Please try again.');
@@ -372,11 +433,10 @@ export default function MovieDetailsPage() {
                             setSelectedFormatFilter(fmt);
                             scrollToBooking();
                           }}
-                          className={`border px-3 py-1.5 rounded-md text-xs font-bold transition-all duration-150 cursor-pointer focus-visible:outline focus-visible:outline-2 focus-visible:outline-[#F84464] ${
-                            selectedFormatFilter === fmt
+                          className={`border px-3 py-1.5 rounded-md text-xs font-bold transition-all duration-150 cursor-pointer focus-visible:outline focus-visible:outline-2 focus-visible:outline-[#F84464] ${selectedFormatFilter === fmt
                               ? 'bg-[#F84464] border-[#F84464] text-white shadow-[0_3px_10px_-3px_rgba(248,68,100,0.5)]'
                               : 'bg-white/10 border-white/20 text-gray-200 hover:border-white/40 hover:bg-white/15'
-                          }`}
+                            }`}
                         >
                           {fmt}
                         </button>
@@ -476,11 +536,10 @@ export default function MovieDetailsPage() {
                   <button
                     key={timeSlot}
                     onClick={() => setSelectedTimeFilter(timeSlot)}
-                    className={`px-3.5 py-1.5 rounded-full text-xs font-semibold transition-colors duration-150 cursor-pointer shrink-0 focus-visible:outline focus-visible:outline-2 focus-visible:outline-[#F84464] ${
-                      selectedTimeFilter === timeSlot
+                    className={`px-3.5 py-1.5 rounded-full text-xs font-semibold transition-colors duration-150 cursor-pointer shrink-0 focus-visible:outline focus-visible:outline-2 focus-visible:outline-[#F84464] ${selectedTimeFilter === timeSlot
                         ? 'bg-[#333545] text-white shadow-[0_3px_10px_-3px_rgba(0,0,0,0.3)]'
                         : 'bg-white border border-gray-200 text-gray-600 hover:bg-gray-100 hover:border-gray-300'
-                    }`}
+                      }`}
                   >
                     {timeSlot}
                   </button>
@@ -496,11 +555,10 @@ export default function MovieDetailsPage() {
                   <button
                     key={d.date}
                     onClick={() => setSelectedDateIndex(index)}
-                    className={`flex flex-col items-center px-5 py-2.5 rounded-xl text-xs transition-all duration-150 cursor-pointer shrink-0 focus-visible:outline focus-visible:outline-2 focus-visible:outline-[#F84464] ${
-                      isSelected
+                    className={`flex flex-col items-center px-5 py-2.5 rounded-xl text-xs transition-all duration-150 cursor-pointer shrink-0 focus-visible:outline focus-visible:outline-2 focus-visible:outline-[#F84464] ${isSelected
                         ? 'bg-[#F84464] text-white font-bold shadow-[0_6px_16px_-4px_rgba(248,68,100,0.45)] scale-[1.02]'
                         : 'bg-white border border-gray-200 text-gray-700 hover:bg-gray-50 hover:border-gray-300 font-medium'
-                    }`}
+                      }`}
                   >
                     <span className="text-[10px] uppercase font-bold tracking-wider opacity-90">{d.day}</span>
                     <span className="text-sm font-extrabold">{d.date}</span>
@@ -526,11 +584,10 @@ export default function MovieDetailsPage() {
                           className="cursor-pointer focus-visible:outline focus-visible:outline-2 focus-visible:outline-[#F84464] rounded-full"
                         >
                           <Heart
-                            className={`w-4 h-4 transition-colors duration-150 ${
-                              favoriteTheatres[theatre.id]
+                            className={`w-4 h-4 transition-colors duration-150 ${favoriteTheatres[theatre.id]
                                 ? 'text-[#F84464] fill-[#F84464]'
                                 : 'text-gray-300 hover:text-[#F84464]/60'
-                            }`}
+                              }`}
                           />
                         </button>
                         <h3 className="text-sm font-bold text-[#222432] hover:text-[#F84464] transition-colors cursor-pointer">
@@ -640,11 +697,10 @@ export default function MovieDetailsPage() {
                       <button
                         key={t.count}
                         onClick={() => handleSeatsCountChange(t.count)}
-                        className={`flex flex-col items-center justify-center w-12 h-12 rounded-xl text-xs font-bold transition-all duration-150 cursor-pointer shrink-0 focus-visible:outline focus-visible:outline-2 focus-visible:outline-[#F84464] ${
-                          bookingModal.seatsCount === t.count
+                        className={`flex flex-col items-center justify-center w-12 h-12 rounded-xl text-xs font-bold transition-all duration-150 cursor-pointer shrink-0 focus-visible:outline focus-visible:outline-2 focus-visible:outline-[#F84464] ${bookingModal.seatsCount === t.count
                             ? 'bg-[#F84464] text-white shadow-[0_6px_16px_-4px_rgba(248,68,100,0.45)] scale-105'
                             : 'bg-gray-100 text-gray-700 hover:bg-gray-200'
-                        }`}
+                          }`}
                       >
                         <span className="text-base leading-none mb-1">{t.emoji}</span>
                         <span className="text-[11px]">{t.count}</span>
@@ -663,7 +719,7 @@ export default function MovieDetailsPage() {
 
                 {/* Interactive Seat Matrix */}
                 <div className="mb-6 space-y-4">
-                  {seatLayout.map((rowItem) => (
+                  {activeSeatLayout.map((rowItem) => (
                     <div key={rowItem.row} className="space-y-1.5">
                       <div className="flex items-center justify-between text-[11px] font-bold text-gray-500 px-2">
                         <span>{rowItem.tier} - ₹{rowItem.price}</span>
@@ -688,13 +744,12 @@ export default function MovieDetailsPage() {
                                   type="button"
                                   disabled={isOccupied}
                                   onClick={() => handleSeatClick(seatId, isOccupied)}
-                                  className={`w-6 h-6 sm:w-7 sm:h-7 rounded text-[10px] font-bold transition-all duration-150 cursor-pointer flex items-center justify-center focus-visible:outline focus-visible:outline-2 focus-visible:outline-[#F84464] ${
-                                    isOccupied
+                                  className={`w-6 h-6 sm:w-7 sm:h-7 rounded text-[10px] font-bold transition-all duration-150 cursor-pointer flex items-center justify-center focus-visible:outline focus-visible:outline-2 focus-visible:outline-[#F84464] ${isOccupied
                                       ? 'bg-gray-200 text-gray-400 cursor-not-allowed border border-gray-200'
                                       : isSelected
-                                      ? 'bg-[#F84464] text-white shadow-sm border border-[#F84464] scale-105'
-                                      : 'bg-white border border-gray-300 text-gray-700 hover:border-[#F84464] hover:text-[#F84464]'
-                                  }`}
+                                        ? 'bg-[#F84464] text-white shadow-sm border border-[#F84464] scale-105'
+                                        : 'bg-white border border-gray-300 text-gray-700 hover:border-[#F84464] hover:text-[#F84464]'
+                                    }`}
                                   title={`${seatId} (${rowItem.tier}) - ₹${rowItem.price}`}
                                 >
                                   {num}
@@ -875,13 +930,14 @@ export default function MovieDetailsPage() {
                 </div>
 
                 <div className="flex items-center gap-3">
-                  <button
-                    onClick={() => alert('M-Ticket downloaded to your device.')}
+                  <Link
+                    to="/my-bookings"
+                    onClick={() => setBookingModal({ ...bookingModal, isOpen: false })}
                     className="flex-1 py-3 bg-gray-100 hover:bg-gray-200 text-gray-800 text-xs font-bold rounded-xl transition-colors duration-150 cursor-pointer flex items-center justify-center gap-1.5 focus-visible:outline focus-visible:outline-2 focus-visible:outline-[#F84464]"
                   >
-                    <Download className="w-4 h-4" />
-                    <span>Download Ticket</span>
-                  </button>
+                    <Ticket className="w-4 h-4 text-[#F84464]" />
+                    <span>View in My Bookings</span>
+                  </Link>
                   <button
                     onClick={() => setBookingModal({ ...bookingModal, isOpen: false })}
                     className="flex-1 py-3 bg-[#F84464] hover:bg-[#E03A58] active:scale-[0.98] text-white text-xs font-bold rounded-xl transition-all duration-200 cursor-pointer focus-visible:outline focus-visible:outline-2 focus-visible:outline-[#F84464] focus-visible:outline-offset-2"
@@ -928,11 +984,10 @@ export default function MovieDetailsPage() {
                       className="cursor-pointer transition-transform duration-150 hover:scale-125 focus-visible:outline focus-visible:outline-2 focus-visible:outline-[#F84464] rounded"
                     >
                       <Star
-                        className={`w-5 h-5 transition-colors ${
-                          num <= userRatingScore
+                        className={`w-5 h-5 transition-colors ${num <= userRatingScore
                             ? 'fill-[#F84464] text-[#F84464]'
                             : 'text-gray-300'
-                        }`}
+                          }`}
                       />
                     </button>
                   ))}

@@ -1,5 +1,9 @@
 const Movie = require('../models/Movie');
 const CategoryItem = require('../models/CategoryItem');
+const Show = require('../models/Show');
+const Cinema = require('../models/Cinema');
+const City = require('../models/City');
+const Offer = require('../models/Offer');
 const mongoose = require('mongoose');
 
 // Helper to normalize document output with backwards-compatible `id` property
@@ -91,7 +95,79 @@ async function getMovieById(req, res) {
       return res.status(404).json({ success: false, message: 'This movie is currently unpublished.' });
     }
 
-    return res.json({ success: true, movie: normalizeItem(movie) });
+    // Query active shows scheduled by B2B Cinema Partners for this movie
+    const partnerShows = await Show.find({
+      $or: [{ movie: movie._id }, { movieTitle: movie.title }],
+      status: 'active'
+    }).populate('cinema').populate('screen');
+
+    const cinemaMap = new Map();
+
+    // 1. Add any existing/legacy embedded theatres from movie.theatres
+    (movie.theatres || []).forEach(t => {
+      cinemaMap.set(t.name.toLowerCase(), {
+        id: t.id || t._id?.toString(),
+        _id: t._id,
+        name: t.name,
+        distance: t.distance || '2.0 km away',
+        facilities: t.facilities || ['M-Ticket', 'F&B'],
+        showtimes: (t.showtimes || []).map(st => ({
+          ...st.toObject ? st.toObject() : st,
+          showId: st._id?.toString() || '',
+          time: st.time,
+          showDate: 'Today'
+        }))
+      });
+    });
+
+    // 2. Merge/append partner shows with full screen layout and IDs
+    partnerShows.forEach(s => {
+      if (!s.cinema) return;
+      const key = s.cinema.name.toLowerCase();
+      const existing = cinemaMap.get(key) || {
+        id: s.cinema._id.toString(),
+        _id: s.cinema._id,
+        name: s.cinema.name,
+        distance: s.cinema.city ? `${s.cinema.city}` : '2.0 km away',
+        facilities: s.cinema.facilities || ['M-Ticket', 'F&B', 'Recliner'],
+        showtimes: []
+      };
+
+      const showtimeItem = {
+        _id: s._id,
+        id: s._id.toString(),
+        showId: s._id.toString(),
+        time: s.startTime,
+        endTime: s.endTime,
+        showDate: s.showDate,
+        format: s.format || '2D',
+        price: `₹${s.ticketPrice || s.pricingTiers?.normal || 200}`,
+        ticketPrice: s.ticketPrice || s.pricingTiers?.normal || 200,
+        status: (s.bookedSeats && s.screen && s.bookedSeats.length >= (s.screen.totalCapacity || 120)) ? 'sold_out' : 'available',
+        bookedSeats: s.bookedSeats || [],
+        pricingTiers: s.pricingTiers,
+        cinemaId: s.cinema._id.toString(),
+        cinemaName: s.cinema.name,
+        screenId: s.screen ? (s.screen._id?.toString() || s.screen.toString()) : '',
+        screenName: s.screen ? (s.screen.name || s.screen.screenNumber || 'Screen 1') : 'Screen 1',
+        seatingLayout: s.screen?.seatingLayout || [],
+        totalCapacity: s.screen?.totalCapacity || 120
+      };
+
+      // If existing showtime has same time, replace or add
+      const existingIdx = existing.showtimes.findIndex(st => st.time === showtimeItem.time && (st.showDate === showtimeItem.showDate || !st.showDate));
+      if (existingIdx >= 0) {
+        existing.showtimes[existingIdx] = showtimeItem;
+      } else {
+        existing.showtimes.push(showtimeItem);
+      }
+      cinemaMap.set(key, existing);
+    });
+
+    const normalized = normalizeItem(movie);
+    normalized.theatres = Array.from(cinemaMap.values());
+
+    return res.json({ success: true, movie: normalized });
   } catch (error) {
     console.error('Error in getMovieById:', error);
     return res.status(500).json({ success: false, message: 'Server error retrieving movie' });
@@ -150,8 +226,31 @@ async function getCategoryItems(req, res) {
   }
 }
 
+// Public endpoints for Cities and Offers
+async function getPublicCities(req, res) {
+  try {
+    const cities = await City.find({ status: 'active' }).sort({ isPopular: -1, name: 1 });
+    return res.json({ success: true, cities });
+  } catch (error) {
+    console.error('Error fetching public cities:', error);
+    return res.status(500).json({ success: false, message: 'Failed to fetch cities.' });
+  }
+}
+
+async function getPublicOffers(req, res) {
+  try {
+    const offers = await Offer.find({ status: 'active' }).sort({ createdAt: -1 });
+    return res.json({ success: true, offers });
+  } catch (error) {
+    console.error('Error fetching public offers:', error);
+    return res.status(500).json({ success: false, message: 'Failed to fetch promo offers.' });
+  }
+}
+
 module.exports = {
   getAllHomeData,
   getMovieById,
-  getCategoryItems
+  getCategoryItems,
+  getPublicCities,
+  getPublicOffers
 };

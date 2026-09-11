@@ -75,6 +75,10 @@ export function AuthProvider({ children }) {
     return login('demo@bookmyshow.com', 'password123');
   };
 
+  const updateUser = (updatedUserData) => {
+    setUser((prev) => ({ ...prev, ...updatedUserData }));
+  };
+
   const value = {
     user,
     token,
@@ -89,6 +93,7 @@ export function AuthProvider({ children }) {
     register,
     logout,
     quickDemoLogin,
+    updateUser,
   };
 
   return <AuthContext.Provider value={value}>{children}</AuthContext.Provider>;
