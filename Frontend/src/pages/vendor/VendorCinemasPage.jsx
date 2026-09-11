@@ -26,7 +26,9 @@ import {
   Trash2,
   Edit2,
   CheckCircle,
-  AlertCircle
+  AlertCircle,
+  Armchair,
+  Sparkles
 } from 'lucide-react';
 
 const POPULAR_CITIES = [
@@ -53,6 +55,8 @@ const AVAILABLE_FACILITIES = [
   'Food Court'
 ];
 
+const ROW_LETTERS = ['A', 'B', 'C', 'D', 'E', 'F', 'G', 'H', 'I', 'J', 'K', 'L'];
+
 export default function VendorCinemasPage() {
   const [cinemas, setCinemas] = useState([]);
   const [loading, setLoading] = useState(true);
@@ -68,7 +72,19 @@ export default function VendorCinemasPage() {
     address: '',
     contactPhone: '',
     contactEmail: '',
-    facilities: ['M-Ticket', 'F&B', 'Recliner']
+    facilities: ['M-Ticket', 'F&B', 'Recliner'],
+    // Integrated Screen & Seat Layout setup
+    autoCreateScreen: true,
+    screenName: 'Screen 1 (Dolby Atmos)',
+    screenNumber: 'AUDI-1',
+    screenType: 'Standard 2D',
+    rowCount: 8,
+    seatsPerRow: 12,
+    includeRecliner: true,
+    includePremium: true,
+    reclinerPrice: 450,
+    premiumPrice: 280,
+    normalPrice: 180
   });
 
   const [formLoading, setFormLoading] = useState(false);
@@ -99,7 +115,18 @@ export default function VendorCinemasPage() {
       address: '',
       contactPhone: '',
       contactEmail: '',
-      facilities: ['M-Ticket', 'F&B', 'Recliner']
+      facilities: ['M-Ticket', 'F&B', 'Recliner'],
+      autoCreateScreen: true,
+      screenName: 'Screen 1 (Dolby Atmos)',
+      screenNumber: 'AUDI-1',
+      screenType: 'Standard 2D',
+      rowCount: 8,
+      seatsPerRow: 12,
+      includeRecliner: true,
+      includePremium: true,
+      reclinerPrice: 450,
+      premiumPrice: 280,
+      normalPrice: 180
     });
     setFormError('');
     setIsAddModalOpen(true);
@@ -114,7 +141,8 @@ export default function VendorCinemasPage() {
       address: cinema.address,
       contactPhone: cinema.contactPhone || '',
       contactEmail: cinema.contactEmail || '',
-      facilities: cinema.facilities || []
+      facilities: cinema.facilities || [],
+      autoCreateScreen: false
     });
     setFormError('');
     setIsEditModalOpen(true);
@@ -147,8 +175,56 @@ export default function VendorCinemasPage() {
     setFormError('');
 
     try {
-      const res = await vendorApi.createCinema(formData);
-      if (res.success) {
+      // 1. Create Cinema
+      const res = await vendorApi.createCinema({
+        name: formData.name.trim(),
+        city: formData.city.trim(),
+        state: formData.state ? formData.state.trim() : '',
+        address: formData.address.trim(),
+        contactPhone: formData.contactPhone ? formData.contactPhone.trim() : '',
+        contactEmail: formData.contactEmail ? formData.contactEmail.trim() : '',
+        facilities: formData.facilities
+      });
+
+      if (res.success && res.data) {
+        const cinemaId = res.data.id || res.data._id;
+
+        // 2. Automatically configure initial Screen and Seating layout if enabled
+        if (formData.autoCreateScreen) {
+          const rows = ROW_LETTERS.slice(0, Number(formData.rowCount) || 8);
+          const layout = rows.map((letter, idx) => {
+            let tier = 'Normal';
+            let basePrice = Number(formData.normalPrice) || 180;
+            let seatsCount = Number(formData.seatsPerRow) || 12;
+
+            if (idx === 0 && formData.includeRecliner) {
+              tier = 'Recliner';
+              basePrice = Number(formData.reclinerPrice) || 450;
+              seatsCount = Math.max(6, seatsCount - 4);
+            } else if (idx < 4 && formData.includePremium) {
+              tier = 'Premium';
+              basePrice = Number(formData.premiumPrice) || 280;
+            }
+
+            return {
+              row: letter,
+              tier,
+              basePrice,
+              seatsCount,
+              disabledSeats: []
+            };
+          });
+
+          await vendorApi.createScreen({
+            cinemaId,
+            screenNumber: formData.screenNumber || 'AUDI-1',
+            name: formData.screenName || 'Screen 1',
+            screenType: formData.screenType || 'Standard 2D',
+            seatingLayout: layout,
+            totalCapacity: layout.reduce((sum, r) => sum + r.seatsCount, 0)
+          });
+        }
+
         setIsAddModalOpen(false);
         await fetchCinemas();
       }
@@ -170,7 +246,15 @@ export default function VendorCinemasPage() {
     setFormError('');
 
     try {
-      const res = await vendorApi.updateCinema(selectedCinema.id || selectedCinema._id, formData);
+      const res = await vendorApi.updateCinema(selectedCinema.id || selectedCinema._id, {
+        name: formData.name.trim(),
+        city: formData.city.trim(),
+        state: formData.state ? formData.state.trim() : '',
+        address: formData.address.trim(),
+        contactPhone: formData.contactPhone ? formData.contactPhone.trim() : '',
+        contactEmail: formData.contactEmail ? formData.contactEmail.trim() : '',
+        facilities: formData.facilities
+      });
       if (res.success) {
         setIsEditModalOpen(false);
         await fetchCinemas();
@@ -195,6 +279,8 @@ export default function VendorCinemasPage() {
     }
   };
 
+  const autoSeatsTotal = (Number(formData.rowCount) || 8) * (Number(formData.seatsPerRow) || 12);
+
   return (
     <div className="space-y-6">
       <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4">
@@ -204,7 +290,7 @@ export default function VendorCinemasPage() {
             <span>Cinemas & Multiplexes</span>
           </h1>
           <p className="text-sm text-gray-500 mt-1">
-            Manage your cinema properties, venue facilities, and contact details.
+            Manage your cinema properties, auditorium seating layouts, and venue facilities.
           </p>
         </div>
 
@@ -271,6 +357,14 @@ export default function VendorCinemasPage() {
                     )}
                   </div>
 
+                  {/* If 0 screens, display quick configure alert */}
+                  {(cinema.screensCount || 0) === 0 && (
+                    <div className="p-2.5 rounded-lg bg-amber-50 border border-amber-200 text-[11px] text-amber-800 flex items-center gap-2">
+                      <Armchair size={15} className="shrink-0 text-amber-600" />
+                      <span>No screens yet! Click button below to configure seats.</span>
+                    </div>
+                  )}
+
                   {/* Facilities Badges */}
                   <div>
                     <p className="text-[11px] font-semibold text-gray-500 mb-1.5 uppercase tracking-wide">
@@ -293,10 +387,10 @@ export default function VendorCinemasPage() {
               <CardFooter className="pt-3 border-t border-gray-100 flex items-center justify-between bg-gray-50/50">
                 <Link
                   to={`/vendor/screens?cinemaId=${cinema.id || cinema._id}`}
-                  className="inline-flex items-center gap-1 text-xs font-bold text-indigo-600 hover:text-indigo-800 transition"
+                  className="inline-flex items-center gap-1.5 text-xs font-bold text-indigo-600 hover:text-indigo-800 bg-indigo-50 hover:bg-indigo-100 px-3 py-1.5 rounded-lg transition"
                 >
-                  <Tv size={13} />
-                  <span>Configure Audi Screens</span>
+                  <Armchair size={14} />
+                  <span>Configure Audi & Seats</span>
                 </Link>
 
                 <div className="flex items-center gap-1">
@@ -328,8 +422,8 @@ export default function VendorCinemasPage() {
           setIsAddModalOpen(false);
           setIsEditModalOpen(false);
         }}
-        title={isAddModalOpen ? 'Add Cinema Venue' : 'Edit Cinema Venue'}
-        maxWidth="max-w-lg"
+        title={isAddModalOpen ? 'Add Cinema Venue & Configure Seats' : 'Edit Cinema Venue'}
+        maxWidth="max-w-xl"
       >
         {formError && (
           <div className="mb-4 p-3 rounded-lg bg-rose-50 border border-rose-200 flex items-start gap-2.5 text-rose-700 text-xs">
@@ -386,6 +480,96 @@ export default function VendorCinemasPage() {
             />
           </div>
 
+          {/* Integrated Initial Screen & Seating Layout Setup */}
+          {isAddModalOpen && (
+            <div className="p-4 bg-gray-50 rounded-xl border border-gray-200 space-y-3">
+              <div className="flex items-center justify-between">
+                <label className="flex items-center gap-2 text-xs font-bold text-gray-900 cursor-pointer">
+                  <input
+                    type="checkbox"
+                    checked={formData.autoCreateScreen}
+                    onChange={(e) => setFormData({ ...formData, autoCreateScreen: e.target.checked })}
+                    className="rounded text-[#F84464] focus:ring-[#F84464]"
+                  />
+                  <span>Configure First Auditorium Screen & Seats Now</span>
+                </label>
+                {formData.autoCreateScreen && (
+                  <span className="text-[11px] font-bold text-[#F84464]">
+                    ~{autoSeatsTotal} Seats
+                  </span>
+                )}
+              </div>
+
+              {formData.autoCreateScreen && (
+                <div className="space-y-3 pt-2 border-t border-gray-200 text-xs">
+                  <div className="grid grid-cols-2 gap-3">
+                    <Input
+                      label="Screen Name"
+                      placeholder="Audi 1 (Dolby Atmos)"
+                      value={formData.screenName}
+                      onChange={(e) => setFormData({ ...formData, screenName: e.target.value })}
+                    />
+                    <Input
+                      label="Screen Identifier"
+                      placeholder="AUDI-1"
+                      value={formData.screenNumber}
+                      onChange={(e) => setFormData({ ...formData, screenNumber: e.target.value })}
+                    />
+                  </div>
+
+                  <div className="grid grid-cols-2 gap-3">
+                    <Input
+                      label="Number of Rows (e.g. 8)"
+                      type="number"
+                      min={4}
+                      max={12}
+                      value={formData.rowCount}
+                      onChange={(e) => setFormData({ ...formData, rowCount: e.target.value })}
+                    />
+                    <Input
+                      label="Seats Per Row (e.g. 12)"
+                      type="number"
+                      min={6}
+                      max={20}
+                      value={formData.seatsPerRow}
+                      onChange={(e) => setFormData({ ...formData, seatsPerRow: e.target.value })}
+                    />
+                  </div>
+
+                  <div className="grid grid-cols-3 gap-2 pt-1">
+                    <div>
+                      <span className="text-[10px] text-rose-700 font-bold block mb-1">Recliner (₹)</span>
+                      <input
+                        type="number"
+                        value={formData.reclinerPrice}
+                        onChange={(e) => setFormData({ ...formData, reclinerPrice: e.target.value })}
+                        className="w-full text-xs p-1.5 border border-gray-300 rounded bg-white"
+                      />
+                    </div>
+                    <div>
+                      <span className="text-[10px] text-indigo-700 font-bold block mb-1">Premium (₹)</span>
+                      <input
+                        type="number"
+                        value={formData.premiumPrice}
+                        onChange={(e) => setFormData({ ...formData, premiumPrice: e.target.value })}
+                        className="w-full text-xs p-1.5 border border-gray-300 rounded bg-white"
+                      />
+                    </div>
+                    <div>
+                      <span className="text-[10px] text-gray-700 font-bold block mb-1">Normal (₹)</span>
+                      <input
+                        type="number"
+                        value={formData.normalPrice}
+                        onChange={(e) => setFormData({ ...formData, normalPrice: e.target.value })}
+                        className="w-full text-xs p-1.5 border border-gray-300 rounded bg-white"
+                      />
+                    </div>
+                  </div>
+                </div>
+              )}
+            </div>
+          )}
+
           <div>
             <label className="block text-xs font-semibold text-gray-700 mb-1.5">
               Venue Amenities & Facilities
@@ -428,7 +612,7 @@ export default function VendorCinemasPage() {
               variant="primary"
               isLoading={formLoading}
             >
-              {isAddModalOpen ? 'Add Cinema Venue' : 'Save Changes'}
+              {isAddModalOpen ? 'Create Venue & Save Layout' : 'Save Changes'}
             </Button>
           </div>
         </form>
