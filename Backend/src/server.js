@@ -31,6 +31,7 @@ const allowedOrigins = [
   'http://localhost:3000',
   'http://127.0.0.1:3000',
   'http://localhost:5173',
+  'https://bookmytrip-seven.vercel.app',
   ...(process.env.FRONTEND_URL ? process.env.FRONTEND_URL.split(',').map(url => url.trim().replace(/\/$/, '')) : [])
 ];
 
@@ -38,9 +39,24 @@ app.use(cors({
   origin: (origin, callback) => {
     // Allow server-to-server or tools without origin header (e.g. curl, postman, mobile apps)
     if (!origin) return callback(null, true);
-    if (allowedOrigins.includes(origin) || NODE_ENV === 'development') {
+
+    // Allow if FRONTEND_URL is '*' or in development mode
+    if (allowedOrigins.includes('*') || process.env.FRONTEND_URL === '*' || NODE_ENV === 'development') {
       return callback(null, true);
     }
+
+    // Allow explicitly matched origins or any *.vercel.app domain
+    try {
+      const parsedUrl = new URL(origin);
+      if (allowedOrigins.includes(origin) || /\.vercel\.app$/.test(parsedUrl.hostname)) {
+        return callback(null, true);
+      }
+    } catch {
+      if (allowedOrigins.includes(origin)) {
+        return callback(null, true);
+      }
+    }
+
     return callback(new Error(`Origin ${origin} is not allowed by CORS policy.`));
   },
   credentials: true,
