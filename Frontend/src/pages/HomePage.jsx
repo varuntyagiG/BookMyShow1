@@ -8,6 +8,7 @@ import MovieSection from '../components/home/MovieSection';
 import LiveEventsSection from '../components/home/LiveEventsSection';
 import StreamSection from '../components/home/StreamSection';
 import PromoBanner from '../components/home/PromoBanner';
+import VIPCinema3DSection from '../components/home/VIPCinema3DSection';
 import { Loader2, AlertCircle, RefreshCw } from 'lucide-react';
 
 export default function HomePage({ searchQuery }) {
@@ -253,6 +254,13 @@ export default function HomePage({ searchQuery }) {
           </div>
 
         </section>
+      )}
+
+      {/* =========================
+          VIP 3D CINEMA EXPERIENCE
+      ========================= */}
+      {!searchQuery && (
+        <VIPCinema3DSection />
       )}
 
       {/* =========================
