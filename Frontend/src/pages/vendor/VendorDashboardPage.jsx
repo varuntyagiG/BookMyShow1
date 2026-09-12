@@ -16,7 +16,8 @@ import {
   TableBody,
   TableRow,
   TableCell,
-  EmptyState
+  EmptyState,
+  BoxOfficeTrendChart
 } from '../../components/ui';
 import {
   IndianRupee,
@@ -37,6 +38,7 @@ export default function VendorDashboardPage() {
   const [analytics, setAnalytics] = useState(null);
   const [loading, setLoading] = useState(true);
   const [refreshing, setRefreshing] = useState(false);
+  const [lastRefreshed, setLastRefreshed] = useState(new Date());
 
   const fetchDashboardData = async () => {
     try {
@@ -377,6 +379,12 @@ export default function VendorDashboardPage() {
           </div>
         </Link>
       </div>
+
+      {/* Visual Analytics Box Office Trend Chart UI Template */}
+      <BoxOfficeTrendChart
+        analytics={analytics}
+        onRefresh={handleManualRefresh}
+      />
 
       {/* Live Recent Bookings Table Card */}
       <Card className="shadow-none border-slate-200/90 overflow-hidden">

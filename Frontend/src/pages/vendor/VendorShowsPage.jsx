@@ -7,7 +7,8 @@ import {
   Modal,
   ConfirmModal,
   Input,
-  EmptyState
+  EmptyState,
+  SlideOverDrawer
 } from '../../components/ui';
 import {
   Calendar,
@@ -1379,12 +1380,13 @@ export default function VendorShowsPage() {
       )}
 
       {/* ========================================================
-          SCHEDULE SHOW MODAL
+          SCHEDULE SHOW SLIDE-OVER DRAWER
           ======================================================== */}
-      <Modal
+      <SlideOverDrawer
         isOpen={isAddModalOpen}
         onClose={() => setIsAddModalOpen(false)}
         title="Schedule Movie Showtime"
+        subtitle="Assign auditorium screen, format, pricing, and timetable"
         maxWidth="max-w-xl"
       >
         {formError && (
@@ -1565,7 +1567,7 @@ export default function VendorShowsPage() {
             </Button>
           </div>
         </form>
-      </Modal>
+      </SlideOverDrawer>
 
       {/* ========================================================
           LIVE SEAT MAP & CUSTOMER MANIFEST MODAL

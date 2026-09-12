@@ -12,3 +12,6 @@ export { default as EmptyState } from './EmptyState';
 export { default as ErrorState } from './ErrorState';
 export { Skeleton, SkeletonMetric, SkeletonTableRows } from './Skeleton';
 export { default as CopyButton, CopyBadge, PasteButton, copyToClipboard } from './CopyButton';
+export { default as TicketPassCard } from './TicketPassCard';
+export { default as BoxOfficeTrendChart } from './BoxOfficeTrendChart';
+export { default as SlideOverDrawer } from './SlideOverDrawer';

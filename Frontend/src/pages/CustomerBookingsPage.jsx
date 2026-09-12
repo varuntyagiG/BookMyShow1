@@ -3,6 +3,7 @@ import { Link, useNavigate } from 'react-router-dom';
 import { bookingApi } from '../services/api';
 import { useRealtimeRefresh } from '../services/realtimeSync';
 import { useAuth } from '../context/AuthContext';
+import { TicketPassCard } from '../components/ui';
 import {
   Ticket,
   Calendar,
@@ -203,108 +204,14 @@ export default function CustomerBookingsPage() {
           </div>
         ) : filteredBookings.length > 0 ? (
           <div className="grid grid-cols-1 md:grid-cols-2 gap-5">
-            {filteredBookings.map((b) => {
-              const isCancelled = b.status === 'cancelled';
-              const seatCount = b.seats?.length || 1;
-              const formattedDate = b.showDate || (b.createdAt ? new Date(b.createdAt).toLocaleDateString('en-GB') : 'Upcoming');
-
-              return (
-                <div
-                  key={b._id}
-                  className={`bg-white rounded-2xl border transition-all duration-200 overflow-hidden shadow-xs hover:shadow-md flex flex-col justify-between ${
-                    isCancelled ? 'border-gray-200 opacity-80' : 'border-gray-100 hover:border-red-200'
-                  }`}
-                >
-                  <div className="p-5">
-                    {/* Top Status Strip */}
-                    <div className="flex items-center justify-between gap-2 mb-3">
-                      <div className="flex items-center gap-2">
-                        <span className="text-[10px] font-mono font-bold text-gray-400 bg-gray-100 px-2 py-0.5 rounded">
-                          {b.bookingId || `ID: ${b._id.slice(-6)}`}
-                        </span>
-                        <span
-                          className={`text-[10px] font-extrabold uppercase px-2 py-0.5 rounded-full ${
-                            isCancelled
-                              ? 'bg-gray-100 text-gray-500'
-                              : b.ticketValidated
-                              ? 'bg-emerald-100 text-emerald-800 border border-emerald-300'
-                              : 'bg-emerald-50 text-emerald-600 border border-emerald-200'
-                          }`}
-                        >
-                          {isCancelled ? 'Cancelled' : (b.ticketValidated ? '✓ Checked In' : 'Confirmed')}
-                        </span>
-                      </div>
-                      <span className="text-xs font-black text-[#222432]">
-                        ₹{b.totalPrice || b.amount || 0}
-                      </span>
-                    </div>
-
-                    {/* Movie / Show Title */}
-                    <h3 className="text-base font-black text-[#222432] leading-tight mb-1">
-                      {b.movieTitle || 'Movie Booking'}
-                    </h3>
-
-                    {/* Theatre & Screen Info */}
-                    <div className="space-y-1.5 text-xs text-gray-600 mt-3 pt-3 border-t border-gray-100">
-                      <div className="flex items-center gap-2">
-                        <MapPin className="w-3.5 h-3.5 text-[#F84464] shrink-0" />
-                        <span className="font-semibold text-gray-800 line-clamp-1">
-                          {b.theatreName || (b.cinema ? b.cinema.name : 'Cinema Hall')}
-                        </span>
-                      </div>
-
-                      <div className="flex items-center gap-4 text-gray-500 text-[11px]">
-                        <span className="flex items-center gap-1">
-                          <Calendar className="w-3 h-3 text-gray-400" />
-                          {formattedDate}
-                        </span>
-                        <span className="flex items-center gap-1">
-                          <Clock className="w-3 h-3 text-gray-400" />
-                          {b.showtime || '10:00 AM'}
-                        </span>
-                      </div>
-                    </div>
-
-                    {/* Seats & Snacks Summary */}
-                    <div className="bg-gray-50 rounded-xl p-3 mt-3 flex items-center justify-between text-xs border border-gray-100">
-                      <div>
-                        <span className="text-[10px] uppercase font-bold text-gray-400 block">
-                          Seats ({seatCount})
-                        </span>
-                        <span className="font-mono font-bold text-[#F84464] text-xs">
-                          {Array.isArray(b.seats) ? b.seats.join(', ') : 'Assigned'}
-                        </span>
-                      </div>
-                      {b.includeSnacks && (
-                        <span className="text-[10px] font-bold text-amber-700 bg-amber-100/70 px-2 py-0.5 rounded">
-                          Popcorn Combo Incl.
-                        </span>
-                      )}
-                    </div>
-                  </div>
-
-                  {/* Card Actions Footer */}
-                  <div className="px-5 py-3 bg-gray-50/70 border-t border-gray-100 flex items-center justify-between gap-2">
-                    <button
-                      onClick={() => setActiveTicketModal(b)}
-                      className="px-3.5 py-1.5 bg-[#333545] hover:bg-[#222432] text-white text-xs font-bold rounded-lg transition-colors cursor-pointer flex items-center gap-1.5 shadow-xs"
-                    >
-                      <QrCode className="w-3.5 h-3.5 text-[#F84464]" />
-                      <span>View M-Ticket</span>
-                    </button>
-
-                    {!isCancelled && (
-                      <button
-                        onClick={() => setCancelModal({ isOpen: true, booking: b, loading: false, error: '' })}
-                        className="text-xs font-semibold text-gray-500 hover:text-red-600 transition-colors cursor-pointer px-2 py-1"
-                      >
-                        Cancel Booking
-                      </button>
-                    )}
-                  </div>
-                </div>
-              );
-            })}
+            {filteredBookings.map((b) => (
+              <TicketPassCard
+                key={b._id}
+                booking={b}
+                onViewTicket={(booking) => setActiveTicketModal(booking)}
+                onCancel={(booking) => setCancelModal({ isOpen: true, booking, loading: false, error: '' })}
+              />
+            ))}
           </div>
         ) : (
           <div className="bg-white rounded-2xl p-12 text-center border border-gray-100 shadow-xs max-w-md mx-auto my-12">
@@ -329,80 +236,107 @@ export default function CustomerBookingsPage() {
       {/* Digital M-Ticket Full Modal */}
       {activeTicketModal && (
         <div className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-black/80 backdrop-blur-xs">
-          <div className="relative w-full max-w-md bg-white rounded-2xl shadow-2xl overflow-hidden animate-in fade-in zoom-in-95 duration-150">
+          <div className="relative w-full max-w-md bg-white rounded-3xl shadow-2xl overflow-hidden animate-in fade-in zoom-in-95 duration-150 border border-slate-200">
             {/* Modal Header Strip */}
-            <div className="bg-[#222432] text-white p-5 flex items-start justify-between relative overflow-hidden">
-              <div className="pointer-events-none absolute -top-12 -right-12 w-32 h-32 bg-[#F84464]/20 rounded-full blur-2xl" />
-              <div>
-                <span className="text-[10px] uppercase font-bold text-[#F84464] tracking-widest block">
-                  Official Electronic Pass
-                </span>
-                <h3 className="text-lg font-black text-white mt-0.5 leading-tight">
-                  {activeTicketModal.movieTitle || 'Movie Ticket'}
-                </h3>
-                <p className="text-xs text-gray-300 mt-0.5">
-                  {activeTicketModal.theatreName || 'Cinema Hall'}
-                </p>
+            <div className="bg-gradient-to-br from-[#222432] via-[#2d3043] to-[#1e202c] text-white p-6 relative overflow-hidden">
+              <div className="pointer-events-none absolute -top-12 -right-12 w-36 h-36 bg-[#F84464]/30 rounded-full blur-2xl" />
+              <div className="flex items-start justify-between relative z-10">
+                <div>
+                  <div className="inline-flex items-center gap-1.5 px-2.5 py-0.5 rounded-full bg-[#F84464]/20 border border-[#F84464]/40 text-[#F84464] text-[9px] font-black uppercase tracking-widest mb-1.5">
+                    <Sparkles className="w-3 h-3" />
+                    <span>Official M-Pass</span>
+                  </div>
+                  <h3 className="text-xl font-black text-white leading-tight">
+                    {activeTicketModal.movieTitle || 'Movie Ticket'}
+                  </h3>
+                  <div className="flex items-center gap-1.5 text-xs text-gray-300 mt-1">
+                    <MapPin className="w-3 h-3 text-[#F84464] shrink-0" />
+                    <span className="truncate">{activeTicketModal.theatreName || 'Cinema Hall'}</span>
+                  </div>
+                </div>
+
+                <button
+                  type="button"
+                  onClick={() => setActiveTicketModal(null)}
+                  className="p-1.5 text-gray-400 hover:text-white rounded-full bg-white/10 hover:bg-white/20 transition-colors cursor-pointer shrink-0"
+                  title="Close Pass"
+                >
+                  <X className="w-5 h-5" />
+                </button>
               </div>
-              <button
-                onClick={() => setActiveTicketModal(null)}
-                className="p-1.5 text-gray-400 hover:text-white rounded-full transition-colors cursor-pointer"
-              >
-                <X className="w-5 h-5" />
-              </button>
+            </div>
+
+            {/* Ticket Perforation Notch (Top) */}
+            <div className="relative flex items-center justify-between w-full h-4 bg-white overflow-hidden -my-2 z-10">
+              <div className="w-4 h-4 rounded-full bg-black/80 -ml-2 border-r border-slate-200 shadow-inner" />
+              <div className="w-full border-t-2 border-dashed border-slate-200 mx-2" />
+              <div className="w-4 h-4 rounded-full bg-black/80 -mr-2 border-l border-slate-200 shadow-inner" />
             </div>
 
             {/* Ticket Body */}
-            <div className="p-6">
+            <div className="p-6 bg-white">
               {/* QR Code Validation Box */}
-              <div className="bg-gray-50 border-2 border-dashed border-gray-200 rounded-2xl p-5 text-center mb-5">
-                <div className="w-32 h-32 bg-white rounded-xl shadow-inner border border-gray-200 p-2 mx-auto flex items-center justify-center mb-3">
-                  <QrCode className="w-28 h-28 text-gray-900" />
+              <div className="bg-slate-50 border-2 border-dashed border-slate-200 rounded-2xl p-5 text-center mb-5 relative group">
+                <div className="w-36 h-36 bg-white rounded-2xl shadow-inner border border-slate-200 p-2.5 mx-auto flex items-center justify-center mb-3">
+                  <QrCode className="w-32 h-32 text-slate-900" />
                 </div>
-                <div className="font-mono text-xs font-black text-gray-800 tracking-wider">
-                  {activeTicketModal.bookingId || activeTicketModal._id}
+                <div className="font-mono text-xs font-black text-slate-800 tracking-widest">
+                  {activeTicketModal.bookingId || `BMT-${(activeTicketModal._id || '').slice(-6).toUpperCase()}`}
                 </div>
-                <span
-                  className={`inline-block mt-1.5 text-[10px] font-extrabold uppercase px-2.5 py-0.5 rounded-full ${
-                    activeTicketModal.status === 'cancelled'
-                      ? 'bg-gray-200 text-gray-600'
-                      : activeTicketModal.ticketValidated
-                      ? 'bg-emerald-100 text-emerald-800 border border-emerald-300'
-                      : 'bg-emerald-100 text-emerald-700'
-                  }`}
-                >
-                  {activeTicketModal.status === 'cancelled'
-                    ? 'VOID / REFUNDED'
-                    : activeTicketModal.ticketValidated
-                    ? '✓ ADMITTED & CHECKED IN AT GATE'
-                    : 'GATE TURNSTILE ACTIVE'}
-                </span>
+                <div className="mt-2">
+                  <span
+                    className={`inline-flex items-center gap-1.5 text-[10px] font-extrabold uppercase px-3 py-1 rounded-full ${
+                      activeTicketModal.status === 'cancelled'
+                        ? 'bg-gray-200 text-gray-700'
+                        : activeTicketModal.ticketValidated
+                        ? 'bg-emerald-100 text-emerald-800 border border-emerald-300'
+                        : 'bg-emerald-50 text-emerald-700 border border-emerald-200'
+                    }`}
+                  >
+                    {activeTicketModal.status === 'cancelled' ? (
+                      <>
+                        <AlertCircle className="w-3 h-3 text-gray-500" />
+                        <span>VOID / CANCELLED</span>
+                      </>
+                    ) : activeTicketModal.ticketValidated ? (
+                      <>
+                        <CheckCircle2 className="w-3 h-3 text-emerald-600" />
+                        <span>✓ ADMITTED AT TURNSTILE GATE</span>
+                      </>
+                    ) : (
+                      <>
+                        <span className="w-2 h-2 rounded-full bg-emerald-500 animate-pulse" />
+                        <span>READY FOR SCANNER TURNSTILE</span>
+                      </>
+                    )}
+                  </span>
+                </div>
               </div>
 
               {/* Show Details Grid */}
-              <div className="grid grid-cols-2 gap-3 text-xs bg-gray-50/80 p-3.5 rounded-xl border border-gray-100 mb-5">
+              <div className="grid grid-cols-2 gap-3 text-xs bg-slate-50 p-4 rounded-2xl border border-slate-100 mb-5">
                 <div>
-                  <span className="text-[10px] text-gray-400 block uppercase font-bold">Date</span>
-                  <span className="font-semibold text-gray-900">
-                    {activeTicketModal.showDate || new Date(activeTicketModal.createdAt).toLocaleDateString('en-GB')}
+                  <span className="text-[10px] text-slate-400 block uppercase font-bold">Show Date</span>
+                  <span className="font-bold text-slate-900">
+                    {activeTicketModal.showDate || (activeTicketModal.createdAt ? new Date(activeTicketModal.createdAt).toLocaleDateString('en-GB') : 'Today')}
                   </span>
                 </div>
                 <div>
-                  <span className="text-[10px] text-gray-400 block uppercase font-bold">Showtime</span>
-                  <span className="font-semibold text-gray-900">
+                  <span className="text-[10px] text-slate-400 block uppercase font-bold">Showtime</span>
+                  <span className="font-bold text-slate-900">
                     {activeTicketModal.showtime || '10:00 AM'}
                   </span>
                 </div>
                 <div>
-                  <span className="text-[10px] text-gray-400 block uppercase font-bold">Seats</span>
-                  <span className="font-black text-[#F84464]">
-                    {Array.isArray(activeTicketModal.seats) ? activeTicketModal.seats.join(', ') : 'Confirmed'}
+                  <span className="text-[10px] text-slate-400 block uppercase font-bold">Reserved Seats</span>
+                  <span className="font-black text-[#F84464] font-mono">
+                    {Array.isArray(activeTicketModal.seats) ? activeTicketModal.seats.join(', ') : 'Assigned'}
                   </span>
                 </div>
                 <div>
-                  <span className="text-[10px] text-gray-400 block uppercase font-bold">Total Paid</span>
-                  <span className="font-black text-gray-900">
-                    ₹{activeTicketModal.totalPrice || activeTicketModal.amount || 0}
+                  <span className="text-[10px] text-slate-400 block uppercase font-bold">Total Paid</span>
+                  <span className="font-black text-slate-900">
+                    ₹{Number(activeTicketModal.totalPrice || activeTicketModal.amount || 0).toLocaleString('en-IN')}
                   </span>
                 </div>
               </div>
@@ -410,15 +344,17 @@ export default function CustomerBookingsPage() {
               {/* Action Buttons */}
               <div className="flex items-center gap-3">
                 <button
+                  type="button"
                   onClick={() => window.print()}
-                  className="flex-1 py-2.5 bg-gray-100 hover:bg-gray-200 text-gray-800 text-xs font-bold rounded-xl transition-colors cursor-pointer flex items-center justify-center gap-1.5"
+                  className="flex-1 py-3 bg-slate-100 hover:bg-slate-200 text-slate-800 text-xs font-bold rounded-xl transition-colors cursor-pointer flex items-center justify-center gap-1.5"
                 >
                   <Printer className="w-3.5 h-3.5" />
                   <span>Print Ticket</span>
                 </button>
                 <button
+                  type="button"
                   onClick={() => setActiveTicketModal(null)}
-                  className="flex-1 py-2.5 bg-[#F84464] hover:bg-[#E03A58] text-white text-xs font-bold rounded-xl transition-all cursor-pointer"
+                  className="flex-1 py-3 bg-[#F84464] hover:bg-[#E03A58] text-white text-xs font-bold rounded-xl transition-all shadow-sm shadow-red-500/25 cursor-pointer"
                 >
                   Done
                 </button>

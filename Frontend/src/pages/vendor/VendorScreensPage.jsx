@@ -8,7 +8,8 @@ import {
   ConfirmModal,
   Input,
   Select,
-  EmptyState
+  EmptyState,
+  SlideOverDrawer
 } from '../../components/ui';
 import {
   Tv,
@@ -1143,13 +1144,14 @@ export default function VendorScreensPage() {
       )}
 
       {/* ========================================================
-          ADD SCREEN MODAL
+          ADD SCREEN SLIDE-OVER DRAWER
           ======================================================== */}
-      <Modal
+      <SlideOverDrawer
         isOpen={isAddModalOpen}
         onClose={() => setIsAddModalOpen(false)}
         title="Add Auditorium Screen & Seating Layout"
-        maxWidth="max-w-lg"
+        subtitle="Configure auditorium format, dimensions, and tier pricing"
+        maxWidth="max-w-xl"
       >
         {formError && (
           <div className="mb-4 p-3 rounded-xl bg-rose-50 border border-rose-200 flex items-start gap-2.5 text-rose-700 text-xs">
@@ -1294,7 +1296,7 @@ export default function VendorScreensPage() {
             </Button>
           </div>
         </form>
-      </Modal>
+      </SlideOverDrawer>
 
       {/* ========================================================
           EDIT / CUSTOMIZE SEATING LAYOUT MODAL
