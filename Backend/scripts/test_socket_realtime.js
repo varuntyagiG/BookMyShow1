@@ -100,7 +100,7 @@ async function runSocketVerification() {
       showtime: '07:30 PM',
       showDate: 'Today',
       movieTitle: 'Inception (IMAX)',
-      seats: ['E7', 'E8'],
+      seats: [`Z${Math.floor(Math.random() * 800 + 100)}`, `Z${Math.floor(Math.random() * 800 + 100)}`],
       ticketPrice: 600,
       convenienceFee: 70,
       totalAmount: 670,

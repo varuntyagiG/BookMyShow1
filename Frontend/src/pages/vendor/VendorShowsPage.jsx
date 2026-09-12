@@ -2,6 +2,7 @@ import React, { useState, useEffect, useMemo, useRef } from 'react';
 import { useSearchParams } from 'react-router-dom';
 import { vendorApi } from '../../services/vendorApi';
 import { useRealtimeRefresh } from '../../services/realtimeSync';
+import { getSocket } from '../../services/socketClient';
 import {
   Button,
   Modal,
@@ -93,6 +94,15 @@ function calculateEndTime(startTimeStr, durationStr = '2h 30m') {
   return `${padH}:${padM} ${endPeriod}`;
 }
 
+/**
+ * Normalizes seat identifiers to ensure seamless matching regardless of hyphens/spacing
+ * e.g., "B1", "B-1", "b 1" all normalize to "B1"
+ */
+function normalizeSeatCode(seat) {
+  if (!seat) return '';
+  return String(seat).replace(/[-\s]/g, '').toUpperCase();
+}
+
 export default function VendorShowsPage() {
   const [searchParams] = useSearchParams();
   const movieIdParam = searchParams.get('movieId') || '';
@@ -135,6 +145,7 @@ export default function VendorShowsPage() {
   const [seatMapData, setSeatMapData] = useState(null);
   const [seatMapLoading, setSeatMapLoading] = useState(false);
   const [seatMapTab, setSeatMapTab] = useState('seats'); // 'seats' | 'manifest'
+  const [liveSelectingSeats, setLiveSelectingSeats] = useState([]);
 
   // Form State for Adding Show
   const [formData, setFormData] = useState({
@@ -182,7 +193,7 @@ export default function VendorShowsPage() {
   }, [selectedDate, selectedCinemaId]);
 
   // Real-time reactive sync across tabs & portals
-  useRealtimeRefresh(['SHOW_MUTATION', 'BOOKING_MUTATION', 'MOVIE_MUTATION', 'SCREEN_MUTATION'], async () => {
+  useRealtimeRefresh(['SHOW_MUTATION', 'BOOKING_MUTATION', 'MOVIE_MUTATION', 'SCREEN_MUTATION', 'SEAT_SELECTION_UPDATED'], async () => {
     loadAllData(false);
     if (isSeatMapModalOpen && selectedShow) {
       try {
@@ -193,6 +204,70 @@ export default function VendorShowsPage() {
       } catch (_e) {}
     }
   });
+
+  // Real-time WebSocket connection for live Heat Map & Seat Locking
+  useEffect(() => {
+    if (!isSeatMapModalOpen || !selectedShow) return;
+
+    const showId = String(selectedShow.id || selectedShow._id);
+    let socket = null;
+    try {
+      socket = getSocket();
+    } catch (_socketErr) {
+      console.warn('Socket client initialization warning:', _socketErr);
+    }
+
+    if (socket) {
+      // Join real-time room for this showtime
+      socket.emit('join_show', showId);
+
+      // 1. Listen for immediate seat locking by any customer
+      const handleSeatsLocked = (data) => {
+        if (data && String(data.showId) === showId) {
+          setSeatMapData((prev) => {
+            if (!prev) return prev;
+            const updatedBooked = Array.from(new Set([...(prev.show?.bookedSeats || []), ...(data.seats || [])]));
+            return {
+              ...prev,
+              show: { ...prev.show, bookedSeats: updatedBooked },
+              totalBookedSeats: updatedBooked.length
+            };
+          });
+          // Remove booked seats from live selecting
+          setLiveSelectingSeats((prev) => prev.filter((s) => !(data.seats || []).includes(s)));
+          loadAllData(false);
+        }
+      };
+
+      // 2. Listen for in-progress seat selection by customer (Live Heatmap glow)
+      const handleSeatsSelecting = (data) => {
+        if (data && String(data.showId) === showId) {
+          setLiveSelectingSeats(Array.isArray(data.seats) ? data.seats : []);
+        }
+      };
+
+      // 3. Listen for new ticket sale to refresh manifest
+      const handleNewSale = () => {
+        vendorApi.getShowSeatMap(showId).then((res) => {
+          if (res.success && res.data) {
+            setSeatMapData(res.data);
+          }
+        }).catch(() => {});
+        loadAllData(false);
+      };
+
+      socket.on('SEATS_LOCKED', handleSeatsLocked);
+      socket.on('SEATS_SELECTING', handleSeatsSelecting);
+      socket.on('NEW_TICKET_SALE', handleNewSale);
+
+      return () => {
+        socket.emit('leave_show', showId);
+        socket.off('SEATS_LOCKED', handleSeatsLocked);
+        socket.off('SEATS_SELECTING', handleSeatsSelecting);
+        socket.off('NEW_TICKET_SALE', handleNewSale);
+      };
+    }
+  }, [isSeatMapModalOpen, selectedShow]);
 
   // When cinema changes in Add Show modal, fetch its screens
   useEffect(() => {
@@ -272,6 +347,7 @@ export default function VendorShowsPage() {
     setIsSeatMapModalOpen(true);
     setSeatMapLoading(true);
     setSeatMapTab('seats');
+    setLiveSelectingSeats([]);
 
     try {
       const res = await vendorApi.getShowSeatMap(show.id || show._id);
@@ -1583,110 +1659,164 @@ export default function VendorShowsPage() {
             <div className="w-8 h-8 border-2 border-indigo-600 border-t-transparent rounded-full animate-spin mx-auto" />
             <p className="font-bold">Loading real-time auditorium matrix & bookings...</p>
           </div>
-        ) : seatMapData ? (
-          <div className="space-y-4">
-            {/* Show Header Summary */}
-            <div className="flex flex-col sm:flex-row sm:items-center justify-between p-3.5 bg-slate-50 rounded-xl border border-slate-200 text-xs gap-3">
-              <div>
-                <p className="font-bold text-slate-900 text-sm">
-                  {seatMapData.cinema?.name}
-                </p>
-                <p className="text-slate-500 text-[11px]">
-                  {seatMapData.screen?.name} • {selectedShow?.startTime} ({selectedShow?.showDate}) • {selectedShow?.format || '2D'}
-                </p>
-              </div>
+        ) : seatMapData ? (() => {
+            // Aggregate all booked seats from show and confirmed bookings
+            const allBookedSeats = new Set();
+            (seatMapData.show?.bookedSeats || []).forEach((s) => allBookedSeats.add(normalizeSeatCode(s)));
+            (seatMapData.recentBookings || []).forEach((b) => {
+              (b.seats || []).forEach((s) => allBookedSeats.add(normalizeSeatCode(s)));
+            });
 
-              {/* Real-time Counts */}
-              <div className="flex items-center gap-3">
-                <span className="text-emerald-700 font-bold bg-emerald-50 px-2.5 py-1 rounded-lg border border-emerald-200">
-                  {Math.max(0, (seatMapData.totalCapacity || 120) - (seatMapData.totalBookedSeats || 0))} Available
-                </span>
-                <span className="text-rose-700 font-bold bg-rose-50 px-2.5 py-1 rounded-lg border border-rose-200">
-                  {seatMapData.totalBookedSeats || 0} Booked
-                </span>
-              </div>
-            </div>
+            const liveSelectingSet = new Set();
+            (liveSelectingSeats || []).forEach((s) => liveSelectingSet.add(normalizeSeatCode(s)));
 
-            {/* Modal Tabs: Seat Grid vs Booking Manifest */}
-            <div className="flex items-center border-b border-slate-200">
-              <button
-                onClick={() => setSeatMapTab('seats')}
-                className={`flex items-center gap-1.5 px-4 py-2 text-xs font-bold border-b-2 transition ${
-                  seatMapTab === 'seats'
-                    ? 'border-indigo-600 text-indigo-600'
-                    : 'border-transparent text-slate-500 hover:text-slate-800'
-                }`}
-              >
-                <Armchair size={14} />
-                <span>Auditorium Layout</span>
-              </button>
-              <button
-                onClick={() => setSeatMapTab('manifest')}
-                className={`flex items-center gap-1.5 px-4 py-2 text-xs font-bold border-b-2 transition ${
-                  seatMapTab === 'manifest'
-                    ? 'border-indigo-600 text-indigo-600'
-                    : 'border-transparent text-slate-500 hover:text-slate-800'
-                }`}
-              >
-                <Ticket size={14} />
-                <span>Bookings Manifest ({seatMapData.recentBookings?.length || 0})</span>
-              </button>
-            </div>
+            const totalBookedCount = allBookedSeats.size;
+            const totalCapacity = seatMapData.totalCapacity || seatMapData.screen?.totalCapacity || 120;
+            const totalAvailableCount = Math.max(0, totalCapacity - totalBookedCount);
 
-            {seatMapTab === 'seats' ? (
-              <div className="space-y-3">
-                {/* Curved Movie Screen Visual */}
-                <div className="text-center py-2">
-                  <div className="w-3/4 mx-auto h-2 bg-gradient-to-b from-indigo-400 via-indigo-300 to-transparent rounded-t-full shadow-sm" />
-                  <p className="text-[9px] text-slate-400 uppercase tracking-widest mt-1 font-mono">
-                    All Eyes This Way Please (Screen)
-                  </p>
+            // Safe fallback layout if screen.seatingLayout is not configured
+            const rowsToRender = (seatMapData.screen?.seatingLayout && seatMapData.screen.seatingLayout.length > 0)
+              ? seatMapData.screen.seatingLayout
+              : ['A', 'B', 'C', 'D', 'E', 'F', 'G', 'H'].map((r) => ({
+                  row: r,
+                  seatsCount: 12
+                }));
+
+            return (
+              <div className="space-y-4">
+                {/* Show Header Summary */}
+                <div className="flex flex-col sm:flex-row sm:items-center justify-between p-3.5 bg-slate-50 rounded-xl border border-slate-200 text-xs gap-3">
+                  <div>
+                    <p className="font-bold text-slate-900 text-sm">
+                      {seatMapData.cinema?.name}
+                    </p>
+                    <p className="text-slate-500 text-[11px]">
+                      {seatMapData.screen?.name} • {selectedShow?.startTime} ({selectedShow?.showDate}) • {selectedShow?.format || '2D'}
+                    </p>
+                  </div>
+
+                  {/* Real-time Counts */}
+                  <div className="flex items-center gap-2 sm:gap-2.5">
+                    {liveSelectingSeats.length > 0 && (
+                      <span className="text-amber-800 font-bold bg-amber-50 px-2.5 py-1 rounded-lg border border-amber-300 animate-pulse flex items-center gap-1.5 text-[11px]">
+                        <span className="relative flex h-2 w-2">
+                          <span className="animate-ping absolute inline-flex h-full w-full rounded-full bg-amber-400 opacity-75"></span>
+                          <span className="relative inline-flex rounded-full h-2 w-2 bg-amber-500"></span>
+                        </span>
+                        <span>{liveSelectingSeats.length} Selecting Live</span>
+                      </span>
+                    )}
+                    <span className="text-emerald-700 font-bold bg-emerald-50 px-2.5 py-1 rounded-lg border border-emerald-200">
+                      {totalAvailableCount} Available
+                    </span>
+                    <span className="text-rose-700 font-bold bg-rose-50 px-2.5 py-1 rounded-lg border border-rose-200">
+                      {totalBookedCount} Booked
+                    </span>
+                  </div>
                 </div>
 
-                {/* Rows and Seats Grid */}
-                <div className="space-y-2 max-h-72 overflow-y-auto p-3 bg-slate-50/70 rounded-xl border border-slate-200/80">
-                  {(seatMapData.screen?.seatingLayout || []).map((row) => (
-                    <div key={row.row} className="flex items-center gap-2 justify-center">
-                      <span className="w-5 text-center font-mono font-bold text-xs text-slate-400">
-                        {row.row}
-                      </span>
-                      <div className="flex items-center gap-1.5 flex-wrap justify-center">
-                        {Array.from({ length: row.seatsCount || 12 }).map((_, idx) => {
-                          const seatCode = `${row.row}-${idx + 1}`;
-                          const isBooked = (seatMapData.show?.bookedSeats || []).includes(seatCode);
+                {/* Modal Tabs: Seat Grid vs Booking Manifest */}
+                <div className="flex items-center border-b border-slate-200">
+                  <button
+                    onClick={() => setSeatMapTab('seats')}
+                    className={`flex items-center gap-1.5 px-4 py-2 text-xs font-bold border-b-2 transition ${
+                      seatMapTab === 'seats'
+                        ? 'border-indigo-600 text-indigo-600'
+                        : 'border-transparent text-slate-500 hover:text-slate-800'
+                    }`}
+                  >
+                    <Armchair size={14} />
+                    <span>Auditorium Layout</span>
+                  </button>
+                  <button
+                    onClick={() => setSeatMapTab('manifest')}
+                    className={`flex items-center gap-1.5 px-4 py-2 text-xs font-bold border-b-2 transition ${
+                      seatMapTab === 'manifest'
+                        ? 'border-indigo-600 text-indigo-600'
+                        : 'border-transparent text-slate-500 hover:text-slate-800'
+                    }`}
+                  >
+                    <Ticket size={14} />
+                    <span>Bookings Manifest ({seatMapData.recentBookings?.length || 0})</span>
+                  </button>
+                </div>
 
-                          return (
-                            <div
-                              key={seatCode}
-                              className={`w-6 h-6 rounded text-[9px] font-mono flex items-center justify-center font-bold transition ${
-                                isBooked
-                                  ? 'bg-rose-500 text-white shadow-xs'
-                                  : 'bg-white border border-slate-300 text-slate-700 hover:border-indigo-500'
-                              }`}
-                              title={`${seatCode} • ${isBooked ? 'Booked' : 'Available'}`}
-                            >
-                              {idx + 1}
-                            </div>
-                          );
-                        })}
+                {seatMapTab === 'seats' ? (
+                  <div className="space-y-3">
+                    {/* Curved Movie Screen Visual */}
+                    <div className="text-center py-2">
+                      <div className="w-3/4 mx-auto h-2 bg-gradient-to-b from-indigo-400 via-indigo-300 to-transparent rounded-t-full shadow-sm" />
+                      <p className="text-[9px] text-slate-400 uppercase tracking-widest mt-1 font-mono">
+                        All Eyes This Way Please (Screen)
+                      </p>
+                    </div>
+
+                    {/* Rows and Seats Grid */}
+                    <div className="space-y-2 max-h-72 overflow-y-auto p-3 bg-slate-50/70 rounded-xl border border-slate-200/80">
+                      {rowsToRender.map((row) => (
+                        <div key={row.row} className="flex items-center gap-2 justify-center">
+                          <span className="w-5 text-center font-mono font-bold text-xs text-slate-400">
+                            {row.row}
+                          </span>
+                          <div className="flex items-center gap-1.5 flex-wrap justify-center">
+                            {Array.from({ length: row.seatsCount || 12 }).map((_, idx) => {
+                              const seatNum = idx + 1;
+                              const codeStandard = `${row.row}${seatNum}`;
+                              const codeHyphen = `${row.row}-${seatNum}`;
+
+                              const isBooked =
+                                allBookedSeats.has(normalizeSeatCode(codeStandard)) ||
+                                allBookedSeats.has(normalizeSeatCode(codeHyphen));
+
+                              const isLiveSelecting =
+                                !isBooked &&
+                                (liveSelectingSet.has(normalizeSeatCode(codeStandard)) ||
+                                  liveSelectingSet.has(normalizeSeatCode(codeHyphen)));
+
+                              return (
+                                <div
+                                  key={codeStandard}
+                                  className={`w-6 h-6 rounded text-[9px] font-mono flex items-center justify-center font-bold transition-all duration-150 ${
+                                    isBooked
+                                      ? 'bg-rose-500 text-white shadow-xs'
+                                      : isLiveSelecting
+                                        ? 'bg-amber-400 text-amber-950 border-2 border-amber-500 font-black animate-pulse shadow-xs'
+                                        : 'bg-white border border-slate-300 text-slate-700 hover:border-indigo-500'
+                                  }`}
+                                  title={`${codeStandard} • ${
+                                    isBooked
+                                      ? 'Booked (Confirmed Ticket)'
+                                      : isLiveSelecting
+                                        ? 'Selecting Live by Customer'
+                                        : 'Available'
+                                  }`}
+                                >
+                                  {seatNum}
+                                </div>
+                              );
+                            })}
+                          </div>
+                        </div>
+                      ))}
+                    </div>
+
+                    {/* Legend */}
+                    <div className="flex items-center justify-center gap-5 pt-2 border-t border-slate-100 text-xs text-slate-500">
+                      <div className="flex items-center gap-1.5">
+                        <div className="w-3.5 h-3.5 bg-white border border-slate-300 rounded" />
+                        <span>Available Seat</span>
+                      </div>
+                      <div className="flex items-center gap-1.5">
+                        <div className="w-3.5 h-3.5 bg-amber-400 border border-amber-500 rounded animate-pulse" />
+                        <span className="font-semibold text-amber-800">Selecting Live</span>
+                      </div>
+                      <div className="flex items-center gap-1.5">
+                        <div className="w-3.5 h-3.5 bg-rose-500 rounded" />
+                        <span className="font-semibold text-rose-700">Booked</span>
                       </div>
                     </div>
-                  ))}
-                </div>
-
-                {/* Legend */}
-                <div className="flex items-center justify-center gap-6 pt-2 border-t border-slate-100 text-xs text-slate-500">
-                  <div className="flex items-center gap-1.5">
-                    <div className="w-3.5 h-3.5 bg-white border border-slate-300 rounded" />
-                    <span>Available Seat</span>
                   </div>
-                  <div className="flex items-center gap-1.5">
-                    <div className="w-3.5 h-3.5 bg-rose-500 rounded" />
-                    <span>Booked Seat</span>
-                  </div>
-                </div>
-              </div>
-            ) : (
+                ) : (
               /* Manifest View */
               <div className="space-y-2 max-h-72 overflow-y-auto">
                 {(!seatMapData.recentBookings || seatMapData.recentBookings.length === 0) ? (
@@ -1723,7 +1853,8 @@ export default function VendorShowsPage() {
               </div>
             )}
           </div>
-        ) : null}
+        );
+      })() : null}
       </Modal>
 
       {/* ========================================================

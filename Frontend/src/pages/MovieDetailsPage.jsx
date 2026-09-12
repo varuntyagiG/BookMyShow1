@@ -1,7 +1,7 @@
 import React, { useState, useEffect, useRef } from 'react';
 import { useParams, Link } from 'react-router-dom';
 import { contentApi, bookingApi } from '../services/api';
-import { useRealtimeRefresh } from '../services/realtimeSync';
+import { useRealtimeRefresh, broadcastSync } from '../services/realtimeSync';
 import { getSocket } from '../services/socketClient';
 import { useCity } from '../context/CityContext';
 import { useAuth } from '../context/AuthContext';
@@ -320,6 +320,21 @@ export default function MovieDetailsPage() {
         }
       }
 
+      // Broadcast real-time seat selection so vendor heat map updates live
+      const rawShowId = prev.showtime?.showId;
+      try {
+        broadcastSync('SEAT_SELECTION_UPDATED', {
+          showId: rawShowId,
+          theatreName: prev.theatre?.name,
+          showtime: prev.showtime?.time,
+          seats: nextSeats
+        });
+        const socket = getSocket();
+        if (socket && rawShowId) {
+          socket.emit('seat_selecting', { showId: rawShowId, seats: nextSeats });
+        }
+      } catch (_syncErr) {}
+
       return {
         ...prev,
         selectedSeats: nextSeats,
@@ -373,6 +388,21 @@ export default function MovieDetailsPage() {
         } catch (_confettiErr) {
           // Fallback gracefully if canvas context is restricted
         }
+
+        // Broadcast booking creation across all tabs & vendor portal
+        try {
+          broadcastSync('BOOKING_MUTATION', {
+            action: 'create',
+            showId: isObjectId(rawShowId) ? rawShowId : undefined,
+            theatreName: bookingModal.theatre?.name,
+            showtime: bookingModal.showtime?.time,
+            seats: bookingModal.selectedSeats
+          });
+          const socket = getSocket();
+          if (socket && rawShowId) {
+            socket.emit('seat_selecting', { showId: rawShowId, seats: [] });
+          }
+        } catch (_syncErr) {}
 
         setBookingModal((prev) => ({
           ...prev,

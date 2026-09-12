@@ -113,6 +113,20 @@ function initSocket(httpServer, options = {}) {
       }
     });
 
+    // Real-time seat selection in-progress by customer (Live Heatmap)
+    socket.on('seat_selecting', (data) => {
+      const showId = typeof data === 'string' ? data : data?.showId;
+      const seats = data?.seats || [];
+      if (showId) {
+        const room = `show:${showId}`;
+        socket.to(room).emit('SEATS_SELECTING', {
+          showId: String(showId),
+          seats,
+          timestamp: Date.now()
+        });
+      }
+    });
+
     socket.on('disconnect', (_reason) => {
       // Client disconnected cleanly
     });
@@ -198,10 +212,26 @@ function notifyAdminSale(txData) {
   });
 }
 
+/**
+ * Broadcast in-progress seat selections to clients viewing this show
+ * @param {string} showId
+ * @param {string[]} seats
+ */
+function broadcastSeatsSelecting(showId, seats = []) {
+  if (!io || !showId) return;
+  const room = `show:${showId}`;
+  io.to(room).emit('SEATS_SELECTING', {
+    showId: String(showId),
+    seats: Array.isArray(seats) ? seats : [],
+    timestamp: Date.now()
+  });
+}
+
 module.exports = {
   initSocket,
   getIO,
   broadcastSeatsLocked,
+  broadcastSeatsSelecting,
   notifyBookingSuccess,
   notifyVendorSale,
   notifyAdminSale

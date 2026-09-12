@@ -669,10 +669,46 @@ async function getShows(req, res) {
       .populate('movie', 'title posterUrl duration language formats customId')
       .sort({ showDate: 1, startTime: 1 });
 
+    const showIds = shows.map(s => s._id);
+    const bookings = await Booking.find({
+      $or: [
+        { show: { $in: showIds } },
+        { partner: req.user._id, bookingStatus: 'confirmed' }
+      ],
+      bookingStatus: 'confirmed'
+    }).select('show theatreName showtime showDate seats');
+
+    // Build lookup maps for booked seats by showId and fallback (theatre+time+date)
+    const seatsByShowId = new Map();
+    const seatsByFallbackKey = new Map();
+
+    bookings.forEach(b => {
+      if (b.show) {
+        const sId = b.show.toString();
+        if (!seatsByShowId.has(sId)) seatsByShowId.set(sId, new Set());
+        (b.seats || []).forEach(seat => seatsByShowId.get(sId).add(seat));
+      }
+      const key = `${(b.theatreName || '').toLowerCase().trim()}|${(b.showtime || '').trim()}|${(b.showDate || '').trim()}`;
+      if (!seatsByFallbackKey.has(key)) seatsByFallbackKey.set(key, new Set());
+      (b.seats || []).forEach(seat => seatsByFallbackKey.get(key).add(seat));
+    });
+
     const formatted = shows.map(s => {
       const obj = s.toObject();
       obj.id = s._id.toString();
-      obj.bookedSeatsCount = s.bookedSeats ? s.bookedSeats.length : 0;
+      const sId = s._id.toString();
+      const sKey = `${(s.cinema?.name || '').toLowerCase().trim()}|${(s.startTime || '').trim()}|${(s.showDate || '').trim()}`;
+
+      const combinedSet = new Set(s.bookedSeats || []);
+      if (seatsByShowId.has(sId)) {
+        seatsByShowId.get(sId).forEach(seat => combinedSet.add(seat));
+      }
+      if (seatsByFallbackKey.has(sKey)) {
+        seatsByFallbackKey.get(sKey).forEach(seat => combinedSet.add(seat));
+      }
+
+      obj.bookedSeats = Array.from(combinedSet);
+      obj.bookedSeatsCount = combinedSet.size;
       obj.totalCapacity = s.screen ? (s.screen.totalCapacity || 120) : 120;
       obj.occupancyRate = obj.totalCapacity > 0 ? Math.round((obj.bookedSeatsCount / obj.totalCapacity) * 100) : 0;
       return obj;
@@ -841,6 +877,22 @@ async function getShowSeatMap(req, res) {
       bookingStatus: 'confirmed'
     }).populate('user', 'name email phone');
 
+    // Aggregate all booked seats from show document and all confirmed bookings
+    const combinedBookedSeats = Array.from(
+      new Set([
+        ...(show.bookedSeats || []),
+        ...bookings.flatMap(b => b.seats || [])
+      ])
+    );
+
+    // Sync missing seats back to Show document in MongoDB
+    if (combinedBookedSeats.length > (show.bookedSeats || []).length) {
+      Show.updateOne(
+        { _id: show._id },
+        { $addToSet: { bookedSeats: { $each: combinedBookedSeats } } }
+      ).catch(() => {});
+    }
+
     return res.json({
       success: true,
       data: {
@@ -853,13 +905,13 @@ async function getShowSeatMap(req, res) {
           format: show.format,
           ticketPrice: show.ticketPrice,
           pricingTiers: show.pricingTiers,
-          bookedSeats: show.bookedSeats || [],
+          bookedSeats: combinedBookedSeats,
           status: show.status
         },
         cinema: show.cinema,
         screen: show.screen,
         bookingsCount: bookings.length,
-        totalBookedSeats: (show.bookedSeats || []).length,
+        totalBookedSeats: combinedBookedSeats.length,
         totalCapacity: show.screen ? show.screen.totalCapacity : 120,
         recentBookings: bookings.map(b => ({
           bookingId: b.bookingId,

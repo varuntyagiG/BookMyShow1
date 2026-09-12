@@ -451,71 +451,92 @@ export default function VendorDashboardPage() {
               onAction={() => window.location.href = '/vendor/shows'}
             />
           ) : (
-            <Table>
-              <TableHeader>
-                <TableRow>
-                  <TableHead>Booking ID</TableHead>
-                  <TableHead>Movie</TableHead>
-                  <TableHead>Theatre & Show</TableHead>
-                  <TableHead>Customer</TableHead>
-                  <TableHead>Seats</TableHead>
-                  <TableHead>Amount</TableHead>
-                  <TableHead>Gate Status</TableHead>
-                </TableRow>
-              </TableHeader>
-              <TableBody>
-                {analytics.recentBookings.map((b) => (
-                  <TableRow key={b.id || b.bookingId}>
-                    <TableCell className="font-mono text-xs font-bold text-gray-900">
-                      {b.bookingId}
-                    </TableCell>
-                    <TableCell className="font-semibold text-gray-800 text-sm">
-                      {b.movieTitle}
-                    </TableCell>
-                    <TableCell>
-                      <div className="text-xs text-gray-900 font-medium">{b.theatreName}</div>
-                      <div className="text-[11px] text-gray-500">
-                        {b.showDate} • {b.showtime}
-                      </div>
-                    </TableCell>
-                    <TableCell className="text-xs text-gray-700">
-                      {b.customerName}
-                    </TableCell>
-                    <TableCell>
-                      <div className="flex flex-wrap gap-1 max-w-[140px]">
-                        {(b.seats || []).slice(0, 3).map((s) => (
-                          <span
-                            key={s}
-                            className="bg-gray-100 text-gray-800 text-[10px] font-semibold px-1.5 py-0.5 rounded"
-                          >
-                            {s}
-                          </span>
-                        ))}
-                        {(b.seats || []).length > 3 && (
-                          <span className="text-[10px] text-gray-400 self-center">
-                            +{b.seats.length - 3} more
-                          </span>
-                        )}
-                      </div>
-                    </TableCell>
-                    <TableCell className="font-semibold text-xs text-gray-900">
-                      ₹{b.totalAmount}
-                    </TableCell>
-                    <TableCell>
-                      {b.ticketValidated ? (
-                        <Badge variant="success" className="text-[11px] font-semibold">
-                          Checked In
-                        </Badge>
-                      ) : (
-                        <Badge variant="warning" className="text-[11px]">
-                          Pending Gate
-                        </Badge>
-                      )}
-                    </TableCell>
+            <div className="overflow-x-auto">
+              <Table>
+                <TableHeader>
+                  <TableRow className="bg-slate-50/80 text-[11px] font-bold uppercase tracking-wider text-slate-500">
+                    <TableHead className="py-3 px-4">Booking Ref</TableHead>
+                    <TableHead className="py-3 px-4">Movie</TableHead>
+                    <TableHead className="py-3 px-4">Theatre & Show</TableHead>
+                    <TableHead className="py-3 px-4">Patron (Customer)</TableHead>
+                    <TableHead className="py-3 px-4">Allocated Seats</TableHead>
+                    <TableHead className="py-3 px-4">Amount</TableHead>
+                    <TableHead className="py-3 px-4">Gate Status</TableHead>
                   </TableRow>
-                ))}
-              </TableBody>
-            </Table>
+                </TableHeader>
+                <TableBody>
+                  {analytics.recentBookings.map((b) => {
+                    const isValidated = Boolean(b.ticketValidated);
+                    const customerName = b.customerName || 'Customer';
+                    const initials = customerName.split(' ').map(n => n[0]).join('').slice(0, 2).toUpperCase() || 'P';
+
+                    return (
+                      <TableRow key={b.id || b.bookingId} className="hover:bg-slate-50/70 transition-colors text-xs border-b border-slate-100">
+                        <TableCell className="py-3 px-4 font-mono font-bold text-slate-900">
+                          <span className="text-[11px] px-2 py-0.5 rounded bg-slate-100 text-slate-800 border border-slate-200/80 font-mono">
+                            {b.bookingId}
+                          </span>
+                        </TableCell>
+                        <TableCell className="py-3 px-4 font-bold text-slate-900">
+                          {b.movieTitle}
+                        </TableCell>
+                        <TableCell className="py-3 px-4">
+                          <div className="text-xs text-slate-900 font-medium">{b.theatreName}</div>
+                          <div className="text-[11px] text-slate-500 flex items-center gap-1 mt-0.5">
+                            <Calendar size={11} className="text-slate-400" />
+                            <span>{b.showDate} • {b.showtime}</span>
+                          </div>
+                        </TableCell>
+                        <TableCell className="py-3 px-4">
+                          <div className="flex items-center gap-2">
+                            <div className="w-6 h-6 rounded-full bg-slate-900 text-white flex items-center justify-center font-bold text-[10px] shrink-0">
+                              {initials}
+                            </div>
+                            <span className="font-semibold text-slate-800 text-xs">{customerName}</span>
+                          </div>
+                        </TableCell>
+                        <TableCell className="py-3 px-4">
+                          <div className="flex flex-wrap gap-1 max-w-[140px]">
+                            {(b.seats || []).slice(0, 3).map((s) => (
+                              <span
+                                key={s}
+                                className="bg-slate-100 text-slate-800 font-mono text-[10px] font-bold px-1.5 py-0.5 rounded border border-slate-200/70"
+                              >
+                                {s}
+                              </span>
+                            ))}
+                            {(b.seats || []).length > 3 && (
+                              <span className="text-[10px] text-slate-400 font-semibold self-center">
+                                +{b.seats.length - 3} more
+                              </span>
+                            )}
+                          </div>
+                        </TableCell>
+                        <TableCell className="py-3 px-4 font-black text-slate-900 font-sans">
+                          ₹{Number(b.totalAmount || 0).toLocaleString('en-IN')}
+                        </TableCell>
+                        <TableCell className="py-3 px-4">
+                          {isValidated ? (
+                            <span className="inline-flex items-center gap-1 px-2.5 py-0.5 rounded-full text-[10px] font-bold bg-emerald-50 text-emerald-700 border border-emerald-200 shadow-2xs">
+                              <CheckCircle2 size={11} />
+                              <span>Checked In</span>
+                            </span>
+                          ) : (
+                            <span className="inline-flex items-center gap-1.5 px-2.5 py-0.5 rounded-full text-[10px] font-bold bg-amber-50 text-amber-700 border border-amber-200 shadow-2xs">
+                              <span className="relative flex h-1.5 w-1.5">
+                                <span className="animate-ping absolute inline-flex h-full w-full rounded-full bg-amber-400 opacity-75"></span>
+                                <span className="relative inline-flex rounded-full h-1.5 w-1.5 bg-amber-500"></span>
+                              </span>
+                              <span>Pending Gate</span>
+                            </span>
+                          )}
+                        </TableCell>
+                      </TableRow>
+                    );
+                  })}
+                </TableBody>
+              </Table>
+            </div>
           )}
         </CardContent>
       </Card>
