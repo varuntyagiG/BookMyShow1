@@ -99,29 +99,29 @@ export default function AdminDashboardPage() {
 
       {/* 4 Prime KPI Cards */}
       <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4">
-        {/* Total GMV - BookMyShow Crimson Hero Card */}
+        {/* Total GMV - Premium Hero Card */}
         <motion.div
           whileHover={{ y: -4, scale: 1.015 }}
           transition={{ type: 'spring', stiffness: 350, damping: 25 }}
-          className="bg-gradient-to-br from-[#F84464] via-[#E23454] to-[#C92A46] text-white rounded-2xl p-5 sm:p-6 shadow-[0_8px_30px_rgba(248,68,100,0.28)] relative overflow-hidden group border border-rose-400/30"
+          className="bg-gradient-to-br from-[#1F2230] via-[#252837] to-[#181A24] text-white rounded-2xl p-5 sm:p-6 shadow-[0_10px_32px_rgba(0,0,0,0.16)] relative overflow-hidden group border border-slate-700/50"
         >
-          <div className="absolute -right-8 -bottom-8 w-32 h-32 rounded-full bg-white/10 blur-2xl pointer-events-none group-hover:scale-125 transition-transform duration-500" />
+          <div className="absolute -right-8 -bottom-8 w-32 h-32 rounded-full bg-[#F84464]/15 blur-2xl pointer-events-none group-hover:scale-125 transition-transform duration-500" />
           <div className="flex items-center justify-between mb-3 relative z-10">
-            <span className="text-[11px] font-extrabold uppercase tracking-wider text-white/80">
+            <span className="text-[11px] font-bold uppercase tracking-wider text-slate-300">
               Nationwide GMV
             </span>
-            <div className="w-10 h-10 rounded-xl bg-white/15 backdrop-blur-xs flex items-center justify-center text-white border border-white/20 shadow-xs group-hover:scale-105 transition-transform">
+            <div className="w-10 h-10 rounded-xl bg-white/10 backdrop-blur-xs flex items-center justify-center text-[#F84464] border border-white/10 shadow-xs group-hover:scale-105 transition-transform">
               <TrendingUp size={20} />
             </div>
           </div>
           <div className="text-2xl sm:text-3xl font-black text-white tracking-tight font-sans relative z-10">
             ₹{loading ? '---' : Number(stats.totalRevenue || 0).toLocaleString('en-IN')}
           </div>
-          <div className="mt-3 flex items-center gap-2 text-xs text-white/90 relative z-10">
-            <span className="bg-white/20 text-white font-bold px-2 py-0.5 rounded-full text-[10px] flex items-center gap-1 border border-white/20">
+          <div className="mt-3 flex items-center gap-2 text-xs text-slate-300 relative z-10">
+            <span className="bg-[#F84464] text-white font-bold px-2 py-0.5 rounded-full text-[10px] flex items-center gap-1">
               <ArrowUpRight size={12} /> Live Feed
             </span>
-            <span className="text-white/80 font-medium">Gross ticket sales volume</span>
+            <span className="text-slate-400 font-medium">Gross ticket sales volume</span>
           </div>
         </motion.div>
 
@@ -129,23 +129,21 @@ export default function AdminDashboardPage() {
         <motion.div
           whileHover={{ y: -4, scale: 1.015 }}
           transition={{ type: 'spring', stiffness: 350, damping: 25 }}
-          className="bg-gradient-to-br from-white via-white to-emerald-50/40 border border-slate-200/90 rounded-2xl p-5 sm:p-6 shadow-[0_4px_20px_-2px_rgba(16,185,129,0.06),0_1px_3px_rgba(0,0,0,0.02)] hover:shadow-[0_16px_32px_-4px_rgba(16,185,129,0.14)] hover:border-emerald-300 transition-all duration-300 relative overflow-hidden group"
+          className="bg-white border border-slate-100/90 rounded-2xl p-5 sm:p-6 shadow-[0_4px_24px_-4px_rgba(0,0,0,0.05),0_1px_3px_rgba(0,0,0,0.02)] hover:shadow-[0_18px_38px_-6px_rgba(0,0,0,0.09)] hover:border-slate-200 transition-all duration-300 relative overflow-hidden group"
         >
-          <div className="absolute top-0 left-0 right-0 h-1 bg-gradient-to-r from-emerald-500 via-teal-500 to-emerald-400" />
-          <div className="absolute -right-8 -top-8 w-24 h-24 rounded-full bg-emerald-400/10 blur-xl pointer-events-none group-hover:scale-150 transition-transform duration-500" />
           <div className="flex items-center justify-between mb-3 relative z-10">
-            <span className="text-[11px] font-extrabold uppercase tracking-wider text-emerald-800/80">
+            <span className="text-[11px] font-bold uppercase tracking-wider text-slate-400">
               Platform Fee Take (10%)
             </span>
-            <div className="w-10 h-10 rounded-xl bg-emerald-500/10 text-emerald-600 border border-emerald-500/20 flex items-center justify-center shadow-xs group-hover:scale-105 group-hover:bg-emerald-600 group-hover:text-white transition-all duration-300">
+            <div className="w-10 h-10 rounded-xl bg-slate-50 text-emerald-600 border border-slate-100 flex items-center justify-center shadow-2xs group-hover:scale-105 transition-all duration-300">
               <Percent size={18} />
             </div>
           </div>
-          <div className="text-2xl sm:text-3xl font-black text-emerald-600 tracking-tight font-sans relative z-10">
+          <div className="text-2xl sm:text-3xl font-black text-slate-900 tracking-tight font-sans relative z-10">
             ₹{loading ? '---' : Number(stats.platformFeeRevenue || 0).toLocaleString('en-IN')}
           </div>
           <div className="mt-3 flex items-center gap-2 text-xs text-slate-500 relative z-10">
-            <span className="text-emerald-700 font-bold bg-emerald-50 px-2 py-0.5 rounded-full text-[10px] border border-emerald-200/70">
+            <span className="text-slate-700 font-semibold bg-slate-50 px-2.5 py-0.5 rounded-full text-[10px] border border-slate-100">
               10% Platform Cut
             </span>
             <span className="font-medium">Convenience earnings</span>
@@ -156,15 +154,13 @@ export default function AdminDashboardPage() {
         <motion.div
           whileHover={{ y: -4, scale: 1.015 }}
           transition={{ type: 'spring', stiffness: 350, damping: 25 }}
-          className="bg-gradient-to-br from-white via-white to-blue-50/40 border border-slate-200/90 rounded-2xl p-5 sm:p-6 shadow-[0_4px_20px_-2px_rgba(59,130,246,0.06),0_1px_3px_rgba(0,0,0,0.02)] hover:shadow-[0_16px_32px_-4px_rgba(59,130,246,0.14)] hover:border-blue-300 transition-all duration-300 relative overflow-hidden group"
+          className="bg-white border border-slate-100/90 rounded-2xl p-5 sm:p-6 shadow-[0_4px_24px_-4px_rgba(0,0,0,0.05),0_1px_3px_rgba(0,0,0,0.02)] hover:shadow-[0_18px_38px_-6px_rgba(0,0,0,0.09)] hover:border-slate-200 transition-all duration-300 relative overflow-hidden group"
         >
-          <div className="absolute top-0 left-0 right-0 h-1 bg-gradient-to-r from-blue-500 via-indigo-500 to-sky-500" />
-          <div className="absolute -right-8 -top-8 w-24 h-24 rounded-full bg-blue-400/10 blur-xl pointer-events-none group-hover:scale-150 transition-transform duration-500" />
           <div className="flex items-center justify-between mb-3 relative z-10">
-            <span className="text-[11px] font-extrabold uppercase tracking-wider text-blue-800/80">
+            <span className="text-[11px] font-bold uppercase tracking-wider text-slate-400">
               Confirmed Admissions
             </span>
-            <div className="w-10 h-10 rounded-xl bg-blue-500/10 text-blue-600 border border-blue-500/20 flex items-center justify-center shadow-xs group-hover:scale-105 group-hover:bg-blue-600 group-hover:text-white transition-all duration-300">
+            <div className="w-10 h-10 rounded-xl bg-slate-50 text-blue-600 border border-slate-100 flex items-center justify-center shadow-2xs group-hover:scale-105 transition-all duration-300">
               <Ticket size={18} />
             </div>
           </div>
@@ -172,7 +168,7 @@ export default function AdminDashboardPage() {
             {loading ? '---' : Number(stats.totalBookings || 0).toLocaleString('en-IN')}
           </div>
           <div className="mt-3 flex items-center gap-2 text-xs text-slate-500 relative z-10">
-            <span className="text-blue-700 font-bold bg-blue-50 px-2 py-0.5 rounded-full text-[10px] border border-blue-200/70">
+            <span className="text-slate-700 font-semibold bg-slate-50 px-2.5 py-0.5 rounded-full text-[10px] border border-slate-100">
               {stats.activeBookingsCount || stats.totalBookings || 0} Issued
             </span>
             <span className="font-medium">Total tickets reserved</span>
@@ -183,15 +179,13 @@ export default function AdminDashboardPage() {
         <motion.div
           whileHover={{ y: -4, scale: 1.015 }}
           transition={{ type: 'spring', stiffness: 350, damping: 25 }}
-          className="bg-gradient-to-br from-white via-white to-amber-50/40 border border-slate-200/90 rounded-2xl p-5 sm:p-6 shadow-[0_4px_20px_-2px_rgba(245,158,11,0.06),0_1px_3px_rgba(0,0,0,0.02)] hover:shadow-[0_16px_32px_-4px_rgba(245,158,11,0.14)] hover:border-amber-300 transition-all duration-300 relative overflow-hidden group"
+          className="bg-white border border-slate-100/90 rounded-2xl p-5 sm:p-6 shadow-[0_4px_24px_-4px_rgba(0,0,0,0.05),0_1px_3px_rgba(0,0,0,0.02)] hover:shadow-[0_18px_38px_-6px_rgba(0,0,0,0.09)] hover:border-slate-200 transition-all duration-300 relative overflow-hidden group"
         >
-          <div className="absolute top-0 left-0 right-0 h-1 bg-gradient-to-r from-amber-500 via-orange-500 to-yellow-500" />
-          <div className="absolute -right-8 -top-8 w-24 h-24 rounded-full bg-amber-400/10 blur-xl pointer-events-none group-hover:scale-150 transition-transform duration-500" />
           <div className="flex items-center justify-between mb-3 relative z-10">
-            <span className="text-[11px] font-extrabold uppercase tracking-wider text-amber-800/80">
+            <span className="text-[11px] font-bold uppercase tracking-wider text-slate-400">
               Partner Venues
             </span>
-            <div className="w-10 h-10 rounded-xl bg-amber-500/10 text-amber-600 border border-amber-500/20 flex items-center justify-center shadow-xs group-hover:scale-105 group-hover:bg-amber-600 group-hover:text-white transition-all duration-300">
+            <div className="w-10 h-10 rounded-xl bg-slate-50 text-amber-600 border border-slate-100 flex items-center justify-center shadow-2xs group-hover:scale-105 transition-all duration-300">
               <Building2 size={18} />
             </div>
           </div>
@@ -199,7 +193,7 @@ export default function AdminDashboardPage() {
             {loading ? '---' : Number(stats.totalVendors || 0).toLocaleString('en-IN')}
           </div>
           <div className="mt-3 flex items-center gap-2 text-xs text-slate-500 relative z-10">
-            <span className="text-amber-800 font-bold bg-amber-50 px-2 py-0.5 rounded-full text-[10px] border border-amber-200/70">
+            <span className="text-slate-700 font-semibold bg-slate-50 px-2.5 py-0.5 rounded-full text-[10px] border border-slate-100">
               {stats.pendingVendors || 0} Pending KYC
             </span>
             <span className="font-medium">Theatres in network</span>

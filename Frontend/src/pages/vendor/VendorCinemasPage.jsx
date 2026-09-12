@@ -357,7 +357,7 @@ export default function VendorCinemasPage() {
               key={cinema.id || cinema._id}
               whileHover={{ y: -5, scale: 1.01 }}
               transition={{ type: 'spring', stiffness: 350, damping: 25 }}
-              className="bg-white rounded-2xl border border-slate-200/90 hover:border-slate-300 shadow-[0_4px_20px_-2px_rgba(0,0,0,0.05),0_1px_3px_rgba(0,0,0,0.02)] hover:shadow-[0_20px_40px_-8px_rgba(0,0,0,0.1),0_4px_16px_-2px_rgba(248,68,100,0.08)] transition-all duration-300 flex flex-col justify-between overflow-hidden group relative before:absolute before:top-0 before:left-0 before:right-0 before:h-1 before:bg-gradient-to-r before:from-[#F84464] before:via-rose-500 before:to-rose-400 before:opacity-0 hover:before:opacity-100 before:transition-opacity before:z-10"
+              className="bg-white rounded-2xl border border-slate-100/90 hover:border-slate-200 shadow-[0_4px_24px_-4px_rgba(0,0,0,0.05),0_1px_3px_rgba(0,0,0,0.02)] hover:shadow-[0_20px_45px_-8px_rgba(0,0,0,0.09)] transition-all duration-300 flex flex-col justify-between overflow-hidden group"
             >
               <div className="p-5 sm:p-6 space-y-4">
                 {/* 1. Header: Cinema Icon, Name, City, Operational Status */}

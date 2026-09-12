@@ -219,7 +219,7 @@ export default function AdminOffersPage() {
                 key={offerId}
                 whileHover={{ y: -4, scale: 1.015 }}
                 transition={{ type: 'spring', stiffness: 350, damping: 25 }}
-                className="bg-white border border-slate-200/90 hover:border-rose-300/80 rounded-2xl p-5 sm:p-6 shadow-[0_4px_20px_-2px_rgba(0,0,0,0.05),0_1px_3px_rgba(0,0,0,0.02)] hover:shadow-[0_16px_36px_-6px_rgba(248,68,100,0.12)] transition-all duration-300 flex flex-col justify-between relative overflow-hidden group before:absolute before:top-0 before:left-0 before:right-0 before:h-1 before:bg-gradient-to-r before:from-[#F84464] before:via-rose-500 before:to-amber-400"
+                className="bg-white border border-slate-100/90 hover:border-slate-200 rounded-2xl p-5 sm:p-6 shadow-[0_4px_24px_-4px_rgba(0,0,0,0.05),0_1px_3px_rgba(0,0,0,0.02)] hover:shadow-[0_18px_38px_-6px_rgba(0,0,0,0.09)] transition-all duration-300 flex flex-col justify-between relative overflow-hidden group"
               >
                 <div>
                   {/* Top Badge & Code */}
