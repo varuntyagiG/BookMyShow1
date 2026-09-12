@@ -28,6 +28,7 @@ export default function AdminMoviesPage() {
   const [editingMovie, setEditingMovie] = useState(null);
   const [saving, setSaving] = useState(false);
   const [toastMessage, setToastMessage] = useState(null);
+  const [modalError, setModalError] = useState('');
 
   // Form State
   const initialFormState = {
@@ -42,7 +43,7 @@ export default function AdminMoviesPage() {
     bannerUrl: '',
     trailerUrl: '',
     isPromoted: false,
-    status: 'released'
+    status: 'published'
   };
   const [formData, setFormData] = useState(initialFormState);
 
@@ -75,11 +76,13 @@ export default function AdminMoviesPage() {
   const handleOpenAdd = () => {
     setEditingMovie(null);
     setFormData(initialFormState);
+    setModalError('');
     setShowModal(true);
   };
 
   const handleOpenEdit = (movie) => {
     setEditingMovie(movie);
+    setModalError('');
     setFormData({
       title: movie.title || '',
       description: movie.description || '',
@@ -92,7 +95,7 @@ export default function AdminMoviesPage() {
       bannerUrl: movie.bannerUrl || '',
       trailerUrl: movie.trailerUrl || '',
       isPromoted: !!movie.isPromoted,
-      status: movie.status || 'released'
+      status: movie.status === 'released' ? 'published' : (movie.status || 'published')
     });
     setShowModal(true);
   };
@@ -100,13 +103,15 @@ export default function AdminMoviesPage() {
   const handleSubmit = async (e) => {
     e.preventDefault();
     setSaving(true);
+    setModalError('');
     try {
       const payload = {
         ...formData,
         genre: formData.genre.split(',').map(g => g.trim()).filter(Boolean),
-        language: formData.language.split(',').map(l => l.trim()).filter(Boolean),
-        duration: Number(formData.duration),
-        rating: Number(formData.rating)
+        language: formData.language.trim() || 'Hindi',
+        duration: Number(formData.duration) || 120,
+        rating: Number(formData.rating) || 8.0,
+        status: 'published'
       };
 
       if (editingMovie) {
@@ -121,7 +126,7 @@ export default function AdminMoviesPage() {
       setTimeout(() => setToastMessage(null), 3000);
       fetchMovies();
     } catch (err) {
-      alert(err.message || 'Failed to save movie');
+      setModalError(err.message || 'Failed to save movie');
     } finally {
       setSaving(false);
     }
@@ -381,6 +386,18 @@ export default function AdminMoviesPage() {
             </div>
 
             <form onSubmit={handleSubmit} className="mt-5 space-y-4">
+              {modalError && (
+                <div className="p-3 bg-rose-50 border border-rose-200 text-rose-700 text-xs rounded-xl font-medium flex items-center justify-between">
+                  <span>{modalError}</span>
+                  <button
+                    type="button"
+                    onClick={() => setModalError('')}
+                    className="text-rose-500 hover:text-rose-800 ml-2 font-bold"
+                  >
+                    ✕
+                  </button>
+                </div>
+              )}
               <div>
                 <label className="block text-xs font-bold uppercase tracking-wider text-gray-700 mb-1">
                   Movie Title *

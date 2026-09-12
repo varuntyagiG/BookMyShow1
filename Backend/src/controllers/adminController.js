@@ -333,14 +333,32 @@ exports.getMovies = async (req, res) => {
 exports.createMovie = async (req, res) => {
   try {
     const customId = 'pmov-' + Math.floor(100000 + Math.random() * 900000);
+    let normalizedLanguage = 'Hindi';
+    if (Array.isArray(req.body.language)) {
+      normalizedLanguage = req.body.language.filter(Boolean).join(', ') || 'Hindi';
+    } else if (typeof req.body.language === 'string') {
+      normalizedLanguage = req.body.language.trim() || 'Hindi';
+    }
+
+    let normalizedStatus = 'published';
+    if (req.body.status) {
+      const s = String(req.body.status).toLowerCase().trim();
+      if (['published', 'draft', 'archived'].includes(s)) {
+        normalizedStatus = s;
+      } else if (s === 'released' || s === 'active') {
+        normalizedStatus = 'published';
+      }
+    }
+
     const movieData = {
       ...req.body,
       customId,
+      language: normalizedLanguage,
+      status: normalizedStatus,
       synopsis: req.body.synopsis || req.body.description || '',
       backdropUrl: req.body.backdropUrl || req.body.bannerUrl || '',
       duration: String(req.body.duration || '120'),
       rating: Number(req.body.rating || 8.0),
-      status: req.body.status || 'published',
       addedBy: req.user?._id
     };
 
@@ -381,6 +399,21 @@ exports.updateMovie = async (req, res) => {
     }
     if (updateData.rating !== undefined) {
       updateData.rating = Number(updateData.rating);
+    }
+    if (updateData.language !== undefined) {
+      if (Array.isArray(updateData.language)) {
+        updateData.language = updateData.language.filter(Boolean).join(', ');
+      } else if (typeof updateData.language === 'string') {
+        updateData.language = updateData.language.trim();
+      }
+    }
+    if (updateData.status) {
+      const s = String(updateData.status).toLowerCase().trim();
+      if (['published', 'draft', 'archived'].includes(s)) {
+        updateData.status = s;
+      } else if (s === 'released' || s === 'active') {
+        updateData.status = 'published';
+      }
     }
 
     const updated = await Movie.findByIdAndUpdate(movieId, updateData, {

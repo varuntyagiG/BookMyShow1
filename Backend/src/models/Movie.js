@@ -39,7 +39,11 @@ const movieSchema = new mongoose.Schema(
     },
     language: {
       type: String,
-      default: 'Hindi'
+      default: 'Hindi',
+      set: (val) => {
+        if (Array.isArray(val)) return val.filter(Boolean).join(', ');
+        return typeof val === 'string' ? val.trim() : 'Hindi';
+      }
     },
     certificate: {
       type: String,
@@ -91,8 +95,9 @@ const movieSchema = new mongoose.Schema(
     },
     status: {
       type: String,
-      enum: ['published', 'draft', 'archived'],
+      enum: ['published', 'draft', 'archived', 'released'],
       default: 'published',
+      set: (val) => (val === 'released' ? 'published' : val),
       index: true
     },
     addedBy: {
