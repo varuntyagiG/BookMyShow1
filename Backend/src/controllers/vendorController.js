@@ -1035,6 +1035,10 @@ async function getBookings(req, res) {
       ]
     };
 
+    if (cinemaId) {
+      query.cinema = cinemaId;
+    }
+
     if (showDate && showDate !== 'All') {
       query.showDate = showDate;
     }

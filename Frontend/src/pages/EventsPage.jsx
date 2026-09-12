@@ -68,6 +68,7 @@ export default function EventsPage() {
       const res = await bookingApi.createBooking({
         movieId: selectedEvent.id || selectedEvent._id || `event-${Date.now()}`,
         movieTitle: selectedEvent.title,
+        categoryType: 'event',
         theatreName: selectedEvent.venue || 'Live Concert Arena',
         showtime: '07:00 PM',
         showDate: selectedEvent.date || 'Upcoming',

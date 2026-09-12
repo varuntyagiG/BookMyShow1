@@ -99,9 +99,15 @@ export default function CategoryPage() {
     setBookingError('');
     try {
       const passes = Array.from({ length: passCount }, (_, i) => `${passTier.toUpperCase()}-${i + 1}`);
+      const categoryTypeMapping = {
+        sports: 'sport',
+        plays: 'play',
+        activities: 'activity'
+      };
       const res = await bookingApi.createBooking({
         movieId: selectedItem.id || selectedItem._id || `cat-${Date.now()}`,
         movieTitle: selectedItem.title,
+        categoryType: categoryTypeMapping[path] || 'event',
         theatreName: selectedItem.venue || `${path.toUpperCase()} Arena`,
         showtime: '06:30 PM',
         showDate: selectedItem.date || 'Upcoming',

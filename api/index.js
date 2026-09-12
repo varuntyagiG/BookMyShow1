@@ -41,24 +41,27 @@ app.use(async (req, res, next) => {
 });
 
 // Health check endpoint
-app.get('/api/health', (req, res) => {
+const healthHandler = (req, res) => {
   res.json({
     status: 'healthy',
     service: 'BookMyTrip Serverless API on Vercel',
     timestamp: new Date().toISOString()
   });
-});
+};
+app.get('/api/health', healthHandler);
+app.get('/health', healthHandler);
 
 // Routes
 app.use('/api/auth', authRoutes);
 app.use('/auth', authRoutes);
-app.use('/api', movieRoutes);
 app.use('/api/bookings', bookingRoutes);
 app.use('/bookings', bookingRoutes);
 app.use('/api/vendor', vendorRoutes);
 app.use('/vendor', vendorRoutes);
 app.use('/api/admin', adminRoutes);
 app.use('/admin', adminRoutes);
+app.use('/api', movieRoutes);
+app.use('/', movieRoutes);
 
 // Export for Vercel Serverless Function
 module.exports = app;

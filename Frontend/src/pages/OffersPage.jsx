@@ -241,7 +241,8 @@ export default function OffersPage() {
     try {
       setLoading(true);
       const res = await contentApi.getOffers();
-      if (res.data?.success && res.data.offers && res.data.offers.length > 0) {
+      const rawOffers = res.offers || res.data?.offers || (Array.isArray(res.data) ? res.data : []);
+      if ((res.success || res.data?.success) && Array.isArray(rawOffers) && rawOffers.length > 0) {
         const gradients = [
           'from-orange-600 to-amber-700',
           'from-blue-700 to-indigo-900',
@@ -250,7 +251,7 @@ export default function OffersPage() {
           'from-red-700 to-rose-900',
           'from-emerald-700 to-teal-900'
         ];
-        const dynamicOffers = res.data.offers.map((o, idx) => {
+        const dynamicOffers = rawOffers.map((o, idx) => {
           let bank = 'Exclusive';
           const lowerTitle = (o.title || '').toLowerCase();
           if (lowerTitle.includes('icici')) bank = 'ICICI Bank';

@@ -204,7 +204,7 @@ exports.getVendors = async (req, res) => {
       partners.map(async (p) => {
         const cinemas = await Cinema.find({ partner: p._id }).lean();
         const cinemaIds = cinemas.map((c) => c._id);
-        const screensCount = await Screen.find({ cinemaId: { $in: cinemaIds } }).countDocuments();
+        const screensCount = await Screen.countDocuments({ cinema: { $in: cinemaIds } });
         const showsCount = await Show.find({ cinema: { $in: cinemaIds }, status: 'active' }).countDocuments();
 
         const isSuspended = p.isDeactivated || p.partnerStatus === 'suspended';

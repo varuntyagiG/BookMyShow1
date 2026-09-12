@@ -313,7 +313,7 @@ async function getPublicCinemas(req, res) {
 async function getPublicOffers(req, res) {
   try {
     const offers = await Offer.find({ status: 'active' }).sort({ createdAt: -1 });
-    return res.json({ success: true, offers });
+    return res.json({ success: true, offers, data: offers });
   } catch (error) {
     console.error('Error fetching public offers:', error);
     return res.status(500).json({ success: false, message: 'Failed to fetch promo offers.' });

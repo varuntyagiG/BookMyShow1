@@ -81,6 +81,7 @@ app.use('/vendor', vendorRoutes);
 app.use('/api/admin', adminRoutes);
 app.use('/admin', adminRoutes);
 app.use('/api', movieRoutes);
+app.use('/', movieRoutes);
 
 // Fallback 404 route
 app.use((req, res) => {
