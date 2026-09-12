@@ -264,13 +264,23 @@ async function getCinemas(req, res) {
   try {
     const cinemas = await Cinema.find({ partner: req.user._id }).sort({ createdAt: -1 });
 
-    // Attach real-time screen count for each cinema
+    // Attach real-time screens list, capacity, and active shows for each cinema
     const cinemaList = await Promise.all(
       cinemas.map(async (cinema) => {
-        const screensCount = await Screen.countDocuments({ cinema: cinema._id });
+        const screens = await Screen.find({ cinema: cinema._id })
+          .select('name screenNumber screenType totalCapacity status')
+          .sort({ screenNumber: 1 })
+          .lean();
+        const screensCount = screens.length;
+        const totalSeatsCapacity = screens.reduce((sum, s) => sum + (s.totalCapacity || 0), 0);
+        const activeShowsCount = await Show.countDocuments({ cinema: cinema._id, status: 'active' });
+
         const obj = cinema.toObject();
         obj.id = cinema._id.toString();
         obj.screensCount = screensCount;
+        obj.screens = screens;
+        obj.totalSeatsCapacity = totalSeatsCapacity;
+        obj.activeShowsCount = activeShowsCount;
         return obj;
       })
     );
