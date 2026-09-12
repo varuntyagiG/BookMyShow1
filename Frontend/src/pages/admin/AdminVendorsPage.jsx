@@ -1,5 +1,6 @@
 import React, { useState, useEffect, useCallback } from 'react';
 import { adminApi } from '../../services/adminApi';
+import { useRealtimeRefresh } from '../../services/realtimeSync';
 import {
   Building2,
   Search,
@@ -46,6 +47,11 @@ export default function AdminVendorsPage() {
     }, 300);
     return () => clearTimeout(timer);
   }, [fetchVendors]);
+
+  // Real-time reactive sync across tabs & portals
+  useRealtimeRefresh(['VENDOR_STATUS_MUTATION'], () => {
+    fetchVendors();
+  });
 
   const handleUpdateStatus = async (vendorId, newStatus) => {
     try {

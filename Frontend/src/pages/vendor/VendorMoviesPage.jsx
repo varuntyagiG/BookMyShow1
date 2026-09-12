@@ -1,6 +1,7 @@
 import React, { useState, useEffect } from 'react';
 import { Link, useNavigate } from 'react-router-dom';
 import { vendorApi } from '../../services/vendorApi';
+import { useRealtimeRefresh } from '../../services/realtimeSync';
 import {
   PageHeader,
   Button,
@@ -90,6 +91,11 @@ export default function VendorMoviesPage() {
   useEffect(() => {
     fetchMovies();
   }, []);
+
+  // Real-time reactive sync across tabs & portals
+  useRealtimeRefresh(['MOVIE_MUTATION'], () => {
+    fetchMovies();
+  });
 
   const openAddModal = () => {
     setFormData({

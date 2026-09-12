@@ -1,6 +1,7 @@
 import React, { useState, useEffect } from 'react';
 import { Link, useNavigate } from 'react-router-dom';
 import { bookingApi } from '../services/api';
+import { useRealtimeRefresh } from '../services/realtimeSync';
 import { useAuth } from '../context/AuthContext';
 import {
   Ticket,
@@ -39,6 +40,13 @@ export default function CustomerBookingsPage() {
     }
     fetchBookings();
   }, [isAuthenticated]);
+
+  // Real-time reactive sync across tabs & portals
+  useRealtimeRefresh(['BOOKING_MUTATION'], () => {
+    if (isAuthenticated) {
+      fetchBookings();
+    }
+  });
 
   async function fetchBookings() {
     try {

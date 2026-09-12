@@ -1,5 +1,6 @@
 import React, { useState, useEffect, useCallback } from 'react';
 import { adminApi } from '../../services/adminApi';
+import { useRealtimeRefresh } from '../../services/realtimeSync';
 import {
   Ticket,
   Search,
@@ -47,6 +48,11 @@ export default function AdminBookingsPage() {
     }, 300);
     return () => clearTimeout(timer);
   }, [fetchBookings]);
+
+  // Real-time reactive sync across tabs & portals
+  useRealtimeRefresh(['BOOKING_MUTATION'], () => {
+    fetchBookings();
+  });
 
   const handleRefundSubmit = async (e) => {
     e.preventDefault();

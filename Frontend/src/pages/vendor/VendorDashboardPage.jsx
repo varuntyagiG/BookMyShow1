@@ -2,6 +2,7 @@ import React, { useState, useEffect } from 'react';
 import { Link } from 'react-router-dom';
 import { useVendorAuth } from '../../context/VendorAuthContext';
 import { vendorApi } from '../../services/vendorApi';
+import { useRealtimeRefresh } from '../../services/realtimeSync';
 import {
   PageHeader,
   MetricCard,
@@ -67,6 +68,11 @@ export default function VendorDashboardPage() {
     }, 30000);
     return () => clearInterval(interval);
   }, []);
+
+  // Real-time reactive sync across tabs & portals
+  useRealtimeRefresh(['BOOKING_MUTATION', 'SHOW_MUTATION', 'SCREEN_MUTATION', 'MOVIE_MUTATION'], () => {
+    fetchDashboardData();
+  });
 
   const handleManualRefresh = () => {
     setRefreshing(true);

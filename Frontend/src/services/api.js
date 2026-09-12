@@ -1,3 +1,5 @@
+import { broadcastSync } from './realtimeSync';
+
 const rawApiUrl = (import.meta.env.VITE_API_URL || '').trim().replace(/\/+$/, '');
 const API_BASE_URL = rawApiUrl
   ? (rawApiUrl.endsWith('/api') ? rawApiUrl : `${rawApiUrl}/api`)
@@ -46,6 +48,18 @@ export async function request(endpoint, options = {}) {
 
       if (!response.ok) {
         throw new Error(data.message || 'Something went wrong');
+      }
+
+      // Automatically invalidate client cache & broadcast real-time sync on mutations
+      if (method !== 'GET') {
+        staticCache.clear();
+        if (endpoint.includes('/bookings')) {
+          broadcastSync('BOOKING_MUTATION', { endpoint, data });
+        } else if (endpoint.includes('/movies')) {
+          broadcastSync('MOVIE_MUTATION', { endpoint, data });
+        } else if (endpoint.includes('/offers')) {
+          broadcastSync('OFFER_MUTATION', { endpoint, data });
+        }
       }
 
       // Cache high-frequency static endpoints for 30s

@@ -1,3 +1,5 @@
+import { broadcastSync } from './realtimeSync';
+
 const rawApiUrl = (import.meta.env.VITE_API_URL || '').trim().replace(/\/+$/, '');
 const API_BASE_URL = rawApiUrl
   ? (rawApiUrl.endsWith('/api') ? rawApiUrl : `${rawApiUrl}/api`)
@@ -57,6 +59,22 @@ export async function adminRequest(endpoint, options = {}) {
         err.data = data;
         err.status = response.status;
         throw err;
+      }
+
+      // Broadcast real-time mutation events across portals and tabs
+      const method = (options.method || 'GET').toUpperCase();
+      if (method !== 'GET') {
+        if (endpoint.includes('/movies')) {
+          broadcastSync('MOVIE_MUTATION', { endpoint, data });
+        } else if (endpoint.includes('/bookings')) {
+          broadcastSync('BOOKING_MUTATION', { endpoint, data });
+        } else if (endpoint.includes('/offers')) {
+          broadcastSync('OFFER_MUTATION', { endpoint, data });
+        } else if (endpoint.includes('/vendors')) {
+          broadcastSync('VENDOR_STATUS_MUTATION', { endpoint, data });
+        } else if (endpoint.includes('/settlements')) {
+          broadcastSync('BOOKING_MUTATION', { endpoint, data });
+        }
       }
 
       return data;

@@ -1,5 +1,6 @@
 import React, { useState, useEffect, useCallback } from 'react';
 import { adminApi } from '../../services/adminApi';
+import { useRealtimeRefresh } from '../../services/realtimeSync';
 import {
   Tag,
   Plus,
@@ -58,6 +59,11 @@ export default function AdminOffersPage() {
   useEffect(() => {
     fetchOffers();
   }, [fetchOffers]);
+
+  // Real-time reactive sync across tabs & portals
+  useRealtimeRefresh(['OFFER_MUTATION'], () => {
+    fetchOffers();
+  });
 
   const handleOpenAdd = () => {
     setEditingOffer(null);

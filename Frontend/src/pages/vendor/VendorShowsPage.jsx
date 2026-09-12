@@ -1,6 +1,7 @@
 import React, { useState, useEffect, useMemo } from 'react';
 import { useSearchParams, Link } from 'react-router-dom';
 import { vendorApi } from '../../services/vendorApi';
+import { useRealtimeRefresh } from '../../services/realtimeSync';
 import {
   Button,
   Card,
@@ -167,6 +168,19 @@ export default function VendorShowsPage() {
   useEffect(() => {
     loadAllData();
   }, [selectedDate, selectedCinemaId]);
+
+  // Real-time reactive sync across tabs & portals
+  useRealtimeRefresh(['SHOW_MUTATION', 'BOOKING_MUTATION', 'MOVIE_MUTATION', 'SCREEN_MUTATION'], async () => {
+    loadAllData(false);
+    if (isSeatMapModalOpen && selectedShow) {
+      try {
+        const res = await vendorApi.getShowSeatMap(selectedShow.id || selectedShow._id);
+        if (res.success && res.data) {
+          setSeatMapData(res.data);
+        }
+      } catch (_e) {}
+    }
+  });
 
   // When cinema changes in Add Show modal, fetch its screens
   useEffect(() => {

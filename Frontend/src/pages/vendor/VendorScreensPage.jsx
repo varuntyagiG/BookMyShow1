@@ -1,6 +1,7 @@
 import React, { useState, useEffect, useMemo } from 'react';
 import { useSearchParams, useNavigate, Link } from 'react-router-dom';
 import { vendorApi } from '../../services/vendorApi';
+import { useRealtimeRefresh } from '../../services/realtimeSync';
 import {
   Button,
   Card,
@@ -117,6 +118,11 @@ export default function VendorScreensPage() {
   useEffect(() => {
     loadData();
   }, [selectedCinemaId]);
+
+  // Real-time reactive sync across tabs & portals
+  useRealtimeRefresh(['SCREEN_MUTATION'], () => {
+    loadData();
+  });
 
   const handleCinemaFilterChange = (cinemaId) => {
     setSelectedCinemaId(cinemaId);

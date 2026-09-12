@@ -1,6 +1,7 @@
 import React, { useState, useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { contentApi } from '../services/api';
+import { useRealtimeRefresh } from '../services/realtimeSync';
 import { useCity } from '../context/CityContext';
 import HeroCarousel from '../components/home/HeroCarousel';
 import MovieSection from '../components/home/MovieSection';
@@ -23,8 +24,8 @@ export default function HomePage({ searchQuery }) {
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState(null);
 
-  const loadHomeContent = React.useCallback(async () => {
-    setLoading(true);
+  const loadHomeContent = React.useCallback(async (silent = false) => {
+    if (!silent) setLoading(true);
     setError(null);
 
     try {
@@ -38,17 +39,24 @@ export default function HomePage({ searchQuery }) {
       }
     } catch (err) {
       console.error('Failed to load home data:', err);
-      setError(
-        'Could not connect to the backend server. Please make sure the backend is running.'
-      );
+      if (!silent) {
+        setError(
+          'Could not connect to the backend server. Please make sure the backend is running.'
+        );
+      }
     } finally {
-      setLoading(false);
+      if (!silent) setLoading(false);
     }
   }, [selectedCity, searchQuery]);
 
   useEffect(() => {
     loadHomeContent();
   }, [loadHomeContent]);
+
+  // Real-time reactive sync across tabs/portals
+  useRealtimeRefresh(['MOVIE_MUTATION', 'SHOW_MUTATION'], () => {
+    loadHomeContent(true);
+  });
 
   /* =========================
      LOADING UI

@@ -1,6 +1,7 @@
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect, useCallback } from 'react';
 import { useCity } from '../context/CityContext';
 import { contentApi } from '../services/api';
+import { useRealtimeRefresh } from '../services/realtimeSync';
 import MovieCard from '../components/home/MovieCard';
 import { Filter, ChevronDown, ChevronUp, RotateCcw, Loader2, SlidersHorizontal, ArrowUpDown, X } from 'lucide-react';
 
@@ -27,24 +28,30 @@ export default function MoviesPage() {
   const genresList = ['Action', 'Adventure', 'Comedy', 'Drama', 'Sci-Fi', 'Horror', 'Thriller'];
   const formatsList = ['2D', '3D', 'IMAX 3D', '4DX'];
 
-  useEffect(() => {
-    async function fetchMovies() {
-      setLoading(true);
-      try {
-        const res = await contentApi.getCategoryItems('movies', {
-          city: selectedCity,
-        });
-        if (res.success && res.items) {
-          setMovies(res.items);
-        }
-      } catch (err) {
-        console.error('Failed to load movies:', err);
-      } finally {
-        setLoading(false);
+  const fetchMovies = useCallback(async (silent = false) => {
+    if (!silent) setLoading(true);
+    try {
+      const res = await contentApi.getCategoryItems('movies', {
+        city: selectedCity,
+      });
+      if (res.success && res.items) {
+        setMovies(res.items);
       }
+    } catch (err) {
+      console.error('Failed to load movies:', err);
+    } finally {
+      if (!silent) setLoading(false);
     }
-    fetchMovies();
   }, [selectedCity]);
+
+  useEffect(() => {
+    fetchMovies();
+  }, [fetchMovies]);
+
+  // Real-time reactive sync across tabs & portals
+  useRealtimeRefresh(['MOVIE_MUTATION'], () => {
+    fetchMovies(true);
+  });
 
   const toggleFilter = (list, setList, item) => {
     if (list.includes(item)) {

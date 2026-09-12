@@ -1,6 +1,7 @@
 import React, { useState, useEffect } from 'react';
 import { Link } from 'react-router-dom';
 import { adminApi } from '../../services/adminApi';
+import { useRealtimeRefresh } from '../../services/realtimeSync';
 import {
   TrendingUp,
   DollarSign,
@@ -43,6 +44,11 @@ export default function AdminDashboardPage() {
   useEffect(() => {
     fetchDashboardData(range);
   }, [range]);
+
+  // Real-time reactive sync across tabs & portals
+  useRealtimeRefresh(['BOOKING_MUTATION', 'MOVIE_MUTATION', 'SHOW_MUTATION', 'VENDOR_STATUS_MUTATION', 'OFFER_MUTATION'], () => {
+    fetchDashboardData(range);
+  });
 
   const stats = data?.stats || {};
   const recentBookings = data?.recentBookings || [];

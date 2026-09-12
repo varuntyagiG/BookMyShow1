@@ -1,6 +1,7 @@
 import React, { useState, useEffect, useRef } from 'react';
 import { useParams, Link } from 'react-router-dom';
 import { contentApi, bookingApi } from '../services/api';
+import { useRealtimeRefresh } from '../services/realtimeSync';
 import { useCity } from '../context/CityContext';
 import { useAuth } from '../context/AuthContext';
 import {
@@ -117,22 +118,56 @@ export default function MovieDetailsPage() {
     ];
   }, [bookingModal.showtime, bookingModal.occupiedSeats]);
 
-  useEffect(() => {
-    async function fetchMovieDetails() {
-      setLoading(true);
-      try {
-        const res = await contentApi.getMovieById(id);
-        if (res.success && res.movie) {
-          setMovie(res.movie);
-        }
-      } catch (err) {
-        console.error('Failed to load movie details:', err);
-      } finally {
-        setLoading(false);
+  const fetchMovieDetails = React.useCallback(async (silent = false) => {
+    if (!silent) setLoading(true);
+    try {
+      const res = await contentApi.getMovieById(id);
+      if (res.success && res.movie) {
+        setMovie(res.movie);
       }
+    } catch (err) {
+      console.error('Failed to load movie details:', err);
+    } finally {
+      if (!silent) setLoading(false);
     }
+  }, [id]);
+
+  useEffect(() => {
     fetchMovieDetails();
-  }, [id, selectedCity]);
+  }, [fetchMovieDetails, selectedCity]);
+
+  // Real-time movie and showtime schedule updates across tabs & portals
+  useRealtimeRefresh(['MOVIE_MUTATION', 'SHOW_MUTATION'], () => {
+    fetchMovieDetails(true);
+  });
+
+  // Real-time seat occupancy updates when seat selection modal is open
+  useRealtimeRefresh(['BOOKING_MUTATION'], async () => {
+    if (bookingModal.isOpen && !bookingModal.confirmed && bookingModal.showtime) {
+      try {
+        const rawShowId = bookingModal.showtime.showId || bookingModal.showtime.id || bookingModal.showtime._id;
+        const seatRes = await bookingApi.getShowSeats({
+          showId: rawShowId,
+          theatreName: bookingModal.theatre?.name,
+          showtime: bookingModal.showtime?.time,
+          showDate: bookingModal.showtime?.showDate || dates[selectedDateIndex]?.date || 'Today',
+          movieId: movie?._id || movie?.customId,
+          movieTitle: movie?.title
+        });
+        if (seatRes.success && Array.isArray(seatRes.bookedSeats)) {
+          setBookingModal((prev) => {
+            const freshOccupied = Array.from(new Set([...(prev.occupiedSeats || []), ...seatRes.bookedSeats]));
+            const remainingSelected = (prev.selectedSeats || []).filter((s) => !freshOccupied.includes(s));
+            return {
+              ...prev,
+              occupiedSeats: freshOccupied,
+              selectedSeats: remainingSelected,
+            };
+          });
+        }
+      } catch (_e) {}
+    }
+  });
 
   const scrollToBooking = () => {
     if (showtimesRef.current) {

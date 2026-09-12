@@ -1,5 +1,6 @@
 import React, { useState, useEffect, useCallback } from 'react';
 import { adminApi } from '../../services/adminApi';
+import { useRealtimeRefresh } from '../../services/realtimeSync';
 import {
   Film,
   Search,
@@ -64,6 +65,11 @@ export default function AdminMoviesPage() {
     }, 300);
     return () => clearTimeout(timer);
   }, [fetchMovies]);
+
+  // Real-time reactive sync across tabs & portals
+  useRealtimeRefresh(['MOVIE_MUTATION'], () => {
+    fetchMovies();
+  });
 
   const handleOpenAdd = () => {
     setEditingMovie(null);
