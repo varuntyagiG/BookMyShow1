@@ -32,6 +32,7 @@ import {
   RefreshCw,
   ArrowUpRight
 } from 'lucide-react';
+import { motion } from 'framer-motion';
 
 export default function VendorDashboardPage() {
   const { partner } = useVendorAuth();
@@ -125,7 +126,11 @@ export default function VendorDashboardPage() {
       {/* Senior Executive KPI Summary Row */}
       <div className="grid grid-cols-1 sm:grid-cols-2 xl:grid-cols-4 gap-4 sm:gap-5">
         {/* Metric 1: Box Office Revenue */}
-        <div className="bg-white p-5 rounded-2xl border border-slate-200/90 shadow-xs hover:shadow-md hover:border-slate-300 transition-all duration-200 flex flex-col justify-between relative overflow-hidden group">
+        <motion.div
+          whileHover={{ y: -4 }}
+          transition={{ type: 'spring', stiffness: 350, damping: 25 }}
+          className="bg-white p-5 rounded-2xl border border-slate-200/90 shadow-xs hover:shadow-md hover:border-slate-300 transition-all duration-200 flex flex-col justify-between relative overflow-hidden group"
+        >
           <div className="absolute top-0 left-0 right-0 h-1 bg-gradient-to-r from-emerald-500 to-teal-600" />
           <div>
             <div className="flex items-start justify-between gap-3">
@@ -159,10 +164,14 @@ export default function VendorDashboardPage() {
               {summary.totalBookings} {summary.totalBookings === 1 ? 'Booking' : 'Bookings'}
             </span>
           </div>
-        </div>
+        </motion.div>
 
         {/* Metric 2: Tickets Sold */}
-        <div className="bg-white p-5 rounded-2xl border border-slate-200/90 shadow-xs hover:shadow-md hover:border-slate-300 transition-all duration-200 flex flex-col justify-between relative overflow-hidden group">
+        <motion.div
+          whileHover={{ y: -4 }}
+          transition={{ type: 'spring', stiffness: 350, damping: 25 }}
+          className="bg-white p-5 rounded-2xl border border-slate-200/90 shadow-xs hover:shadow-md hover:border-slate-300 transition-all duration-200 flex flex-col justify-between relative overflow-hidden group"
+        >
           <div className="absolute top-0 left-0 right-0 h-1 bg-gradient-to-r from-rose-500 to-pink-600" />
           <div>
             <div className="flex items-start justify-between gap-3">
@@ -196,10 +205,14 @@ export default function VendorDashboardPage() {
               Across Shows
             </span>
           </div>
-        </div>
+        </motion.div>
 
         {/* Metric 3: Gate Check-Ins */}
-        <div className="bg-white p-5 rounded-2xl border border-slate-200/90 shadow-xs hover:shadow-md hover:border-slate-300 transition-all duration-200 flex flex-col justify-between relative overflow-hidden group">
+        <motion.div
+          whileHover={{ y: -4 }}
+          transition={{ type: 'spring', stiffness: 350, damping: 25 }}
+          className="bg-white p-5 rounded-2xl border border-slate-200/90 shadow-xs hover:shadow-md hover:border-slate-300 transition-all duration-200 flex flex-col justify-between relative overflow-hidden group"
+        >
           <div className="absolute top-0 left-0 right-0 h-1 bg-gradient-to-r from-blue-500 to-indigo-600" />
           <div>
             <div className="flex items-start justify-between gap-3">
@@ -233,10 +246,14 @@ export default function VendorDashboardPage() {
               {summary.totalBookings > 0 ? Math.round((summary.validatedTicketsCount / summary.totalBookings) * 100) : 0}% Verified
             </span>
           </div>
-        </div>
+        </motion.div>
 
         {/* Metric 4: Active Schedules */}
-        <div className="bg-white p-5 rounded-2xl border border-slate-200/90 shadow-xs hover:shadow-md hover:border-slate-300 transition-all duration-200 flex flex-col justify-between relative overflow-hidden group">
+        <motion.div
+          whileHover={{ y: -4 }}
+          transition={{ type: 'spring', stiffness: 350, damping: 25 }}
+          className="bg-white p-5 rounded-2xl border border-slate-200/90 shadow-xs hover:shadow-md hover:border-slate-300 transition-all duration-200 flex flex-col justify-between relative overflow-hidden group"
+        >
           <div className="absolute top-0 left-0 right-0 h-1 bg-gradient-to-r from-violet-500 to-purple-600" />
           <div>
             <div className="flex items-start justify-between gap-3">
@@ -270,15 +287,16 @@ export default function VendorDashboardPage() {
               Timetables
             </span>
           </div>
-        </div>
+        </motion.div>
       </div>
 
       {/* Quick Operations Command Cards */}
       <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4">
-        <Link
-          to="/vendor/cinemas"
-          className="group bg-white p-5 rounded-2xl border border-slate-200/80 shadow-[0_2px_8px_-2px_rgba(0,0,0,0.03)] hover:border-[#F84464]/60 hover:shadow-[0_12px_28px_-6px_rgba(248,68,100,0.12)] hover:-translate-y-1 transition-all duration-300 relative overflow-hidden flex items-center justify-between"
-        >
+        <motion.div whileHover={{ y: -4, scale: 1.015 }} whileTap={{ scale: 0.98 }} transition={{ type: 'spring', stiffness: 350, damping: 25 }}>
+          <Link
+            to="/vendor/cinemas"
+            className="group bg-white p-5 rounded-2xl border border-slate-200/80 shadow-[0_2px_8px_-2px_rgba(0,0,0,0.03)] hover:border-[#F84464]/60 hover:shadow-[0_12px_28px_-6px_rgba(248,68,100,0.12)] transition-all duration-300 relative overflow-hidden flex items-center justify-between h-full"
+          >
           <div className="absolute top-0 left-0 right-0 h-0.5 bg-gradient-to-r from-rose-500 to-rose-300 opacity-0 group-hover:opacity-100 transition-opacity" />
           <div className="flex items-center gap-3.5">
             <div className="w-11 h-11 rounded-xl bg-rose-50 text-[#F84464] border border-rose-100 flex items-center justify-center font-bold shadow-2xs group-hover:scale-105 group-hover:bg-[#F84464] group-hover:text-white transition-all duration-300">
@@ -296,15 +314,17 @@ export default function VendorDashboardPage() {
               </div>
             </div>
           </div>
-          <div className="w-8 h-8 rounded-lg bg-slate-50 flex items-center justify-center text-slate-400 group-hover:bg-rose-50 group-hover:text-[#F84464] transition-all">
-            <ArrowUpRight size={16} className="group-hover:translate-x-0.5 group-hover:-translate-y-0.5 transition-transform" />
-          </div>
-        </Link>
+            <div className="w-8 h-8 rounded-lg bg-slate-50 flex items-center justify-center text-slate-400 group-hover:bg-rose-50 group-hover:text-[#F84464] transition-all">
+              <ArrowUpRight size={16} className="group-hover:translate-x-0.5 group-hover:-translate-y-0.5 transition-transform" />
+            </div>
+          </Link>
+        </motion.div>
 
-        <Link
-          to="/vendor/screens"
-          className="group bg-white p-5 rounded-2xl border border-slate-200/80 shadow-[0_2px_8px_-2px_rgba(0,0,0,0.03)] hover:border-indigo-500/60 hover:shadow-[0_12px_28px_-6px_rgba(99,102,241,0.12)] hover:-translate-y-1 transition-all duration-300 relative overflow-hidden flex items-center justify-between"
-        >
+        <motion.div whileHover={{ y: -4, scale: 1.015 }} whileTap={{ scale: 0.98 }} transition={{ type: 'spring', stiffness: 350, damping: 25 }}>
+          <Link
+            to="/vendor/screens"
+            className="group bg-white p-5 rounded-2xl border border-slate-200/80 shadow-[0_2px_8px_-2px_rgba(0,0,0,0.03)] hover:border-indigo-500/60 hover:shadow-[0_12px_28px_-6px_rgba(99,102,241,0.12)] transition-all duration-300 relative overflow-hidden flex items-center justify-between h-full"
+          >
           <div className="absolute top-0 left-0 right-0 h-0.5 bg-gradient-to-r from-indigo-500 to-indigo-300 opacity-0 group-hover:opacity-100 transition-opacity" />
           <div className="flex items-center gap-3.5">
             <div className="w-11 h-11 rounded-xl bg-indigo-50 text-indigo-600 border border-indigo-100 flex items-center justify-center font-bold shadow-2xs group-hover:scale-105 group-hover:bg-indigo-600 group-hover:text-white transition-all duration-300">
@@ -322,15 +342,17 @@ export default function VendorDashboardPage() {
               </div>
             </div>
           </div>
-          <div className="w-8 h-8 rounded-lg bg-slate-50 flex items-center justify-center text-slate-400 group-hover:bg-indigo-50 group-hover:text-indigo-600 transition-all">
-            <ArrowUpRight size={16} className="group-hover:translate-x-0.5 group-hover:-translate-y-0.5 transition-transform" />
-          </div>
-        </Link>
+            <div className="w-8 h-8 rounded-lg bg-slate-50 flex items-center justify-center text-slate-400 group-hover:bg-indigo-50 group-hover:text-indigo-600 transition-all">
+              <ArrowUpRight size={16} className="group-hover:translate-x-0.5 group-hover:-translate-y-0.5 transition-transform" />
+            </div>
+          </Link>
+        </motion.div>
 
-        <Link
-          to="/vendor/movies"
-          className="group bg-white p-5 rounded-2xl border border-slate-200/80 shadow-[0_2px_8px_-2px_rgba(0,0,0,0.03)] hover:border-emerald-500/60 hover:shadow-[0_12px_28px_-6px_rgba(16,185,129,0.12)] hover:-translate-y-1 transition-all duration-300 relative overflow-hidden flex items-center justify-between"
-        >
+        <motion.div whileHover={{ y: -4, scale: 1.015 }} whileTap={{ scale: 0.98 }} transition={{ type: 'spring', stiffness: 350, damping: 25 }}>
+          <Link
+            to="/vendor/movies"
+            className="group bg-white p-5 rounded-2xl border border-slate-200/80 shadow-[0_2px_8px_-2px_rgba(0,0,0,0.03)] hover:border-emerald-500/60 hover:shadow-[0_12px_28px_-6px_rgba(16,185,129,0.12)] transition-all duration-300 relative overflow-hidden flex items-center justify-between h-full"
+          >
           <div className="absolute top-0 left-0 right-0 h-0.5 bg-gradient-to-r from-emerald-500 to-emerald-300 opacity-0 group-hover:opacity-100 transition-opacity" />
           <div className="flex items-center gap-3.5">
             <div className="w-11 h-11 rounded-xl bg-emerald-50 text-emerald-600 border border-emerald-100 flex items-center justify-center font-bold shadow-2xs group-hover:scale-105 group-hover:bg-emerald-600 group-hover:text-white transition-all duration-300">
@@ -348,36 +370,39 @@ export default function VendorDashboardPage() {
               </div>
             </div>
           </div>
-          <div className="w-8 h-8 rounded-lg bg-slate-50 flex items-center justify-center text-slate-400 group-hover:bg-emerald-50 group-hover:text-emerald-600 transition-all">
-            <ArrowUpRight size={16} className="group-hover:translate-x-0.5 group-hover:-translate-y-0.5 transition-transform" />
-          </div>
-        </Link>
-
-        <Link
-          to="/vendor/shows"
-          className="group bg-white p-5 rounded-2xl border border-slate-200/80 shadow-[0_2px_8px_-2px_rgba(0,0,0,0.03)] hover:border-amber-500/60 hover:shadow-[0_12px_28px_-6px_rgba(245,158,11,0.12)] hover:-translate-y-1 transition-all duration-300 relative overflow-hidden flex items-center justify-between"
-        >
-          <div className="absolute top-0 left-0 right-0 h-0.5 bg-gradient-to-r from-amber-500 to-amber-300 opacity-0 group-hover:opacity-100 transition-opacity" />
-          <div className="flex items-center gap-3.5">
-            <div className="w-11 h-11 rounded-xl bg-amber-50 text-amber-600 border border-amber-100 flex items-center justify-center font-bold shadow-2xs group-hover:scale-105 group-hover:bg-amber-600 group-hover:text-white transition-all duration-300">
-              <Calendar size={20} />
+            <div className="w-8 h-8 rounded-lg bg-slate-50 flex items-center justify-center text-slate-400 group-hover:bg-emerald-50 group-hover:text-emerald-600 transition-all">
+              <ArrowUpRight size={16} className="group-hover:translate-x-0.5 group-hover:-translate-y-0.5 transition-transform" />
             </div>
-            <div>
-              <p className="font-bold text-slate-900 text-sm group-hover:text-amber-600 transition">
-                Show Timetables
-              </p>
-              <div className="flex items-center gap-1.5 mt-0.5">
-                <span className="inline-flex items-center px-1.5 py-0.5 rounded text-[10px] font-semibold bg-amber-50 text-amber-700">
-                  {summary.activeShowsCount} Live
-                </span>
-                <span className="text-[11px] text-slate-400">Timetable</span>
+          </Link>
+        </motion.div>
+
+        <motion.div whileHover={{ y: -4, scale: 1.015 }} whileTap={{ scale: 0.98 }} transition={{ type: 'spring', stiffness: 350, damping: 25 }}>
+          <Link
+            to="/vendor/shows"
+            className="group bg-white p-5 rounded-2xl border border-slate-200/80 shadow-[0_2px_8px_-2px_rgba(0,0,0,0.03)] hover:border-amber-500/60 hover:shadow-[0_12px_28px_-6px_rgba(245,158,11,0.12)] transition-all duration-300 relative overflow-hidden flex items-center justify-between h-full"
+          >
+            <div className="absolute top-0 left-0 right-0 h-0.5 bg-gradient-to-r from-amber-500 to-amber-300 opacity-0 group-hover:opacity-100 transition-opacity" />
+            <div className="flex items-center gap-3.5">
+              <div className="w-11 h-11 rounded-xl bg-amber-50 text-amber-600 border border-amber-100 flex items-center justify-center font-bold shadow-2xs group-hover:scale-105 group-hover:bg-amber-600 group-hover:text-white transition-all duration-300">
+                <Calendar size={20} />
+              </div>
+              <div>
+                <p className="font-bold text-slate-900 text-sm group-hover:text-amber-600 transition">
+                  Show Timetables
+                </p>
+                <div className="flex items-center gap-1.5 mt-0.5">
+                  <span className="inline-flex items-center px-1.5 py-0.5 rounded text-[10px] font-semibold bg-amber-50 text-amber-700">
+                    {summary.activeShowsCount} Live
+                  </span>
+                  <span className="text-[11px] text-slate-400">Timetable</span>
+                </div>
               </div>
             </div>
-          </div>
-          <div className="w-8 h-8 rounded-lg bg-slate-50 flex items-center justify-center text-slate-400 group-hover:bg-amber-50 group-hover:text-amber-600 transition-all">
-            <ArrowUpRight size={16} className="group-hover:translate-x-0.5 group-hover:-translate-y-0.5 transition-transform" />
-          </div>
-        </Link>
+            <div className="w-8 h-8 rounded-lg bg-slate-50 flex items-center justify-center text-slate-400 group-hover:bg-amber-50 group-hover:text-amber-600 transition-all">
+              <ArrowUpRight size={16} className="group-hover:translate-x-0.5 group-hover:-translate-y-0.5 transition-transform" />
+            </div>
+          </Link>
+        </motion.div>
       </div>
 
       {/* Visual Analytics Box Office Trend Chart UI Template */}

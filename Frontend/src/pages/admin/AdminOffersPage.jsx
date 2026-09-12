@@ -1,4 +1,5 @@
 import React, { useState, useEffect, useCallback } from 'react';
+import { motion } from 'framer-motion';
 import { adminApi } from '../../services/adminApi';
 import { useRealtimeRefresh } from '../../services/realtimeSync';
 import {
@@ -214,8 +215,10 @@ export default function AdminOffersPage() {
             const isPercent = o.discountType === 'percentage';
 
             return (
-              <div
+              <motion.div
                 key={offerId}
+                whileHover={{ y: -4, scale: 1.015 }}
+                transition={{ type: 'spring', stiffness: 350, damping: 25 }}
                 className="bg-white border border-gray-200 hover:border-gray-300 rounded-xl p-5 shadow-sm hover:shadow-md transition flex flex-col justify-between"
               >
                 <div>
@@ -304,7 +307,7 @@ export default function AdminOffersPage() {
                     </button>
                   </div>
                 </div>
-              </div>
+              </motion.div>
             );
           })}
         </div>

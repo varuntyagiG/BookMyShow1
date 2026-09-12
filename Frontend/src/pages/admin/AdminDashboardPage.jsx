@@ -19,6 +19,7 @@ import {
   Sparkles,
   ExternalLink
 } from 'lucide-react';
+import { motion } from 'framer-motion';
 
 export default function AdminDashboardPage() {
   const [data, setData] = useState(null);
@@ -99,7 +100,11 @@ export default function AdminDashboardPage() {
       {/* 4 Prime KPI Cards */}
       <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4">
         {/* Total GMV - BookMyShow Crimson Hero Card */}
-        <div className="bg-gradient-to-br from-[#F84464] to-[#d83552] text-white rounded-xl p-5 shadow-md relative overflow-hidden group">
+        <motion.div
+          whileHover={{ y: -4, scale: 1.015 }}
+          transition={{ type: 'spring', stiffness: 350, damping: 25 }}
+          className="bg-gradient-to-br from-[#F84464] to-[#d83552] text-white rounded-xl p-5 shadow-md relative overflow-hidden group"
+        >
           <div className="flex items-center justify-between mb-3">
             <span className="text-xs font-bold uppercase tracking-wider text-white/90">
               Nationwide GMV
@@ -117,10 +122,14 @@ export default function AdminDashboardPage() {
             </span>
             <span>Gross ticket sales</span>
           </div>
-        </div>
+        </motion.div>
 
         {/* Platform 10% Fee Revenue */}
-        <div className="bg-white border border-gray-200 rounded-xl p-5 shadow-sm hover:shadow-md transition">
+        <motion.div
+          whileHover={{ y: -4, scale: 1.015 }}
+          transition={{ type: 'spring', stiffness: 350, damping: 25 }}
+          className="bg-white border border-gray-200 rounded-xl p-5 shadow-sm hover:shadow-md transition"
+        >
           <div className="flex items-center justify-between mb-3">
             <span className="text-xs font-bold text-gray-500 uppercase tracking-wider">
               Platform Fee Take (10%)
@@ -136,10 +145,14 @@ export default function AdminDashboardPage() {
             <span className="text-emerald-700 font-bold bg-emerald-100 px-1.5 py-0.2 rounded text-[10px]">10% Take</span>
             <span>Convenience fees</span>
           </div>
-        </div>
+        </motion.div>
 
         {/* Confirmed Bookings */}
-        <div className="bg-white border border-gray-200 rounded-xl p-5 shadow-sm hover:shadow-md transition">
+        <motion.div
+          whileHover={{ y: -4, scale: 1.015 }}
+          transition={{ type: 'spring', stiffness: 350, damping: 25 }}
+          className="bg-white border border-gray-200 rounded-xl p-5 shadow-sm hover:shadow-md transition"
+        >
           <div className="flex items-center justify-between mb-3">
             <span className="text-xs font-bold text-gray-500 uppercase tracking-wider">
               Confirmed Admissions
@@ -157,10 +170,14 @@ export default function AdminDashboardPage() {
             </span>
             <span>Tickets issued</span>
           </div>
-        </div>
+        </motion.div>
 
         {/* Cinema Partners Network */}
-        <div className="bg-white border border-gray-200 rounded-xl p-5 shadow-sm hover:shadow-md transition">
+        <motion.div
+          whileHover={{ y: -4, scale: 1.015 }}
+          transition={{ type: 'spring', stiffness: 350, damping: 25 }}
+          className="bg-white border border-gray-200 rounded-xl p-5 shadow-sm hover:shadow-md transition"
+        >
           <div className="flex items-center justify-between mb-3">
             <span className="text-xs font-bold text-gray-500 uppercase tracking-wider">
               Partner Venues
@@ -178,7 +195,7 @@ export default function AdminDashboardPage() {
             </span>
             <span>Theatres in network</span>
           </div>
-        </div>
+        </motion.div>
       </div>
 
       {/* Secondary Operational Telemetry Row */}

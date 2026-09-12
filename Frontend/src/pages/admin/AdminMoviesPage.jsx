@@ -1,4 +1,5 @@
 import React, { useState, useEffect, useCallback } from 'react';
+import { motion } from 'framer-motion';
 import { adminApi } from '../../services/adminApi';
 import { useRealtimeRefresh } from '../../services/realtimeSync';
 import {
@@ -244,9 +245,11 @@ export default function AdminMoviesPage() {
           {movies.map((m) => {
             const movieId = m._id || m.id;
             return (
-              <div
+              <motion.div
                 key={movieId}
-                className="flex flex-col group w-full transition-all duration-300 transform hover:-translate-y-1.5"
+                whileHover={{ y: -6, scale: 1.02 }}
+                transition={{ type: 'spring', stiffness: 350, damping: 25 }}
+                className="flex flex-col group w-full"
               >
                 {/* Poster wrapper with Customer Storefront styling */}
                 <div className="relative aspect-[2/3] w-full rounded-2xl overflow-hidden bg-gray-200 shadow-sm border border-gray-100 group-hover:shadow-xl group-hover:border-gray-200 transition-all duration-300">
@@ -354,7 +357,7 @@ export default function AdminMoviesPage() {
                     </button>
                   </div>
                 </div>
-              </div>
+              </motion.div>
             );
           })}
         </div>

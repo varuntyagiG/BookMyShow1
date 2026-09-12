@@ -1,5 +1,6 @@
 import React, { useState, useEffect } from 'react';
 import { Link } from 'react-router-dom';
+import { motion } from 'framer-motion';
 import { vendorApi } from '../../services/vendorApi';
 import {
   Button,
@@ -352,9 +353,11 @@ export default function VendorCinemasPage() {
       ) : (
         <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
           {cinemas.map((cinema) => (
-            <div
+            <motion.div
               key={cinema.id || cinema._id}
-              className="bg-white rounded-2xl border border-slate-200/80 hover:border-slate-300 shadow-[0_2px_12px_rgba(0,0,0,0.03)] hover:shadow-[0_16px_36px_rgba(0,0,0,0.08)] hover:-translate-y-1 transition-all duration-300 flex flex-col justify-between overflow-hidden group"
+              whileHover={{ y: -5, scale: 1.01 }}
+              transition={{ type: 'spring', stiffness: 350, damping: 25 }}
+              className="bg-white rounded-2xl border border-slate-200/80 hover:border-slate-300 shadow-[0_2px_12px_rgba(0,0,0,0.03)] hover:shadow-[0_16px_36px_rgba(0,0,0,0.08)] transition-all duration-300 flex flex-col justify-between overflow-hidden group"
             >
               <div className="p-5 sm:p-6 space-y-4">
                 {/* 1. Header: Cinema Icon, Name, City, Operational Status */}
@@ -502,7 +505,7 @@ export default function VendorCinemasPage() {
                   </button>
                 </div>
               </div>
-            </div>
+            </motion.div>
           ))}
         </div>
       )}

@@ -1,4 +1,5 @@
 import React, { useState, useEffect, useCallback } from 'react';
+import { motion } from 'framer-motion';
 import { adminApi } from '../../services/adminApi';
 import { useRealtimeRefresh } from '../../services/realtimeSync';
 import {
@@ -158,8 +159,10 @@ export default function AdminVendorsPage() {
             const isSuspended = v.verificationStatus === 'suspended' || v.isDeactivated;
 
             return (
-              <div
+              <motion.div
                 key={v._id || v.id}
+                whileHover={{ y: -3, scale: 1.008 }}
+                transition={{ type: 'spring', stiffness: 350, damping: 25 }}
                 className="bg-white border border-gray-200 hover:border-gray-300 rounded-xl p-5 shadow-sm hover:shadow-md transition flex flex-col lg:flex-row lg:items-center lg:justify-between gap-6"
               >
                 {/* Partner Identity */}
@@ -260,7 +263,7 @@ export default function AdminVendorsPage() {
                     </button>
                   )}
                 </div>
-              </div>
+              </motion.div>
             );
           })}
         </div>

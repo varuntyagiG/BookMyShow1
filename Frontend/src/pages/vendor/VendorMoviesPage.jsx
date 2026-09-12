@@ -1,4 +1,5 @@
 import React, { useState, useEffect } from 'react';
+import { motion } from 'framer-motion';
 import { Link, useNavigate } from 'react-router-dom';
 import { vendorApi } from '../../services/vendorApi';
 import { useRealtimeRefresh } from '../../services/realtimeSync';
@@ -223,9 +224,11 @@ export default function VendorMoviesPage() {
           {filteredMovies.map((movie) => {
             const movieId = movie.id || movie._id;
             return (
-              <div
+              <motion.div
                 key={movieId}
-                className="flex flex-col group w-full transition-all duration-300 transform hover:-translate-y-1.5"
+                whileHover={{ y: -6, scale: 1.02 }}
+                transition={{ type: 'spring', stiffness: 350, damping: 25 }}
+                className="flex flex-col group w-full"
               >
                 {/* Poster wrapper with Customer Storefront styling */}
                 <div className="relative aspect-[2/3] w-full rounded-2xl overflow-hidden bg-slate-900 shadow-sm border border-slate-200/90 group-hover:shadow-xl group-hover:border-slate-300 transition-all duration-300">
@@ -310,7 +313,7 @@ export default function VendorMoviesPage() {
                     </Link>
                   </div>
                 </div>
-              </div>
+              </motion.div>
             );
           })}
         </div>
