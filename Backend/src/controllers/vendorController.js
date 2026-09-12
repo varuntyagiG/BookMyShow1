@@ -650,7 +650,7 @@ async function getShows(req, res) {
 
     const query = { partner: req.user._id };
     if (cinemaId) query.cinema = cinemaId;
-    if (date) query.showDate = date;
+    if (date && date !== 'All') query.showDate = date;
     if (movieId && mongoose.Types.ObjectId.isValid(movieId)) query.movie = movieId;
 
     const shows = await Show.find(query)
