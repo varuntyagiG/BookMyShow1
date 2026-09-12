@@ -1,5 +1,7 @@
 import React, { createContext, useContext, useState, useEffect, useCallback, useMemo } from 'react';
 import { contentApi } from '../services/api';
+import { autoDetectCurrentCity } from '../utils/geoLocator';
+import { broadcastSync } from '../services/realtimeSync';
 
 const CityContext = createContext(null);
 
@@ -31,6 +33,21 @@ export function CityProvider({ children }) {
   const [popularCities, setPopularCities] = useState(DEFAULT_POPULAR_CITIES);
   const [otherCities, setOtherCities] = useState(DEFAULT_OTHER_CITIES);
   const [loading, setLoading] = useState(true);
+
+  // Live Location Detection State
+  const [isDetectingLocation, setIsDetectingLocation] = useState(false);
+  const [locationMessage, setLocationMessage] = useState('');
+
+  // First-Visit Interceptor: Automatically greet new visitors with City Modal
+  useEffect(() => {
+    const hasChosenCity = localStorage.getItem('bms_city');
+    if (!hasChosenCity) {
+      const timer = setTimeout(() => {
+        setIsCityModalOpen(true);
+      }, 600);
+      return () => clearTimeout(timer);
+    }
+  }, []);
 
   // Fetch active cities from MongoDB (Single Source of Truth)
   useEffect(() => {
@@ -70,6 +87,33 @@ export function CityProvider({ children }) {
     setSelectedCityState(city);
     localStorage.setItem('bms_city', city);
     setIsCityModalOpen(false);
+    broadcastSync('CITY_CHANGED', { city });
+  }, []);
+
+  // Live GPS Auto-Detection Action
+  const detectLocation = useCallback(async () => {
+    setIsDetectingLocation(true);
+    setLocationMessage('');
+
+    try {
+      const result = await autoDetectCurrentCity();
+      if (result.success && result.cityName) {
+        setSelectedCityState(result.cityName);
+        localStorage.setItem('bms_city', result.cityName);
+        setLocationMessage(result.message || `📍 Matched: ${result.cityName}`);
+        broadcastSync('CITY_CHANGED', { city: result.cityName });
+        return result;
+      } else {
+        setLocationMessage(result.message || 'Location access denied or unavailable.');
+        return result;
+      }
+    } catch (err) {
+      const errMsg = err.message || 'Failed to detect location.';
+      setLocationMessage(errMsg);
+      return { success: false, message: errMsg };
+    } finally {
+      setIsDetectingLocation(false);
+    }
   }, []);
 
   const openCityModal = useCallback(() => setIsCityModalOpen(true), []);
@@ -85,7 +129,22 @@ export function CityProvider({ children }) {
     popularCities,
     otherCities,
     loadingCities: loading,
-  }), [selectedCity, setSelectedCity, isCityModalOpen, openCityModal, closeCityModal, popularCities, otherCities, loading]);
+    isDetectingLocation,
+    locationMessage,
+    detectLocation
+  }), [
+    selectedCity,
+    setSelectedCity,
+    isCityModalOpen,
+    openCityModal,
+    closeCityModal,
+    popularCities,
+    otherCities,
+    loading,
+    isDetectingLocation,
+    locationMessage,
+    detectLocation
+  ]);
 
   return <CityContext.Provider value={value}>{children}</CityContext.Provider>;
 }

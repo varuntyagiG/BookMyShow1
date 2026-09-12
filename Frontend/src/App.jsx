@@ -3,6 +3,8 @@ import { BrowserRouter, Routes, Route, Outlet, Navigate } from 'react-router-dom
 import { AuthProvider } from './context/AuthContext';
 import { VendorAuthProvider } from './context/VendorAuthContext';
 import { CityProvider } from './context/CityContext';
+import { NotificationProvider } from './context/NotificationContext';
+import { NotificationToastContainer, NotificationDrawer } from './components/common/NotificationToast';
 
 // Customer Components
 import Navbar from './components/common/Navbar';
@@ -170,7 +172,11 @@ export default function App() {
         <VendorAuthProvider>
           <AdminAuthProvider>
             <CityProvider>
-              <AppRoutes />
+              <NotificationProvider>
+                <NotificationToastContainer />
+                <NotificationDrawer />
+                <AppRoutes />
+              </NotificationProvider>
             </CityProvider>
           </AdminAuthProvider>
         </VendorAuthProvider>

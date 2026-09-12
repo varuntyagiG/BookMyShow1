@@ -4,6 +4,12 @@ const Cinema = require('../models/Cinema');
 const Show = require('../models/Show');
 const Screen = require('../models/Screen');
 const mongoose = require('mongoose');
+const {
+  broadcastSeatsLocked,
+  notifyBookingSuccess,
+  notifyVendorSale,
+  notifyAdminSale
+} = require('../services/socketService');
 
 // Create a new movie or event ticket booking
 async function createBooking(req, res) {
@@ -120,6 +126,12 @@ async function createBooking(req, res) {
       }
 
       reservedOnShow = matchedShow._id;
+      // Real-time broadcast: Lock seats immediately for all concurrent viewers
+      try {
+        broadcastSeatsLocked(matchedShow._id, seatList);
+      } catch (wsErr) {
+        console.warn('Socket broadcast error (non-fatal):', wsErr.message);
+      }
     } else if (categoryType === 'movie' && seatList.every(s => !s.startsWith('PASS-'))) {
       // Legacy conflict check if show document is not in MongoDB
       const existingConflict = await Booking.findOne({
@@ -240,6 +252,33 @@ async function createBooking(req, res) {
       } catch (err) {
         console.warn('Note: Could not update nested showtime bookedSeats array:', err.message);
       }
+    }
+
+    // 7. Real-Time WebSocket Multi-channel Broadcasts
+    try {
+      if (req.user && req.user._id) {
+        notifyBookingSuccess(req.user._id, booking);
+      }
+      if (safePartnerId) {
+        notifyVendorSale(safePartnerId, {
+          bookingId: booking.bookingId,
+          theatreName: booking.theatreName,
+          screenName: booking.screenName,
+          movieTitle: booking.movieTitle,
+          showtime: booking.showtime,
+          seatsCount: booking.seatsCount,
+          totalAmount: booking.totalAmount,
+          seats: booking.seats
+        });
+      }
+      notifyAdminSale({
+        bookingId: booking.bookingId,
+        movieTitle: booking.movieTitle,
+        totalAmount: booking.totalAmount,
+        seatsCount: booking.seatsCount
+      });
+    } catch (wsErr) {
+      console.warn('Socket multi-cast error (non-fatal):', wsErr.message);
     }
 
     return res.status(201).json({

@@ -1,12 +1,14 @@
 import React, { useState, useRef, useEffect } from 'react';
-import { Search, ChevronDown, LogOut, Ticket, Settings, MapPin, X, Film, Sparkles } from 'lucide-react';
+import { Search, ChevronDown, LogOut, Ticket, Settings, MapPin, X, Film, Sparkles, Bell } from 'lucide-react';
 import { useAuth } from '../../context/AuthContext';
 import { useCity } from '../../context/CityContext';
+import { useNotification } from '../../context/NotificationContext';
 import { Link, useNavigate } from 'react-router-dom';
 
 export default function Navbar({ onSearch }) {
   const { user, isAuthenticated, logout, openAuthModal } = useAuth();
   const { selectedCity, setIsCityModalOpen } = useCity();
+  const { unreadCount, setIsOpenDrawer } = useNotification();
   const [userDropdownOpen, setUserDropdownOpen] = useState(false);
   const [searchInput, setSearchInput] = useState('');
   const [searchFocused, setSearchFocused] = useState(false);
@@ -143,6 +145,21 @@ export default function Navbar({ onSearch }) {
               <MapPin className="w-3.5 h-3.5 text-[#F84464]" />
               <span className="font-medium">{selectedCity}</span>
               <ChevronDown className="w-3.5 h-3.5 text-gray-400" />
+            </button>
+
+            {/* Real-time Notification Bell */}
+            <button
+              onClick={() => setIsOpenDrawer(true)}
+              className="relative p-2 text-gray-200 hover:text-white rounded-full hover:bg-white/10 transition-all cursor-pointer active:scale-95"
+              title="Real-time Notifications"
+              aria-label="Notifications"
+            >
+              <Bell className="w-4 h-4 sm:w-4.5 sm:h-4.5" />
+              {unreadCount > 0 && (
+                <span className="absolute -top-0.5 -right-0.5 min-w-[17px] h-[17px] px-1 bg-[#F84464] text-white text-[9px] font-black rounded-full flex items-center justify-center shadow-xs animate-pulse">
+                  {unreadCount > 9 ? '9+' : unreadCount}
+                </span>
+              )}
             </button>
 
             {/* Auth Button or User Menu */}

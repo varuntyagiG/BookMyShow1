@@ -2,15 +2,7 @@ import React, { useState, useEffect } from 'react';
 import { Link } from 'react-router-dom';
 import { vendorApi } from '../../services/vendorApi';
 import {
-  PageHeader,
   Button,
-  Card,
-  CardHeader,
-  CardTitle,
-  CardDescription,
-  CardContent,
-  CardFooter,
-  Badge,
   Modal,
   ConfirmModal,
   Input,
@@ -28,8 +20,50 @@ import {
   CheckCircle,
   AlertCircle,
   Armchair,
-  Sparkles
+  Building2,
+  Car,
+  Utensils,
+  Volume2,
+  Accessibility,
+  Ticket,
+  ChevronRight
 } from 'lucide-react';
+
+function renderFacilityPill(facility) {
+  const fLower = (facility || '').toLowerCase();
+  let icon = <CheckCircle size={11} className="text-slate-500" />;
+  let colorStyle = 'bg-slate-50 text-slate-700 border-slate-200/80';
+
+  if (fLower.includes('ticket') || fLower.includes('m-ticket')) {
+    icon = <Ticket size={11} className="text-emerald-600" />;
+    colorStyle = 'bg-emerald-50 text-emerald-800 border-emerald-200/70';
+  } else if (fLower.includes('food') || fLower.includes('f&b') || fLower.includes('snack')) {
+    icon = <Utensils size={11} className="text-amber-600" />;
+    colorStyle = 'bg-amber-50 text-amber-800 border-amber-200/70';
+  } else if (fLower.includes('atmos') || fLower.includes('sound') || fLower.includes('dolby') || fLower.includes('audio')) {
+    icon = <Volume2 size={11} className="text-indigo-600" />;
+    colorStyle = 'bg-indigo-50 text-indigo-800 border-indigo-200/70';
+  } else if (fLower.includes('park') || fLower.includes('valet')) {
+    icon = <Car size={11} className="text-blue-600" />;
+    colorStyle = 'bg-blue-50 text-blue-800 border-blue-200/70';
+  } else if (fLower.includes('wheel') || fLower.includes('access')) {
+    icon = <Accessibility size={11} className="text-cyan-600" />;
+    colorStyle = 'bg-cyan-50 text-cyan-800 border-cyan-200/70';
+  } else if (fLower.includes('recliner') || fLower.includes('vip') || fLower.includes('sofa')) {
+    icon = <Armchair size={11} className="text-purple-600" />;
+    colorStyle = 'bg-purple-50 text-purple-800 border-purple-200/70';
+  }
+
+  return (
+    <span
+      key={facility}
+      className={`inline-flex items-center gap-1.5 px-2.5 py-1 rounded-lg text-[11px] font-semibold border ${colorStyle} shadow-2xs transition-all`}
+    >
+      {icon}
+      <span>{facility}</span>
+    </span>
+  );
+}
 
 const POPULAR_CITIES = [
   'Mumbai',
@@ -318,147 +352,157 @@ export default function VendorCinemasPage() {
       ) : (
         <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
           {cinemas.map((cinema) => (
-            <Card
+            <div
               key={cinema.id || cinema._id}
-              interactive={true}
-              accent="primary"
-              className="flex flex-col justify-between border-slate-200/90 group"
+              className="bg-white rounded-2xl border border-slate-200/80 hover:border-slate-300 shadow-[0_2px_12px_rgba(0,0,0,0.03)] hover:shadow-[0_16px_36px_rgba(0,0,0,0.08)] hover:-translate-y-1 transition-all duration-300 flex flex-col justify-between overflow-hidden group"
             >
-              <div>
-                <CardHeader className="pb-3 border-b border-slate-100 bg-gradient-to-b from-slate-50/50 to-white">
-                  <div className="flex items-start justify-between gap-3 w-full">
+              <div className="p-5 sm:p-6 space-y-4">
+                {/* 1. Header: Cinema Icon, Name, City, Operational Status */}
+                <div className="flex items-start justify-between gap-3">
+                  <div className="flex items-center gap-3 min-w-0">
+                    <div className="w-12 h-12 rounded-2xl bg-gradient-to-br from-slate-900 via-slate-800 to-slate-950 text-white flex items-center justify-center shrink-0 shadow-md group-hover:scale-105 group-hover:from-[#F84464] group-hover:to-[#ff5374] transition-all duration-300">
+                      <Building2 size={22} />
+                    </div>
                     <div className="min-w-0 flex-1">
-                      <div className="flex items-center gap-2 mb-1">
-                        <span className="w-2 h-2 rounded-full bg-[#F84464]" />
-                        <span className="text-[10px] font-bold uppercase tracking-wider text-slate-400">
-                          Multiplex Venue
-                        </span>
-                      </div>
-                      <CardTitle className="text-base sm:text-lg text-slate-900 leading-snug line-clamp-1 group-hover:text-[#F84464] transition-colors">
+                      <h3
+                        className="text-base sm:text-lg font-bold text-slate-900 leading-snug truncate group-hover:text-[#F84464] transition-colors"
+                        title={cinema.name}
+                      >
                         {cinema.name}
-                      </CardTitle>
-                      <div className="flex items-center gap-1.5 text-xs text-slate-500 mt-1">
+                      </h3>
+                      <div className="flex items-center gap-1.5 text-xs text-slate-500 mt-0.5">
                         <MapPin size={13} className="text-[#F84464] shrink-0" />
-                        <span className="truncate font-medium">{cinema.city}{cinema.state ? `, ${cinema.state}` : ''}</span>
+                        <span className="font-semibold text-slate-700">{cinema.city}</span>
+                        {cinema.state && <span className="text-slate-400">• {cinema.state}</span>}
                       </div>
                     </div>
-
-                    <span
-                      className={`inline-flex items-center gap-1.5 text-[11px] font-bold px-2.5 py-1 rounded-full border shadow-2xs shrink-0 ${
-                        cinema.status === 'active'
-                          ? 'bg-emerald-50 text-emerald-700 border-emerald-200/80'
-                          : 'bg-slate-100 text-slate-600 border-slate-200'
-                      }`}
-                    >
-                      {cinema.status === 'active' && (
-                        <span className="relative flex h-1.5 w-1.5">
-                          <span className="animate-ping absolute inline-flex h-full w-full rounded-full bg-emerald-400 opacity-75"></span>
-                          <span className="relative inline-flex rounded-full h-1.5 w-1.5 bg-emerald-500"></span>
-                        </span>
-                      )}
-                      <span>{cinema.status === 'active' ? 'Operational' : 'Inactive'}</span>
-                    </span>
                   </div>
-                </CardHeader>
 
-                <CardContent className="space-y-3.5 text-xs text-slate-600 pt-4">
-                  {/* Address */}
-                  <p className="line-clamp-2 text-slate-500 leading-relaxed">
-                    {cinema.address}
+                  <span
+                    className={`inline-flex items-center gap-1.5 text-[11px] font-bold px-2.5 py-1 rounded-full border shadow-2xs shrink-0 ${
+                      cinema.status === 'active'
+                        ? 'bg-emerald-50 text-emerald-700 border-emerald-200/80'
+                        : 'bg-slate-100 text-slate-600 border-slate-200'
+                    }`}
+                  >
+                    {cinema.status === 'active' && (
+                      <span className="relative flex h-1.5 w-1.5">
+                        <span className="animate-ping absolute inline-flex h-full w-full rounded-full bg-emerald-400 opacity-75"></span>
+                        <span className="relative inline-flex rounded-full h-1.5 w-1.5 bg-emerald-500"></span>
+                      </span>
+                    )}
+                    <span>{cinema.status === 'active' ? 'Operational' : 'Inactive'}</span>
+                  </span>
+                </div>
+
+                {/* 2. Address & Contact Information (Clean, readable, natural) */}
+                <div className="pt-2 border-t border-slate-100 space-y-2 text-xs">
+                  <p className="text-slate-600 leading-relaxed line-clamp-2">
+                    <span className="font-semibold text-slate-700">Address: </span>
+                    <span>{cinema.address || 'Address registered on-file.'}</span>
                   </p>
 
-                  {/* Highlights Stat Strip */}
-                  <div className="grid grid-cols-2 gap-2 p-2.5 rounded-xl bg-slate-50/80 border border-slate-100">
-                    <div className="flex items-center gap-2">
-                      <div className="w-8 h-8 rounded-lg bg-indigo-50 text-indigo-600 flex items-center justify-center shrink-0">
-                        <Tv size={15} />
-                      </div>
-                      <div>
-                        <div className="text-[10px] text-slate-400 font-semibold uppercase">Screens</div>
-                        <div className="font-bold text-slate-900 text-xs">
-                          {cinema.screensCount || 0} Auditorium{(cinema.screensCount || 0) === 1 ? '' : 's'}
-                        </div>
-                      </div>
+                  <div className="flex flex-wrap items-center gap-x-4 gap-y-1 text-[11px] text-slate-500">
+                    <div className="flex items-center gap-1.5">
+                      <Phone size={12} className="text-[#F84464] shrink-0" />
+                      <span className="font-medium text-slate-700">{cinema.contactPhone || 'Helpline on-file'}</span>
                     </div>
+                    {cinema.contactEmail && (
+                      <div className="flex items-center gap-1.5 truncate max-w-[180px]">
+                        <Mail size={12} className="text-slate-400 shrink-0" />
+                        <span className="font-medium text-slate-700 truncate">{cinema.contactEmail}</span>
+                      </div>
+                    )}
+                  </div>
+                </div>
 
-                    <div className="flex items-center gap-2">
-                      <div className="w-8 h-8 rounded-lg bg-rose-50 text-[#F84464] flex items-center justify-center shrink-0">
-                        <Phone size={14} />
-                      </div>
-                      <div className="min-w-0">
-                        <div className="text-[10px] text-slate-400 font-semibold uppercase">Helpline</div>
-                        <div className="font-medium text-slate-800 text-xs truncate">
-                          {cinema.contactPhone || 'On-file'}
-                        </div>
-                      </div>
+                {/* 3. Operational Screen Summary Ribbon (BookMyShow Style) */}
+                <div className="rounded-xl bg-slate-50/90 border border-slate-200/70 p-3 flex items-center justify-between gap-3">
+                  <div className="flex items-center gap-2.5">
+                    <div className="w-8 h-8 rounded-lg bg-indigo-50 text-indigo-600 flex items-center justify-center shrink-0 border border-indigo-100">
+                      <Tv size={15} />
+                    </div>
+                    <div>
+                      <span className="text-[10px] font-bold uppercase tracking-wider text-slate-400 block">Screens</span>
+                      <span className="text-xs font-bold text-slate-900">
+                        {cinema.screensCount || 0} Auditorium{(cinema.screensCount || 0) === 1 ? '' : 's'}
+                      </span>
                     </div>
                   </div>
 
-                  {/* If 0 screens, display quick configure alert */}
-                  {(cinema.screensCount || 0) === 0 && (
-                    <div className="p-3 rounded-xl bg-amber-50/80 border border-amber-200/80 text-[11px] text-amber-900 flex items-center gap-2.5 shadow-2xs">
-                      <div className="w-6 h-6 rounded-md bg-amber-100 text-amber-700 flex items-center justify-center shrink-0">
-                        <Armchair size={14} />
-                      </div>
-                      <span className="font-medium">No screens configured yet. Set up auditoriums below.</span>
-                    </div>
-                  )}
+                  <div className="h-7 w-px bg-slate-200" />
 
-                  {/* Facilities Badges */}
-                  <div>
-                    <div className="flex items-center justify-between mb-2">
-                      <span className="text-[10px] font-bold text-slate-400 uppercase tracking-wider">
-                        Venue Amenities & Tech
-                      </span>
-                      <span className="text-[10px] text-slate-400 font-medium">
-                        {(cinema.facilities || []).length} active
-                      </span>
+                  <div className="flex items-center gap-2.5">
+                    <div className="w-8 h-8 rounded-lg bg-emerald-50 text-emerald-600 flex items-center justify-center shrink-0 border border-emerald-100">
+                      <Ticket size={15} />
                     </div>
-                    <div className="flex flex-wrap gap-1.5">
-                      {(cinema.facilities || []).length === 0 ? (
-                        <span className="text-slate-400 text-[11px]">Standard amenities</span>
-                      ) : (
-                        (cinema.facilities || []).map((f) => (
-                          <span
-                            key={f}
-                            className="bg-white text-slate-700 text-[10px] font-semibold px-2 py-0.5 rounded-md border border-slate-200 shadow-2xs group-hover:border-slate-300 transition-colors"
-                          >
-                            {f}
-                          </span>
-                        ))
-                      )}
+                    <div>
+                      <span className="text-[10px] font-bold uppercase tracking-wider text-slate-400 block">Ticketing</span>
+                      <span className="text-xs font-bold text-slate-900">
+                        M-Ticket Active
+                      </span>
                     </div>
                   </div>
-                </CardContent>
+                </div>
+
+                {/* Alert if 0 screens configured */}
+                {(cinema.screensCount || 0) === 0 && (
+                  <div className="p-2.5 rounded-xl bg-amber-50/90 border border-amber-200/80 text-[11px] text-amber-900 flex items-center gap-2 shadow-2xs">
+                    <AlertCircle size={14} className="text-amber-700 shrink-0" />
+                    <span className="font-medium">No auditoriums added yet. Configure screens below.</span>
+                  </div>
+                )}
+
+                {/* 4. Amenities & Sound Badges */}
+                <div>
+                  <div className="flex items-center justify-between mb-2">
+                    <span className="text-[10px] font-bold text-slate-400 uppercase tracking-wider">
+                      Amenities & Facilities
+                    </span>
+                    <span className="text-[10px] text-slate-400 font-semibold">
+                      {(cinema.facilities || []).length} enabled
+                    </span>
+                  </div>
+                  <div className="flex flex-wrap gap-1.5">
+                    {(cinema.facilities || []).length === 0 ? (
+                      <span className="text-slate-400 text-xs italic">Standard multiplex amenities</span>
+                    ) : (
+                      (cinema.facilities || []).map(renderFacilityPill)
+                    )}
+                  </div>
+                </div>
               </div>
 
-              <CardFooter className="pt-3 pb-3 border-t border-slate-100 bg-slate-50/50 flex items-center justify-between">
+              {/* 5. Card Footer: Action Area with BookMyShow Crimson CTA */}
+              <div className="p-4 px-5 border-t border-slate-100 bg-slate-50/70 flex items-center justify-between gap-3">
                 <Link
                   to={`/vendor/screens?cinemaId=${cinema.id || cinema._id}`}
-                  className="inline-flex items-center gap-1.5 text-xs font-bold text-indigo-700 bg-indigo-50/90 hover:bg-indigo-100 border border-indigo-200/80 px-3.5 py-2 rounded-xl transition shadow-2xs group/btn"
+                  className="inline-flex items-center gap-2 text-xs font-bold text-white bg-[#F84464] hover:bg-[#e03a58] px-4 py-2.5 rounded-xl shadow-[0_4px_14px_rgba(248,68,100,0.3)] hover:shadow-[0_6px_20px_rgba(248,68,100,0.4)] hover:scale-[1.02] active:scale-[0.98] transition-all duration-200 group/btn"
                 >
-                  <Armchair size={14} className="text-indigo-600 group-hover/btn:scale-110 transition-transform" />
-                  <span>Configure Audi & Seats</span>
+                  <Armchair size={15} className="text-rose-100 group-hover/btn:text-white transition-colors" />
+                  <span>Configure Screens ({cinema.screensCount || 0})</span>
+                  <ChevronRight size={13} className="text-rose-200 group-hover/btn:translate-x-0.5 transition-transform" />
                 </Link>
 
-                <div className="flex items-center gap-1">
+                <div className="flex items-center gap-1.5">
                   <button
                     onClick={() => openEditModal(cinema)}
-                    className="p-2 text-slate-400 hover:text-slate-700 hover:bg-white rounded-lg border border-transparent hover:border-slate-200 transition shadow-2xs"
+                    className="px-2.5 py-2 text-xs font-semibold text-slate-600 hover:text-slate-900 bg-white hover:bg-slate-100 rounded-xl border border-slate-200/80 transition flex items-center gap-1 shadow-2xs cursor-pointer hover:border-slate-300"
                     title="Edit Venue Details"
                   >
-                    <Edit2 size={14} />
+                    <Edit2 size={13} />
+                    <span>Edit</span>
                   </button>
                   <button
                     onClick={() => openDeleteModal(cinema)}
-                    className="p-2 text-slate-400 hover:text-rose-600 hover:bg-rose-50 rounded-lg border border-transparent hover:border-rose-200 transition shadow-2xs"
+                    className="p-2 text-slate-400 hover:text-rose-600 hover:bg-rose-50 rounded-xl border border-slate-200/80 hover:border-rose-200 transition shadow-2xs cursor-pointer"
                     title="Delete Venue"
                   >
                     <Trash2 size={14} />
                   </button>
                 </div>
-              </CardFooter>
-            </Card>
+              </div>
+            </div>
           ))}
         </div>
       )}

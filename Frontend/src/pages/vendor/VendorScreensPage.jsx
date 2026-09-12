@@ -1,11 +1,9 @@
-import React, { useState, useEffect, useMemo } from 'react';
-import { useSearchParams, useNavigate, Link } from 'react-router-dom';
+import React, { useState, useEffect, useMemo, useRef } from 'react';
+import { useSearchParams, Link } from 'react-router-dom';
 import { vendorApi } from '../../services/vendorApi';
 import { useRealtimeRefresh } from '../../services/realtimeSync';
 import {
   Button,
-  Card,
-  Badge,
   Modal,
   ConfirmModal,
   Input,
@@ -25,11 +23,13 @@ import {
   Eye,
   TrendingUp,
   Search,
-  CheckCircle2,
   DollarSign,
   Layers,
   ChevronRight,
-  Info
+  Building2,
+  ChevronDown,
+  Check,
+  X
 } from 'lucide-react';
 
 const SCREEN_TYPES = [
@@ -46,7 +46,6 @@ const ROW_LETTERS = ['A', 'B', 'C', 'D', 'E', 'F', 'G', 'H', 'I', 'J', 'K', 'L',
 export default function VendorScreensPage() {
   const [searchParams, setSearchParams] = useSearchParams();
   const cinemaIdParam = searchParams.get('cinemaId') || '';
-  const navigate = useNavigate();
 
   const [cinemas, setCinemas] = useState([]);
   const [screens, setScreens] = useState([]);
@@ -56,6 +55,8 @@ export default function VendorScreensPage() {
   // Filters
   const [searchQuery, setSearchQuery] = useState('');
   const [selectedFormat, setSelectedFormat] = useState('all');
+  const [isVenueDropdownOpen, setIsVenueDropdownOpen] = useState(false);
+  const venueDropdownRef = useRef(null);
 
   // Modals
   const [isAddModalOpen, setIsAddModalOpen] = useState(false);
@@ -129,6 +130,20 @@ export default function VendorScreensPage() {
     if (cinemaId) setSearchParams({ cinemaId });
     else setSearchParams({});
   };
+
+  useEffect(() => {
+    function handleClickOutside(event) {
+      if (venueDropdownRef.current && !venueDropdownRef.current.contains(event.target)) {
+        setIsVenueDropdownOpen(false);
+      }
+    }
+    document.addEventListener('mousedown', handleClickOutside);
+    return () => document.removeEventListener('mousedown', handleClickOutside);
+  }, []);
+
+  const activeCinema = useMemo(() => {
+    return cinemas.find(c => (c.id || c._id) === selectedCinemaId);
+  }, [cinemas, selectedCinemaId]);
 
   // Helper to build array of rows given config
   const buildSeatingLayout = (rowCount, seatsPerRow, includeRecliner, includePremium, recPrice, premPrice, normPrice) => {
@@ -452,8 +467,7 @@ export default function VendorScreensPage() {
       {/* Senior Executive KPI Summary Bar */}
       <div className="grid grid-cols-1 sm:grid-cols-2 xl:grid-cols-4 gap-4 sm:gap-5">
         {/* Metric 1: Auditoriums */}
-        <div className="bg-white p-5 rounded-2xl border border-slate-200/90 shadow-xs hover:shadow-md hover:border-slate-300 transition-all duration-200 flex flex-col justify-between relative overflow-hidden group">
-          <div className="absolute top-0 left-0 right-0 h-1 bg-gradient-to-r from-indigo-500 to-blue-600" />
+        <div className="bg-white p-5 rounded-2xl border border-slate-200/90 shadow-xs hover:shadow-md hover:border-slate-300 transition-all duration-200 flex flex-col justify-between group">
           <div>
             <div className="flex items-start justify-between gap-3">
               <div>
@@ -489,8 +503,7 @@ export default function VendorScreensPage() {
         </div>
 
         {/* Metric 2: Total Seats */}
-        <div className="bg-white p-5 rounded-2xl border border-slate-200/90 shadow-xs hover:shadow-md hover:border-slate-300 transition-all duration-200 flex flex-col justify-between relative overflow-hidden group">
-          <div className="absolute top-0 left-0 right-0 h-1 bg-gradient-to-r from-rose-500 to-pink-600" />
+        <div className="bg-white p-5 rounded-2xl border border-slate-200/90 shadow-xs hover:shadow-md hover:border-slate-300 transition-all duration-200 flex flex-col justify-between group">
           <div>
             <div className="flex items-start justify-between gap-3">
               <div>
@@ -526,8 +539,7 @@ export default function VendorScreensPage() {
         </div>
 
         {/* Metric 3: Premium Halls */}
-        <div className="bg-white p-5 rounded-2xl border border-slate-200/90 shadow-xs hover:shadow-md hover:border-slate-300 transition-all duration-200 flex flex-col justify-between relative overflow-hidden group">
-          <div className="absolute top-0 left-0 right-0 h-1 bg-gradient-to-r from-violet-500 to-purple-600" />
+        <div className="bg-white p-5 rounded-2xl border border-slate-200/90 shadow-xs hover:shadow-md hover:border-slate-300 transition-all duration-200 flex flex-col justify-between group">
           <div>
             <div className="flex items-start justify-between gap-3">
               <div>
@@ -563,8 +575,7 @@ export default function VendorScreensPage() {
         </div>
 
         {/* Metric 4: Max Potential / Show */}
-        <div className="bg-white p-5 rounded-2xl border border-slate-200/90 shadow-xs hover:shadow-md hover:border-slate-300 transition-all duration-200 flex flex-col justify-between relative overflow-hidden group">
-          <div className="absolute top-0 left-0 right-0 h-1 bg-gradient-to-r from-emerald-500 to-teal-600" />
+        <div className="bg-white p-5 rounded-2xl border border-slate-200/90 shadow-xs hover:shadow-md hover:border-slate-300 transition-all duration-200 flex flex-col justify-between group">
           <div>
             <div className="flex items-start justify-between gap-3">
               <div>
@@ -599,57 +610,189 @@ export default function VendorScreensPage() {
         </div>
       </div>
 
-      {/* Filter & Search Toolbar */}
-      <div className="bg-white p-3.5 sm:p-4 rounded-2xl border border-slate-200/90 shadow-xs flex flex-col lg:flex-row lg:items-center justify-between gap-3.5">
-        {/* Left: Cinema Venue Pills */}
-        <div className="flex flex-wrap items-center gap-2 flex-1">
-          <button
-            onClick={() => handleCinemaFilterChange('')}
-            className={`text-xs px-3.5 py-1.5 rounded-xl font-bold transition shrink-0 ${
-              !selectedCinemaId
-                ? 'bg-slate-900 text-white shadow-xs'
-                : 'bg-slate-100 text-slate-600 hover:text-slate-900'
-            }`}
-          >
-            All Multiplexes ({screens.length})
-          </button>
+      {/* ========================================================
+          BOOKMYSHOW MULTIPLEX DROPDOWN & SEARCH TOOLBAR
+          ======================================================== */}
+      <div className="bg-white p-3 sm:p-4 rounded-2xl border border-slate-200/90 shadow-xs flex flex-col lg:flex-row lg:items-center justify-between gap-3.5 relative z-20">
+        {/* Left: Custom BookMyShow Multiplex Selector Dropdown */}
+        <div className="flex items-center gap-2.5 flex-wrap">
+          <div className="relative" ref={venueDropdownRef}>
+            <button
+              type="button"
+              onClick={() => setIsVenueDropdownOpen(prev => !prev)}
+              className={`w-full sm:w-auto min-w-[260px] sm:min-w-[300px] max-w-[380px] px-3.5 py-2.5 rounded-xl border text-left transition-all duration-200 flex items-center justify-between gap-3 cursor-pointer shadow-2xs ${
+                selectedCinemaId
+                  ? 'bg-rose-50/50 border-[#F84464] ring-2 ring-[#F84464]/15'
+                  : 'bg-slate-50/80 hover:bg-white border-slate-200 hover:border-slate-300'
+              }`}
+            >
+              <div className="flex items-center gap-2.5 min-w-0 flex-1">
+                <div className={`w-8 h-8 rounded-lg flex items-center justify-center shrink-0 border transition-colors ${
+                  selectedCinemaId
+                    ? 'bg-[#F84464] text-white border-[#F84464]'
+                    : 'bg-white text-slate-700 border-slate-200'
+                }`}>
+                  {selectedCinemaId ? <MapPin size={15} /> : <Building2 size={15} />}
+                </div>
+                <div className="min-w-0 flex-1">
+                  <span className="text-[10px] uppercase font-bold text-slate-400 tracking-wider block leading-none mb-1">
+                    Select Multiplex
+                  </span>
+                  <span className="text-xs font-bold text-slate-900 truncate block leading-tight">
+                    {activeCinema ? activeCinema.name : `All Multiplexes (${screens.length} Screens)`}
+                  </span>
+                </div>
+              </div>
 
-          {cinemas.map((c) => {
-            const id = c.id || c._id;
-            const isSelected = selectedCinemaId === id;
-            return (
-              <button
-                key={id}
-                onClick={() => handleCinemaFilterChange(id)}
-                className={`text-xs px-3 py-1.5 rounded-xl font-bold transition shrink-0 flex items-center gap-1.5 ${
-                  isSelected
-                    ? 'bg-[#F84464] text-white shadow-xs'
-                    : 'bg-slate-100 text-slate-600 hover:text-slate-900'
-                }`}
-              >
-                <MapPin size={12} className={isSelected ? 'text-white' : 'text-[#F84464]'} />
-                <span>{c.name}</span>
-              </button>
-            );
-          })}
+              <div className="flex items-center gap-1.5 shrink-0 pl-1">
+                {selectedCinemaId ? (
+                  <span className="text-[10px] font-mono font-bold px-1.5 py-0.5 rounded bg-white text-[#F84464] border border-rose-200 shadow-2xs">
+                    {activeCinema?.screensCount || 1} Audis
+                  </span>
+                ) : (
+                  <span className="text-[10px] font-mono font-bold px-1.5 py-0.5 rounded bg-white text-slate-600 border border-slate-200 shadow-2xs">
+                    {cinemas.length} Venues
+                  </span>
+                )}
+                <ChevronDown
+                  size={15}
+                  className={`text-slate-400 transition-transform duration-200 ${
+                    isVenueDropdownOpen ? 'rotate-180 text-slate-800' : ''
+                  }`}
+                />
+              </div>
+            </button>
+
+            {/* Dropdown Menu Panel */}
+            {isVenueDropdownOpen && (
+              <div className="absolute left-0 top-full mt-2 w-full sm:w-[350px] bg-white rounded-2xl border border-slate-200 shadow-xl py-2 z-50 animate-in fade-in slide-in-from-top-2 duration-150">
+                {/* Header */}
+                <div className="px-4 py-2 border-b border-slate-100 flex items-center justify-between text-[11px] font-bold text-slate-400 uppercase tracking-wider">
+                  <span>Multiplex Properties</span>
+                  <span className="font-semibold text-slate-500">{cinemas.length} Venues Active</span>
+                </div>
+
+                {/* Options List */}
+                <div className="max-h-72 overflow-y-auto py-1">
+                  {/* Option: All Multiplexes */}
+                  <button
+                    type="button"
+                    onClick={() => {
+                      handleCinemaFilterChange('');
+                      setIsVenueDropdownOpen(false);
+                    }}
+                    className={`w-full px-4 py-2.5 flex items-center justify-between text-left transition text-xs cursor-pointer ${
+                      !selectedCinemaId
+                        ? 'bg-rose-50 text-[#F84464] font-bold'
+                        : 'hover:bg-slate-50 text-slate-700 font-medium'
+                    }`}
+                  >
+                    <div className="flex items-center gap-2.5 min-w-0">
+                      <div className={`w-7 h-7 rounded-lg flex items-center justify-center shrink-0 ${
+                        !selectedCinemaId ? 'bg-[#F84464] text-white' : 'bg-slate-100 text-slate-500'
+                      }`}>
+                        <Building2 size={14} />
+                      </div>
+                      <div>
+                        <p className="font-bold">All Multiplexes</p>
+                        <p className="text-[10px] text-slate-400">All venues directory combined</p>
+                      </div>
+                    </div>
+                    <div className="flex items-center gap-2 shrink-0">
+                      <span className="text-[10px] font-mono font-bold px-1.5 py-0.5 rounded bg-slate-100 text-slate-600">
+                        {screens.length} Screens
+                      </span>
+                      {!selectedCinemaId && <Check size={14} className="text-[#F84464]" />}
+                    </div>
+                  </button>
+
+                  <div className="my-1 border-t border-slate-100" />
+
+                  {/* Option: Each Cinema (Varun-Solutions, PVR The Mall Shimla, Hari Om, CineWorld: Grand Mall IMAX, etc.) */}
+                  {cinemas.map((c) => {
+                    const id = c.id || c._id;
+                    const isSelected = selectedCinemaId === id;
+                    return (
+                      <button
+                        key={id}
+                        type="button"
+                        onClick={() => {
+                          handleCinemaFilterChange(id);
+                          setIsVenueDropdownOpen(false);
+                        }}
+                        className={`w-full px-4 py-2.5 flex items-center justify-between text-left transition text-xs cursor-pointer ${
+                          isSelected
+                            ? 'bg-rose-50 text-[#F84464] font-bold'
+                            : 'hover:bg-slate-50 text-slate-800 font-medium'
+                        }`}
+                      >
+                        <div className="flex items-center gap-2.5 min-w-0 flex-1">
+                          <div className={`w-7 h-7 rounded-lg flex items-center justify-center shrink-0 ${
+                            isSelected ? 'bg-[#F84464] text-white' : 'bg-slate-100 text-slate-500'
+                          }`}>
+                            <MapPin size={14} />
+                          </div>
+                          <div className="min-w-0 flex-1">
+                            <p className="font-bold truncate" title={c.name}>{c.name}</p>
+                            <p className="text-[10px] text-slate-400 truncate">
+                              {c.city}{c.state ? `, ${c.state}` : ''}
+                            </p>
+                          </div>
+                        </div>
+                        <div className="flex items-center gap-2 shrink-0 ml-2">
+                          <span className={`text-[10px] font-mono font-bold px-1.5 py-0.5 rounded ${
+                            isSelected ? 'bg-rose-100 text-[#F84464]' : 'bg-slate-100 text-slate-600'
+                          }`}>
+                            {c.screensCount || 1} {c.screensCount === 1 ? 'Audi' : 'Audis'}
+                          </span>
+                          {isSelected && <Check size={14} className="text-[#F84464]" />}
+                        </div>
+                      </button>
+                    );
+                  })}
+                </div>
+              </div>
+            )}
+          </div>
+
+          {selectedCinemaId && (
+            <button
+              type="button"
+              onClick={() => handleCinemaFilterChange('')}
+              className="px-2.5 py-2 text-xs font-semibold text-slate-500 hover:text-[#F84464] hover:bg-rose-50 rounded-xl transition flex items-center gap-1 cursor-pointer"
+              title="Clear selected venue filter"
+            >
+              <X size={13} />
+              <span>Clear Filter</span>
+            </button>
+          )}
         </div>
 
-        {/* Right: Search & Format Filter */}
-        <div className="flex flex-wrap items-center gap-2.5">
+        {/* Right: Search Box & Format Filter Tabs */}
+        <div className="flex flex-wrap items-center gap-2.5 flex-1 justify-end">
           {/* Search Box */}
-          <div className="relative min-w-[200px]">
+          <div className="relative min-w-[200px] flex-1 sm:max-w-xs">
             <Search size={14} className="absolute left-3 top-1/2 -translate-y-1/2 text-slate-400" />
             <input
               type="text"
-              placeholder="Search screen or format..."
+              placeholder="Search screen name, audi number..."
               value={searchQuery}
               onChange={(e) => setSearchQuery(e.target.value)}
-              className="w-full text-xs pl-8 pr-3 py-2 bg-slate-50 border border-slate-200 rounded-xl focus:bg-white focus:outline-none focus:ring-2 focus:ring-[#F84464]/20 focus:border-[#F84464] transition"
+              className="w-full text-xs pl-8 pr-7 py-2.5 bg-slate-50 border border-slate-200 rounded-xl focus:bg-white focus:outline-none focus:ring-2 focus:ring-[#F84464]/20 focus:border-[#F84464] transition shadow-2xs"
             />
+            {searchQuery && (
+              <button
+                type="button"
+                onClick={() => setSearchQuery('')}
+                className="absolute right-2.5 top-1/2 -translate-y-1/2 text-xs text-slate-400 hover:text-slate-600 cursor-pointer"
+              >
+                ✕
+              </button>
+            )}
           </div>
 
-          {/* Format Tabs */}
-          <div className="inline-flex p-1 bg-slate-100/90 rounded-xl border border-slate-200/70 text-xs">
+          {/* Format Filter Tabs */}
+          <div className="inline-flex p-1 bg-slate-100 rounded-xl text-xs">
             {[
               { id: 'all', label: 'All' },
               { id: 'imax', label: 'IMAX' },
@@ -658,8 +801,9 @@ export default function VendorScreensPage() {
             ].map(f => (
               <button
                 key={f.id}
+                type="button"
                 onClick={() => setSelectedFormat(f.id)}
-                className={`px-2.5 py-1 rounded-lg font-bold transition ${
+                className={`px-3 py-1.5 rounded-lg font-bold transition cursor-pointer ${
                   selectedFormat === f.id
                     ? 'bg-white text-slate-900 shadow-xs'
                     : 'text-slate-600 hover:text-slate-900'
@@ -747,111 +891,84 @@ export default function VendorScreensPage() {
             return (
               <div
                 key={screen.id || screen._id}
-                className="bg-white rounded-2xl border border-slate-200/90 hover:border-slate-300 shadow-xs hover:shadow-md transition-all duration-300 overflow-hidden flex flex-col justify-between group relative"
+                className="bg-white rounded-2xl border border-slate-200/80 hover:border-slate-300 shadow-[0_2px_10px_rgba(0,0,0,0.03)] hover:shadow-[0_12px_28px_rgba(0,0,0,0.08)] transition-all duration-300 flex flex-col justify-between overflow-hidden group"
               >
-                {/* Format Top Gradient Accent Ribbon */}
-                <div className={`h-1.5 w-full bg-gradient-to-r ${formatStyle.ribbon}`} />
-
                 <div className="p-5 sm:p-6 space-y-4">
-                  {/* Top Screen Header & Format Tags */}
-                  <div>
-                    <div className="flex items-center justify-between gap-2 mb-2 flex-wrap">
-                      <div className="flex items-center gap-2 flex-wrap">
-                        {/* Audi Identifier */}
-                        <span className="font-mono font-black text-xs uppercase px-2.5 py-0.5 rounded-md bg-slate-900 text-white shadow-2xs">
-                          {screen.screenNumber}
-                        </span>
-
-                        {/* Screen Format Badge */}
-                        <span className={`inline-flex items-center gap-1 text-[11px] font-bold px-2.5 py-0.5 rounded-full border ${formatStyle.badgeBg}`}>
-                          <FormatIcon size={12} />
-                          <span>{screen.screenType || 'Standard 2D'}</span>
-                        </span>
-                      </div>
-
-                      {/* Top Action Icons */}
-                      <div className="flex items-center gap-1">
-                        <button
-                          onClick={() => openEditLayoutModal(screen)}
-                          className="p-1.5 text-slate-400 hover:text-indigo-600 hover:bg-indigo-50 rounded-lg transition"
-                          title="Configure Seating Layout"
+                  {/* 1. Top Screen Header & Format Tags (BookMyShow Style) */}
+                  <div className="flex items-start justify-between gap-3">
+                    <div className="flex items-start gap-3 min-w-0">
+                      <span className="font-mono font-black text-xs uppercase px-2.5 py-1.5 rounded-xl bg-slate-900 text-white shadow-2xs shrink-0 tracking-wider">
+                        {screen.screenNumber}
+                      </span>
+                      <div className="min-w-0 flex-1">
+                        <h3
+                          className="text-base sm:text-lg font-bold text-slate-900 leading-snug truncate group-hover:text-[#F84464] transition-colors"
+                          title={screen.name}
                         >
-                          <Sliders size={15} />
-                        </button>
-                        <button
-                          onClick={() => openDeleteModal(screen)}
-                          className="p-1.5 text-slate-400 hover:text-rose-600 hover:bg-rose-50 rounded-lg transition"
-                          title="Delete Screen"
-                        >
-                          <Trash2 size={15} />
-                        </button>
+                          {screen.name}
+                        </h3>
+                        <p className="text-xs text-slate-500 mt-0.5 flex items-center gap-1.5 font-medium truncate">
+                          <MapPin size={13} className="text-[#F84464] shrink-0" />
+                          <span className="font-semibold text-slate-700">{screen.cinema?.name || 'Cinema Multiplex'}</span>
+                          {screen.cinema?.city && (
+                            <span className="text-slate-400">• {screen.cinema.city}</span>
+                          )}
+                        </p>
                       </div>
                     </div>
 
-                    {/* Screen Full Title (Zero Truncation) */}
-                    <h3 className="text-lg font-black text-slate-900 leading-snug group-hover:text-indigo-600 transition-colors break-words">
-                      {screen.name}
-                    </h3>
-
-                    {/* Cinema Venue Location */}
-                    <p className="text-xs text-slate-500 mt-1 flex items-center gap-1.5 font-medium break-words">
-                      <MapPin size={13} className="text-[#F84464] shrink-0" />
-                      <span>{screen.cinema?.name || 'Cinema Multiplex'}</span>
-                      {screen.cinema?.city && (
-                        <>
-                          <span className="text-slate-300">•</span>
-                          <span>{screen.cinema.city}</span>
-                        </>
-                      )}
-                    </p>
+                    <span className={`inline-flex items-center gap-1.5 text-[11px] font-bold px-2.5 py-1 rounded-full border shadow-2xs shrink-0 ${formatStyle.badgeBg}`}>
+                      <FormatIcon size={12} />
+                      <span>{screen.screenType || 'Standard 2D'}</span>
+                    </span>
                   </div>
 
-                  {/* Operational Metrics Triad */}
-                  <div className="grid grid-cols-3 gap-2 bg-slate-50/90 p-3 rounded-xl border border-slate-200/80 text-center">
-                    <div className="border-r border-slate-200/70 pr-2">
+                  {/* 2. Operational Metrics Triad */}
+                  <div className="grid grid-cols-3 gap-2 bg-slate-50/90 p-3 rounded-xl border border-slate-200/70 text-center">
+                    <div className="border-r border-slate-200/70 pr-1">
                       <p className="text-[10px] uppercase font-bold text-slate-400 tracking-wider">
                         Capacity
                       </p>
-                      <p className="text-base font-mono font-black text-slate-900 mt-0.5">
+                      <p className="text-sm sm:text-base font-bold text-slate-900 mt-0.5">
                         {screen.totalCapacity}
                       </p>
-                      <p className="text-[10px] text-slate-500 font-medium">Seats</p>
+                      <p className="text-[10px] text-slate-500 font-medium">Total Seats</p>
                     </div>
 
-                    <div className="border-r border-slate-200/70 px-2">
+                    <div className="border-r border-slate-200/70 px-1">
                       <p className="text-[10px] uppercase font-bold text-slate-400 tracking-wider">
                         Rows
                       </p>
-                      <p className="text-base font-mono font-black text-slate-900 mt-0.5">
+                      <p className="text-sm sm:text-base font-bold text-slate-900 mt-0.5">
                         {rowCount}
                       </p>
                       <p className="text-[10px] text-slate-500 font-medium">A to {lastRowLetter}</p>
                     </div>
 
-                    <div className="pl-2">
+                    <div className="pl-1">
                       <p className="text-[10px] uppercase font-bold text-slate-400 tracking-wider">
-                        Max Gross
+                        Full House
                       </p>
-                      <p className="text-base font-mono font-black text-emerald-700 mt-0.5">
+                      <p className="text-sm sm:text-base font-bold text-emerald-700 mt-0.5 truncate">
                         ₹{maxScreenGross.toLocaleString('en-IN')}
                       </p>
-                      <p className="text-[10px] text-slate-500 font-medium">Per Show</p>
+                      <p className="text-[10px] text-slate-500 font-medium">Max Yield</p>
                     </div>
                   </div>
 
-                  {/* Tiered Seating Proportional Spectrum Bar */}
+                  {/* 3. Tiered Seating Proportions & Base Fares */}
                   <div className="space-y-2">
                     <div className="flex items-center justify-between text-xs">
                       <span className="text-[10px] font-bold text-slate-400 uppercase tracking-wider">
-                        Seating Tier Proportions
+                        Seating Tiers & Fares
                       </span>
-                      <span className="text-[11px] font-mono font-bold text-slate-700">
+                      <span className="text-[11px] font-bold text-slate-600">
                         {reclinerCount > 0 ? '3 Tiers' : '2 Tiers'} Configured
                       </span>
                     </div>
 
                     {/* Segmented Color Spectrum Bar */}
-                    <div className="w-full h-3 rounded-full overflow-hidden flex shadow-inner bg-slate-100">
+                    <div className="w-full h-2.5 rounded-full overflow-hidden flex shadow-2xs bg-slate-100">
                       {reclinerCount > 0 && (
                         <div
                           style={{ width: `${reclinerPct}%` }}
@@ -875,96 +992,149 @@ export default function VendorScreensPage() {
                       )}
                     </div>
 
-                    {/* Legend Chips with Base Fares (No Cut-Offs) */}
-                    <div className="flex flex-wrap items-center gap-1.5 pt-1 text-xs">
+                    {/* Legend Chips with Base Fares */}
+                    <div className="flex flex-wrap items-center gap-1.5 pt-0.5 text-xs">
                       {reclinerCount > 0 && (
-                        <span className="inline-flex items-center gap-1 bg-rose-50 text-[#F84464] border border-rose-100/90 px-2 py-0.5 rounded-md font-medium text-[11px]">
+                        <span className="inline-flex items-center gap-1.5 bg-rose-50 text-[#F84464] border border-rose-200/80 px-2 py-0.5 rounded-md font-medium text-[11px]">
                           <span className="w-1.5 h-1.5 rounded-full bg-[#F84464]" />
                           <span>Recliner ({reclinerCount}): <strong>₹{reclinerPrice}</strong></span>
                         </span>
                       )}
                       {premiumCount > 0 && (
-                        <span className="inline-flex items-center gap-1 bg-indigo-50 text-indigo-700 border border-indigo-100/90 px-2 py-0.5 rounded-md font-medium text-[11px]">
+                        <span className="inline-flex items-center gap-1.5 bg-indigo-50 text-indigo-700 border border-indigo-200/80 px-2 py-0.5 rounded-md font-medium text-[11px]">
                           <span className="w-1.5 h-1.5 rounded-full bg-indigo-600" />
                           <span>Premium ({premiumCount}): <strong>₹{premiumPrice}</strong></span>
                         </span>
                       )}
                       {normalCount > 0 && (
-                        <span className="inline-flex items-center gap-1 bg-slate-100 text-slate-700 border border-slate-200 px-2 py-0.5 rounded-md font-medium text-[11px]">
+                        <span className="inline-flex items-center gap-1.5 bg-slate-100 text-slate-700 border border-slate-200 px-2 py-0.5 rounded-md font-medium text-[11px]">
                           <span className="w-1.5 h-1.5 rounded-full bg-slate-400" />
-                          <span>Normal ({normalCount}): <strong>₹{normalPrice}</strong></span>
+                          <span>Classic ({normalCount}): <strong>₹{normalPrice}</strong></span>
                         </span>
                       )}
                     </div>
                   </div>
 
-                  {/* Mini Floor Plan Preview with Screen Curve */}
-                  <div className="bg-slate-900 rounded-xl p-3 text-white space-y-2 relative overflow-hidden">
-                    {/* Curved Screen Banner */}
-                    <div className="text-center pt-1 pb-1">
-                      <div className="w-3/4 mx-auto h-1.5 bg-gradient-to-b from-indigo-400 via-indigo-300 to-transparent rounded-t-full shadow-sm" />
-                      <p className="text-[8px] text-slate-400 uppercase tracking-widest mt-0.5 font-mono">
-                        Auditorium Screen Direction
-                      </p>
+                  {/* 4. Real Mini Visual Seating Matrix (BookMyShow Theatre Engine) */}
+                  <div className="rounded-2xl bg-gradient-to-b from-slate-950 via-slate-900 to-slate-950 p-3.5 text-center relative overflow-hidden border border-slate-800 shadow-inner group/matrix">
+                    {/* Ambient Screen Projection Glow Beam */}
+                    <div className="absolute top-0 left-1/2 -translate-x-1/2 w-4/5 h-10 bg-gradient-to-b from-indigo-500/20 via-indigo-500/5 to-transparent blur-md pointer-events-none" />
+
+                    {/* Curved Cinema Screen */}
+                    <div className="w-4/5 mx-auto mb-2.5 relative">
+                      <div className="h-1.5 bg-gradient-to-r from-transparent via-cyan-400 to-transparent rounded-t-full shadow-[0_0_12px_rgba(34,211,238,0.7)]" />
+                      <div className="flex items-center justify-center gap-1.5 mt-1">
+                        <span className="h-[1px] w-5 bg-slate-800" />
+                        <span className="text-[8px] font-mono tracking-widest text-slate-400 uppercase font-semibold">
+                          SCREEN THIS WAY
+                        </span>
+                        <span className="h-[1px] w-5 bg-slate-800" />
+                      </div>
                     </div>
 
-                    {/* Miniature Row Distribution */}
-                    <div className="space-y-1 py-1 max-h-28 overflow-y-auto pr-1">
-                      {layout.map((row) => (
-                        <div key={row.row} className="flex items-center justify-between text-[10px] font-mono text-slate-300 px-1">
-                          <div className="flex items-center gap-1.5">
-                            <span className="w-4 font-bold text-slate-400">{row.row}</span>
-                            <span
-                              className={`w-2 h-2 rounded-full ${
-                                row.tier === 'Recliner'
-                                  ? 'bg-[#F84464]'
-                                  : row.tier === 'Premium'
-                                  ? 'bg-indigo-400'
-                                  : 'bg-slate-400'
-                              }`}
-                            />
-                            <span className="text-slate-300 text-[10px]">{row.tier}</span>
-                          </div>
-
-                          <div className="flex items-center gap-2">
-                            <span className="text-slate-400">{row.seatsCount} Seats</span>
-                            <span className="text-emerald-400 font-bold">₹{row.basePrice}</span>
+                    {/* Miniature Row Distribution with Live Seat Dots */}
+                    <div className="space-y-1.5 py-1 px-1">
+                      {layout.slice(0, 5).map((row) => (
+                        <div key={row.row} className="flex items-center justify-center gap-1.5">
+                          <span className="text-[9px] font-mono font-bold text-slate-500 w-3 text-right shrink-0">
+                            {row.row}
+                          </span>
+                          <div className="flex items-center gap-0.5 justify-center flex-1 max-w-[210px]">
+                            {Array.from({ length: Math.min(row.seatsCount, 12) }).map((_, seatIdx) => (
+                              <span
+                                key={seatIdx}
+                                className={`h-2 rounded-[2px] transition-transform duration-150 hover:scale-125 cursor-default ${
+                                  row.tier === 'Recliner'
+                                    ? 'w-3.5 bg-[#F84464] shadow-[0_0_4px_rgba(248,68,100,0.5)]'
+                                    : row.tier === 'Premium'
+                                    ? 'w-2 bg-indigo-500 shadow-[0_0_4px_rgba(99,102,241,0.4)]'
+                                    : 'w-2 bg-slate-600'
+                                }`}
+                                title={`${row.row}${seatIdx + 1} (${row.tier} • ₹${row.basePrice})`}
+                              />
+                            ))}
+                            {row.seatsCount > 12 && (
+                              <span className="text-[8px] font-mono text-slate-500 pl-0.5">+{row.seatsCount - 12}</span>
+                            )}
                           </div>
                         </div>
                       ))}
+                      {layout.length > 5 && (
+                        <p className="text-[9px] font-mono text-slate-500 pt-0.5">
+                          + {layout.length - 5} more rows ({rowCount} total rows)
+                        </p>
+                      )}
+                    </div>
+
+                    {/* Footer Row in Matrix Preview */}
+                    <div className="mt-2 pt-2 border-t border-slate-800/90 flex items-center justify-between text-xs text-slate-400 px-1">
+                      <div className="flex items-center gap-2.5 text-[10px] font-mono text-slate-400">
+                        <span className="flex items-center gap-1">
+                          <span className="w-2 h-1.5 rounded-[1px] bg-[#F84464]" />
+                          <span>VIP</span>
+                        </span>
+                        <span className="flex items-center gap-1">
+                          <span className="w-1.5 h-1.5 rounded-[1px] bg-indigo-500" />
+                          <span>Prem</span>
+                        </span>
+                        <span className="flex items-center gap-1">
+                          <span className="w-1.5 h-1.5 rounded-[1px] bg-slate-600" />
+                          <span>Classic</span>
+                        </span>
+                      </div>
+
+                      <button
+                        onClick={() => openPreviewMatrixModal(screen)}
+                        className="text-[11px] font-bold text-cyan-400 hover:text-cyan-300 flex items-center gap-1 transition cursor-pointer hover:underline"
+                        title="Open interactive seat layout matrix"
+                      >
+                        <Eye size={12} />
+                        <span>Interactive Grid →</span>
+                      </button>
                     </div>
                   </div>
                 </div>
 
-                {/* Card Action Footer */}
-                <div className="p-4 bg-slate-50/80 border-t border-slate-100 flex items-center justify-between gap-2 flex-wrap">
+                {/* 5. Card Action Footer with BookMyShow Crimson CTA */}
+                <div className="p-4 px-5 bg-slate-50/70 border-t border-slate-100 flex items-center justify-between gap-2.5 flex-wrap">
                   <div className="flex items-center gap-2">
                     <button
                       onClick={() => openEditLayoutModal(screen)}
-                      className="inline-flex items-center gap-1.5 text-xs font-bold text-indigo-700 bg-indigo-50 hover:bg-indigo-100 border border-indigo-200/90 px-3 py-2 rounded-xl transition shadow-2xs"
+                      className="inline-flex items-center gap-2 text-xs font-bold text-white bg-[#F84464] hover:bg-[#e03a58] px-4 py-2.5 rounded-xl shadow-[0_4px_14px_rgba(248,68,100,0.3)] hover:shadow-[0_6px_20px_rgba(248,68,100,0.4)] hover:scale-[1.02] active:scale-[0.98] transition-all duration-200 group/btn cursor-pointer"
                     >
-                      <Sliders size={14} className="text-indigo-600" />
-                      <span>Configure Seats</span>
+                      <Sliders size={13} className="text-rose-100 group-hover/btn:text-white transition-colors" />
+                      <span>Configure Layout</span>
+                      <ChevronRight size={13} className="text-rose-200 group-hover/btn:translate-x-0.5 transition-transform" />
                     </button>
 
                     <button
                       onClick={() => openPreviewMatrixModal(screen)}
-                      className="inline-flex items-center gap-1 text-xs font-bold text-slate-700 bg-white hover:bg-slate-100 border border-slate-200 px-3 py-2 rounded-xl transition shadow-2xs"
+                      className="inline-flex items-center gap-1.5 text-xs font-semibold text-slate-700 hover:text-slate-900 bg-white hover:bg-slate-100 border border-slate-200/80 px-3 py-2.5 rounded-xl transition shadow-2xs cursor-pointer hover:border-slate-300"
                       title="Inspect Full Seat Matrix"
                     >
-                      <Eye size={14} className="text-slate-500" />
+                      <Eye size={13} className="text-slate-500" />
                       <span>View Grid</span>
                     </button>
                   </div>
 
-                  <Link
-                    to={`/vendor/shows`}
-                    className="inline-flex items-center gap-1 text-xs font-bold text-[#F84464] hover:text-white hover:bg-[#F84464] bg-rose-50/80 border border-rose-200/70 px-3 py-2 rounded-xl transition"
-                    title="Program movie showtimes on this screen"
-                  >
-                    <Calendar size={13} />
-                    <span>Schedule</span>
-                  </Link>
+                  <div className="flex items-center gap-1.5">
+                    <Link
+                      to={`/vendor/shows`}
+                      className="inline-flex items-center gap-1.5 text-xs font-semibold text-[#F84464] hover:text-white hover:bg-[#F84464] bg-rose-50/90 border border-rose-200/70 px-3 py-2.5 rounded-xl transition shadow-2xs"
+                      title="Program movie showtimes on this screen"
+                    >
+                      <Calendar size={13} />
+                      <span>Schedule</span>
+                    </Link>
+
+                    <button
+                      onClick={() => openDeleteModal(screen)}
+                      className="p-2 text-slate-400 hover:text-rose-600 hover:bg-rose-50 rounded-xl border border-slate-200/80 hover:border-rose-200 transition shadow-2xs cursor-pointer"
+                      title="Delete Screen"
+                    >
+                      <Trash2 size={14} />
+                    </button>
+                  </div>
                 </div>
               </div>
             );

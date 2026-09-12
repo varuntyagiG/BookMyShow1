@@ -2,6 +2,7 @@ import React, { useState, useEffect, useRef } from 'react';
 import { useParams, Link } from 'react-router-dom';
 import { contentApi, bookingApi } from '../services/api';
 import { useRealtimeRefresh } from '../services/realtimeSync';
+import { getSocket } from '../services/socketClient';
 import { useCity } from '../context/CityContext';
 import { useAuth } from '../context/AuthContext';
 import {
@@ -168,6 +169,48 @@ export default function MovieDetailsPage() {
       } catch (_e) {}
     }
   });
+
+  // Instantaneous WebSocket Show Room subscription for real-time seat locks
+  useEffect(() => {
+    if (!bookingModal.isOpen || bookingModal.confirmed || !bookingModal.showtime) return;
+
+    const rawShowId = bookingModal.showtime.showId || bookingModal.showtime.id || bookingModal.showtime._id;
+    const socket = getSocket();
+
+    if (rawShowId) {
+      socket.emit('join_show', { showId: String(rawShowId) });
+    }
+
+    const handleLiveSeatsLocked = (data) => {
+      if (data && Array.isArray(data.seats) && (!data.showId || data.showId === String(rawShowId))) {
+        setBookingModal((prev) => {
+          const newlyLocked = data.seats;
+          const freshOccupied = Array.from(new Set([...(prev.occupiedSeats || []), ...newlyLocked]));
+          const conflictedSeats = (prev.selectedSeats || []).filter((s) => newlyLocked.includes(s));
+          const remainingSelected = (prev.selectedSeats || []).filter((s) => !newlyLocked.includes(s));
+
+          if (conflictedSeats.length > 0) {
+            setBookingError(`⚠️ Seat(s) ${conflictedSeats.join(', ')} were just secured by another customer.`);
+          }
+
+          return {
+            ...prev,
+            occupiedSeats: freshOccupied,
+            selectedSeats: remainingSelected
+          };
+        });
+      }
+    };
+
+    socket.on('SEATS_LOCKED', handleLiveSeatsLocked);
+
+    return () => {
+      if (rawShowId) {
+        socket.emit('leave_show', { showId: String(rawShowId) });
+      }
+      socket.off('SEATS_LOCKED', handleLiveSeatsLocked);
+    };
+  }, [bookingModal.isOpen, bookingModal.confirmed, bookingModal.showtime?.showId, bookingModal.showtime?.id, bookingModal.showtime?._id]);
 
   const scrollToBooking = () => {
     if (showtimesRef.current) {

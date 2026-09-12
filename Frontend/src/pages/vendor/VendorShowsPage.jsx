@@ -1,15 +1,12 @@
-import React, { useState, useEffect, useMemo } from 'react';
-import { useSearchParams, Link } from 'react-router-dom';
+import React, { useState, useEffect, useMemo, useRef } from 'react';
+import { useSearchParams } from 'react-router-dom';
 import { vendorApi } from '../../services/vendorApi';
 import { useRealtimeRefresh } from '../../services/realtimeSync';
 import {
   Button,
-  Card,
-  Badge,
   Modal,
   ConfirmModal,
   Input,
-  Select,
   EmptyState
 } from '../../components/ui';
 import {
@@ -21,20 +18,18 @@ import {
   Film,
   Users,
   AlertCircle,
-  Eye,
   Ban,
-  CheckCircle2,
   RefreshCw,
   Search,
   LayoutGrid,
-  ListFilter,
+  Rows3,
   Armchair,
   TrendingUp,
   Ticket,
-  ChevronRight,
-  Sparkles,
-  Info,
-  DollarSign
+  Building2,
+  ChevronDown,
+  Check,
+  X
 } from 'lucide-react';
 
 const COMMON_SHOWTIMES = [
@@ -98,7 +93,7 @@ function calculateEndTime(startTimeStr, durationStr = '2h 30m') {
 }
 
 export default function VendorShowsPage() {
-  const [searchParams, setSearchParams] = useSearchParams();
+  const [searchParams] = useSearchParams();
   const movieIdParam = searchParams.get('movieId') || '';
 
   const [shows, setShows] = useState([]);
@@ -113,7 +108,23 @@ export default function VendorShowsPage() {
   const [selectedCinemaId, setSelectedCinemaId] = useState('');
   const [statusFilter, setStatusFilter] = useState('all'); // 'all' | 'active' | 'filling_fast' | 'cancelled'
   const [searchQuery, setSearchQuery] = useState('');
-  const [viewMode, setViewMode] = useState('cards'); // 'cards' | 'timeline'
+  const [viewMode, setViewMode] = useState('cards'); // 'cards' | 'grid' | 'timeline' | 'by_movie'
+  const [isVenueDropdownOpen, setIsVenueDropdownOpen] = useState(false);
+  const venueDropdownRef = useRef(null);
+
+  useEffect(() => {
+    const handleClickOutside = (event) => {
+      if (venueDropdownRef.current && !venueDropdownRef.current.contains(event.target)) {
+        setIsVenueDropdownOpen(false);
+      }
+    };
+    document.addEventListener('mousedown', handleClickOutside);
+    return () => document.removeEventListener('mousedown', handleClickOutside);
+  }, []);
+
+  const activeCinema = useMemo(() => {
+    return cinemas.find(c => (c.id || c._id) === selectedCinemaId);
+  }, [cinemas, selectedCinemaId]);
 
   // Modals
   const [isAddModalOpen, setIsAddModalOpen] = useState(false);
@@ -401,6 +412,37 @@ export default function VendorShowsPage() {
     return Object.values(groups);
   }, [filteredShows]);
 
+  // Group shows by Movie for Movie Showcase View
+  const groupedByMovie = useMemo(() => {
+    const groups = {};
+    filteredShows.forEach(show => {
+      const movieId = show.movie?.id || show.movie?._id || show.movieId || show.movieTitle;
+      if (!groups[movieId]) {
+        groups[movieId] = {
+          movieId,
+          movieTitle: show.movieTitle,
+          movie: show.movie,
+          shows: [],
+          totalTickets: 0,
+          totalCapacity: 0,
+          totalRevenue: 0
+        };
+      }
+      groups[movieId].shows.push(show);
+      groups[movieId].totalTickets += (show.bookedSeatsCount || 0);
+      groups[movieId].totalCapacity += (show.totalCapacity || 120);
+      const baseRate = show.pricingTiers?.normal || show.ticketPrice || 200;
+      groups[movieId].totalRevenue += ((show.bookedSeatsCount || 0) * baseRate);
+    });
+
+    Object.values(groups).forEach(g => {
+      g.shows.sort((a, b) => (a.startTime || '').localeCompare(b.startTime || ''));
+      g.occupancyRate = g.totalCapacity > 0 ? Math.round((g.totalTickets / g.totalCapacity) * 100) : 0;
+    });
+
+    return Object.values(groups);
+  }, [filteredShows]);
+
   return (
     <div className="space-y-6 max-w-7xl mx-auto px-2 sm:px-4 pb-12">
       {/* Top Header */}
@@ -531,7 +573,7 @@ export default function VendorShowsPage() {
       </div>
 
       {/* Interactive Filter & View Controls */}
-      <div className="bg-white p-3.5 sm:p-4 rounded-2xl border border-slate-200/90 shadow-xs flex flex-col lg:flex-row lg:items-center justify-between gap-3.5">
+      <div className="bg-white p-3.5 sm:p-4 rounded-2xl border border-slate-200/90 shadow-xs flex flex-col xl:flex-row xl:items-center justify-between gap-3.5 relative z-20">
         {/* Left: Date Selector & Search Input */}
         <div className="flex flex-wrap items-center gap-2.5 flex-1">
           {/* Date Segmented Control */}
@@ -549,7 +591,7 @@ export default function VendorShowsPage() {
                 <button
                   key={tab.id}
                   onClick={() => setSelectedDate(tab.id)}
-                  className={`flex items-center gap-1.5 px-3 py-1.5 rounded-lg text-xs font-bold transition ${
+                  className={`flex items-center gap-1.5 px-3 py-1.5 rounded-lg text-xs font-bold transition cursor-pointer ${
                     selectedDate === tab.id
                       ? 'bg-white text-slate-900 shadow-xs'
                       : 'text-slate-600 hover:text-slate-900'
@@ -575,37 +617,134 @@ export default function VendorShowsPage() {
             <Search size={15} className="absolute left-3 top-1/2 -translate-y-1/2 text-slate-400" />
             <input
               type="text"
-              placeholder="Search movie or screen..."
+              placeholder="Search movie, venue, screen..."
               value={searchQuery}
               onChange={(e) => setSearchQuery(e.target.value)}
-              className="w-full text-xs pl-8 pr-3 py-2 bg-slate-50 border border-slate-200 rounded-xl focus:bg-white focus:outline-none focus:ring-2 focus:ring-[#F84464]/20 focus:border-[#F84464] transition"
+              className="w-full text-xs pl-8 pr-7 py-2.5 bg-slate-50 border border-slate-200 rounded-xl focus:bg-white focus:outline-none focus:ring-2 focus:ring-[#F84464]/20 focus:border-[#F84464] transition"
             />
+            {searchQuery && (
+              <button
+                type="button"
+                onClick={() => setSearchQuery('')}
+                className="absolute right-2.5 top-1/2 -translate-y-1/2 text-xs text-slate-400 hover:text-slate-600 cursor-pointer"
+              >
+                ✕
+              </button>
+            )}
           </div>
         </div>
 
-        {/* Right: Venue Filter, Status Filter & View Toggle */}
+        {/* Right: Venue Dropdown, Status Filter & 4-Way View Switcher */}
         <div className="flex flex-wrap items-center gap-2.5">
-          {/* Cinema Filter (if multiple) */}
-          {cinemas.length > 1 && (
-            <select
-              value={selectedCinemaId}
-              onChange={(e) => setSelectedCinemaId(e.target.value)}
-              className="text-xs py-2 px-3 bg-slate-50 border border-slate-200 rounded-xl text-slate-700 font-medium focus:bg-white focus:outline-none focus:border-[#F84464]"
+          {/* Custom Multiplex Selector Dropdown */}
+          <div className="relative" ref={venueDropdownRef}>
+            <button
+              type="button"
+              onClick={() => setIsVenueDropdownOpen(prev => !prev)}
+              className={`px-3.5 py-2 rounded-xl border text-left transition-all duration-200 flex items-center justify-between gap-2.5 cursor-pointer text-xs shadow-2xs ${
+                selectedCinemaId
+                  ? 'bg-rose-50/50 border-[#F84464] ring-2 ring-[#F84464]/15'
+                  : 'bg-slate-50/80 hover:bg-white border-slate-200 hover:border-slate-300'
+              }`}
             >
-              <option value="">All Multiplex Venues</option>
-              {cinemas.map(c => (
-                <option key={c.id || c._id} value={c.id || c._id}>
-                  {c.name}
-                </option>
-              ))}
-            </select>
+              <div className="flex items-center gap-2 min-w-0">
+                <div className={`w-6 h-6 rounded-lg flex items-center justify-center shrink-0 border transition-colors ${
+                  selectedCinemaId
+                    ? 'bg-[#F84464] text-white border-[#F84464]'
+                    : 'bg-white text-slate-700 border-slate-200'
+                }`}>
+                  {selectedCinemaId ? <MapPin size={12} /> : <Building2 size={12} />}
+                </div>
+                <span className="font-bold text-slate-900 truncate max-w-[150px]">
+                  {activeCinema ? activeCinema.name : 'All Multiplexes'}
+                </span>
+              </div>
+              <ChevronDown
+                size={14}
+                className={`text-slate-400 transition-transform duration-200 ${
+                  isVenueDropdownOpen ? 'rotate-180 text-slate-800' : ''
+                }`}
+              />
+            </button>
+
+            {isVenueDropdownOpen && (
+              <div className="absolute left-0 top-full mt-2 w-72 bg-white rounded-2xl border border-slate-200 shadow-xl py-2 z-50 animate-in fade-in slide-in-from-top-2 duration-150">
+                <div className="px-3.5 py-1.5 border-b border-slate-100 flex items-center justify-between text-[11px] font-bold text-slate-400 uppercase tracking-wider">
+                  <span>Multiplex Venues</span>
+                  <span>{cinemas.length} Venues</span>
+                </div>
+                <div className="max-h-64 overflow-y-auto py-1">
+                  <button
+                    type="button"
+                    onClick={() => {
+                      setSelectedCinemaId('');
+                      setIsVenueDropdownOpen(false);
+                    }}
+                    className={`w-full px-3.5 py-2 flex items-center justify-between text-left transition text-xs cursor-pointer ${
+                      !selectedCinemaId
+                        ? 'bg-rose-50 text-[#F84464] font-bold'
+                        : 'hover:bg-slate-50 text-slate-700 font-medium'
+                    }`}
+                  >
+                    <div className="flex items-center gap-2">
+                      <Building2 size={14} className={!selectedCinemaId ? 'text-[#F84464]' : 'text-slate-400'} />
+                      <span>All Multiplexes ({shows.length} Shows)</span>
+                    </div>
+                    {!selectedCinemaId && <Check size={14} className="text-[#F84464]" />}
+                  </button>
+
+                  <div className="my-1 border-t border-slate-100" />
+
+                  {cinemas.map(c => {
+                    const id = c.id || c._id;
+                    const isSelected = selectedCinemaId === id;
+                    return (
+                      <button
+                        key={id}
+                        type="button"
+                        onClick={() => {
+                          setSelectedCinemaId(id);
+                          setIsVenueDropdownOpen(false);
+                        }}
+                        className={`w-full px-3.5 py-2 flex items-center justify-between text-left transition text-xs cursor-pointer ${
+                          isSelected
+                            ? 'bg-rose-50 text-[#F84464] font-bold'
+                            : 'hover:bg-slate-50 text-slate-800 font-medium'
+                        }`}
+                      >
+                        <div className="flex items-center gap-2 min-w-0">
+                          <MapPin size={14} className={isSelected ? 'text-[#F84464]' : 'text-slate-400'} />
+                          <div className="truncate">
+                            <p className="font-bold truncate">{c.name}</p>
+                            <p className="text-[10px] text-slate-400 truncate">{c.city}</p>
+                          </div>
+                        </div>
+                        {isSelected && <Check size={14} className="text-[#F84464] shrink-0" />}
+                      </button>
+                    );
+                  })}
+                </div>
+              </div>
+            )}
+          </div>
+
+          {selectedCinemaId && (
+            <button
+              type="button"
+              onClick={() => setSelectedCinemaId('')}
+              className="p-2 text-slate-400 hover:text-slate-600 hover:bg-slate-100 rounded-xl transition cursor-pointer"
+              title="Clear cinema filter"
+            >
+              <X size={14} />
+            </button>
           )}
 
           {/* Status Filter */}
           <div className="inline-flex p-1 bg-slate-100/90 rounded-xl border border-slate-200/70 text-xs">
             <button
+              type="button"
               onClick={() => setStatusFilter('all')}
-              className={`px-2.5 py-1 rounded-lg font-bold transition ${
+              className={`px-2.5 py-1.5 rounded-lg font-bold transition cursor-pointer ${
                 statusFilter === 'all'
                   ? 'bg-white text-slate-900 shadow-xs'
                   : 'text-slate-600 hover:text-slate-900'
@@ -614,8 +753,9 @@ export default function VendorShowsPage() {
               All
             </button>
             <button
+              type="button"
               onClick={() => setStatusFilter('active')}
-              className={`px-2.5 py-1 rounded-lg font-bold transition ${
+              className={`px-2.5 py-1.5 rounded-lg font-bold transition cursor-pointer ${
                 statusFilter === 'active'
                   ? 'bg-white text-emerald-700 shadow-xs'
                   : 'text-slate-600 hover:text-slate-900'
@@ -624,8 +764,9 @@ export default function VendorShowsPage() {
               Live
             </button>
             <button
+              type="button"
               onClick={() => setStatusFilter('filling_fast')}
-              className={`px-2.5 py-1 rounded-lg font-bold transition ${
+              className={`px-2.5 py-1.5 rounded-lg font-bold transition cursor-pointer ${
                 statusFilter === 'filling_fast'
                   ? 'bg-white text-amber-700 shadow-xs'
                   : 'text-slate-600 hover:text-slate-900'
@@ -634,8 +775,9 @@ export default function VendorShowsPage() {
               &gt;70%
             </button>
             <button
+              type="button"
               onClick={() => setStatusFilter('cancelled')}
-              className={`px-2.5 py-1 rounded-lg font-bold transition ${
+              className={`px-2.5 py-1.5 rounded-lg font-bold transition cursor-pointer ${
                 statusFilter === 'cancelled'
                   ? 'bg-white text-rose-700 shadow-xs'
                   : 'text-slate-600 hover:text-slate-900'
@@ -645,29 +787,59 @@ export default function VendorShowsPage() {
             </button>
           </div>
 
-          {/* View Mode Switcher */}
-          <div className="inline-flex p-1 bg-slate-100/90 rounded-xl border border-slate-200/70">
+          {/* 4-Way View Mode Switcher */}
+          <div className="inline-flex p-1 bg-slate-100 rounded-xl border border-slate-200/70 text-xs">
             <button
+              type="button"
               onClick={() => setViewMode('cards')}
-              className={`p-1.5 rounded-lg transition ${
+              className={`flex items-center gap-1.5 px-2.5 py-1.5 rounded-lg font-bold transition cursor-pointer ${
                 viewMode === 'cards'
                   ? 'bg-white text-slate-900 shadow-xs'
-                  : 'text-slate-400 hover:text-slate-700'
+                  : 'text-slate-500 hover:text-slate-900'
               }`}
-              title="Detailed Cards Layout"
+              title="Detailed Wide Cards"
             >
-              <LayoutGrid size={16} />
+              <Rows3 size={15} />
+              <span className="hidden sm:inline">Cards</span>
             </button>
             <button
+              type="button"
+              onClick={() => setViewMode('grid')}
+              className={`flex items-center gap-1.5 px-2.5 py-1.5 rounded-lg font-bold transition cursor-pointer ${
+                viewMode === 'grid'
+                  ? 'bg-white text-slate-900 shadow-xs'
+                  : 'text-slate-500 hover:text-slate-900'
+              }`}
+              title="Compact Poster Grid"
+            >
+              <LayoutGrid size={15} />
+              <span className="hidden sm:inline">Grid</span>
+            </button>
+            <button
+              type="button"
               onClick={() => setViewMode('timeline')}
-              className={`p-1.5 rounded-lg transition ${
+              className={`flex items-center gap-1.5 px-2.5 py-1.5 rounded-lg font-bold transition cursor-pointer ${
                 viewMode === 'timeline'
                   ? 'bg-white text-slate-900 shadow-xs'
-                  : 'text-slate-400 hover:text-slate-700'
+                  : 'text-slate-500 hover:text-slate-900'
               }`}
-              title="Screen Timetable View"
+              title="Auditorium Screen Board"
             >
-              <Calendar size={16} />
+              <Calendar size={15} />
+              <span className="hidden sm:inline">Screen Board</span>
+            </button>
+            <button
+              type="button"
+              onClick={() => setViewMode('by_movie')}
+              className={`flex items-center gap-1.5 px-2.5 py-1.5 rounded-lg font-bold transition cursor-pointer ${
+                viewMode === 'by_movie'
+                  ? 'bg-white text-slate-900 shadow-xs'
+                  : 'text-slate-500 hover:text-slate-900'
+              }`}
+              title="Grouped by Movie Showcase"
+            >
+              <Film size={15} />
+              <span className="hidden sm:inline">By Movie</span>
             </button>
           </div>
         </div>
@@ -711,248 +883,121 @@ export default function VendorShowsPage() {
             <span>Schedule Show Now</span>
           </Button>
         </div>
-      ) : viewMode === 'cards' ? (
+      ) : viewMode === 'grid' ? (
         /* ========================================================
-           VIEW MODE 1: DETAILED, ELEGANTLY ALIGNED SHOW CARDS
+           VIEW MODE 2: COMPACT POSTER GRID CARDS
            ======================================================== */
-        <div className="space-y-3.5">
+        <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-4.5">
           {filteredShows.map((show) => {
             const isCancelled = show.status === 'cancelled';
             const isFillingFast = show.occupancyRate > 70 && !isCancelled;
-            const isAlmostFull = show.occupancyRate > 90 && !isCancelled;
             const availableSeats = Math.max(0, (show.totalCapacity || 120) - (show.bookedSeatsCount || 0));
-            const estShowRevenue = (show.bookedSeatsCount || 0) * (show.pricingTiers?.normal || show.ticketPrice || 200);
 
             return (
               <div
                 key={show.id || show._id}
-                className="bg-white rounded-2xl border border-slate-200/90 hover:border-slate-300 shadow-xs hover:shadow-md transition-all duration-200 overflow-hidden relative group"
+                className="bg-white rounded-2xl border border-slate-200/90 hover:border-slate-300 shadow-xs hover:shadow-md transition-all duration-200 overflow-hidden flex flex-col justify-between group"
               >
-                {/* Status Indicator Stripe on Left */}
-                <div
-                  className={`absolute top-0 bottom-0 left-0 w-1.5 transition-colors ${
-                    isCancelled
-                      ? 'bg-rose-500'
-                      : isAlmostFull
-                      ? 'bg-gradient-to-b from-purple-500 to-rose-500'
-                      : isFillingFast
-                      ? 'bg-amber-500'
-                      : 'bg-emerald-500'
-                  }`}
-                />
+                {/* Poster Header */}
+                <div className="relative aspect-[16/10] bg-slate-900 overflow-hidden">
+                  <img
+                    src={
+                      show.movie?.posterUrl ||
+                      'https://images.unsplash.com/photo-1489599849927-2ee91cede3ba?auto=format&fit=crop&w=400&q=80'
+                    }
+                    alt={show.movieTitle}
+                    className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-300 opacity-90"
+                  />
+                  <div className="absolute inset-0 bg-gradient-to-t from-black/80 via-black/20 to-transparent" />
 
-                <div className="p-4 sm:p-5 pl-5 sm:pl-6 space-y-4">
-                  {/* =========================================================================
-                      ROW 1: FILM IDENTITY & TIMETABLES (Spacious, Zero Cut-offs)
-                      ========================================================================= */}
-                  <div className="flex flex-col md:flex-row md:items-start justify-between gap-4">
-                    {/* Left + Center: Poster & Film Metadata */}
-                    <div className="flex items-start gap-4 min-w-0 flex-1">
-                      {/* 2:3 Vertical Poster */}
-                      <div className="relative w-20 sm:w-24 aspect-[2/3] rounded-xl overflow-hidden bg-slate-100 shrink-0 border border-slate-200/80 shadow-xs group-hover:scale-105 transition-transform duration-300">
-                        <img
-                          src={
-                            show.movie?.posterUrl ||
-                            'https://images.unsplash.com/photo-1489599849927-2ee91cede3ba?auto=format&fit=crop&w=400&q=80'
-                          }
-                          alt={show.movieTitle}
-                          className="w-full h-full object-cover"
-                        />
-                        {/* Format Badge Overlay */}
-                        <div className="absolute top-1.5 left-1.5">
-                          <span className="bg-black/85 backdrop-blur-xs text-white text-[9px] font-black uppercase tracking-wider px-1.5 py-0.5 rounded shadow-xs">
-                            {show.format || '2D'}
-                          </span>
-                        </div>
-                      </div>
+                  {/* Top Badges */}
+                  <div className="absolute top-2.5 left-2.5 right-2.5 flex items-center justify-between gap-1.5">
+                    <span className="bg-black/80 backdrop-blur-xs text-white text-[10px] font-black uppercase tracking-wider px-2 py-0.5 rounded-md border border-white/10 shadow-xs">
+                      {show.format || '2D'}
+                    </span>
+                    {isCancelled ? (
+                      <span className="text-[10px] font-bold px-2 py-0.5 rounded-md bg-slate-900/90 text-slate-300 border border-slate-700">
+                        Cancelled
+                      </span>
+                    ) : isFillingFast ? (
+                      <span className="text-[10px] font-bold px-2 py-0.5 rounded-md bg-amber-500 text-white shadow-xs animate-pulse">
+                        {show.occupancyRate}% Full
+                      </span>
+                    ) : (
+                      <span className="text-[10px] font-bold px-2 py-0.5 rounded-md bg-emerald-500/90 text-white shadow-xs">
+                        Live
+                      </span>
+                    )}
+                  </div>
 
-                      {/* Movie Details (Zero Truncation, Natural Line Wrap) */}
-                      <div className="min-w-0 flex-1 space-y-1.5">
-                        <div className="flex items-center gap-2 flex-wrap">
-                          {isCancelled ? (
-                            <span className="text-[10px] font-bold px-2.5 py-0.5 rounded-full bg-rose-50 text-rose-700 border border-rose-200">
-                              Cancelled
-                            </span>
-                          ) : isAlmostFull ? (
-                            <span className="text-[10px] font-bold px-2.5 py-0.5 rounded-full bg-purple-50 text-purple-700 border border-purple-200 flex items-center gap-1.5">
-                              <span className="w-1.5 h-1.5 rounded-full bg-purple-500 animate-ping" />
-                              Almost Full ({show.occupancyRate}%)
-                            </span>
-                          ) : isFillingFast ? (
-                            <span className="text-[10px] font-bold px-2.5 py-0.5 rounded-full bg-amber-50 text-amber-800 border border-amber-200 flex items-center gap-1.5">
-                              <span className="w-1.5 h-1.5 rounded-full bg-amber-500 animate-pulse" />
-                              Filling Fast ({show.occupancyRate}%)
-                            </span>
-                          ) : (
-                            <span className="text-[10px] font-bold px-2.5 py-0.5 rounded-full bg-emerald-50 text-emerald-700 border border-emerald-200 flex items-center gap-1.5">
-                              <span className="w-1.5 h-1.5 rounded-full bg-emerald-500" />
-                              Live on BookMyTrip
-                            </span>
-                          )}
+                  {/* Showtime Overlay on Poster Bottom */}
+                  <div className="absolute bottom-2.5 left-2.5 right-2.5 flex items-center justify-between text-white text-xs">
+                    <span className="font-mono font-bold flex items-center gap-1 drop-shadow-sm">
+                      <Clock size={12} className="text-[#F84464]" />
+                      {show.startTime}
+                    </span>
+                    <span className="text-[11px] font-medium bg-white/20 backdrop-blur-xs px-2 py-0.5 rounded text-white">
+                      {show.showDate}
+                    </span>
+                  </div>
+                </div>
 
-                          {show.movie?.certificate && (
-                            <span className="text-[10px] font-bold px-2 py-0.5 rounded bg-slate-100 text-slate-700 border border-slate-200">
-                              {show.movie.certificate}
-                            </span>
-                          )}
-                        </div>
+                {/* Card Body */}
+                <div className="p-4 flex-1 flex flex-col justify-between space-y-3">
+                  <div>
+                    <h3 className="font-black text-slate-900 text-sm leading-snug group-hover:text-[#F84464] transition truncate" title={show.movieTitle}>
+                      {show.movieTitle}
+                    </h3>
+                    <p className="text-[11px] text-slate-400 truncate mt-0.5">
+                      {show.movie?.language || 'Hindi'} • {show.movie?.duration || '2h 30m'}
+                    </p>
 
-                        {/* Full Movie Title (NO truncate, NO line-clamp) */}
-                        <h3 className="text-lg sm:text-xl font-black text-slate-900 leading-snug group-hover:text-[#F84464] transition-colors break-words">
-                          {show.movieTitle}
-                        </h3>
-
-                        {/* Language & Runtime */}
-                        <p className="text-xs text-slate-500 font-medium">
-                          {show.movie?.language || 'Hindi, English'} • {show.movie?.duration || '2h 30m'}
-                        </p>
-
-                        {/* Multiplex Venue & Screen (Full names, wrapping naturally) */}
-                        <div className="flex flex-wrap items-center gap-2 pt-1">
-                          <span className="inline-flex items-center gap-1.5 text-xs text-slate-700 font-medium">
-                            <MapPin size={13} className="text-[#F84464] shrink-0" />
-                            <span>{show.cinema?.name || 'Multiplex Venue'}</span>
-                          </span>
-                          <span className="text-slate-300">•</span>
-                          <span className="inline-flex items-center gap-1 bg-indigo-50 border border-indigo-100/80 px-2.5 py-0.5 rounded-md text-indigo-900 font-bold text-xs">
-                            <Tv size={12} className="text-indigo-600 shrink-0" />
-                            <span>{show.screen?.name || 'Screen 1'}</span>
-                          </span>
-                        </div>
-                      </div>
-                    </div>
-
-                    {/* Right: Dedicated Showtime Slot Box */}
-                    <div className="shrink-0 md:text-right flex flex-col items-start md:items-end justify-center bg-slate-50/90 border border-slate-200/80 p-3 sm:p-3.5 rounded-xl min-w-[210px]">
-                      <div className="flex items-center gap-1.5 text-slate-400 text-xs font-semibold uppercase tracking-wider mb-1">
-                        <Clock size={13} />
-                        <span>Programmed Slot</span>
-                      </div>
-
-                      <div className="flex items-baseline gap-1.5 font-mono">
-                        <span className="text-base sm:text-lg font-black text-slate-950">
-                          {show.startTime}
-                        </span>
-                        <span className="text-slate-400 font-bold text-xs">to</span>
-                        <span className="text-sm sm:text-base font-bold text-slate-700">
-                          {show.endTime}
-                        </span>
-                      </div>
-
-                      <div className="flex items-center gap-2 mt-2">
-                        <span className="text-xs font-bold bg-white px-2.5 py-0.5 rounded-md border border-slate-200 text-slate-800 shadow-2xs">
-                          {show.showDate}
-                        </span>
-                        <span className="text-[10px] font-semibold text-slate-500">
-                          {show.format || '2D'} Format
-                        </span>
-                      </div>
+                    {/* Venue & Screen */}
+                    <div className="flex items-center gap-1.5 text-xs text-slate-600 mt-2">
+                      <MapPin size={12} className="text-[#F84464] shrink-0" />
+                      <span className="truncate font-medium">{show.cinema?.name}</span>
+                      <span className="text-slate-300">•</span>
+                      <span className="font-bold text-indigo-700 text-[11px] shrink-0">{show.screen?.name}</span>
                     </div>
                   </div>
 
-                  {/* =========================================================================
-                      ROW 2: CAPACITY, PRICING TIERS & ACTIONS (Zero Truncation, Multi-Column)
-                      ========================================================================= */}
-                  <div className="border-t border-slate-100/90 pt-3.5 mt-2 bg-slate-50/60 -mx-4 sm:-mx-5 -mb-4 sm:-mb-5 p-4 sm:p-5 rounded-b-2xl flex flex-col lg:flex-row lg:items-center justify-between gap-4">
-                    {/* Left: Capacity & Hall Occupancy Progress */}
-                    <div className="lg:w-[320px] xl:w-[350px] shrink-0 space-y-1.5">
-                      <div className="flex items-center justify-between text-xs">
-                        <span className="text-slate-500 font-bold text-[10px] uppercase tracking-wider">
-                          Auditorium Capacity
-                        </span>
-                        <span className="font-bold text-slate-900 font-mono text-xs">
-                          {show.bookedSeatsCount} / {show.totalCapacity} Booked ({show.occupancyRate}%)
-                        </span>
-                      </div>
-
-                      {/* Gradient Progress Bar */}
-                      <div className="w-full h-2.5 bg-slate-200/90 rounded-full overflow-hidden shadow-inner">
-                        <div
-                          className={`h-full transition-all duration-500 rounded-full ${
-                            isCancelled
-                              ? 'bg-slate-300'
-                              : show.occupancyRate > 80
-                              ? 'bg-gradient-to-r from-amber-500 to-rose-500'
-                              : show.occupancyRate > 40
-                              ? 'bg-gradient-to-r from-emerald-500 to-amber-500'
-                              : 'bg-emerald-500'
-                          }`}
-                          style={{ width: `${Math.min(show.occupancyRate, 100)}%` }}
-                        />
-                      </div>
-
-                      <div className="flex items-center justify-between text-xs">
-                        <span className="text-emerald-700 font-bold text-[11px]">
-                          {availableSeats} seats open for booking
-                        </span>
-                        <span className="text-slate-500 font-mono text-[11px]">
-                          ₹{estShowRevenue.toLocaleString('en-IN')} Gross
-                        </span>
-                      </div>
+                  {/* Occupancy Progress */}
+                  <div className="space-y-1.5 pt-2 border-t border-slate-100">
+                    <div className="flex items-center justify-between text-[11px]">
+                      <span className="text-slate-500 font-medium">Occupancy</span>
+                      <span className="font-mono font-bold text-slate-800">
+                        {show.bookedSeatsCount}/{show.totalCapacity} ({show.occupancyRate}%)
+                      </span>
                     </div>
-
-                    {/* Center: Ticket Pricing Matrix (All Tiers Visible, No Cut-Offs) */}
-                    <div className="flex-1 min-w-0 lg:px-4 border-t lg:border-t-0 lg:border-l lg:border-r border-slate-200/70 pt-3 lg:pt-0">
-                      <p className="text-[10px] font-bold uppercase tracking-wider text-slate-400 mb-1.5">
-                        Configured Ticket Tiers
-                      </p>
-                      <div className="flex flex-wrap items-center gap-2">
-                        <div className="inline-flex items-center gap-1.5 bg-white px-2.5 py-1 rounded-lg border border-slate-200 shadow-2xs text-xs">
-                          <span className="text-slate-500 font-medium">Normal:</span>
-                          <span className="font-mono font-black text-slate-900">
-                            ₹{show.pricingTiers?.normal || show.ticketPrice || 200}
-                          </span>
-                        </div>
-                        <div className="inline-flex items-center gap-1.5 bg-white px-2.5 py-1 rounded-lg border border-slate-200 shadow-2xs text-xs">
-                          <span className="text-slate-500 font-medium">Premium:</span>
-                          <span className="font-mono font-black text-slate-900">
-                            ₹{show.pricingTiers?.premium || 280}
-                          </span>
-                        </div>
-                        <div className="inline-flex items-center gap-1.5 bg-white px-2.5 py-1 rounded-lg border border-slate-200 shadow-2xs text-xs">
-                          <span className="text-slate-500 font-medium">Recliner:</span>
-                          <span className="font-mono font-black text-slate-900">
-                            ₹{show.pricingTiers?.recliner || 450}
-                          </span>
-                        </div>
-                      </div>
+                    <div className="w-full h-1.5 bg-slate-100 rounded-full overflow-hidden">
+                      <div
+                        className="h-full bg-emerald-500 rounded-full"
+                        style={{ width: `${Math.min(show.occupancyRate, 100)}%` }}
+                      />
                     </div>
-
-                    {/* Right: Operational Action Buttons */}
-                    <div className="flex items-center gap-2 shrink-0 pt-2 lg:pt-0 border-t lg:border-t-0 border-slate-200/70 justify-end">
-                      <button
-                        onClick={() => openSeatMapModal(show)}
-                        className="inline-flex items-center justify-center gap-1.5 text-xs font-bold text-indigo-700 bg-indigo-50 hover:bg-indigo-100 border border-indigo-200/90 px-4 py-2.5 rounded-xl transition shadow-2xs"
-                        title="View Live Seat Layout & Heatmap"
-                      >
-                        <Armchair size={15} className="text-indigo-600" />
-                        <span>Live Seat Map</span>
-                      </button>
-
-                      {show.status !== 'cancelled' ? (
-                        <button
-                          onClick={() => openCancelModal(show)}
-                          className="inline-flex items-center justify-center gap-1.5 text-xs font-semibold text-slate-500 hover:text-rose-600 hover:bg-rose-50 px-3 py-2.5 rounded-xl border border-slate-200/80 hover:border-rose-200 transition"
-                          title="Cancel Showtime"
-                        >
-                          <Ban size={14} />
-                          <span>Cancel Show</span>
-                        </button>
-                      ) : (
-                        <span className="text-xs font-bold text-rose-500 uppercase px-3 py-2 bg-rose-50 rounded-xl border border-rose-100">
-                          Show Cancelled
-                        </span>
-                      )}
+                    <div className="flex items-center justify-between text-[10px] text-slate-400">
+                      <span>{availableSeats} seats open</span>
+                      <span className="font-bold text-slate-700">From ₹{show.pricingTiers?.normal || show.ticketPrice || 200}</span>
                     </div>
                   </div>
+
+                  {/* Action Button */}
+                  <button
+                    type="button"
+                    onClick={() => openSeatMapModal(show)}
+                    className="w-full py-2 bg-rose-50 hover:bg-[#F84464] text-[#F84464] hover:text-white rounded-xl text-xs font-bold border border-rose-200/80 hover:border-[#F84464] transition-all flex items-center justify-center gap-1.5 shadow-2xs cursor-pointer group/btn"
+                  >
+                    <Armchair size={14} className="group-hover/btn:scale-110 transition-transform" />
+                    <span>View Seat Layout</span>
+                  </button>
                 </div>
               </div>
             );
           })}
         </div>
-      ) : (
+      ) : viewMode === 'timeline' ? (
         /* ========================================================
-           VIEW MODE 2: CHRONOLOGICAL SCREEN TIMETABLE MATRIX
+           VIEW MODE 3: AUDITORIUM SCREEN TIMETABLE MATRIX
            ======================================================== */
         <div className="space-y-4">
           {groupedByScreen.map(group => (
@@ -978,7 +1023,7 @@ export default function VendorShowsPage() {
                   </div>
                 </div>
 
-                <span className="text-xs font-bold text-indigo-600 bg-indigo-50 px-2.5 py-1 rounded-lg self-start sm:self-auto">
+                <span className="text-xs font-bold text-indigo-600 bg-indigo-50 px-2.5 py-1 rounded-lg self-start sm:self-auto border border-indigo-100">
                   {group.shows.length} Showtimes Programmed
                 </span>
               </div>
@@ -991,10 +1036,10 @@ export default function VendorShowsPage() {
                     <div
                       key={show.id || show._id}
                       onClick={() => openSeatMapModal(show)}
-                      className={`p-3 rounded-xl border transition-all cursor-pointer group ${
+                      className={`p-3.5 rounded-xl border transition-all cursor-pointer group ${
                         isCancelled
                           ? 'bg-slate-50 border-slate-200 opacity-60'
-                          : 'bg-white border-slate-200 hover:border-indigo-400 hover:shadow-xs'
+                          : 'bg-white border-slate-200 hover:border-slate-300 hover:shadow-sm'
                       }`}
                     >
                       <div className="flex items-center justify-between mb-1.5">
@@ -1010,9 +1055,9 @@ export default function VendorShowsPage() {
                         {show.movieTitle}
                       </p>
 
-                      <div className="flex items-center justify-between text-[10px] text-slate-500 mt-2">
+                      <div className="flex items-center justify-between text-[10px] text-slate-500 mt-2.5 pt-2 border-t border-slate-100">
                         <span>{show.bookedSeatsCount} / {show.totalCapacity} Booked</span>
-                        <span className="font-bold text-slate-800">{show.occupancyRate}%</span>
+                        <span className="font-bold text-emerald-700">{show.occupancyRate}%</span>
                       </div>
                     </div>
                   );
@@ -1020,6 +1065,316 @@ export default function VendorShowsPage() {
               </div>
             </div>
           ))}
+        </div>
+      ) : viewMode === 'by_movie' ? (
+        /* ========================================================
+           VIEW MODE 4: GROUPED BY MOVIE SHOWCASE
+           ======================================================== */
+        <div className="space-y-4">
+          {groupedByMovie.map(group => (
+            <div
+              key={group.movieId}
+              className="bg-white rounded-2xl border border-slate-200/90 shadow-xs p-5 space-y-4"
+            >
+              {/* Movie Header */}
+              <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-3 border-b border-slate-100 pb-4">
+                <div className="flex items-center gap-3.5 min-w-0">
+                  <div className="w-12 h-16 rounded-lg overflow-hidden bg-slate-100 shrink-0 border border-slate-200 shadow-2xs">
+                    <img
+                      src={
+                        group.movie?.posterUrl ||
+                        'https://images.unsplash.com/photo-1489599849927-2ee91cede3ba?auto=format&fit=crop&w=400&q=80'
+                      }
+                      alt={group.movieTitle}
+                      className="w-full h-full object-cover"
+                    />
+                  </div>
+                  <div className="min-w-0">
+                    <div className="flex items-center gap-2">
+                      <h3 className="text-base font-black text-slate-900 truncate">
+                        {group.movieTitle}
+                      </h3>
+                      {group.movie?.certificate && (
+                        <span className="text-[10px] font-bold px-1.5 py-0.2 rounded bg-slate-100 text-slate-600 border border-slate-200 shrink-0">
+                          {group.movie.certificate}
+                        </span>
+                      )}
+                    </div>
+                    <p className="text-xs text-slate-400 mt-0.5 truncate">
+                      {group.movie?.language || 'Hindi'} • {group.movie?.duration || '2h 30m'}
+                    </p>
+                  </div>
+                </div>
+
+                <div className="flex items-center gap-2 flex-wrap sm:justify-end">
+                  <span className="text-xs font-bold px-2.5 py-1 rounded-lg bg-slate-100 text-slate-700">
+                    {group.shows.length} {group.shows.length === 1 ? 'Show' : 'Shows'}
+                  </span>
+                  <span className="text-xs font-bold px-2.5 py-1 rounded-lg bg-emerald-50 text-emerald-700 border border-emerald-100">
+                    {group.totalTickets} Tickets Booked ({group.occupancyRate}%)
+                  </span>
+                  <span className="text-xs font-mono font-bold px-2.5 py-1 rounded-lg bg-slate-50 text-slate-800 border border-slate-200">
+                    ₹{group.totalRevenue.toLocaleString('en-IN')} Gross
+                  </span>
+                </div>
+              </div>
+
+              {/* Showtimes Grid for this Movie */}
+              <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-3">
+                {group.shows.map(show => (
+                  <div
+                    key={show.id || show._id}
+                    onClick={() => openSeatMapModal(show)}
+                    className="p-3.5 bg-slate-50/70 hover:bg-white rounded-xl border border-slate-200/80 hover:border-slate-300 transition-all cursor-pointer group shadow-2xs"
+                  >
+                    <div className="flex items-center justify-between mb-1.5">
+                      <span className="font-mono font-black text-xs text-slate-900 bg-white px-2 py-0.5 rounded border border-slate-200 shadow-2xs">
+                        {show.startTime}
+                      </span>
+                      <span className="text-[10px] font-bold px-1.5 py-0.2 rounded bg-indigo-50 text-indigo-700">
+                        {show.format || '2D'}
+                      </span>
+                    </div>
+
+                    <p className="text-xs font-bold text-slate-800 truncate mt-1">
+                      {show.screen?.name}
+                    </p>
+                    <p className="text-[10px] text-slate-400 truncate flex items-center gap-1 mt-0.5">
+                      <MapPin size={10} className="text-[#F84464]" />
+                      <span>{show.cinema?.name}</span>
+                    </p>
+
+                    <div className="flex items-center justify-between text-[10px] mt-2.5 pt-2 border-t border-slate-200/60">
+                      <span className="text-slate-500 font-medium">{show.bookedSeatsCount}/{show.totalCapacity} Seats</span>
+                      <span className="font-bold text-emerald-700">{show.occupancyRate}%</span>
+                    </div>
+                  </div>
+                ))}
+              </div>
+            </div>
+          ))}
+        </div>
+      ) : (
+        /* ========================================================
+           VIEW MODE 1: DETAILED, ELEGANTLY ALIGNED SHOW CARDS (DEFAULT)
+           ======================================================== */
+        <div className="space-y-3.5">
+          {filteredShows.map((show) => {
+            const isCancelled = show.status === 'cancelled';
+            const isFillingFast = show.occupancyRate > 70 && !isCancelled;
+            const isAlmostFull = show.occupancyRate > 90 && !isCancelled;
+            const availableSeats = Math.max(0, (show.totalCapacity || 120) - (show.bookedSeatsCount || 0));
+            const estShowRevenue = (show.bookedSeatsCount || 0) * (show.pricingTiers?.normal || show.ticketPrice || 200);
+
+            return (
+              <div
+                key={show.id || show._id}
+                className="bg-white rounded-2xl border border-slate-200/90 hover:border-slate-300 shadow-xs hover:shadow-md transition-all duration-200 overflow-hidden group p-5 sm:p-6 space-y-4"
+              >
+                {/* ROW 1: FILM IDENTITY & TIMETABLES */}
+                <div className="flex flex-col md:flex-row md:items-start justify-between gap-4">
+                  {/* Left + Center: Poster & Film Metadata */}
+                  <div className="flex items-start gap-4 min-w-0 flex-1">
+                    {/* 2:3 Vertical Poster */}
+                    <div className="relative w-20 sm:w-24 aspect-[2/3] rounded-xl overflow-hidden bg-slate-100 shrink-0 border border-slate-200/80 shadow-xs group-hover:scale-102 transition-transform duration-300">
+                      <img
+                        src={
+                          show.movie?.posterUrl ||
+                          'https://images.unsplash.com/photo-1489599849927-2ee91cede3ba?auto=format&fit=crop&w=400&q=80'
+                        }
+                        alt={show.movieTitle}
+                        className="w-full h-full object-cover"
+                      />
+                      {/* Format Badge Overlay */}
+                      <div className="absolute top-1.5 left-1.5">
+                        <span className="bg-black/85 backdrop-blur-xs text-white text-[9px] font-black uppercase tracking-wider px-1.5 py-0.5 rounded shadow-xs">
+                          {show.format || '2D'}
+                        </span>
+                      </div>
+                    </div>
+
+                    {/* Movie Details */}
+                    <div className="min-w-0 flex-1 space-y-1.5">
+                      <div className="flex items-center gap-2 flex-wrap">
+                        {isCancelled ? (
+                          <span className="text-[10px] font-bold px-2.5 py-0.5 rounded-full bg-slate-100 text-slate-600 border border-slate-200">
+                            Cancelled
+                          </span>
+                        ) : isAlmostFull ? (
+                          <span className="text-[10px] font-bold px-2.5 py-0.5 rounded-full bg-purple-50 text-purple-700 border border-purple-200 flex items-center gap-1.5">
+                            <span className="w-1.5 h-1.5 rounded-full bg-purple-500 animate-ping" />
+                            Almost Full ({show.occupancyRate}%)
+                          </span>
+                        ) : isFillingFast ? (
+                          <span className="text-[10px] font-bold px-2.5 py-0.5 rounded-full bg-amber-50 text-amber-800 border border-amber-200 flex items-center gap-1.5">
+                            <span className="w-1.5 h-1.5 rounded-full bg-amber-500 animate-pulse" />
+                            Filling Fast ({show.occupancyRate}%)
+                          </span>
+                        ) : (
+                          <span className="text-[10px] font-bold px-2.5 py-0.5 rounded-full bg-emerald-50 text-emerald-700 border border-emerald-200 flex items-center gap-1.5">
+                            <span className="w-1.5 h-1.5 rounded-full bg-emerald-500" />
+                            Live on BookMyTrip
+                          </span>
+                        )}
+
+                        {show.movie?.certificate && (
+                          <span className="text-[10px] font-bold px-2 py-0.5 rounded bg-slate-100 text-slate-700 border border-slate-200">
+                            {show.movie.certificate}
+                          </span>
+                        )}
+                      </div>
+
+                      {/* Full Movie Title */}
+                      <h3 className="text-lg sm:text-xl font-black text-slate-900 leading-snug group-hover:text-[#F84464] transition-colors break-words">
+                        {show.movieTitle}
+                      </h3>
+
+                      {/* Language & Runtime */}
+                      <p className="text-xs text-slate-500 font-medium">
+                        {show.movie?.language || 'Hindi, English'} • {show.movie?.duration || '2h 30m'}
+                      </p>
+
+                      {/* Multiplex Venue & Screen */}
+                      <div className="flex flex-wrap items-center gap-2 pt-1">
+                        <span className="inline-flex items-center gap-1.5 text-xs text-slate-700 font-medium">
+                          <MapPin size={13} className="text-[#F84464] shrink-0" />
+                          <span>{show.cinema?.name || 'Multiplex Venue'}</span>
+                        </span>
+                        <span className="text-slate-300">•</span>
+                        <span className="inline-flex items-center gap-1 bg-indigo-50 border border-indigo-100/80 px-2.5 py-0.5 rounded-md text-indigo-900 font-bold text-xs">
+                          <Tv size={12} className="text-indigo-600 shrink-0" />
+                          <span>{show.screen?.name || 'Screen 1'}</span>
+                        </span>
+                      </div>
+                    </div>
+                  </div>
+
+                  {/* Right: Dedicated Showtime Slot Box */}
+                  <div className="shrink-0 md:text-right flex flex-col items-start md:items-end justify-center bg-slate-50/90 border border-slate-200/80 p-3 sm:p-3.5 rounded-xl min-w-[210px]">
+                    <div className="flex items-center gap-1.5 text-slate-400 text-xs font-semibold uppercase tracking-wider mb-1">
+                      <Clock size={13} />
+                      <span>Programmed Slot</span>
+                    </div>
+
+                    <div className="flex items-baseline gap-1.5 font-mono">
+                      <span className="text-base sm:text-lg font-black text-slate-950">
+                        {show.startTime}
+                      </span>
+                      <span className="text-slate-400 font-bold text-xs">to</span>
+                      <span className="text-sm sm:text-base font-bold text-slate-700">
+                        {show.endTime}
+                      </span>
+                    </div>
+
+                    <div className="flex items-center gap-2 mt-2">
+                      <span className="text-xs font-bold bg-white px-2.5 py-0.5 rounded-md border border-slate-200 text-slate-800 shadow-2xs">
+                        {show.showDate}
+                      </span>
+                      <span className="text-[10px] font-semibold text-slate-500">
+                        {show.format || '2D'} Format
+                      </span>
+                    </div>
+                  </div>
+                </div>
+
+                {/* ROW 2: CAPACITY, PRICING TIERS & ACTIONS */}
+                <div className="border-t border-slate-100/90 pt-3.5 mt-2 bg-slate-50/60 -mx-5 sm:-mx-6 -mb-5 sm:-mb-6 p-4 sm:p-5 rounded-b-2xl flex flex-col lg:flex-row lg:items-center justify-between gap-4">
+                  {/* Left: Capacity & Hall Occupancy Progress */}
+                  <div className="lg:w-[320px] xl:w-[350px] shrink-0 space-y-1.5">
+                    <div className="flex items-center justify-between text-xs">
+                      <span className="text-slate-500 font-bold text-[10px] uppercase tracking-wider">
+                        Auditorium Capacity
+                      </span>
+                      <span className="font-bold text-slate-900 font-mono text-xs">
+                        {show.bookedSeatsCount} / {show.totalCapacity} Booked ({show.occupancyRate}%)
+                      </span>
+                    </div>
+
+                    {/* Progress Bar */}
+                    <div className="w-full h-2.5 bg-slate-200/90 rounded-full overflow-hidden shadow-inner">
+                      <div
+                        className={`h-full transition-all duration-500 rounded-full ${
+                          isCancelled
+                            ? 'bg-slate-300'
+                            : show.occupancyRate > 80
+                            ? 'bg-gradient-to-r from-amber-500 to-rose-500'
+                            : show.occupancyRate > 40
+                            ? 'bg-gradient-to-r from-emerald-500 to-amber-500'
+                            : 'bg-emerald-500'
+                        }`}
+                        style={{ width: `${Math.min(show.occupancyRate, 100)}%` }}
+                      />
+                    </div>
+
+                    <div className="flex items-center justify-between text-xs">
+                      <span className="text-emerald-700 font-bold text-[11px]">
+                        {availableSeats} seats open for booking
+                      </span>
+                      <span className="text-slate-500 font-mono text-[11px]">
+                        ₹{estShowRevenue.toLocaleString('en-IN')} Gross
+                      </span>
+                    </div>
+                  </div>
+
+                  {/* Center: Ticket Pricing Matrix */}
+                  <div className="flex-1 min-w-0 lg:px-4 border-t lg:border-t-0 lg:border-l lg:border-r border-slate-200/70 pt-3 lg:pt-0">
+                    <p className="text-[10px] font-bold uppercase tracking-wider text-slate-400 mb-1.5">
+                      Configured Ticket Tiers
+                    </p>
+                    <div className="flex flex-wrap items-center gap-2">
+                      <div className="inline-flex items-center gap-1.5 bg-white px-2.5 py-1 rounded-lg border border-slate-200 shadow-2xs text-xs">
+                        <span className="text-slate-500 font-medium">Normal:</span>
+                        <span className="font-mono font-black text-slate-900">
+                          ₹{show.pricingTiers?.normal || show.ticketPrice || 200}
+                        </span>
+                      </div>
+                      <div className="inline-flex items-center gap-1.5 bg-white px-2.5 py-1 rounded-lg border border-slate-200 shadow-2xs text-xs">
+                        <span className="text-slate-500 font-medium">Premium:</span>
+                        <span className="font-mono font-black text-slate-900">
+                          ₹{show.pricingTiers?.premium || 280}
+                        </span>
+                      </div>
+                      <div className="inline-flex items-center gap-1.5 bg-white px-2.5 py-1 rounded-lg border border-slate-200 shadow-2xs text-xs">
+                        <span className="text-slate-500 font-medium">Recliner:</span>
+                        <span className="font-mono font-black text-slate-900">
+                          ₹{show.pricingTiers?.recliner || 450}
+                        </span>
+                      </div>
+                    </div>
+                  </div>
+
+                  {/* Right: Operational Action Buttons */}
+                  <div className="flex items-center gap-2 shrink-0 pt-2 lg:pt-0 border-t lg:border-t-0 border-slate-200/70 justify-end">
+                    <button
+                      type="button"
+                      onClick={() => openSeatMapModal(show)}
+                      className="inline-flex items-center justify-center gap-1.5 text-xs font-bold text-white bg-[#F84464] hover:bg-[#E23454] px-4 py-2.5 rounded-xl transition shadow-xs cursor-pointer"
+                      title="View Live Seat Layout & Heatmap"
+                    >
+                      <Armchair size={15} />
+                      <span>Live Seat Map</span>
+                    </button>
+
+                    {show.status !== 'cancelled' ? (
+                      <button
+                        type="button"
+                        onClick={() => openCancelModal(show)}
+                        className="inline-flex items-center justify-center gap-1.5 text-xs font-semibold text-slate-500 hover:text-rose-600 hover:bg-rose-50 px-3 py-2.5 rounded-xl border border-slate-200/80 hover:border-rose-200 transition cursor-pointer"
+                        title="Cancel Showtime"
+                      >
+                        <Ban size={14} />
+                        <span>Cancel Show</span>
+                      </button>
+                    ) : (
+                      <span className="text-xs font-bold text-slate-500 uppercase px-3 py-2 bg-slate-100 rounded-xl border border-slate-200">
+                        Show Cancelled
+                      </span>
+                    )}
+                  </div>
+                </div>
+              </div>
+            );
+          })}
         </div>
       )}
 

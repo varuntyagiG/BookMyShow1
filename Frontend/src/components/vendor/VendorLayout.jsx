@@ -39,37 +39,43 @@ export default function VendorLayout() {
   };
 
   return (
-    <div className="min-h-screen bg-[#F5F5FA] flex flex-col">
+    <div className="min-h-screen bg-[#F8F9FD] flex flex-col font-sans">
       {/* Top Partner Navigation Bar */}
-      <header className="bg-[#333545] text-white sticky top-0 z-40 shadow-md">
+      <header className="bg-slate-900 text-white sticky top-0 z-40 border-b border-slate-800 shadow-md">
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 h-16 flex items-center justify-between">
           {/* Brand & Mobile Hamburger */}
           <div className="flex items-center gap-3">
             <button
               onClick={() => setSidebarOpen(!sidebarOpen)}
-              className="lg:hidden p-2 rounded-lg text-gray-300 hover:text-white hover:bg-[#222432] transition"
+              className="lg:hidden p-2 rounded-xl text-slate-400 hover:text-white hover:bg-slate-800 transition"
               aria-label="Toggle Navigation"
             >
-              {sidebarOpen ? <X size={22} /> : <Menu size={22} />}
+              {sidebarOpen ? <X size={20} /> : <Menu size={20} />}
             </button>
 
             <Link to="/vendor/dashboard" className="flex items-center gap-2">
               <span className="text-2xl font-black tracking-tight text-white">
                 book<span className="text-[#F84464]">my</span>trip
               </span>
-              <span className="bg-[#F84464] text-white text-[10px] uppercase font-bold tracking-wider px-2 py-0.5 rounded-full ml-1">
-                Partner Portal
+              <span className="bg-gradient-to-r from-[#F84464] to-[#ff5e7e] text-white text-[10px] uppercase font-black tracking-wider px-2.5 py-0.5 rounded-full ml-1 shadow-xs">
+                Cinema Partner
               </span>
             </Link>
           </div>
 
           {/* Business Name, Customer App Link & Logout */}
           <div className="flex items-center gap-3 sm:gap-4">
+            {/* Live Sync Indicator */}
+            <div className="hidden xl:flex items-center gap-2 px-3 py-1 rounded-full bg-emerald-500/10 border border-emerald-500/20 text-emerald-400 text-xs font-semibold">
+              <span className="w-2 h-2 rounded-full bg-emerald-400 animate-pulse" />
+              <span>Live Engine Connected</span>
+            </div>
+
             <Link
               to="/"
               target="_blank"
               rel="noopener noreferrer"
-              className="hidden sm:inline-flex items-center gap-1.5 text-xs font-medium text-gray-300 hover:text-white bg-[#222432] hover:bg-black/40 px-3 py-1.5 rounded-lg border border-gray-700 transition"
+              className="hidden sm:inline-flex items-center gap-1.5 text-xs font-semibold text-slate-300 hover:text-white bg-slate-800 hover:bg-slate-750 px-3 py-1.5 rounded-xl border border-slate-700/80 transition"
               title="Open Customer Portal in new tab"
             >
               <span>Customer App</span>
@@ -78,28 +84,32 @@ export default function VendorLayout() {
 
             <Link
               to="/vendor/scanner"
-              className="inline-flex items-center gap-1.5 text-xs font-semibold text-white bg-[#F84464] hover:bg-[#d83552] px-3 py-1.5 rounded-lg shadow-sm transition"
+              className="inline-flex items-center gap-1.5 text-xs font-bold text-white bg-[#F84464] hover:bg-[#E23454] px-3.5 py-1.5 rounded-xl shadow-xs transition active:scale-95"
             >
               <CheckCircle2 size={13} />
               <span>Gate Scanner</span>
             </Link>
 
-            <div className="hidden md:flex flex-col text-right">
-              <span className="text-sm font-semibold text-white leading-tight">
-                {partner?.businessName || partner?.name || 'Cinema Partner'}
-              </span>
-              <span className="text-[11px] text-emerald-400 flex items-center justify-end gap-1">
-                <span className="w-1.5 h-1.5 rounded-full bg-emerald-400 animate-pulse"></span>
-                Active Partner
-              </span>
+            <div className="hidden md:flex items-center gap-2.5 pl-2 border-l border-slate-800">
+              <div className="w-8 h-8 rounded-xl bg-gradient-to-tr from-indigo-600 to-violet-600 text-white flex items-center justify-center font-bold text-xs shadow-xs">
+                {partner?.businessName ? partner.businessName.charAt(0).toUpperCase() : 'P'}
+              </div>
+              <div className="flex flex-col text-left">
+                <span className="text-xs font-bold text-white leading-tight max-w-[140px] truncate">
+                  {partner?.businessName || partner?.name || 'Cinema Circuit'}
+                </span>
+                <span className="text-[10px] text-slate-400">
+                  Verified Partner
+                </span>
+              </div>
             </div>
 
             <button
               onClick={handleLogout}
-              className="p-2 text-gray-400 hover:text-white hover:bg-[#222432] rounded-lg transition"
+              className="p-2 text-slate-400 hover:text-rose-400 hover:bg-slate-800/80 rounded-xl transition"
               title="Logout Partner Session"
             >
-              <LogOut size={18} />
+              <LogOut size={17} />
             </button>
           </div>
         </div>
@@ -109,10 +119,10 @@ export default function VendorLayout() {
       <div className="flex-1 max-w-7xl w-full mx-auto px-4 sm:px-6 lg:px-8 py-6 flex gap-6">
         {/* Desktop Sidebar */}
         <aside className="hidden lg:block w-64 shrink-0">
-          <div className="bg-white rounded-xl border border-gray-200 shadow-sm p-4 sticky top-24">
+          <div className="bg-white rounded-2xl border border-slate-200/90 shadow-xs p-4 sticky top-24">
             <div className="px-3 py-2 mb-2">
-              <p className="text-[11px] font-bold uppercase tracking-wider text-gray-400">
-                Operations Menu
+              <p className="text-[10px] font-black uppercase tracking-wider text-slate-400">
+                Box Office Operations
               </p>
             </div>
             <nav className="space-y-1">
@@ -123,23 +133,23 @@ export default function VendorLayout() {
                     key={item.to}
                     to={item.to}
                     className={({ isActive }) =>
-                      `flex items-center justify-between px-3 py-2.5 rounded-lg text-sm font-medium transition ${
+                      `flex items-center justify-between px-3 py-2.5 rounded-xl text-xs font-bold transition-all ${
                         isActive
-                          ? 'bg-[#F84464] text-white shadow-sm'
-                          : 'text-[#333545] hover:bg-gray-100 hover:text-black'
+                          ? 'bg-gradient-to-r from-[#F84464] to-[#ff5777] text-white shadow-xs'
+                          : 'text-slate-600 hover:bg-slate-100 hover:text-slate-900'
                       }`
                     }
                   >
                     {({ isActive }) => (
                       <>
                         <div className="flex items-center gap-3">
-                          <Icon size={18} className={isActive ? 'text-white' : 'text-gray-500'} />
+                          <Icon size={16} className={isActive ? 'text-white' : 'text-slate-400'} />
                           <span>{item.label}</span>
                         </div>
                         {item.badge && (
                           <span
-                            className={`text-[10px] font-bold px-1.5 py-0.5 rounded ${
-                              isActive ? 'bg-white text-[#F84464]' : 'bg-emerald-100 text-emerald-700'
+                            className={`text-[9px] font-black px-1.5 py-0.5 rounded-md uppercase tracking-wider ${
+                              isActive ? 'bg-white text-[#F84464]' : 'bg-emerald-50 text-emerald-700 border border-emerald-200/60'
                             }`}
                           >
                             {item.badge}
@@ -153,13 +163,13 @@ export default function VendorLayout() {
             </nav>
 
             {/* Quick Partner Support Box */}
-            <div className="mt-8 p-3 rounded-lg bg-gray-50 border border-gray-200">
-              <div className="flex items-center gap-2 text-xs font-semibold text-gray-800">
+            <div className="mt-8 p-3.5 rounded-xl bg-slate-50 border border-slate-200/80">
+              <div className="flex items-center gap-2 text-xs font-bold text-slate-800">
                 <Shield className="text-[#F84464]" size={14} />
-                <span>Partner Support</span>
+                <span>Partner Concierge</span>
               </div>
-              <p className="text-[11px] text-gray-500 mt-1">
-                24x7 Box Office & Gate operations desk active.
+              <p className="text-[11px] text-slate-500 mt-1 leading-relaxed">
+                24x7 Box Office & Gate admission support desk active.
               </p>
             </div>
           </div>

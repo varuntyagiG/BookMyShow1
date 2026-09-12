@@ -4,15 +4,12 @@ import { useVendorAuth } from '../../context/VendorAuthContext';
 import { vendorApi } from '../../services/vendorApi';
 import { useRealtimeRefresh } from '../../services/realtimeSync';
 import {
-  PageHeader,
-  MetricCard,
   Card,
   CardHeader,
   CardTitle,
   CardDescription,
   CardContent,
   Badge,
-  Button,
   Table,
   TableHeader,
   TableHead,
@@ -32,7 +29,6 @@ import {
   Film,
   ScanLine,
   RefreshCw,
-  Clock,
   ArrowUpRight
 } from 'lucide-react';
 
@@ -41,7 +37,6 @@ export default function VendorDashboardPage() {
   const [analytics, setAnalytics] = useState(null);
   const [loading, setLoading] = useState(true);
   const [refreshing, setRefreshing] = useState(false);
-  const [lastRefreshed, setLastRefreshed] = useState(new Date());
 
   const fetchDashboardData = async () => {
     try {
@@ -125,44 +120,155 @@ export default function VendorDashboardPage() {
         </div>
       </div>
 
-      {/* Metrics Row */}
-      <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4">
-        <MetricCard
-          title="Box Office Revenue"
-          value={`₹${summary.totalRevenue.toLocaleString('en-IN')}`}
-          change={`${summary.totalBookings} customer bookings`}
-          isPositive={true}
-          icon={IndianRupee}
-          loading={loading}
-          variant="brand"
-        />
+      {/* Senior Executive KPI Summary Row */}
+      <div className="grid grid-cols-1 sm:grid-cols-2 xl:grid-cols-4 gap-4 sm:gap-5">
+        {/* Metric 1: Box Office Revenue */}
+        <div className="bg-white p-5 rounded-2xl border border-slate-200/90 shadow-xs hover:shadow-md hover:border-slate-300 transition-all duration-200 flex flex-col justify-between relative overflow-hidden group">
+          <div className="absolute top-0 left-0 right-0 h-1 bg-gradient-to-r from-emerald-500 to-teal-600" />
+          <div>
+            <div className="flex items-start justify-between gap-3">
+              <div>
+                <p className="text-[10px] font-bold uppercase tracking-wider text-slate-400">
+                  Financial Gross
+                </p>
+                <h3 className="text-sm font-bold text-slate-800 mt-0.5">
+                  Box Office Revenue
+                </h3>
+              </div>
+              <div className="w-10 h-10 rounded-xl bg-emerald-50 text-emerald-600 border border-emerald-100 flex items-center justify-center shrink-0 group-hover:scale-105 transition-transform">
+                <IndianRupee size={20} />
+              </div>
+            </div>
 
-        <MetricCard
-          title="Tickets Sold"
-          value={summary.totalTicketsSold.toString()}
-          change={`${summary.occupancyRate}% theatre occupancy`}
-          isPositive={true}
-          icon={Ticket}
-          loading={loading}
-        />
+            <div className="mt-3 flex items-baseline gap-1.5 flex-wrap">
+              <span className="text-2xl sm:text-3xl font-black text-slate-900 tracking-tight">
+                ₹{summary.totalRevenue.toLocaleString('en-IN')}
+              </span>
+              <span className="text-xs font-semibold text-slate-400">gross</span>
+            </div>
+          </div>
 
-        <MetricCard
-          title="Gate Check-Ins"
-          value={summary.validatedTicketsCount.toString()}
-          change={`${summary.totalBookings > 0 ? Math.round((summary.validatedTicketsCount / summary.totalBookings) * 100) : 0}% admissions verified`}
-          isPositive={true}
-          icon={CheckCircle2}
-          loading={loading}
-        />
+          <div className="mt-4 pt-3 border-t border-slate-100 flex items-center justify-between text-xs">
+            <span className="inline-flex items-center gap-1.5 px-2 py-0.5 rounded-md text-[11px] font-bold bg-emerald-50 text-emerald-700 border border-emerald-200/60">
+              <TrendingUp size={12} />
+              Live Box Office
+            </span>
+            <span className="text-slate-500 font-medium text-[11px]">
+              {summary.totalBookings} {summary.totalBookings === 1 ? 'Booking' : 'Bookings'}
+            </span>
+          </div>
+        </div>
 
-        <MetricCard
-          title="Active Schedules"
-          value={summary.activeShowsCount.toString()}
-          change={`Across ${summary.screensCount} auditoriums`}
-          isPositive={true}
-          icon={Calendar}
-          loading={loading}
-        />
+        {/* Metric 2: Tickets Sold */}
+        <div className="bg-white p-5 rounded-2xl border border-slate-200/90 shadow-xs hover:shadow-md hover:border-slate-300 transition-all duration-200 flex flex-col justify-between relative overflow-hidden group">
+          <div className="absolute top-0 left-0 right-0 h-1 bg-gradient-to-r from-rose-500 to-pink-600" />
+          <div>
+            <div className="flex items-start justify-between gap-3">
+              <div>
+                <p className="text-[10px] font-bold uppercase tracking-wider text-slate-400">
+                  Admissions
+                </p>
+                <h3 className="text-sm font-bold text-slate-800 mt-0.5">
+                  Tickets Sold
+                </h3>
+              </div>
+              <div className="w-10 h-10 rounded-xl bg-rose-50 text-[#F84464] border border-rose-100 flex items-center justify-center shrink-0 group-hover:scale-105 transition-transform">
+                <Ticket size={20} />
+              </div>
+            </div>
+
+            <div className="mt-3 flex items-baseline gap-1.5">
+              <span className="text-2xl sm:text-3xl font-black text-slate-900 tracking-tight">
+                {summary.totalTicketsSold.toLocaleString('en-IN')}
+              </span>
+              <span className="text-xs font-semibold text-slate-400">tickets</span>
+            </div>
+          </div>
+
+          <div className="mt-4 pt-3 border-t border-slate-100 flex items-center justify-between text-xs">
+            <span className="inline-flex items-center gap-1.5 px-2 py-0.5 rounded-md text-[11px] font-bold bg-rose-50 text-[#F84464] border border-rose-200/60">
+              <Ticket size={12} />
+              {summary.occupancyRate}% Occupancy
+            </span>
+            <span className="text-slate-500 font-medium text-[11px]">
+              Across Shows
+            </span>
+          </div>
+        </div>
+
+        {/* Metric 3: Gate Check-Ins */}
+        <div className="bg-white p-5 rounded-2xl border border-slate-200/90 shadow-xs hover:shadow-md hover:border-slate-300 transition-all duration-200 flex flex-col justify-between relative overflow-hidden group">
+          <div className="absolute top-0 left-0 right-0 h-1 bg-gradient-to-r from-blue-500 to-indigo-600" />
+          <div>
+            <div className="flex items-start justify-between gap-3">
+              <div>
+                <p className="text-[10px] font-bold uppercase tracking-wider text-slate-400">
+                  Access Control
+                </p>
+                <h3 className="text-sm font-bold text-slate-800 mt-0.5">
+                  Gate Check-Ins
+                </h3>
+              </div>
+              <div className="w-10 h-10 rounded-xl bg-blue-50 text-blue-600 border border-blue-100 flex items-center justify-center shrink-0 group-hover:scale-105 transition-transform">
+                <CheckCircle2 size={20} />
+              </div>
+            </div>
+
+            <div className="mt-3 flex items-baseline gap-1.5">
+              <span className="text-2xl sm:text-3xl font-black text-slate-900 tracking-tight">
+                {summary.validatedTicketsCount.toLocaleString('en-IN')}
+              </span>
+              <span className="text-xs font-semibold text-slate-400">verified</span>
+            </div>
+          </div>
+
+          <div className="mt-4 pt-3 border-t border-slate-100 flex items-center justify-between text-xs">
+            <span className="inline-flex items-center gap-1.5 px-2 py-0.5 rounded-md text-[11px] font-bold bg-blue-50 text-blue-700 border border-blue-200/60">
+              <span className="w-1.5 h-1.5 rounded-full bg-blue-500 animate-pulse" />
+              Scanner Active
+            </span>
+            <span className="text-slate-500 font-medium text-[11px]">
+              {summary.totalBookings > 0 ? Math.round((summary.validatedTicketsCount / summary.totalBookings) * 100) : 0}% Verified
+            </span>
+          </div>
+        </div>
+
+        {/* Metric 4: Active Schedules */}
+        <div className="bg-white p-5 rounded-2xl border border-slate-200/90 shadow-xs hover:shadow-md hover:border-slate-300 transition-all duration-200 flex flex-col justify-between relative overflow-hidden group">
+          <div className="absolute top-0 left-0 right-0 h-1 bg-gradient-to-r from-violet-500 to-purple-600" />
+          <div>
+            <div className="flex items-start justify-between gap-3">
+              <div>
+                <p className="text-[10px] font-bold uppercase tracking-wider text-slate-400">
+                  Programming
+                </p>
+                <h3 className="text-sm font-bold text-slate-800 mt-0.5">
+                  Active Schedules
+                </h3>
+              </div>
+              <div className="w-10 h-10 rounded-xl bg-violet-50 text-violet-600 border border-violet-100 flex items-center justify-center shrink-0 group-hover:scale-105 transition-transform">
+                <Calendar size={20} />
+              </div>
+            </div>
+
+            <div className="mt-3 flex items-baseline gap-1.5">
+              <span className="text-2xl sm:text-3xl font-black text-slate-900 tracking-tight">
+                {summary.activeShowsCount.toLocaleString('en-IN')}
+              </span>
+              <span className="text-xs font-semibold text-slate-400">shows</span>
+            </div>
+          </div>
+
+          <div className="mt-4 pt-3 border-t border-slate-100 flex items-center justify-between text-xs">
+            <span className="inline-flex items-center gap-1.5 px-2 py-0.5 rounded-md text-[11px] font-bold bg-violet-50 text-violet-700 border border-violet-200/60">
+              <Tv size={12} />
+              {summary.screensCount} Audis
+            </span>
+            <span className="text-slate-500 font-medium text-[11px]">
+              Timetables
+            </span>
+          </div>
+        </div>
       </div>
 
       {/* Quick Operations Command Cards */}

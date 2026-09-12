@@ -1,4 +1,5 @@
 const path = require('path');
+const http = require('http');
 // Load .env from Backend root regardless of which directory the command was run from
 require('dotenv').config({ path: path.resolve(__dirname, '../.env') });
 require('dotenv').config();
@@ -12,6 +13,7 @@ const bookingRoutes = require('./routes/bookingRoutes');
 const vendorRoutes = require('./routes/vendorRoutes');
 const adminRoutes = require('./routes/adminRoutes');
 const { connectDB, isDBConnected, closeDB } = require('./config/db');
+const { initSocket } = require('./services/socketService');
 
 // 1. Environment Variable Validation
 const requiredEnvVars = ['MONGO_URI', 'JWT_SECRET'];
@@ -107,7 +109,10 @@ async function startServer() {
     // Connect to MongoDB before accepting HTTP traffic
     await connectDB();
 
-    const server = app.listen(PORT, () => {
+    const server = http.createServer(app);
+    initSocket(server);
+
+    server.listen(PORT, () => {
       console.log(`\n🚀 BookMyTrip Backend server is LIVE on port ${PORT} [${NODE_ENV}]`);
       console.log(`📋 Health Check: http://localhost:${PORT}/api/health\n`);
     });
