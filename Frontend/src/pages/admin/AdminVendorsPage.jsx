@@ -163,48 +163,48 @@ export default function AdminVendorsPage() {
                 key={v._id || v.id}
                 whileHover={{ y: -3, scale: 1.008 }}
                 transition={{ type: 'spring', stiffness: 350, damping: 25 }}
-                className="bg-white border border-gray-200 hover:border-gray-300 rounded-xl p-5 shadow-sm hover:shadow-md transition flex flex-col lg:flex-row lg:items-center lg:justify-between gap-6"
+                className="bg-white border border-slate-200/90 hover:border-slate-300 rounded-2xl p-5 sm:p-6 shadow-[0_4px_20px_-2px_rgba(0,0,0,0.05),0_1px_3px_rgba(0,0,0,0.02)] hover:shadow-[0_16px_36px_-6px_rgba(0,0,0,0.08)] transition-all duration-300 flex flex-col lg:flex-row lg:items-center lg:justify-between gap-6"
               >
                 {/* Partner Identity */}
                 <div className="flex items-start gap-4">
-                  <div className="w-12 h-12 rounded-xl bg-red-50 border border-red-100 flex items-center justify-center text-[#F84464] shrink-0">
-                    <Building2 size={24} />
+                  <div className="w-13 h-13 rounded-2xl bg-gradient-to-br from-rose-50 to-rose-100/80 border border-rose-200/80 flex items-center justify-center text-[#F84464] shrink-0 shadow-xs">
+                    <Building2 size={26} />
                   </div>
                   <div>
                     <div className="flex items-center gap-2.5 flex-wrap">
-                      <h3 className="text-base font-bold text-gray-900">
+                      <h3 className="text-base sm:text-lg font-bold text-slate-900">
                         {v.businessName || v.name || 'Cinema Partner'}
                       </h3>
                       {/* Status Badge */}
                       <span
-                        className={`text-[10px] font-bold uppercase tracking-wider px-2 py-0.5 rounded-full flex items-center gap-1 ${
+                        className={`text-[10px] font-bold uppercase tracking-wider px-2.5 py-0.5 rounded-full flex items-center gap-1 border ${
                           isApproved
-                            ? 'bg-emerald-100 text-emerald-800'
+                            ? 'bg-emerald-50 text-emerald-700 border-emerald-200/80'
                             : isPending
-                            ? 'bg-amber-100 text-amber-800'
-                            : 'bg-rose-100 text-rose-800'
+                            ? 'bg-amber-50 text-amber-700 border-amber-200/80'
+                            : 'bg-rose-50 text-rose-700 border-rose-200/80'
                         }`}
                       >
-                        {isApproved && <CheckCircle2 size={10} />}
-                        {isPending && <Clock size={10} />}
-                        {isSuspended && <ShieldAlert size={10} />}
+                        {isApproved && <CheckCircle2 size={11} />}
+                        {isPending && <Clock size={11} />}
+                        {isSuspended && <ShieldAlert size={11} />}
                         <span>{v.verificationStatus || (v.isDeactivated ? 'Suspended' : 'Approved')}</span>
                       </span>
                     </div>
 
-                    <p className="text-xs text-gray-500 mt-0.5">
-                      Operator: <span className="text-gray-800 font-semibold">{v.name}</span>
+                    <p className="text-xs text-slate-500 mt-0.5 font-medium">
+                      Primary Operator: <span className="text-slate-800 font-bold">{v.name}</span>
                     </p>
 
                     {/* Contact Pills */}
-                    <div className="flex items-center gap-2.5 mt-2 flex-wrap text-xs text-gray-600">
-                      <span className="flex items-center gap-1.5 bg-gray-50 px-2.5 py-1 rounded-lg border border-gray-200">
-                        <Mail size={12} className="text-gray-400" />
+                    <div className="flex items-center gap-2 mt-2.5 flex-wrap text-xs text-slate-600">
+                      <span className="flex items-center gap-1.5 bg-slate-50 px-3 py-1 rounded-xl border border-slate-200/80 font-medium">
+                        <Mail size={12} className="text-slate-400" />
                         <span>{v.email}</span>
                       </span>
                       {v.phone && (
-                        <span className="flex items-center gap-1.5 bg-gray-50 px-2.5 py-1 rounded-lg border border-gray-200">
-                          <Phone size={12} className="text-gray-400" />
+                        <span className="flex items-center gap-1.5 bg-slate-50 px-3 py-1 rounded-xl border border-slate-200/80 font-medium">
+                          <Phone size={12} className="text-slate-400" />
                           <span>{v.phone}</span>
                         </span>
                       )}
@@ -213,28 +213,28 @@ export default function AdminVendorsPage() {
                 </div>
 
                 {/* Aggregate Infrastructure Stats */}
-                <div className="grid grid-cols-3 gap-3 sm:gap-4 py-3 lg:py-0 border-y lg:border-y-0 lg:border-x border-gray-100 lg:px-6">
+                <div className="grid grid-cols-3 gap-4 sm:gap-6 py-3 lg:py-2.5 bg-slate-50/80 rounded-2xl border border-slate-200/70 px-6">
                   <div className="text-center">
-                    <div className="text-sm sm:text-base font-black text-gray-900">{v.cinemaCount || v.cinemasCount || 0}</div>
-                    <div className="text-[10px] uppercase font-bold text-gray-400">Venues</div>
+                    <div className="text-base sm:text-lg font-black text-slate-900">{v.cinemaCount || v.cinemasCount || 0}</div>
+                    <div className="text-[10px] uppercase font-bold text-slate-400 tracking-wider">Venues</div>
+                  </div>
+                  <div className="text-center border-x border-slate-200/80 px-4">
+                    <div className="text-base sm:text-lg font-black text-slate-900">{v.screenCount || v.screensCount || 0}</div>
+                    <div className="text-[10px] uppercase font-bold text-slate-400 tracking-wider">Screens</div>
                   </div>
                   <div className="text-center">
-                    <div className="text-sm sm:text-base font-black text-gray-900">{v.screenCount || v.screensCount || 0}</div>
-                    <div className="text-[10px] uppercase font-bold text-gray-400">Screens</div>
-                  </div>
-                  <div className="text-center">
-                    <div className="text-sm sm:text-base font-black text-gray-900">{v.showCount || v.activeShowsCount || 0}</div>
-                    <div className="text-[10px] uppercase font-bold text-gray-400">Shows</div>
+                    <div className="text-base sm:text-lg font-black text-slate-900">{v.showCount || v.activeShowsCount || 0}</div>
+                    <div className="text-[10px] uppercase font-bold text-slate-400 tracking-wider">Shows</div>
                   </div>
                 </div>
 
                 {/* Operations & KYC Actions */}
-                <div className="flex items-center gap-2 self-end lg:self-center">
+                <div className="flex items-center gap-2 self-end lg:self-center shrink-0">
                   {!isApproved && (
                     <button
                       onClick={() => handleUpdateStatus(v._id || v.id, 'approved')}
                       disabled={actionLoading === (v._id || v.id)}
-                      className="inline-flex items-center gap-1.5 bg-emerald-600 hover:bg-emerald-700 text-white text-xs font-semibold px-3.5 py-2 rounded-lg shadow-sm transition disabled:opacity-50"
+                      className="inline-flex items-center gap-1.5 bg-emerald-600 hover:bg-emerald-700 text-white text-xs font-bold px-4 py-2.5 rounded-xl shadow-xs transition disabled:opacity-50 cursor-pointer"
                     >
                       <CheckCircle2 size={14} />
                       <span>Approve KYC</span>
@@ -245,7 +245,7 @@ export default function AdminVendorsPage() {
                     <button
                       onClick={() => handleUpdateStatus(v._id || v.id, 'suspended')}
                       disabled={actionLoading === (v._id || v.id)}
-                      className="inline-flex items-center gap-1.5 bg-rose-50 hover:bg-rose-100 text-rose-700 border border-rose-200 text-xs font-semibold px-3.5 py-2 rounded-lg transition disabled:opacity-50"
+                      className="inline-flex items-center gap-1.5 bg-rose-50 hover:bg-rose-100 text-rose-700 border border-rose-200/80 text-xs font-bold px-4 py-2.5 rounded-xl transition disabled:opacity-50 cursor-pointer"
                     >
                       <ShieldAlert size={14} />
                       <span>Suspend</span>
@@ -256,7 +256,7 @@ export default function AdminVendorsPage() {
                     <button
                       onClick={() => handleUpdateStatus(v._id || v.id, 'approved')}
                       disabled={actionLoading === (v._id || v.id)}
-                      className="inline-flex items-center gap-1.5 bg-blue-600 hover:bg-blue-700 text-white text-xs font-semibold px-3.5 py-2 rounded-lg transition disabled:opacity-50"
+                      className="inline-flex items-center gap-1.5 bg-blue-600 hover:bg-blue-700 text-white text-xs font-bold px-4 py-2.5 rounded-xl shadow-xs transition disabled:opacity-50 cursor-pointer"
                     >
                       <CheckCircle2 size={14} />
                       <span>Reinstate</span>

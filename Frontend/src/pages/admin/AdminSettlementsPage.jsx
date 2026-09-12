@@ -113,35 +113,68 @@ export default function AdminSettlementsPage() {
       </div>
 
       {/* Nodal Balance Summary Cards */}
-      <div className="grid grid-cols-1 sm:grid-cols-3 gap-4">
-        <div className="bg-white border border-gray-200 rounded-xl p-5 shadow-sm">
-          <div className="text-xs font-bold uppercase tracking-wider text-gray-500 mb-1">
-            Total Gateway Inflow
+      <div className="grid grid-cols-1 sm:grid-cols-3 gap-4 sm:gap-5">
+        <div className="bg-gradient-to-br from-white via-white to-slate-50/50 border border-slate-200/90 rounded-2xl p-5 sm:p-6 shadow-[0_4px_20px_-2px_rgba(0,0,0,0.05),0_1px_3px_rgba(0,0,0,0.02)] hover:shadow-[0_16px_32px_-4px_rgba(0,0,0,0.08)] transition-all duration-300 relative overflow-hidden group">
+          <div className="absolute top-0 left-0 right-0 h-1 bg-gradient-to-r from-slate-700 to-slate-900" />
+          <div className="flex items-center justify-between mb-3">
+            <span className="text-[11px] font-extrabold uppercase tracking-wider text-slate-500">
+              Total Gateway Inflow
+            </span>
+            <div className="w-10 h-10 rounded-xl bg-slate-100 text-slate-700 flex items-center justify-center font-bold shadow-2xs group-hover:scale-105 transition-transform">
+              <Landmark size={18} />
+            </div>
           </div>
-          <div className="text-2xl sm:text-3xl font-black text-gray-900">
+          <div className="text-2xl sm:text-3xl font-black text-slate-900 tracking-tight font-sans">
             ₹{loading ? '---' : totalGross.toLocaleString('en-IN')}
           </div>
-          <p className="text-[11px] text-gray-500 mt-2">Gross admissions across partner theatres</p>
+          <div className="mt-3 flex items-center gap-2 text-xs text-slate-500">
+            <span className="bg-slate-100 text-slate-700 font-bold px-2 py-0.5 rounded-full text-[10px] border border-slate-200">
+              Gross Volume
+            </span>
+            <span className="font-medium">Across partner theatres</span>
+          </div>
         </div>
 
-        <div className="bg-white border border-gray-200 rounded-xl p-5 shadow-sm">
-          <div className="text-xs font-bold uppercase tracking-wider text-emerald-600 mb-1">
-            Platform Retained Fee (10%)
+        <div className="bg-gradient-to-br from-white via-white to-emerald-50/40 border border-slate-200/90 rounded-2xl p-5 sm:p-6 shadow-[0_4px_20px_-2px_rgba(16,185,129,0.06),0_1px_3px_rgba(0,0,0,0.02)] hover:shadow-[0_16px_32px_-4px_rgba(16,185,129,0.14)] hover:border-emerald-300 transition-all duration-300 relative overflow-hidden group">
+          <div className="absolute top-0 left-0 right-0 h-1 bg-gradient-to-r from-emerald-500 via-teal-500 to-emerald-400" />
+          <div className="flex items-center justify-between mb-3">
+            <span className="text-[11px] font-extrabold uppercase tracking-wider text-emerald-800/80">
+              Platform Retained Fee (10%)
+            </span>
+            <div className="w-10 h-10 rounded-xl bg-emerald-500/10 text-emerald-600 border border-emerald-500/20 flex items-center justify-center font-bold shadow-2xs group-hover:scale-105 group-hover:bg-emerald-600 group-hover:text-white transition-all duration-300">
+              <Percent size={18} />
+            </div>
           </div>
-          <div className="text-2xl sm:text-3xl font-black text-emerald-600">
+          <div className="text-2xl sm:text-3xl font-black text-emerald-600 tracking-tight font-sans">
             ₹{loading ? '---' : totalPlatformCut.toLocaleString('en-IN')}
           </div>
-          <p className="text-[11px] text-gray-500 mt-2">BookMyTrip convenience earnings</p>
+          <div className="mt-3 flex items-center gap-2 text-xs text-slate-500">
+            <span className="bg-emerald-50 text-emerald-700 font-bold px-2 py-0.5 rounded-full text-[10px] border border-emerald-200/70">
+              10% Platform Cut
+            </span>
+            <span className="font-medium">Convenience earnings</span>
+          </div>
         </div>
 
-        <div className="bg-white border border-gray-200 rounded-xl p-5 shadow-sm">
-          <div className="text-xs font-bold uppercase tracking-wider text-blue-600 mb-1">
-            Net Disbursable to Partners
+        <div className="bg-gradient-to-br from-white via-white to-blue-50/40 border border-slate-200/90 rounded-2xl p-5 sm:p-6 shadow-[0_4px_20px_-2px_rgba(59,130,246,0.06),0_1px_3px_rgba(0,0,0,0.02)] hover:shadow-[0_16px_32px_-4px_rgba(59,130,246,0.14)] hover:border-blue-300 transition-all duration-300 relative overflow-hidden group">
+          <div className="absolute top-0 left-0 right-0 h-1 bg-gradient-to-r from-blue-500 via-indigo-500 to-sky-500" />
+          <div className="flex items-center justify-between mb-3">
+            <span className="text-[11px] font-extrabold uppercase tracking-wider text-blue-800/80">
+              Net Disbursable to Partners
+            </span>
+            <div className="w-10 h-10 rounded-xl bg-blue-500/10 text-blue-600 border border-blue-500/20 flex items-center justify-center font-bold shadow-2xs group-hover:scale-105 group-hover:bg-blue-600 group-hover:text-white transition-all duration-300">
+              <ShieldCheck size={18} />
+            </div>
           </div>
-          <div className="text-2xl sm:text-3xl font-black text-blue-600">
+          <div className="text-2xl sm:text-3xl font-black text-blue-600 tracking-tight font-sans">
             ₹{loading ? '---' : totalNetPayable.toLocaleString('en-IN')}
           </div>
-          <p className="text-[11px] text-gray-500 mt-2">Scheduled for weekly bank wire</p>
+          <div className="mt-3 flex items-center gap-2 text-xs text-slate-500">
+            <span className="bg-blue-50 text-blue-700 font-bold px-2 py-0.5 rounded-full text-[10px] border border-blue-200/70">
+              Weekly Bank Wire
+            </span>
+            <span className="font-medium">Scheduled RTGS/NEFT</span>
+          </div>
         </div>
       </div>
 

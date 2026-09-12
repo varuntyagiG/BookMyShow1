@@ -129,38 +129,44 @@ export default function VendorDashboardPage() {
         <motion.div
           whileHover={{ y: -4 }}
           transition={{ type: 'spring', stiffness: 350, damping: 25 }}
-          className="bg-white p-5 rounded-2xl border border-slate-200/90 shadow-xs hover:shadow-md hover:border-slate-300 transition-all duration-200 flex flex-col justify-between relative overflow-hidden group"
+          className="bg-gradient-to-br from-white via-white to-emerald-50/40 p-5 rounded-2xl border border-slate-200/90 shadow-[0_4px_20px_-2px_rgba(16,185,129,0.06),0_1px_3px_rgba(0,0,0,0.02)] hover:shadow-[0_16px_32px_-4px_rgba(16,185,129,0.14)] hover:border-emerald-300/80 transition-all duration-300 flex flex-col justify-between relative overflow-hidden group"
         >
-          <div className="absolute top-0 left-0 right-0 h-1 bg-gradient-to-r from-emerald-500 to-teal-600" />
+          <div className="absolute top-0 left-0 right-0 h-1 bg-gradient-to-r from-emerald-500 via-teal-500 to-emerald-400" />
+          <div className="absolute -right-8 -top-8 w-24 h-24 rounded-full bg-emerald-400/10 blur-xl pointer-events-none group-hover:scale-150 transition-transform duration-500" />
           <div>
-            <div className="flex items-start justify-between gap-3">
+            <div className="flex items-start justify-between gap-3 relative z-10">
               <div>
-                <p className="text-[10px] font-bold uppercase tracking-wider text-slate-400">
+                <p className="text-[10px] font-extrabold uppercase tracking-wider text-emerald-700/80">
                   Financial Gross
                 </p>
                 <h3 className="text-sm font-bold text-slate-800 mt-0.5">
                   Box Office Revenue
                 </h3>
               </div>
-              <div className="w-10 h-10 rounded-xl bg-emerald-50 text-emerald-600 border border-emerald-100 flex items-center justify-center shrink-0 group-hover:scale-105 transition-transform">
+              <div className="w-11 h-11 rounded-2xl bg-emerald-500/10 text-emerald-600 border border-emerald-500/20 flex items-center justify-center shrink-0 group-hover:scale-110 group-hover:bg-emerald-600 group-hover:text-white transition-all duration-300 shadow-xs">
                 <IndianRupee size={20} />
               </div>
             </div>
 
-            <div className="mt-3 flex items-baseline gap-1.5 flex-wrap">
-              <span className="text-2xl sm:text-3xl font-black text-slate-900 tracking-tight">
+            <div className="mt-3.5 flex items-baseline gap-2 flex-wrap relative z-10">
+              <span className="text-2xl sm:text-3xl font-black text-slate-900 tracking-tight font-sans">
                 ₹{summary.totalRevenue.toLocaleString('en-IN')}
               </span>
-              <span className="text-xs font-semibold text-slate-400">gross</span>
+              <span className="text-[11px] font-bold text-emerald-600 bg-emerald-50 px-2 py-0.5 rounded-full border border-emerald-200/70">
+                Gross Collection
+              </span>
             </div>
           </div>
 
-          <div className="mt-4 pt-3 border-t border-slate-100 flex items-center justify-between text-xs">
-            <span className="inline-flex items-center gap-1.5 px-2 py-0.5 rounded-md text-[11px] font-bold bg-emerald-50 text-emerald-700 border border-emerald-200/60">
-              <TrendingUp size={12} />
+          <div className="mt-4 pt-3 border-t border-slate-100 flex items-center justify-between text-xs relative z-10">
+            <span className="inline-flex items-center gap-1.5 px-2.5 py-1 rounded-full text-[11px] font-bold bg-emerald-50 text-emerald-700 border border-emerald-200/70">
+              <span className="relative flex h-2 w-2">
+                <span className="animate-ping absolute inline-flex h-full w-full rounded-full bg-emerald-400 opacity-75"></span>
+                <span className="relative inline-flex rounded-full h-2 w-2 bg-emerald-500"></span>
+              </span>
               Live Box Office
             </span>
-            <span className="text-slate-500 font-medium text-[11px]">
+            <span className="text-slate-500 font-semibold text-[11px]">
               {summary.totalBookings} {summary.totalBookings === 1 ? 'Booking' : 'Bookings'}
             </span>
           </div>
@@ -170,38 +176,41 @@ export default function VendorDashboardPage() {
         <motion.div
           whileHover={{ y: -4 }}
           transition={{ type: 'spring', stiffness: 350, damping: 25 }}
-          className="bg-white p-5 rounded-2xl border border-slate-200/90 shadow-xs hover:shadow-md hover:border-slate-300 transition-all duration-200 flex flex-col justify-between relative overflow-hidden group"
+          className="bg-gradient-to-br from-white via-white to-rose-50/40 p-5 rounded-2xl border border-slate-200/90 shadow-[0_4px_20px_-2px_rgba(248,68,100,0.06),0_1px_3px_rgba(0,0,0,0.02)] hover:shadow-[0_16px_32px_-4px_rgba(248,68,100,0.14)] hover:border-rose-300/80 transition-all duration-300 flex flex-col justify-between relative overflow-hidden group"
         >
-          <div className="absolute top-0 left-0 right-0 h-1 bg-gradient-to-r from-rose-500 to-pink-600" />
+          <div className="absolute top-0 left-0 right-0 h-1 bg-gradient-to-r from-[#F84464] via-rose-500 to-pink-500" />
+          <div className="absolute -right-8 -top-8 w-24 h-24 rounded-full bg-rose-400/10 blur-xl pointer-events-none group-hover:scale-150 transition-transform duration-500" />
           <div>
-            <div className="flex items-start justify-between gap-3">
+            <div className="flex items-start justify-between gap-3 relative z-10">
               <div>
-                <p className="text-[10px] font-bold uppercase tracking-wider text-slate-400">
+                <p className="text-[10px] font-extrabold uppercase tracking-wider text-rose-700/80">
                   Admissions
                 </p>
                 <h3 className="text-sm font-bold text-slate-800 mt-0.5">
                   Tickets Sold
                 </h3>
               </div>
-              <div className="w-10 h-10 rounded-xl bg-rose-50 text-[#F84464] border border-rose-100 flex items-center justify-center shrink-0 group-hover:scale-105 transition-transform">
+              <div className="w-11 h-11 rounded-2xl bg-rose-500/10 text-[#F84464] border border-rose-500/20 flex items-center justify-center shrink-0 group-hover:scale-110 group-hover:bg-[#F84464] group-hover:text-white transition-all duration-300 shadow-xs">
                 <Ticket size={20} />
               </div>
             </div>
 
-            <div className="mt-3 flex items-baseline gap-1.5">
-              <span className="text-2xl sm:text-3xl font-black text-slate-900 tracking-tight">
+            <div className="mt-3.5 flex items-baseline gap-2 relative z-10">
+              <span className="text-2xl sm:text-3xl font-black text-slate-900 tracking-tight font-sans">
                 {summary.totalTicketsSold.toLocaleString('en-IN')}
               </span>
-              <span className="text-xs font-semibold text-slate-400">tickets</span>
+              <span className="text-[11px] font-bold text-[#F84464] bg-rose-50 px-2 py-0.5 rounded-full border border-rose-200/70">
+                Admissions
+              </span>
             </div>
           </div>
 
-          <div className="mt-4 pt-3 border-t border-slate-100 flex items-center justify-between text-xs">
-            <span className="inline-flex items-center gap-1.5 px-2 py-0.5 rounded-md text-[11px] font-bold bg-rose-50 text-[#F84464] border border-rose-200/60">
+          <div className="mt-4 pt-3 border-t border-slate-100 flex items-center justify-between text-xs relative z-10">
+            <span className="inline-flex items-center gap-1.5 px-2.5 py-1 rounded-full text-[11px] font-bold bg-rose-50 text-[#F84464] border border-rose-200/70">
               <Ticket size={12} />
               {summary.occupancyRate}% Occupancy
             </span>
-            <span className="text-slate-500 font-medium text-[11px]">
+            <span className="text-slate-500 font-semibold text-[11px]">
               Across Shows
             </span>
           </div>
@@ -211,38 +220,41 @@ export default function VendorDashboardPage() {
         <motion.div
           whileHover={{ y: -4 }}
           transition={{ type: 'spring', stiffness: 350, damping: 25 }}
-          className="bg-white p-5 rounded-2xl border border-slate-200/90 shadow-xs hover:shadow-md hover:border-slate-300 transition-all duration-200 flex flex-col justify-between relative overflow-hidden group"
+          className="bg-gradient-to-br from-white via-white to-blue-50/40 p-5 rounded-2xl border border-slate-200/90 shadow-[0_4px_20px_-2px_rgba(59,130,246,0.06),0_1px_3px_rgba(0,0,0,0.02)] hover:shadow-[0_16px_32px_-4px_rgba(59,130,246,0.14)] hover:border-blue-300/80 transition-all duration-300 flex flex-col justify-between relative overflow-hidden group"
         >
-          <div className="absolute top-0 left-0 right-0 h-1 bg-gradient-to-r from-blue-500 to-indigo-600" />
+          <div className="absolute top-0 left-0 right-0 h-1 bg-gradient-to-r from-blue-500 via-indigo-500 to-sky-500" />
+          <div className="absolute -right-8 -top-8 w-24 h-24 rounded-full bg-blue-400/10 blur-xl pointer-events-none group-hover:scale-150 transition-transform duration-500" />
           <div>
-            <div className="flex items-start justify-between gap-3">
+            <div className="flex items-start justify-between gap-3 relative z-10">
               <div>
-                <p className="text-[10px] font-bold uppercase tracking-wider text-slate-400">
+                <p className="text-[10px] font-extrabold uppercase tracking-wider text-blue-700/80">
                   Access Control
                 </p>
                 <h3 className="text-sm font-bold text-slate-800 mt-0.5">
                   Gate Check-Ins
                 </h3>
               </div>
-              <div className="w-10 h-10 rounded-xl bg-blue-50 text-blue-600 border border-blue-100 flex items-center justify-center shrink-0 group-hover:scale-105 transition-transform">
+              <div className="w-11 h-11 rounded-2xl bg-blue-500/10 text-blue-600 border border-blue-500/20 flex items-center justify-center shrink-0 group-hover:scale-110 group-hover:bg-blue-600 group-hover:text-white transition-all duration-300 shadow-xs">
                 <CheckCircle2 size={20} />
               </div>
             </div>
 
-            <div className="mt-3 flex items-baseline gap-1.5">
-              <span className="text-2xl sm:text-3xl font-black text-slate-900 tracking-tight">
+            <div className="mt-3.5 flex items-baseline gap-2 relative z-10">
+              <span className="text-2xl sm:text-3xl font-black text-slate-900 tracking-tight font-sans">
                 {summary.validatedTicketsCount.toLocaleString('en-IN')}
               </span>
-              <span className="text-xs font-semibold text-slate-400">verified</span>
+              <span className="text-[11px] font-bold text-blue-600 bg-blue-50 px-2 py-0.5 rounded-full border border-blue-200/70">
+                Verified
+              </span>
             </div>
           </div>
 
-          <div className="mt-4 pt-3 border-t border-slate-100 flex items-center justify-between text-xs">
-            <span className="inline-flex items-center gap-1.5 px-2 py-0.5 rounded-md text-[11px] font-bold bg-blue-50 text-blue-700 border border-blue-200/60">
-              <span className="w-1.5 h-1.5 rounded-full bg-blue-500 animate-pulse" />
+          <div className="mt-4 pt-3 border-t border-slate-100 flex items-center justify-between text-xs relative z-10">
+            <span className="inline-flex items-center gap-1.5 px-2.5 py-1 rounded-full text-[11px] font-bold bg-blue-50 text-blue-700 border border-blue-200/70">
+              <span className="w-2 h-2 rounded-full bg-blue-500 animate-pulse" />
               Scanner Active
             </span>
-            <span className="text-slate-500 font-medium text-[11px]">
+            <span className="text-slate-500 font-semibold text-[11px]">
               {summary.totalBookings > 0 ? Math.round((summary.validatedTicketsCount / summary.totalBookings) * 100) : 0}% Verified
             </span>
           </div>
@@ -252,39 +264,42 @@ export default function VendorDashboardPage() {
         <motion.div
           whileHover={{ y: -4 }}
           transition={{ type: 'spring', stiffness: 350, damping: 25 }}
-          className="bg-white p-5 rounded-2xl border border-slate-200/90 shadow-xs hover:shadow-md hover:border-slate-300 transition-all duration-200 flex flex-col justify-between relative overflow-hidden group"
+          className="bg-gradient-to-br from-white via-white to-violet-50/40 p-5 rounded-2xl border border-slate-200/90 shadow-[0_4px_20px_-2px_rgba(139,92,246,0.06),0_1px_3px_rgba(0,0,0,0.02)] hover:shadow-[0_16px_32px_-4px_rgba(139,92,246,0.14)] hover:border-violet-300/80 transition-all duration-300 flex flex-col justify-between relative overflow-hidden group"
         >
-          <div className="absolute top-0 left-0 right-0 h-1 bg-gradient-to-r from-violet-500 to-purple-600" />
+          <div className="absolute top-0 left-0 right-0 h-1 bg-gradient-to-r from-violet-500 via-purple-500 to-fuchsia-500" />
+          <div className="absolute -right-8 -top-8 w-24 h-24 rounded-full bg-violet-400/10 blur-xl pointer-events-none group-hover:scale-150 transition-transform duration-500" />
           <div>
-            <div className="flex items-start justify-between gap-3">
+            <div className="flex items-start justify-between gap-3 relative z-10">
               <div>
-                <p className="text-[10px] font-bold uppercase tracking-wider text-slate-400">
+                <p className="text-[10px] font-extrabold uppercase tracking-wider text-violet-700/80">
                   Programming
                 </p>
                 <h3 className="text-sm font-bold text-slate-800 mt-0.5">
                   Active Schedules
                 </h3>
               </div>
-              <div className="w-10 h-10 rounded-xl bg-violet-50 text-violet-600 border border-violet-100 flex items-center justify-center shrink-0 group-hover:scale-105 transition-transform">
+              <div className="w-11 h-11 rounded-2xl bg-violet-500/10 text-violet-600 border border-violet-500/20 flex items-center justify-center shrink-0 group-hover:scale-110 group-hover:bg-violet-600 group-hover:text-white transition-all duration-300 shadow-xs">
                 <Calendar size={20} />
               </div>
             </div>
 
-            <div className="mt-3 flex items-baseline gap-1.5">
-              <span className="text-2xl sm:text-3xl font-black text-slate-900 tracking-tight">
+            <div className="mt-3.5 flex items-baseline gap-2 relative z-10">
+              <span className="text-2xl sm:text-3xl font-black text-slate-900 tracking-tight font-sans">
                 {summary.activeShowsCount.toLocaleString('en-IN')}
               </span>
-              <span className="text-xs font-semibold text-slate-400">shows</span>
+              <span className="text-[11px] font-bold text-violet-600 bg-violet-50 px-2 py-0.5 rounded-full border border-violet-200/70">
+                Live Shows
+              </span>
             </div>
           </div>
 
-          <div className="mt-4 pt-3 border-t border-slate-100 flex items-center justify-between text-xs">
-            <span className="inline-flex items-center gap-1.5 px-2 py-0.5 rounded-md text-[11px] font-bold bg-violet-50 text-violet-700 border border-violet-200/60">
+          <div className="mt-4 pt-3 border-t border-slate-100 flex items-center justify-between text-xs relative z-10">
+            <span className="inline-flex items-center gap-1.5 px-2.5 py-1 rounded-full text-[11px] font-bold bg-violet-50 text-violet-700 border border-violet-200/70">
               <Tv size={12} />
               {summary.screensCount} Audis
             </span>
-            <span className="text-slate-500 font-medium text-[11px]">
-              Timetables
+            <span className="text-slate-500 font-semibold text-[11px]">
+              Timetables Active
             </span>
           </div>
         </motion.div>
@@ -295,26 +310,26 @@ export default function VendorDashboardPage() {
         <motion.div whileHover={{ y: -4, scale: 1.015 }} whileTap={{ scale: 0.98 }} transition={{ type: 'spring', stiffness: 350, damping: 25 }}>
           <Link
             to="/vendor/cinemas"
-            className="group bg-white p-5 rounded-2xl border border-slate-200/80 shadow-[0_2px_8px_-2px_rgba(0,0,0,0.03)] hover:border-[#F84464]/60 hover:shadow-[0_12px_28px_-6px_rgba(248,68,100,0.12)] transition-all duration-300 relative overflow-hidden flex items-center justify-between h-full"
+            className="group bg-white p-5 rounded-2xl border border-slate-200/90 shadow-[0_2px_12px_-2px_rgba(0,0,0,0.04)] hover:border-[#F84464]/60 hover:shadow-[0_16px_32px_-6px_rgba(248,68,100,0.14)] transition-all duration-300 relative overflow-hidden flex items-center justify-between h-full"
           >
-          <div className="absolute top-0 left-0 right-0 h-0.5 bg-gradient-to-r from-rose-500 to-rose-300 opacity-0 group-hover:opacity-100 transition-opacity" />
-          <div className="flex items-center gap-3.5">
-            <div className="w-11 h-11 rounded-xl bg-rose-50 text-[#F84464] border border-rose-100 flex items-center justify-center font-bold shadow-2xs group-hover:scale-105 group-hover:bg-[#F84464] group-hover:text-white transition-all duration-300">
-              <MapPin size={20} />
-            </div>
-            <div>
-              <p className="font-bold text-slate-900 text-sm group-hover:text-[#F84464] transition">
-                Cinemas & Venues
-              </p>
-              <div className="flex items-center gap-1.5 mt-0.5">
-                <span className="inline-flex items-center px-1.5 py-0.5 rounded text-[10px] font-semibold bg-rose-50 text-rose-700">
-                  {summary.cinemasCount} Venues
-                </span>
-                <span className="text-[11px] text-slate-400">Manage</span>
+            <div className="absolute top-0 left-0 right-0 h-1 bg-gradient-to-r from-[#F84464] to-rose-400 opacity-80 group-hover:opacity-100 transition-opacity" />
+            <div className="flex items-center gap-3.5">
+              <div className="w-12 h-12 rounded-2xl bg-rose-50 text-[#F84464] border border-rose-100 flex items-center justify-center font-bold shadow-xs group-hover:scale-105 group-hover:bg-[#F84464] group-hover:text-white transition-all duration-300">
+                <MapPin size={22} />
+              </div>
+              <div>
+                <p className="font-bold text-slate-900 text-sm group-hover:text-[#F84464] transition">
+                  Cinemas & Venues
+                </p>
+                <div className="flex items-center gap-1.5 mt-1">
+                  <span className="inline-flex items-center px-2 py-0.5 rounded-full text-[10px] font-bold bg-rose-50 text-[#F84464] border border-rose-200/60">
+                    {summary.cinemasCount} Venues
+                  </span>
+                  <span className="text-[11px] text-slate-400 font-medium">Manage</span>
+                </div>
               </div>
             </div>
-          </div>
-            <div className="w-8 h-8 rounded-lg bg-slate-50 flex items-center justify-center text-slate-400 group-hover:bg-rose-50 group-hover:text-[#F84464] transition-all">
+            <div className="w-8 h-8 rounded-xl bg-slate-50 flex items-center justify-center text-slate-400 group-hover:bg-rose-50 group-hover:text-[#F84464] transition-all">
               <ArrowUpRight size={16} className="group-hover:translate-x-0.5 group-hover:-translate-y-0.5 transition-transform" />
             </div>
           </Link>
@@ -323,26 +338,26 @@ export default function VendorDashboardPage() {
         <motion.div whileHover={{ y: -4, scale: 1.015 }} whileTap={{ scale: 0.98 }} transition={{ type: 'spring', stiffness: 350, damping: 25 }}>
           <Link
             to="/vendor/screens"
-            className="group bg-white p-5 rounded-2xl border border-slate-200/80 shadow-[0_2px_8px_-2px_rgba(0,0,0,0.03)] hover:border-indigo-500/60 hover:shadow-[0_12px_28px_-6px_rgba(99,102,241,0.12)] transition-all duration-300 relative overflow-hidden flex items-center justify-between h-full"
+            className="group bg-white p-5 rounded-2xl border border-slate-200/90 shadow-[0_2px_12px_-2px_rgba(0,0,0,0.04)] hover:border-indigo-500/60 hover:shadow-[0_16px_32px_-6px_rgba(99,102,241,0.14)] transition-all duration-300 relative overflow-hidden flex items-center justify-between h-full"
           >
-          <div className="absolute top-0 left-0 right-0 h-0.5 bg-gradient-to-r from-indigo-500 to-indigo-300 opacity-0 group-hover:opacity-100 transition-opacity" />
-          <div className="flex items-center gap-3.5">
-            <div className="w-11 h-11 rounded-xl bg-indigo-50 text-indigo-600 border border-indigo-100 flex items-center justify-center font-bold shadow-2xs group-hover:scale-105 group-hover:bg-indigo-600 group-hover:text-white transition-all duration-300">
-              <Tv size={20} />
-            </div>
-            <div>
-              <p className="font-bold text-slate-900 text-sm group-hover:text-indigo-600 transition">
-                Audi Screens
-              </p>
-              <div className="flex items-center gap-1.5 mt-0.5">
-                <span className="inline-flex items-center px-1.5 py-0.5 rounded text-[10px] font-semibold bg-indigo-50 text-indigo-700">
-                  {summary.screensCount} Audis
-                </span>
-                <span className="text-[11px] text-slate-400">Layouts</span>
+            <div className="absolute top-0 left-0 right-0 h-1 bg-gradient-to-r from-indigo-500 to-violet-400 opacity-80 group-hover:opacity-100 transition-opacity" />
+            <div className="flex items-center gap-3.5">
+              <div className="w-12 h-12 rounded-2xl bg-indigo-50 text-indigo-600 border border-indigo-100 flex items-center justify-center font-bold shadow-xs group-hover:scale-105 group-hover:bg-indigo-600 group-hover:text-white transition-all duration-300">
+                <Tv size={22} />
+              </div>
+              <div>
+                <p className="font-bold text-slate-900 text-sm group-hover:text-indigo-600 transition">
+                  Audi Screens
+                </p>
+                <div className="flex items-center gap-1.5 mt-1">
+                  <span className="inline-flex items-center px-2 py-0.5 rounded-full text-[10px] font-bold bg-indigo-50 text-indigo-700 border border-indigo-200/60">
+                    {summary.screensCount} Audis
+                  </span>
+                  <span className="text-[11px] text-slate-400 font-medium">Layouts</span>
+                </div>
               </div>
             </div>
-          </div>
-            <div className="w-8 h-8 rounded-lg bg-slate-50 flex items-center justify-center text-slate-400 group-hover:bg-indigo-50 group-hover:text-indigo-600 transition-all">
+            <div className="w-8 h-8 rounded-xl bg-slate-50 flex items-center justify-center text-slate-400 group-hover:bg-indigo-50 group-hover:text-indigo-600 transition-all">
               <ArrowUpRight size={16} className="group-hover:translate-x-0.5 group-hover:-translate-y-0.5 transition-transform" />
             </div>
           </Link>
@@ -351,26 +366,26 @@ export default function VendorDashboardPage() {
         <motion.div whileHover={{ y: -4, scale: 1.015 }} whileTap={{ scale: 0.98 }} transition={{ type: 'spring', stiffness: 350, damping: 25 }}>
           <Link
             to="/vendor/movies"
-            className="group bg-white p-5 rounded-2xl border border-slate-200/80 shadow-[0_2px_8px_-2px_rgba(0,0,0,0.03)] hover:border-emerald-500/60 hover:shadow-[0_12px_28px_-6px_rgba(16,185,129,0.12)] transition-all duration-300 relative overflow-hidden flex items-center justify-between h-full"
+            className="group bg-white p-5 rounded-2xl border border-slate-200/90 shadow-[0_2px_12px_-2px_rgba(0,0,0,0.04)] hover:border-emerald-500/60 hover:shadow-[0_16px_32px_-6px_rgba(16,185,129,0.14)] transition-all duration-300 relative overflow-hidden flex items-center justify-between h-full"
           >
-          <div className="absolute top-0 left-0 right-0 h-0.5 bg-gradient-to-r from-emerald-500 to-emerald-300 opacity-0 group-hover:opacity-100 transition-opacity" />
-          <div className="flex items-center gap-3.5">
-            <div className="w-11 h-11 rounded-xl bg-emerald-50 text-emerald-600 border border-emerald-100 flex items-center justify-center font-bold shadow-2xs group-hover:scale-105 group-hover:bg-emerald-600 group-hover:text-white transition-all duration-300">
-              <Film size={20} />
-            </div>
-            <div>
-              <p className="font-bold text-slate-900 text-sm group-hover:text-emerald-600 transition">
-                Movie Catalog
-              </p>
-              <div className="flex items-center gap-1.5 mt-0.5">
-                <span className="inline-flex items-center px-1.5 py-0.5 rounded text-[10px] font-semibold bg-emerald-50 text-emerald-700">
-                  Schedule
-                </span>
-                <span className="text-[11px] text-slate-400">Library</span>
+            <div className="absolute top-0 left-0 right-0 h-1 bg-gradient-to-r from-emerald-500 to-teal-400 opacity-80 group-hover:opacity-100 transition-opacity" />
+            <div className="flex items-center gap-3.5">
+              <div className="w-12 h-12 rounded-2xl bg-emerald-50 text-emerald-600 border border-emerald-100 flex items-center justify-center font-bold shadow-xs group-hover:scale-105 group-hover:bg-emerald-600 group-hover:text-white transition-all duration-300">
+                <Film size={22} />
+              </div>
+              <div>
+                <p className="font-bold text-slate-900 text-sm group-hover:text-emerald-600 transition">
+                  Movie Catalog
+                </p>
+                <div className="flex items-center gap-1.5 mt-1">
+                  <span className="inline-flex items-center px-2 py-0.5 rounded-full text-[10px] font-bold bg-emerald-50 text-emerald-700 border border-emerald-200/60">
+                    Schedule
+                  </span>
+                  <span className="text-[11px] text-slate-400 font-medium">Library</span>
+                </div>
               </div>
             </div>
-          </div>
-            <div className="w-8 h-8 rounded-lg bg-slate-50 flex items-center justify-center text-slate-400 group-hover:bg-emerald-50 group-hover:text-emerald-600 transition-all">
+            <div className="w-8 h-8 rounded-xl bg-slate-50 flex items-center justify-center text-slate-400 group-hover:bg-emerald-50 group-hover:text-emerald-600 transition-all">
               <ArrowUpRight size={16} className="group-hover:translate-x-0.5 group-hover:-translate-y-0.5 transition-transform" />
             </div>
           </Link>
@@ -379,26 +394,26 @@ export default function VendorDashboardPage() {
         <motion.div whileHover={{ y: -4, scale: 1.015 }} whileTap={{ scale: 0.98 }} transition={{ type: 'spring', stiffness: 350, damping: 25 }}>
           <Link
             to="/vendor/shows"
-            className="group bg-white p-5 rounded-2xl border border-slate-200/80 shadow-[0_2px_8px_-2px_rgba(0,0,0,0.03)] hover:border-amber-500/60 hover:shadow-[0_12px_28px_-6px_rgba(245,158,11,0.12)] transition-all duration-300 relative overflow-hidden flex items-center justify-between h-full"
+            className="group bg-white p-5 rounded-2xl border border-slate-200/90 shadow-[0_2px_12px_-2px_rgba(0,0,0,0.04)] hover:border-amber-500/60 hover:shadow-[0_16px_32px_-6px_rgba(245,158,11,0.14)] transition-all duration-300 relative overflow-hidden flex items-center justify-between h-full"
           >
-            <div className="absolute top-0 left-0 right-0 h-0.5 bg-gradient-to-r from-amber-500 to-amber-300 opacity-0 group-hover:opacity-100 transition-opacity" />
+            <div className="absolute top-0 left-0 right-0 h-1 bg-gradient-to-r from-amber-500 to-orange-400 opacity-80 group-hover:opacity-100 transition-opacity" />
             <div className="flex items-center gap-3.5">
-              <div className="w-11 h-11 rounded-xl bg-amber-50 text-amber-600 border border-amber-100 flex items-center justify-center font-bold shadow-2xs group-hover:scale-105 group-hover:bg-amber-600 group-hover:text-white transition-all duration-300">
-                <Calendar size={20} />
+              <div className="w-12 h-12 rounded-2xl bg-amber-50 text-amber-600 border border-amber-100 flex items-center justify-center font-bold shadow-xs group-hover:scale-105 group-hover:bg-amber-600 group-hover:text-white transition-all duration-300">
+                <Calendar size={22} />
               </div>
               <div>
                 <p className="font-bold text-slate-900 text-sm group-hover:text-amber-600 transition">
                   Show Timetables
                 </p>
-                <div className="flex items-center gap-1.5 mt-0.5">
-                  <span className="inline-flex items-center px-1.5 py-0.5 rounded text-[10px] font-semibold bg-amber-50 text-amber-700">
+                <div className="flex items-center gap-1.5 mt-1">
+                  <span className="inline-flex items-center px-2 py-0.5 rounded-full text-[10px] font-bold bg-amber-50 text-amber-700 border border-amber-200/60">
                     {summary.activeShowsCount} Live
                   </span>
-                  <span className="text-[11px] text-slate-400">Timetable</span>
+                  <span className="text-[11px] text-slate-400 font-medium">Timetable</span>
                 </div>
               </div>
             </div>
-            <div className="w-8 h-8 rounded-lg bg-slate-50 flex items-center justify-center text-slate-400 group-hover:bg-amber-50 group-hover:text-amber-600 transition-all">
+            <div className="w-8 h-8 rounded-xl bg-slate-50 flex items-center justify-center text-slate-400 group-hover:bg-amber-50 group-hover:text-amber-600 transition-all">
               <ArrowUpRight size={16} className="group-hover:translate-x-0.5 group-hover:-translate-y-0.5 transition-transform" />
             </div>
           </Link>

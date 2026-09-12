@@ -103,24 +103,25 @@ export default function AdminDashboardPage() {
         <motion.div
           whileHover={{ y: -4, scale: 1.015 }}
           transition={{ type: 'spring', stiffness: 350, damping: 25 }}
-          className="bg-gradient-to-br from-[#F84464] to-[#d83552] text-white rounded-xl p-5 shadow-md relative overflow-hidden group"
+          className="bg-gradient-to-br from-[#F84464] via-[#E23454] to-[#C92A46] text-white rounded-2xl p-5 sm:p-6 shadow-[0_8px_30px_rgba(248,68,100,0.28)] relative overflow-hidden group border border-rose-400/30"
         >
-          <div className="flex items-center justify-between mb-3">
-            <span className="text-xs font-bold uppercase tracking-wider text-white/90">
+          <div className="absolute -right-8 -bottom-8 w-32 h-32 rounded-full bg-white/10 blur-2xl pointer-events-none group-hover:scale-125 transition-transform duration-500" />
+          <div className="flex items-center justify-between mb-3 relative z-10">
+            <span className="text-[11px] font-extrabold uppercase tracking-wider text-white/80">
               Nationwide GMV
             </span>
-            <div className="w-9 h-9 rounded-xl bg-white/20 flex items-center justify-center text-white">
-              <TrendingUp size={18} />
+            <div className="w-10 h-10 rounded-xl bg-white/15 backdrop-blur-xs flex items-center justify-center text-white border border-white/20 shadow-xs group-hover:scale-105 transition-transform">
+              <TrendingUp size={20} />
             </div>
           </div>
-          <div className="text-2xl sm:text-3xl font-black text-white tracking-tight">
+          <div className="text-2xl sm:text-3xl font-black text-white tracking-tight font-sans relative z-10">
             ₹{loading ? '---' : Number(stats.totalRevenue || 0).toLocaleString('en-IN')}
           </div>
-          <div className="mt-2 flex items-center gap-1.5 text-[11px] text-white/80">
-            <span className="bg-white/20 text-white font-bold px-1.5 py-0.5 rounded text-[10px] flex items-center">
-              <ArrowUpRight size={11} /> Live
+          <div className="mt-3 flex items-center gap-2 text-xs text-white/90 relative z-10">
+            <span className="bg-white/20 text-white font-bold px-2 py-0.5 rounded-full text-[10px] flex items-center gap-1 border border-white/20">
+              <ArrowUpRight size={12} /> Live Feed
             </span>
-            <span>Gross ticket sales</span>
+            <span className="text-white/80 font-medium">Gross ticket sales volume</span>
           </div>
         </motion.div>
 
@@ -128,22 +129,26 @@ export default function AdminDashboardPage() {
         <motion.div
           whileHover={{ y: -4, scale: 1.015 }}
           transition={{ type: 'spring', stiffness: 350, damping: 25 }}
-          className="bg-white border border-gray-200 rounded-xl p-5 shadow-sm hover:shadow-md transition"
+          className="bg-gradient-to-br from-white via-white to-emerald-50/40 border border-slate-200/90 rounded-2xl p-5 sm:p-6 shadow-[0_4px_20px_-2px_rgba(16,185,129,0.06),0_1px_3px_rgba(0,0,0,0.02)] hover:shadow-[0_16px_32px_-4px_rgba(16,185,129,0.14)] hover:border-emerald-300 transition-all duration-300 relative overflow-hidden group"
         >
-          <div className="flex items-center justify-between mb-3">
-            <span className="text-xs font-bold text-gray-500 uppercase tracking-wider">
+          <div className="absolute top-0 left-0 right-0 h-1 bg-gradient-to-r from-emerald-500 via-teal-500 to-emerald-400" />
+          <div className="absolute -right-8 -top-8 w-24 h-24 rounded-full bg-emerald-400/10 blur-xl pointer-events-none group-hover:scale-150 transition-transform duration-500" />
+          <div className="flex items-center justify-between mb-3 relative z-10">
+            <span className="text-[11px] font-extrabold uppercase tracking-wider text-emerald-800/80">
               Platform Fee Take (10%)
             </span>
-            <div className="w-9 h-9 rounded-xl bg-emerald-50 text-emerald-600 flex items-center justify-center">
+            <div className="w-10 h-10 rounded-xl bg-emerald-500/10 text-emerald-600 border border-emerald-500/20 flex items-center justify-center shadow-xs group-hover:scale-105 group-hover:bg-emerald-600 group-hover:text-white transition-all duration-300">
               <Percent size={18} />
             </div>
           </div>
-          <div className="text-2xl sm:text-3xl font-black text-emerald-600 tracking-tight">
+          <div className="text-2xl sm:text-3xl font-black text-emerald-600 tracking-tight font-sans relative z-10">
             ₹{loading ? '---' : Number(stats.platformFeeRevenue || 0).toLocaleString('en-IN')}
           </div>
-          <div className="mt-2 flex items-center gap-1.5 text-[11px] text-gray-500">
-            <span className="text-emerald-700 font-bold bg-emerald-100 px-1.5 py-0.2 rounded text-[10px]">10% Take</span>
-            <span>Convenience fees</span>
+          <div className="mt-3 flex items-center gap-2 text-xs text-slate-500 relative z-10">
+            <span className="text-emerald-700 font-bold bg-emerald-50 px-2 py-0.5 rounded-full text-[10px] border border-emerald-200/70">
+              10% Platform Cut
+            </span>
+            <span className="font-medium">Convenience earnings</span>
           </div>
         </motion.div>
 
@@ -151,24 +156,26 @@ export default function AdminDashboardPage() {
         <motion.div
           whileHover={{ y: -4, scale: 1.015 }}
           transition={{ type: 'spring', stiffness: 350, damping: 25 }}
-          className="bg-white border border-gray-200 rounded-xl p-5 shadow-sm hover:shadow-md transition"
+          className="bg-gradient-to-br from-white via-white to-blue-50/40 border border-slate-200/90 rounded-2xl p-5 sm:p-6 shadow-[0_4px_20px_-2px_rgba(59,130,246,0.06),0_1px_3px_rgba(0,0,0,0.02)] hover:shadow-[0_16px_32px_-4px_rgba(59,130,246,0.14)] hover:border-blue-300 transition-all duration-300 relative overflow-hidden group"
         >
-          <div className="flex items-center justify-between mb-3">
-            <span className="text-xs font-bold text-gray-500 uppercase tracking-wider">
+          <div className="absolute top-0 left-0 right-0 h-1 bg-gradient-to-r from-blue-500 via-indigo-500 to-sky-500" />
+          <div className="absolute -right-8 -top-8 w-24 h-24 rounded-full bg-blue-400/10 blur-xl pointer-events-none group-hover:scale-150 transition-transform duration-500" />
+          <div className="flex items-center justify-between mb-3 relative z-10">
+            <span className="text-[11px] font-extrabold uppercase tracking-wider text-blue-800/80">
               Confirmed Admissions
             </span>
-            <div className="w-9 h-9 rounded-xl bg-blue-50 text-blue-600 flex items-center justify-center">
+            <div className="w-10 h-10 rounded-xl bg-blue-500/10 text-blue-600 border border-blue-500/20 flex items-center justify-center shadow-xs group-hover:scale-105 group-hover:bg-blue-600 group-hover:text-white transition-all duration-300">
               <Ticket size={18} />
             </div>
           </div>
-          <div className="text-2xl sm:text-3xl font-black text-gray-900 tracking-tight">
+          <div className="text-2xl sm:text-3xl font-black text-slate-900 tracking-tight font-sans relative z-10">
             {loading ? '---' : Number(stats.totalBookings || 0).toLocaleString('en-IN')}
           </div>
-          <div className="mt-2 flex items-center gap-1.5 text-[11px] text-gray-500">
-            <span className="text-blue-700 font-bold bg-blue-100 px-1.5 py-0.2 rounded text-[10px]">
-              {stats.activeBookingsCount || stats.totalBookings || 0}
+          <div className="mt-3 flex items-center gap-2 text-xs text-slate-500 relative z-10">
+            <span className="text-blue-700 font-bold bg-blue-50 px-2 py-0.5 rounded-full text-[10px] border border-blue-200/70">
+              {stats.activeBookingsCount || stats.totalBookings || 0} Issued
             </span>
-            <span>Tickets issued</span>
+            <span className="font-medium">Total tickets reserved</span>
           </div>
         </motion.div>
 
@@ -176,67 +183,69 @@ export default function AdminDashboardPage() {
         <motion.div
           whileHover={{ y: -4, scale: 1.015 }}
           transition={{ type: 'spring', stiffness: 350, damping: 25 }}
-          className="bg-white border border-gray-200 rounded-xl p-5 shadow-sm hover:shadow-md transition"
+          className="bg-gradient-to-br from-white via-white to-amber-50/40 border border-slate-200/90 rounded-2xl p-5 sm:p-6 shadow-[0_4px_20px_-2px_rgba(245,158,11,0.06),0_1px_3px_rgba(0,0,0,0.02)] hover:shadow-[0_16px_32px_-4px_rgba(245,158,11,0.14)] hover:border-amber-300 transition-all duration-300 relative overflow-hidden group"
         >
-          <div className="flex items-center justify-between mb-3">
-            <span className="text-xs font-bold text-gray-500 uppercase tracking-wider">
+          <div className="absolute top-0 left-0 right-0 h-1 bg-gradient-to-r from-amber-500 via-orange-500 to-yellow-500" />
+          <div className="absolute -right-8 -top-8 w-24 h-24 rounded-full bg-amber-400/10 blur-xl pointer-events-none group-hover:scale-150 transition-transform duration-500" />
+          <div className="flex items-center justify-between mb-3 relative z-10">
+            <span className="text-[11px] font-extrabold uppercase tracking-wider text-amber-800/80">
               Partner Venues
             </span>
-            <div className="w-9 h-9 rounded-xl bg-amber-50 text-amber-600 flex items-center justify-center">
+            <div className="w-10 h-10 rounded-xl bg-amber-500/10 text-amber-600 border border-amber-500/20 flex items-center justify-center shadow-xs group-hover:scale-105 group-hover:bg-amber-600 group-hover:text-white transition-all duration-300">
               <Building2 size={18} />
             </div>
           </div>
-          <div className="text-2xl sm:text-3xl font-black text-gray-900 tracking-tight">
+          <div className="text-2xl sm:text-3xl font-black text-slate-900 tracking-tight font-sans relative z-10">
             {loading ? '---' : Number(stats.totalVendors || 0).toLocaleString('en-IN')}
           </div>
-          <div className="mt-2 flex items-center gap-1.5 text-[11px] text-gray-500">
-            <span className="text-amber-800 font-bold bg-amber-100 px-1.5 py-0.2 rounded text-[10px]">
-              {stats.pendingVendors || 0} Pending
+          <div className="mt-3 flex items-center gap-2 text-xs text-slate-500 relative z-10">
+            <span className="text-amber-800 font-bold bg-amber-50 px-2 py-0.5 rounded-full text-[10px] border border-amber-200/70">
+              {stats.pendingVendors || 0} Pending KYC
             </span>
-            <span>Theatres in network</span>
+            <span className="font-medium">Theatres in network</span>
           </div>
         </motion.div>
       </div>
 
       {/* Secondary Operational Telemetry Row */}
       <div className="grid grid-cols-2 sm:grid-cols-4 gap-4">
-        <div className="bg-white border border-gray-200 rounded-xl p-4 shadow-sm flex items-center gap-3.5">
-          <div className="w-10 h-10 rounded-lg bg-purple-50 flex items-center justify-center text-purple-600">
-            <Film size={18} />
+        <div className="bg-white border border-slate-200/90 rounded-2xl p-4 shadow-[0_2px_8px_-2px_rgba(0,0,0,0.03)] hover:shadow-md hover:border-slate-300 transition-all flex items-center gap-3.5">
+          <div className="w-11 h-11 rounded-xl bg-purple-50 flex items-center justify-center text-purple-600 border border-purple-100 shadow-2xs">
+            <Film size={20} />
           </div>
           <div>
-            <div className="text-lg font-black text-gray-900">{stats.totalMovies || 0}</div>
-            <div className="text-[11px] text-gray-500">CineData Titles</div>
+            <div className="text-lg font-black text-slate-900">{stats.totalMovies || 0}</div>
+            <div className="text-[11px] text-slate-500 font-medium">CineData Titles</div>
           </div>
         </div>
 
-        <div className="bg-white border border-gray-200 rounded-xl p-4 shadow-sm flex items-center gap-3.5">
-          <div className="w-10 h-10 rounded-lg bg-emerald-50 flex items-center justify-center text-emerald-600">
-            <Building2 size={18} />
+        <div className="bg-white border border-slate-200/90 rounded-2xl p-4 shadow-[0_2px_8px_-2px_rgba(0,0,0,0.03)] hover:shadow-md hover:border-slate-300 transition-all flex items-center gap-3.5">
+          <div className="w-11 h-11 rounded-xl bg-emerald-50 flex items-center justify-center text-emerald-600 border border-emerald-100 shadow-2xs">
+            <Building2 size={20} />
           </div>
           <div>
-            <div className="text-lg font-black text-gray-900">{stats.totalCinemas || 0}</div>
-            <div className="text-[11px] text-gray-500">Theatres Online</div>
+            <div className="text-lg font-black text-slate-900">{stats.totalCinemas || 0}</div>
+            <div className="text-[11px] text-slate-500 font-medium">Theatres Online</div>
           </div>
         </div>
 
-        <div className="bg-white border border-gray-200 rounded-xl p-4 shadow-sm flex items-center gap-3.5">
-          <div className="w-10 h-10 rounded-lg bg-sky-50 flex items-center justify-center text-sky-600">
-            <Calendar size={18} />
+        <div className="bg-white border border-slate-200/90 rounded-2xl p-4 shadow-[0_2px_8px_-2px_rgba(0,0,0,0.03)] hover:shadow-md hover:border-slate-300 transition-all flex items-center gap-3.5">
+          <div className="w-11 h-11 rounded-xl bg-sky-50 flex items-center justify-center text-sky-600 border border-sky-100 shadow-2xs">
+            <Calendar size={20} />
           </div>
           <div>
-            <div className="text-lg font-black text-gray-900">{stats.totalShows || 0}</div>
-            <div className="text-[11px] text-gray-500">Scheduled Shows</div>
+            <div className="text-lg font-black text-slate-900">{stats.totalShows || 0}</div>
+            <div className="text-[11px] text-slate-500 font-medium">Scheduled Shows</div>
           </div>
         </div>
 
-        <div className="bg-white border border-gray-200 rounded-xl p-4 shadow-sm flex items-center gap-3.5">
-          <div className="w-10 h-10 rounded-lg bg-rose-50 flex items-center justify-center text-[#F84464]">
-            <Users size={18} />
+        <div className="bg-white border border-slate-200/90 rounded-2xl p-4 shadow-[0_2px_8px_-2px_rgba(0,0,0,0.03)] hover:shadow-md hover:border-slate-300 transition-all flex items-center gap-3.5">
+          <div className="w-11 h-11 rounded-xl bg-rose-50 flex items-center justify-center text-[#F84464] border border-rose-100 shadow-2xs">
+            <Users size={20} />
           </div>
           <div>
-            <div className="text-lg font-black text-gray-900">{stats.totalUsers || 0}</div>
-            <div className="text-[11px] text-gray-500">Registered Patrons</div>
+            <div className="text-lg font-black text-slate-900">{stats.totalUsers || 0}</div>
+            <div className="text-[11px] text-slate-500 font-medium">Registered Patrons</div>
           </div>
         </div>
       </div>

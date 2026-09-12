@@ -219,27 +219,27 @@ export default function AdminOffersPage() {
                 key={offerId}
                 whileHover={{ y: -4, scale: 1.015 }}
                 transition={{ type: 'spring', stiffness: 350, damping: 25 }}
-                className="bg-white border border-gray-200 hover:border-gray-300 rounded-xl p-5 shadow-sm hover:shadow-md transition flex flex-col justify-between"
+                className="bg-white border border-slate-200/90 hover:border-rose-300/80 rounded-2xl p-5 sm:p-6 shadow-[0_4px_20px_-2px_rgba(0,0,0,0.05),0_1px_3px_rgba(0,0,0,0.02)] hover:shadow-[0_16px_36px_-6px_rgba(248,68,100,0.12)] transition-all duration-300 flex flex-col justify-between relative overflow-hidden group before:absolute before:top-0 before:left-0 before:right-0 before:h-1 before:bg-gradient-to-r before:from-[#F84464] before:via-rose-500 before:to-amber-400"
               >
                 <div>
                   {/* Top Badge & Code */}
                   <div className="flex items-center justify-between gap-2 mb-3">
-                    <span className="font-mono text-xs font-bold text-gray-900 bg-gray-50 border border-gray-200 px-3 py-1 rounded-lg tracking-wider">
+                    <span className="font-mono text-xs font-black text-[#F84464] bg-rose-50/90 border border-dashed border-rose-300 px-3 py-1 rounded-xl tracking-wider shadow-2xs">
                       {o.code}
                     </span>
 
                     <div className="flex items-center gap-2">
                       <span
-                        className={`text-[10px] font-bold uppercase tracking-wider px-2 py-0.5 rounded-full ${
+                        className={`text-[10px] font-bold uppercase tracking-wider px-2.5 py-0.5 rounded-full border ${
                           o.isActive
-                            ? 'bg-emerald-100 text-emerald-800'
-                            : 'bg-gray-100 text-gray-600'
+                            ? 'bg-emerald-50 text-emerald-700 border-emerald-200/80'
+                            : 'bg-slate-100 text-slate-600 border-slate-200'
                         }`}
                       >
                         {o.isActive ? 'Active' : 'Paused'}
                       </span>
                       {o.badgeText && (
-                        <span className="bg-[#F84464] text-white text-[10px] font-bold uppercase px-2 py-0.5 rounded-full shadow-sm">
+                        <span className="bg-gradient-to-r from-[#F84464] to-rose-500 text-white text-[10px] font-black uppercase px-2.5 py-0.5 rounded-full shadow-xs">
                           {o.badgeText}
                         </span>
                       )}
@@ -247,45 +247,45 @@ export default function AdminOffersPage() {
                   </div>
 
                   {/* Title & Desc */}
-                  <h3 className="text-base font-bold text-gray-900">{o.title}</h3>
-                  <p className="text-xs text-gray-500 mt-1 line-clamp-2 leading-relaxed">
+                  <h3 className="text-base font-bold text-slate-900 group-hover:text-[#F84464] transition-colors">{o.title}</h3>
+                  <p className="text-xs text-slate-500 mt-1 line-clamp-2 leading-relaxed">
                     {o.description}
                   </p>
 
                   {/* Commercial Specifications */}
-                  <div className="mt-4 p-3 rounded-xl bg-gray-50 border border-gray-200 space-y-2 text-xs">
-                    <div className="flex items-center justify-between text-gray-700">
-                      <span className="text-gray-500 flex items-center gap-1.5">
-                        <CreditCard size={13} className="text-[#F84464]" />
+                  <div className="mt-4 p-3.5 rounded-2xl bg-gradient-to-br from-slate-50 via-slate-50/80 to-rose-50/20 border border-slate-200/80 space-y-2.5 text-xs">
+                    <div className="flex items-center justify-between text-slate-700">
+                      <span className="text-slate-500 flex items-center gap-1.5 font-medium">
+                        <CreditCard size={14} className="text-[#F84464]" />
                         <span>Partner Bank:</span>
                       </span>
-                      <span className="font-bold text-gray-900">{o.bankName || 'Universal'}</span>
+                      <span className="font-bold text-slate-900">{o.bankName || 'Universal'}</span>
                     </div>
 
-                    <div className="flex items-center justify-between text-gray-700">
-                      <span className="text-gray-500 flex items-center gap-1.5">
-                        <Sparkles size={13} className="text-amber-500" />
+                    <div className="flex items-center justify-between text-slate-700">
+                      <span className="text-slate-500 flex items-center gap-1.5 font-medium">
+                        <Sparkles size={14} className="text-amber-500" />
                         <span>Benefit:</span>
                       </span>
-                      <span className="font-bold text-emerald-700">
+                      <span className="font-bold text-emerald-700 bg-emerald-50/90 px-2 py-0.5 rounded-md border border-emerald-200/60 text-[11px]">
                         {isB1G1 && 'Buy 1 Get 1 Free'}
                         {isFlat && `Flat ₹${o.discountValue} OFF`}
                         {isPercent && `${o.discountValue}% OFF (Max ₹${o.maxDiscountAmount})`}
                       </span>
                     </div>
 
-                    <div className="flex items-center justify-between text-gray-700">
-                      <span className="text-gray-500">Min Cart Value:</span>
-                      <span className="font-semibold text-gray-900">₹{o.minBookingAmount || 0}</span>
+                    <div className="flex items-center justify-between text-slate-700">
+                      <span className="text-slate-500 font-medium">Min Cart Value:</span>
+                      <span className="font-bold text-slate-900">₹{o.minBookingAmount || 0}</span>
                     </div>
                   </div>
                 </div>
 
                 {/* Card Footer Actions */}
-                <div className="mt-5 pt-4 border-t border-gray-100 flex items-center justify-between gap-2">
+                <div className="mt-5 pt-3.5 border-t border-slate-100 flex items-center justify-between gap-2">
                   <button
                     onClick={() => handleToggleActive(o)}
-                    className="text-xs font-semibold text-gray-500 hover:text-gray-800 transition"
+                    className="text-xs font-bold text-slate-600 hover:text-slate-900 bg-slate-50 hover:bg-slate-100 px-3 py-1.5 rounded-xl border border-slate-200/80 transition cursor-pointer"
                   >
                     {o.isActive ? 'Pause Campaign' : 'Activate Campaign'}
                   </button>
@@ -293,14 +293,14 @@ export default function AdminOffersPage() {
                   <div className="flex items-center gap-1.5">
                     <button
                       onClick={() => handleOpenEdit(o)}
-                      className="p-2 bg-gray-50 hover:bg-gray-100 text-gray-600 hover:text-gray-900 rounded-lg border border-gray-200 transition"
+                      className="p-2 bg-slate-50 hover:bg-slate-100 text-slate-600 hover:text-slate-900 rounded-xl border border-slate-200/80 transition cursor-pointer shadow-2xs"
                       title="Edit Campaign"
                     >
                       <Edit size={14} />
                     </button>
                     <button
                       onClick={() => handleDeleteOffer(offerId, o.code)}
-                      className="p-2 bg-rose-50 hover:bg-rose-100 text-rose-600 rounded-lg border border-rose-200 transition"
+                      className="p-2 bg-rose-50 hover:bg-rose-100 text-rose-600 rounded-xl border border-rose-200/80 transition cursor-pointer shadow-2xs"
                       title="Delete Campaign"
                     >
                       <Trash2 size={14} />

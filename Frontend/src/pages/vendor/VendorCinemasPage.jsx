@@ -357,13 +357,13 @@ export default function VendorCinemasPage() {
               key={cinema.id || cinema._id}
               whileHover={{ y: -5, scale: 1.01 }}
               transition={{ type: 'spring', stiffness: 350, damping: 25 }}
-              className="bg-white rounded-2xl border border-slate-200/80 hover:border-slate-300 shadow-[0_2px_12px_rgba(0,0,0,0.03)] hover:shadow-[0_16px_36px_rgba(0,0,0,0.08)] transition-all duration-300 flex flex-col justify-between overflow-hidden group"
+              className="bg-white rounded-2xl border border-slate-200/90 hover:border-slate-300 shadow-[0_4px_20px_-2px_rgba(0,0,0,0.05),0_1px_3px_rgba(0,0,0,0.02)] hover:shadow-[0_20px_40px_-8px_rgba(0,0,0,0.1),0_4px_16px_-2px_rgba(248,68,100,0.08)] transition-all duration-300 flex flex-col justify-between overflow-hidden group relative before:absolute before:top-0 before:left-0 before:right-0 before:h-1 before:bg-gradient-to-r before:from-[#F84464] before:via-rose-500 before:to-rose-400 before:opacity-0 hover:before:opacity-100 before:transition-opacity before:z-10"
             >
               <div className="p-5 sm:p-6 space-y-4">
                 {/* 1. Header: Cinema Icon, Name, City, Operational Status */}
                 <div className="flex items-start justify-between gap-3">
                   <div className="flex items-center gap-3 min-w-0">
-                    <div className="w-12 h-12 rounded-2xl bg-gradient-to-br from-slate-900 via-slate-800 to-slate-950 text-white flex items-center justify-center shrink-0 shadow-md group-hover:scale-105 group-hover:from-[#F84464] group-hover:to-[#ff5374] transition-all duration-300">
+                    <div className="w-12 h-12 rounded-2xl bg-gradient-to-br from-slate-900 via-slate-800 to-slate-950 text-white flex items-center justify-center shrink-0 shadow-[0_4px_14px_rgba(0,0,0,0.18)] group-hover:scale-105 group-hover:from-[#F84464] group-hover:to-[#e03a58] transition-all duration-300">
                       <Building2 size={22} />
                     </div>
                     <div className="min-w-0 flex-1">
@@ -389,9 +389,9 @@ export default function VendorCinemasPage() {
                     }`}
                   >
                     {cinema.status === 'active' && (
-                      <span className="relative flex h-1.5 w-1.5">
+                      <span className="relative flex h-2 w-2">
                         <span className="animate-ping absolute inline-flex h-full w-full rounded-full bg-emerald-400 opacity-75"></span>
-                        <span className="relative inline-flex rounded-full h-1.5 w-1.5 bg-emerald-500"></span>
+                        <span className="relative inline-flex rounded-full h-2 w-2 bg-emerald-500"></span>
                       </span>
                     )}
                     <span>{cinema.status === 'active' ? 'Operational' : 'Inactive'}</span>
@@ -405,13 +405,13 @@ export default function VendorCinemasPage() {
                     <span>{cinema.address || 'Address registered on-file.'}</span>
                   </p>
 
-                  <div className="flex flex-wrap items-center gap-x-4 gap-y-1 text-[11px] text-slate-500">
-                    <div className="flex items-center gap-1.5">
+                  <div className="flex flex-wrap items-center gap-x-4 gap-y-1.5 text-[11px] text-slate-500">
+                    <div className="flex items-center gap-1.5 bg-slate-50 px-2 py-0.5 rounded-md border border-slate-100">
                       <Phone size={12} className="text-[#F84464] shrink-0" />
                       <span className="font-medium text-slate-700">{cinema.contactPhone || 'Helpline on-file'}</span>
                     </div>
                     {cinema.contactEmail && (
-                      <div className="flex items-center gap-1.5 truncate max-w-[180px]">
+                      <div className="flex items-center gap-1.5 bg-slate-50 px-2 py-0.5 rounded-md border border-slate-100 truncate max-w-[180px]">
                         <Mail size={12} className="text-slate-400 shrink-0" />
                         <span className="font-medium text-slate-700 truncate">{cinema.contactEmail}</span>
                       </div>
@@ -420,10 +420,10 @@ export default function VendorCinemasPage() {
                 </div>
 
                 {/* 3. Operational Screen Summary Ribbon (BookMyShow Style) */}
-                <div className="rounded-xl bg-slate-50/90 border border-slate-200/70 p-3 flex items-center justify-between gap-3">
+                <div className="rounded-2xl bg-gradient-to-r from-slate-50 via-indigo-50/20 to-slate-50 border border-slate-200/80 p-3.5 flex items-center justify-between gap-3">
                   <div className="flex items-center gap-2.5">
-                    <div className="w-8 h-8 rounded-lg bg-indigo-50 text-indigo-600 flex items-center justify-center shrink-0 border border-indigo-100">
-                      <Tv size={15} />
+                    <div className="w-9 h-9 rounded-xl bg-indigo-50 text-indigo-600 flex items-center justify-center shrink-0 border border-indigo-100 shadow-2xs">
+                      <Tv size={16} />
                     </div>
                     <div>
                       <span className="text-[10px] font-bold uppercase tracking-wider text-slate-400 block">Screens</span>
@@ -433,11 +433,11 @@ export default function VendorCinemasPage() {
                     </div>
                   </div>
 
-                  <div className="h-7 w-px bg-slate-200" />
+                  <div className="h-8 w-px bg-slate-200/80" />
 
                   <div className="flex items-center gap-2.5">
-                    <div className="w-8 h-8 rounded-lg bg-emerald-50 text-emerald-600 flex items-center justify-center shrink-0 border border-emerald-100">
-                      <Ticket size={15} />
+                    <div className="w-9 h-9 rounded-xl bg-emerald-50 text-emerald-600 flex items-center justify-center shrink-0 border border-emerald-100 shadow-2xs">
+                      <Ticket size={16} />
                     </div>
                     <div>
                       <span className="text-[10px] font-bold uppercase tracking-wider text-slate-400 block">Ticketing</span>
