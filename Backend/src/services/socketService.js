@@ -1,4 +1,9 @@
-const { Server } = require('socket.io');
+let Server = null;
+try {
+  Server = require('socket.io').Server;
+} catch (_err) {
+  // Optional in serverless environments like Vercel
+}
 const jwt = require('jsonwebtoken');
 
 let io = null;
@@ -9,6 +14,9 @@ let io = null;
  * @param {object} options
  */
 function initSocket(httpServer, options = {}) {
+  if (!Server) {
+    return null;
+  }
   const allowedOrigins = [
     'http://localhost:3000',
     'http://127.0.0.1:3000',

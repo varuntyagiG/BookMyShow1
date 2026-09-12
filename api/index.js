@@ -30,17 +30,7 @@ app.use(cors({
 
 app.use(express.json());
 
-// Serverless DB connection middleware
-app.use(async (req, res, next) => {
-  try {
-    await connectDB();
-  } catch (err) {
-    console.error('Serverless DB Connection error:', err.message);
-  }
-  next();
-});
-
-// Health check endpoint
+// Health check endpoint (immediate response, no DB dependency)
 const healthHandler = (req, res) => {
   res.json({
     status: 'healthy',
@@ -50,6 +40,16 @@ const healthHandler = (req, res) => {
 };
 app.get('/api/health', healthHandler);
 app.get('/health', healthHandler);
+
+// Serverless DB connection middleware
+app.use(async (req, res, next) => {
+  try {
+    await connectDB();
+  } catch (err) {
+    console.error('Serverless DB Connection error:', err.message);
+  }
+  next();
+});
 
 // Routes
 app.use('/api/auth', authRoutes);
