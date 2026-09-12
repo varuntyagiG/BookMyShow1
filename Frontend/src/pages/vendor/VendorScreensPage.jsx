@@ -1,5 +1,6 @@
 import React, { useState, useEffect, useMemo, useRef } from 'react';
 import { useSearchParams, Link } from 'react-router-dom';
+import { motion } from 'framer-motion';
 import { vendorApi } from '../../services/vendorApi';
 import { useRealtimeRefresh } from '../../services/realtimeSync';
 import {
@@ -30,7 +31,10 @@ import {
   Building2,
   ChevronDown,
   Check,
-  X
+  X,
+  Ticket,
+  Volume2,
+  CheckCircle
 } from 'lucide-react';
 
 const SCREEN_TYPES = [
@@ -43,6 +47,39 @@ const SCREEN_TYPES = [
 ];
 
 const ROW_LETTERS = ['A', 'B', 'C', 'D', 'E', 'F', 'G', 'H', 'I', 'J', 'K', 'L', 'M', 'N'];
+
+function renderScreenFeaturePill(feature) {
+  const fLower = (feature || '').toLowerCase();
+  let icon = <CheckCircle size={11} className="text-slate-500" />;
+  let colorStyle = 'bg-slate-50 text-slate-700 border-slate-200/80';
+
+  if (fLower.includes('ticket') || fLower.includes('m-ticket')) {
+    icon = <Ticket size={11} className="text-emerald-600" />;
+    colorStyle = 'bg-emerald-50 text-emerald-800 border-emerald-200/70';
+  } else if (fLower.includes('atmos') || fLower.includes('sound') || fLower.includes('audio')) {
+    icon = <Volume2 size={11} className="text-indigo-600" />;
+    colorStyle = 'bg-indigo-50 text-indigo-800 border-indigo-200/70';
+  } else if (fLower.includes('recliner') || fLower.includes('vip') || fLower.includes('seat')) {
+    icon = <Armchair size={11} className="text-purple-600" />;
+    colorStyle = 'bg-purple-50 text-purple-800 border-purple-200/70';
+  } else if (fLower.includes('imax') || fLower.includes('laser') || fLower.includes('4dx')) {
+    icon = <Sparkles size={11} className="text-violet-600" />;
+    colorStyle = 'bg-violet-50 text-violet-800 border-violet-200/70';
+  } else if (fLower.includes('2d') || fLower.includes('3d') || fLower.includes('screen')) {
+    icon = <Tv size={11} className="text-cyan-600" />;
+    colorStyle = 'bg-cyan-50 text-cyan-800 border-cyan-200/70';
+  }
+
+  return (
+    <span
+      key={feature}
+      className={`inline-flex items-center gap-1.5 px-2.5 py-1 rounded-lg text-[11px] font-semibold border ${colorStyle} shadow-2xs transition-all`}
+    >
+      {icon}
+      <span>{feature}</span>
+    </span>
+  );
+}
 
 export default function VendorScreensPage() {
   const [searchParams, setSearchParams] = useSearchParams();
@@ -859,7 +896,7 @@ export default function VendorScreensPage() {
         /* ========================================================
            SENIOR SOFTWARE ENGINEER MULTI-TIER SCREEN CARDS
            ======================================================== */
-        <div className="grid grid-cols-1 md:grid-cols-2 xl:grid-cols-3 gap-5">
+        <div className="grid grid-cols-1 xl:grid-cols-2 gap-6">
           {filteredScreens.map((screen) => {
             const formatStyle = getFormatBadgeStyle(screen.screenType);
             const FormatIcon = formatStyle.icon;
@@ -889,72 +926,194 @@ export default function VendorScreensPage() {
             const premiumPct = Math.round((premiumCount / total) * 100);
             const normalPct = Math.max(0, 100 - reclinerPct - premiumPct);
 
+            const featuresList = [
+              screen.screenType || 'Standard 2D',
+              `Tiered Layout (${rowCount} Rows A-${lastRowLetter})`,
+              'M-Ticket Instant Entry',
+              'Dolby Atmos 7.1 Certified',
+              'Interactive Matrix Ready'
+            ];
+
             return (
-              <div
+              <motion.div
                 key={screen.id || screen._id}
-                className="bg-white rounded-3xl border border-slate-100/90 hover:border-slate-200 shadow-[0_4px_20px_-4px_rgba(0,0,0,0.05),0_1px_3px_rgba(0,0,0,0.02)] hover:shadow-[0_16px_36px_-6px_rgba(0,0,0,0.08)] transition-all duration-300 flex flex-col justify-between overflow-hidden group"
+                whileHover={{ y: -4 }}
+                transition={{ duration: 0.2 }}
+                className="bg-white rounded-3xl border border-slate-100/90 hover:border-slate-200 shadow-[0_4px_24px_-4px_rgba(0,0,0,0.05),0_1px_3px_rgba(0,0,0,0.02)] hover:shadow-[0_20px_45px_-8px_rgba(0,0,0,0.09)] transition-all duration-300 flex flex-col justify-between overflow-hidden group"
               >
-                <div className="p-5 sm:p-5.5 space-y-3.5">
-                  {/* 1. Header: Screen Number, Full Name, Venue & Format Badge */}
-                  <div className="flex items-start justify-between gap-2.5">
-                    <div className="flex items-start gap-2.5 min-w-0 flex-1">
-                      <span className="font-mono font-black text-xs uppercase px-2.5 py-1.5 rounded-xl bg-slate-900 text-white shadow-2xs shrink-0 tracking-wider">
-                        {screen.screenNumber || 'AUDI'}
-                      </span>
+                <div className="p-6 sm:p-7 space-y-5">
+                  {/* 1. Header: Auditorium Identity, Host Cinema Badge, and Status */}
+                  <div className="flex flex-col sm:flex-row sm:items-start justify-between gap-4">
+                    <div className="flex items-start gap-3.5 min-w-0 flex-1">
+                      <div className="w-13 h-13 rounded-2xl bg-gradient-to-br from-slate-900 via-slate-800 to-slate-950 text-white flex items-center justify-center shrink-0 shadow-[0_6px_18px_rgba(0,0,0,0.18)] group-hover:scale-105 group-hover:from-[#F84464] group-hover:to-[#e03a58] transition-all duration-300">
+                        <Tv size={24} />
+                      </div>
                       <div className="min-w-0 flex-1">
+                        <div className="flex flex-wrap items-center gap-2 mb-1.5">
+                          <span className="text-[10px] font-black uppercase tracking-wider px-2.5 py-0.5 rounded-md bg-slate-100 text-slate-700 border border-slate-200/70 font-mono">
+                            HALL: #{screen.screenNumber || 'AUDI-1'}
+                          </span>
+                          <span className="text-[10px] font-bold text-slate-500 uppercase tracking-wider px-2 py-0.5 rounded-md bg-slate-50 border border-slate-200/60">
+                            {screen.screenType || 'Standard 2D'}
+                          </span>
+                        </div>
+
+                        {/* Full Screen Name (Never truncated) */}
                         <h3
-                          className="text-base font-extrabold text-slate-900 leading-snug break-words group-hover:text-[#F84464] transition-colors"
+                          className="text-lg sm:text-xl font-black text-slate-900 leading-snug break-words group-hover:text-[#F84464] transition-colors"
                         >
                           {screen.name}
                         </h3>
-                        <p className="text-xs text-slate-500 mt-0.5 flex items-center gap-1.5 font-medium break-words">
-                          <MapPin size={12} className="text-[#F84464] shrink-0" />
-                          <span className="font-semibold text-slate-700">{screen.cinema?.name || 'Multiplex Venue'}</span>
-                          {screen.cinema?.city && (
-                            <span className="text-slate-400">• {screen.cinema.city}</span>
-                          )}
+
+                        <div className="flex items-center gap-1.5 text-xs text-slate-500 mt-1">
+                          <MapPin size={13} className="text-[#F84464] shrink-0" />
+                          <span className="font-bold text-slate-800">{screen.cinema?.name || 'Multiplex Venue'}</span>
+                          {screen.cinema?.city && <span className="text-slate-500">• {screen.cinema.city}</span>}
+                        </div>
+                      </div>
+                    </div>
+
+                    {/* Operational Status Badge */}
+                    <div className="flex sm:flex-col items-center sm:items-end justify-between gap-2 shrink-0">
+                      <span
+                        className={`inline-flex items-center gap-1.5 text-[11px] font-bold px-3 py-1 rounded-full border shadow-2xs ${
+                          screen.status !== 'inactive'
+                            ? 'bg-emerald-50 text-emerald-700 border-emerald-200/80'
+                            : 'bg-slate-100 text-slate-600 border-slate-200'
+                        }`}
+                      >
+                        {screen.status !== 'inactive' && (
+                          <span className="relative flex h-2 w-2">
+                            <span className="animate-ping absolute inline-flex h-full w-full rounded-full bg-emerald-400 opacity-75"></span>
+                            <span className="relative inline-flex rounded-full h-2 w-2 bg-emerald-500"></span>
+                          </span>
+                        )}
+                        <span>{screen.status !== 'inactive' ? 'Active & Programmed' : 'Offline'}</span>
+                      </span>
+                    </div>
+                  </div>
+
+                  {/* 2. Full Location & Physical Multiplex Property (Matching Cinema 2nd Section) */}
+                  <div className="rounded-2xl bg-slate-50/90 border border-slate-100 p-4 space-y-3">
+                    <div className="flex items-start gap-2.5">
+                      <div className="w-6 h-6 rounded-lg bg-rose-50 border border-rose-100 flex items-center justify-center shrink-0 mt-0.5 text-[#F84464]">
+                        <Building2 size={13} />
+                      </div>
+                      <div className="flex-1 min-w-0">
+                        <span className="text-[10px] font-bold uppercase tracking-wider text-slate-400 block mb-0.5">
+                          Host Cinema Multiplex & Location
+                        </span>
+                        <p className="text-xs font-medium text-slate-700 leading-relaxed break-words">
+                          {screen.cinema?.address || `${screen.cinema?.name || 'Cinema Multiplex'}, ${screen.cinema?.city || ''}`}
                         </p>
                       </div>
                     </div>
 
-                    <span className={`inline-flex items-center gap-1 text-[11px] font-bold px-2.5 py-1 rounded-full border shadow-2xs shrink-0 ${formatStyle.badgeBg}`}>
-                      <FormatIcon size={11} />
-                      <span>{screen.screenType || 'Standard 2D'}</span>
-                    </span>
+                    {/* Technical Specifications Bar */}
+                    <div className="pt-2.5 border-t border-slate-200/60 flex flex-wrap items-center gap-3 text-xs">
+                      <div className="inline-flex items-center gap-2 bg-white px-3 py-1.5 rounded-xl border border-slate-200/80 text-slate-700 shadow-2xs">
+                        <FormatIcon size={13} className="text-[#F84464] shrink-0" />
+                        <span className="font-semibold text-[11px]">{screen.screenType || 'Standard 2D'}</span>
+                      </div>
+
+                      <div className="inline-flex items-center gap-2 bg-white px-3 py-1.5 rounded-xl border border-slate-200/80 text-slate-700 shadow-2xs">
+                        <Layers size={13} className="text-indigo-600 shrink-0" />
+                        <span className="font-semibold text-[11px]">{rowCount} Rows ({screen.totalCapacity} Seats)</span>
+                      </div>
+
+                      <button
+                        type="button"
+                        onClick={() => openPreviewMatrixModal(screen)}
+                        className="inline-flex items-center gap-2 bg-white px-3 py-1.5 rounded-xl border border-slate-200/80 hover:border-slate-300 text-slate-700 hover:text-slate-900 shadow-2xs transition cursor-pointer"
+                        title="Interactive Seat Layout Preview"
+                      >
+                        <Eye size={13} className="text-slate-400 shrink-0" />
+                        <span className="font-semibold text-[11px]">Seat Matrix Preview →</span>
+                      </button>
+                    </div>
                   </div>
 
-                  {/* 2. Key Metrics Strip (Capacity • Rows • Max Yield) */}
-                  <div className="grid grid-cols-3 gap-2 bg-slate-50/90 p-2.5 rounded-2xl border border-slate-100 text-center">
-                    <div className="border-r border-slate-200/60 pr-1">
-                      <span className="text-[10px] uppercase font-bold text-slate-400 block tracking-wider">Capacity</span>
-                      <span className="text-sm font-black text-slate-900 block mt-0.5">{screen.totalCapacity || 120}</span>
-                      <span className="text-[10px] text-slate-500 font-medium">Total Seats</span>
+                  {/* 3. Comprehensive Multiplex Telemetry Grid (4 Key Metrics - Matching Cinema 3rd Section) */}
+                  <div className="grid grid-cols-2 sm:grid-cols-4 gap-2.5">
+                    <div className="p-3 rounded-2xl bg-indigo-50/40 border border-indigo-100/80 flex flex-col justify-between">
+                      <div className="flex items-center justify-between mb-1.5">
+                        <span className="text-[10px] font-bold uppercase tracking-wider text-indigo-900/70">Capacity</span>
+                        <Tv size={14} className="text-indigo-600" />
+                      </div>
+                      <div>
+                        <span className="text-lg font-black text-slate-900 leading-none">
+                          {screen.totalCapacity || 120}
+                        </span>
+                        <span className="text-[10px] font-semibold text-slate-500 block mt-0.5">
+                          Total Seats
+                        </span>
+                      </div>
                     </div>
-                    <div className="border-r border-slate-200/60 px-1">
-                      <span className="text-[10px] uppercase font-bold text-slate-400 block tracking-wider">Layout</span>
-                      <span className="text-sm font-black text-slate-900 block mt-0.5">{rowCount} Rows</span>
-                      <span className="text-[10px] text-slate-500 font-medium">A to {lastRowLetter}</span>
+
+                    <div className="p-3 rounded-2xl bg-purple-50/40 border border-purple-100/80 flex flex-col justify-between">
+                      <div className="flex items-center justify-between mb-1.5">
+                        <span className="text-[10px] font-bold uppercase tracking-wider text-purple-900/70">Layout</span>
+                        <Armchair size={14} className="text-purple-600" />
+                      </div>
+                      <div>
+                        <span className="text-lg font-black text-slate-900 leading-none">
+                          {rowCount} Rows
+                        </span>
+                        <span className="text-[10px] font-semibold text-slate-500 block mt-0.5">
+                          A to {lastRowLetter}
+                        </span>
+                      </div>
                     </div>
-                    <div className="pl-1">
-                      <span className="text-[10px] uppercase font-bold text-slate-400 block tracking-wider">Max Gross</span>
-                      <span className="text-sm font-black text-emerald-700 block mt-0.5 truncate">₹{maxScreenGross.toLocaleString('en-IN')}</span>
-                      <span className="text-[10px] text-slate-500 font-medium">Full House</span>
+
+                    <div className="p-3 rounded-2xl bg-amber-50/40 border border-amber-100/80 flex flex-col justify-between">
+                      <div className="flex items-center justify-between mb-1.5">
+                        <span className="text-[10px] font-bold uppercase tracking-wider text-amber-900/70">Full House</span>
+                        <TrendingUp size={14} className="text-amber-600" />
+                      </div>
+                      <div>
+                        <span className="text-lg font-black text-slate-900 leading-none truncate">
+                          ₹{maxScreenGross.toLocaleString('en-IN')}
+                        </span>
+                        <span className="text-[10px] font-semibold text-slate-500 block mt-0.5">
+                          Max Yield / Show
+                        </span>
+                      </div>
+                    </div>
+
+                    <div className="p-3 rounded-2xl bg-emerald-50/40 border border-emerald-100/80 flex flex-col justify-between">
+                      <div className="flex items-center justify-between mb-1.5">
+                        <span className="text-[10px] font-bold uppercase tracking-wider text-emerald-900/70">Ticketing</span>
+                        <Ticket size={14} className="text-emerald-600" />
+                      </div>
+                      <div>
+                        <span className="text-xs font-black text-emerald-700 leading-none block">
+                          M-Ticket
+                        </span>
+                        <span className="text-[10px] font-semibold text-slate-500 block mt-0.5">
+                          Paperless Entry
+                        </span>
+                      </div>
                     </div>
                   </div>
 
-                  {/* 3. Seating Tiers & Base Fares Breakdown (All Content Visible) */}
-                  <div className="space-y-2">
-                    <div className="flex items-center justify-between text-[11px]">
-                      <span className="font-bold text-slate-500 uppercase tracking-wider text-[10px]">
-                        Tier Inventory & Base Fares
+                  {/* 4. Tier Breakdown & Seating Proportions Pod (Matching Cinema 4th Section) */}
+                  <div className="rounded-2xl border border-slate-200/70 bg-slate-50/50 p-3.5 space-y-2.5">
+                    <div className="flex items-center justify-between">
+                      <span className="text-[10px] font-bold uppercase tracking-wider text-slate-500 flex items-center gap-1.5">
+                        <Sliders size={12} className="text-slate-400" />
+                        Auditorium Seating Tiers ({reclinerCount > 0 ? '3 Tiers' : '2 Tiers'})
                       </span>
-                      <span className="font-bold text-slate-600 font-mono text-[10px]">
-                        {reclinerCount > 0 ? '3 Tiers Active' : '2 Tiers Active'}
-                      </span>
+                      <button
+                        type="button"
+                        onClick={() => openEditLayoutModal(screen)}
+                        className="text-[11px] font-bold text-[#F84464] hover:underline cursor-pointer"
+                      >
+                        Configure Layout →
+                      </button>
                     </div>
 
-                    {/* Slim Segmented Color Ratio Bar */}
-                    <div className="w-full h-2 rounded-full overflow-hidden flex shadow-2xs bg-slate-100">
+                    {/* Segmented Color Spectrum Bar */}
+                    <div className="w-full h-2 rounded-full overflow-hidden flex shadow-2xs bg-slate-200/80">
                       {reclinerCount > 0 && (
                         <div
                           style={{ width: `${reclinerPct}%` }}
@@ -978,98 +1137,95 @@ export default function VendorScreensPage() {
                       )}
                     </div>
 
-                    {/* Detailed Pricing & Seat Count Chips */}
-                    <div className="grid grid-cols-1 sm:grid-cols-3 gap-1.5 text-xs">
-                      {reclinerCount > 0 ? (
-                        <div className="bg-rose-50/80 border border-rose-100 rounded-xl p-1.5 text-center">
-                          <span className="text-[10px] font-bold text-rose-700 block">Recliner VIP</span>
-                          <span className="font-black text-slate-900 text-xs">₹{reclinerPrice}</span>
-                          <span className="text-[10px] text-slate-500 block">{reclinerCount} seats</span>
-                        </div>
-                      ) : (
-                        <div className="bg-slate-50 border border-slate-100 rounded-xl p-1.5 text-center opacity-60">
-                          <span className="text-[10px] font-semibold text-slate-400 block">Recliner</span>
-                          <span className="font-semibold text-slate-400 text-xs">—</span>
-                          <span className="text-[10px] text-slate-400 block">None</span>
+                    {/* Tier Breakdown Pills */}
+                    <div className="flex flex-wrap gap-2">
+                      {reclinerCount > 0 && (
+                        <div className="bg-white border border-slate-200/80 rounded-xl px-3 py-1.5 shadow-2xs text-xs flex items-center gap-2">
+                          <span className="w-2 h-2 rounded-full bg-[#F84464] shrink-0"></span>
+                          <span className="font-bold text-slate-800">Recliner VIP</span>
+                          <span className="text-[10px] font-bold text-rose-700 bg-rose-50 px-1.5 py-0.5 rounded">
+                            ₹{reclinerPrice}
+                          </span>
+                          <span className="text-[10px] text-slate-400 font-medium">{reclinerCount} seats</span>
                         </div>
                       )}
-
-                      <div className="bg-indigo-50/80 border border-indigo-100 rounded-xl p-1.5 text-center">
-                        <span className="text-[10px] font-bold text-indigo-700 block">Premium</span>
-                        <span className="font-black text-slate-900 text-xs">₹{premiumPrice}</span>
-                        <span className="text-[10px] text-slate-500 block">{premiumCount} seats</span>
+                      <div className="bg-white border border-slate-200/80 rounded-xl px-3 py-1.5 shadow-2xs text-xs flex items-center gap-2">
+                        <span className="w-2 h-2 rounded-full bg-indigo-600 shrink-0"></span>
+                        <span className="font-bold text-slate-800">Premium Tier</span>
+                        <span className="text-[10px] font-bold text-indigo-700 bg-indigo-50 px-1.5 py-0.5 rounded">
+                          ₹{premiumPrice}
+                        </span>
+                        <span className="text-[10px] text-slate-400 font-medium">{premiumCount} seats</span>
                       </div>
-
-                      <div className="bg-slate-50 border border-slate-200/80 rounded-xl p-1.5 text-center">
-                        <span className="text-[10px] font-bold text-slate-700 block">Classic</span>
-                        <span className="font-black text-slate-900 text-xs">₹{normalPrice}</span>
-                        <span className="text-[10px] text-slate-500 block">{normalCount} seats</span>
+                      <div className="bg-white border border-slate-200/80 rounded-xl px-3 py-1.5 shadow-2xs text-xs flex items-center gap-2">
+                        <span className="w-2 h-2 rounded-full bg-slate-400 shrink-0"></span>
+                        <span className="font-bold text-slate-800">Classic Normal</span>
+                        <span className="text-[10px] font-bold text-slate-700 bg-slate-100 px-1.5 py-0.5 rounded">
+                          ₹{normalPrice}
+                        </span>
+                        <span className="text-[10px] text-slate-400 font-medium">{normalCount} seats</span>
                       </div>
                     </div>
                   </div>
 
-                  {/* 4. Compact Interactive Seating Matrix Bar */}
-                  <div className="rounded-2xl bg-slate-900 text-white p-2.5 px-3.5 flex items-center justify-between gap-3 shadow-inner">
-                    <div className="flex items-center gap-2.5 text-xs min-w-0">
-                      <div className="w-7 h-7 rounded-lg bg-white/10 flex items-center justify-center shrink-0 text-cyan-400">
-                        <Armchair size={14} />
-                      </div>
-                      <div className="min-w-0">
-                        <span className="text-[10px] font-mono text-cyan-300 font-bold block uppercase tracking-wider">
-                          Seat Map Matrix
-                        </span>
-                        <span className="text-[11px] text-slate-300 font-medium truncate block">
-                          Curved screen with {rowCount} tiers configured
-                        </span>
-                      </div>
+                  {/* 5. Auditorium Features & Capabilities (Matching Cinema 5th Section) */}
+                  <div>
+                    <div className="flex items-center justify-between mb-2">
+                      <span className="text-[10px] font-bold text-slate-400 uppercase tracking-wider">
+                        Auditorium Features & Display Specifications
+                      </span>
+                      <span className="text-[10px] text-slate-500 font-bold">
+                        {featuresList.length} Enabled
+                      </span>
                     </div>
+                    <div className="flex flex-wrap gap-1.5">
+                      {featuresList.map(renderScreenFeaturePill)}
+                    </div>
+                  </div>
+                </div>
+
+                {/* 6. Card Footer Actions: Command Bar (Matching Cinema 6th Section) */}
+                <div className="p-4 sm:px-6 border-t border-slate-100 bg-slate-50/70 flex flex-wrap items-center justify-between gap-3">
+                  <div className="flex items-center gap-2">
+                    <button
+                      type="button"
+                      onClick={() => openEditLayoutModal(screen)}
+                      className="inline-flex items-center gap-1.5 text-xs font-bold text-white bg-[#F84464] hover:bg-[#e03a58] px-4 py-2.5 rounded-xl shadow-[0_4px_14px_rgba(248,68,100,0.3)] hover:shadow-[0_6px_20px_rgba(248,68,100,0.4)] hover:scale-[1.02] active:scale-[0.98] transition-all duration-200 cursor-pointer"
+                    >
+                      <Sliders size={14} className="text-rose-100" />
+                      <span>Configure Layout</span>
+                    </button>
 
                     <button
                       type="button"
                       onClick={() => openPreviewMatrixModal(screen)}
-                      className="inline-flex items-center gap-1.5 text-xs font-bold text-cyan-400 hover:text-cyan-300 bg-white/10 hover:bg-white/15 px-3 py-1.5 rounded-xl transition cursor-pointer shrink-0 border border-white/10"
-                      title="Inspect full seat layout matrix"
+                      className="inline-flex items-center gap-1.5 text-xs font-bold text-slate-700 hover:text-slate-900 bg-white hover:bg-slate-100 px-3.5 py-2.5 rounded-xl border border-slate-200/80 shadow-2xs transition cursor-pointer"
                     >
-                      <Eye size={12} />
+                      <Eye size={14} className="text-slate-500" />
                       <span>Inspect Grid</span>
-                    </button>
-                  </div>
-                </div>
-
-                {/* 5. Card Footer Actions: Compact Command Bar */}
-                <div className="p-3.5 sm:px-5 bg-slate-50/70 border-t border-slate-100 flex items-center justify-between gap-2 flex-wrap">
-                  <div className="flex items-center gap-1.5">
-                    <button
-                      type="button"
-                      onClick={() => openEditLayoutModal(screen)}
-                      className="inline-flex items-center gap-1.5 text-xs font-bold text-white bg-[#F84464] hover:bg-[#e03a58] px-3.5 py-2 rounded-xl shadow-[0_4px_12px_rgba(248,68,100,0.3)] hover:scale-[1.02] active:scale-[0.98] transition cursor-pointer"
-                    >
-                      <Sliders size={13} className="text-rose-100" />
-                      <span>Configure Layout</span>
                     </button>
 
                     <Link
                       to="/vendor/shows"
-                      className="inline-flex items-center gap-1 text-xs font-semibold text-slate-700 hover:text-slate-900 bg-white hover:bg-slate-100 border border-slate-200/80 px-3 py-2 rounded-xl transition shadow-2xs"
-                      title="Schedule shows on this auditorium"
+                      className="inline-flex items-center gap-1.5 text-xs font-bold text-slate-700 hover:text-slate-900 bg-white hover:bg-slate-100 px-3.5 py-2.5 rounded-xl border border-slate-200/80 shadow-2xs transition"
                     >
-                      <Calendar size={13} className="text-indigo-600" />
-                      <span>Schedule</span>
+                      <Calendar size={14} className="text-indigo-600" />
+                      <span>Schedule Shows</span>
                     </Link>
                   </div>
 
-                  <div className="flex items-center gap-1">
+                  <div className="flex items-center gap-1.5">
                     <button
                       type="button"
                       onClick={() => openDeleteModal(screen)}
                       className="p-2 text-slate-400 hover:text-rose-600 hover:bg-rose-50 rounded-xl border border-slate-200/80 hover:border-rose-200 transition shadow-2xs cursor-pointer"
                       title="Delete Screen"
                     >
-                      <Trash2 size={13} />
+                      <Trash2 size={14} />
                     </button>
                   </div>
                 </div>
-              </div>
+              </motion.div>
             );
           })}
         </div>
