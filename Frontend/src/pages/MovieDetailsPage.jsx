@@ -18,9 +18,10 @@ import {
   Ticket,
   Popcorn,
   QrCode,
-  Download,
   Check
 } from 'lucide-react';
+import confetti from 'canvas-confetti';
+import { motion } from 'framer-motion';
 
 const generateBookingId = () => 'BMS-' + Date.now().toString().slice(-6);
 
@@ -361,6 +362,18 @@ export default function MovieDetailsPage() {
       });
 
       if (res.success && res.booking) {
+        // Trigger celebratory confetti cannon on booking success
+        try {
+          confetti({
+            particleCount: 110,
+            spread: 75,
+            origin: { y: 0.6 },
+            colors: ['#F84464', '#10B981', '#FFD700', '#3B82F6', '#EC4899']
+          });
+        } catch (_confettiErr) {
+          // Fallback gracefully if canvas context is restricted
+        }
+
         setBookingModal((prev) => ({
           ...prev,
           confirmed: true,
@@ -860,20 +873,23 @@ export default function MovieDetailsPage() {
 
                             return (
                               <React.Fragment key={num}>
-                                <button
+                                <motion.button
                                   type="button"
                                   disabled={isOccupied}
                                   onClick={() => handleSeatClick(seatId, isOccupied)}
-                                  className={`w-6 h-6 sm:w-7 sm:h-7 rounded text-[10px] font-bold transition-all duration-150 cursor-pointer flex items-center justify-center focus-visible:outline focus-visible:outline-2 focus-visible:outline-[#F84464] ${isOccupied
+                                  whileTap={!isOccupied ? { scale: 0.8 } : undefined}
+                                  animate={isSelected ? { scale: [1, 1.22, 1] } : { scale: 1 }}
+                                  transition={{ type: 'spring', stiffness: 500, damping: 18 }}
+                                  className={`w-6 h-6 sm:w-7 sm:h-7 rounded text-[10px] font-bold transition-colors duration-150 cursor-pointer flex items-center justify-center focus-visible:outline focus-visible:outline-2 focus-visible:outline-[#F84464] ${isOccupied
                                       ? 'bg-gray-200 text-gray-400 cursor-not-allowed border border-gray-200'
                                       : isSelected
-                                        ? 'bg-[#F84464] text-white shadow-sm border border-[#F84464] scale-105'
+                                        ? 'bg-[#F84464] text-white shadow-sm border border-[#F84464]'
                                         : 'bg-white border border-gray-300 text-gray-700 hover:border-[#F84464] hover:text-[#F84464]'
                                     }`}
                                   title={`${seatId} (${rowItem.tier}) - ₹${rowItem.price}`}
                                 >
                                   {num}
-                                </button>
+                                </motion.button>
                                 {/* Center aisle gap */}
                                 {isAisle && <div className="w-3 sm:w-5" />}
                               </React.Fragment>
@@ -987,7 +1003,12 @@ export default function MovieDetailsPage() {
                 </p>
 
                 {/* Digital Ticket Card */}
-                <div className="bg-gradient-to-b from-[#222432] to-[#121216] text-white rounded-2xl p-5 text-left text-xs mb-6 shadow-[0_20px_50px_-15px_rgba(0,0,0,0.5)] border border-white/10 relative overflow-hidden">
+                <motion.div
+                  initial={{ opacity: 0, scale: 0.94, y: 15 }}
+                  animate={{ opacity: 1, scale: 1, y: 0 }}
+                  transition={{ type: 'spring', stiffness: 320, damping: 24 }}
+                  className="bg-gradient-to-b from-[#222432] to-[#121216] text-white rounded-2xl p-5 text-left text-xs mb-6 shadow-[0_20px_50px_-15px_rgba(0,0,0,0.5)] border border-white/10 relative overflow-hidden"
+                >
                   <div className="pointer-events-none absolute -top-10 -right-10 w-40 h-40 bg-[#F84464]/15 rounded-full blur-3xl" />
                   <div className="relative flex items-start justify-between gap-4 pb-4 border-b border-white/10">
                     <div>
@@ -1047,7 +1068,7 @@ export default function MovieDetailsPage() {
                       PAID &amp; ACTIVE
                     </span>
                   </div>
-                </div>
+                </motion.div>
 
                 <div className="flex items-center gap-3">
                   <Link

@@ -1,6 +1,7 @@
 import React, { useState } from 'react';
 import { Star, Heart } from 'lucide-react';
 import { useNavigate } from 'react-router-dom';
+import { motion } from 'framer-motion';
 
 export default function MovieCard({ movie, onSelect }) {
   const navigate = useNavigate();
@@ -21,9 +22,12 @@ export default function MovieCard({ movie, onSelect }) {
   };
 
   return (
-    <div
+    <motion.div
       onClick={handleClick}
-      className="flex flex-col group cursor-pointer w-full transition-all duration-300 transform hover:-translate-y-2"
+      whileHover={{ y: -6, scale: 1.025 }}
+      whileTap={{ scale: 0.98 }}
+      transition={{ type: 'spring', stiffness: 350, damping: 25 }}
+      className="flex flex-col group cursor-pointer w-full"
     >
       {/* Poster wrapper */}
       <div className="relative aspect-[2/3] w-full rounded-xl overflow-hidden bg-gray-200 shadow-sm border border-gray-100 group-hover:shadow-xl group-hover:border-gray-200 transition-all duration-300">
@@ -44,17 +48,19 @@ export default function MovieCard({ movie, onSelect }) {
             <div />
           )}
 
-          <button
+          <motion.button
             type="button"
             onClick={handleHeartClick}
+            whileTap={{ scale: 0.75 }}
+            animate={isLiked ? { scale: [1, 1.35, 1] } : { scale: 1 }}
+            transition={{ type: 'spring', stiffness: 500, damping: 15 }}
             className="w-7 h-7 rounded-full bg-black/40 hover:bg-black/70 backdrop-blur-xs flex items-center justify-center pointer-events-auto transition-colors cursor-pointer"
             aria-label="Add to wishlist"
           >
             <Heart
-              className={`w-4 h-4 transition-colors ${isLiked ? 'text-[#F84464] fill-[#F84464]' : 'text-white/90'
-                }`}
+              className={`w-4 h-4 transition-colors ${isLiked ? 'text-[#F84464] fill-[#F84464]' : 'text-white/90'}`}
             />
-          </button>
+          </motion.button>
         </div>
 
         {/* Rating Overlay at bottom of poster with gradient */}
@@ -96,6 +102,6 @@ export default function MovieCard({ movie, onSelect }) {
           )}
         </div>
       </div>
-    </div>
+    </motion.div>
   );
 }

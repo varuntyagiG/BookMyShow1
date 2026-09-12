@@ -9,6 +9,7 @@ import {
   Armchair,
   Sparkles
 } from 'lucide-react';
+import { motion } from 'framer-motion';
 
 export default function TicketPassCard({
   booking,
@@ -29,7 +30,11 @@ export default function TicketPassCard({
   const totalAmount = booking.totalPrice || booking.amount || 0;
 
   return (
-    <div
+    <motion.div
+      initial={{ opacity: 0, y: 16 }}
+      animate={{ opacity: 1, y: 0 }}
+      whileHover={{ y: -4 }}
+      transition={{ type: 'spring', stiffness: 320, damping: 24 }}
       className={`relative bg-white rounded-2xl border transition-all duration-200 overflow-hidden shadow-xs hover:shadow-md flex flex-col justify-between group ${
         isCancelled
           ? 'border-gray-200 bg-gray-50/50 opacity-80'
@@ -214,6 +219,6 @@ export default function TicketPassCard({
           </button>
         </div>
       </div>
-    </div>
+    </motion.div>
   );
 }

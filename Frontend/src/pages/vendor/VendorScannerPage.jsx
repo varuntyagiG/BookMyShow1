@@ -20,6 +20,7 @@ import {
   Volume2,
   VolumeX
 } from 'lucide-react';
+import { motion } from 'framer-motion';
 
 // Web Audio API Sound generator for gate chimes
 function playGateSound(type = 'success') {
@@ -189,8 +190,12 @@ export default function VendorScannerPage() {
                 {/* Ambient Grid overlay */}
                 <div className="absolute inset-0 bg-[linear-gradient(to_right,#ffffff05_1px,transparent_1px),linear-gradient(to_bottom,#ffffff05_1px,transparent_1px)] bg-[size:24px_24px] pointer-events-none" />
 
-                {/* Animated Laser Scanning Line */}
-                <div className="absolute inset-x-8 top-1/2 h-0.5 bg-[#F84464] shadow-[0_0_16px_#F84464] animate-pulse" />
+                {/* Animated Vertical Laser Scanning Beam */}
+                <motion.div
+                  animate={{ y: [-65, 65, -65] }}
+                  transition={{ repeat: Infinity, duration: 2.2, ease: 'easeInOut' }}
+                  className="absolute inset-x-8 h-0.5 bg-gradient-to-r from-transparent via-[#F84464] to-transparent shadow-[0_0_18px_#F84464] pointer-events-none"
+                />
 
                 <div className="text-center z-10 p-4">
                   <div className="w-14 h-14 rounded-2xl bg-white/5 border border-white/10 flex items-center justify-center mx-auto mb-3 shadow-lg">
@@ -285,7 +290,10 @@ export default function VendorScannerPage() {
         {/* Right Column: Gate Validation Outcome Display (5 cols) */}
         <div className="lg:col-span-5 space-y-6">
           {validationResult ? (
-            <div
+            <motion.div
+              initial={{ opacity: 0, scale: 0.95, y: 14 }}
+              animate={{ opacity: 1, scale: 1, y: 0 }}
+              transition={{ type: 'spring', stiffness: 350, damping: 25 }}
               className={`rounded-2xl border p-5 shadow-lg transition-all duration-300 relative overflow-hidden ${
                 validationResult.status === 'SUCCESS'
                   ? 'bg-gradient-to-b from-emerald-50/90 to-white border-emerald-300 text-emerald-950 shadow-emerald-500/10'
@@ -413,7 +421,7 @@ export default function VendorScannerPage() {
                   </div>
                 </div>
               ) : null}
-            </div>
+            </motion.div>
           ) : (
             /* Standby Card */
             <div className="rounded-2xl border border-dashed border-slate-300 p-8 text-center bg-white shadow-2xs">
