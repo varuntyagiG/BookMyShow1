@@ -35,6 +35,7 @@ export default function Navbar({ onSearch }) {
   const [searchInput, setSearchInput] = useState('');
   const [searchFocused, setSearchFocused] = useState(false);
   const [soundOn, setSoundOn] = useState(isSoundEnabled());
+  const [isScrolled, setIsScrolled] = useState(false);
   const dropdownRef = useRef(null);
   const searchBoxRef = useRef(null);
   const searchInputRef = useRef(null);
@@ -42,6 +43,15 @@ export default function Navbar({ onSearch }) {
 
   useEffect(() => {
     return subscribeSoundChange(setSoundOn);
+  }, []);
+
+  // Listen to scroll position for dynamic obsidian glass morphing
+  useEffect(() => {
+    const handleScroll = () => {
+      setIsScrolled(window.scrollY > 20);
+    };
+    window.addEventListener('scroll', handleScroll, { passive: true });
+    return () => window.removeEventListener('scroll', handleScroll);
   }, []);
 
   // Curated suggestions for the Grand Omnisearch
@@ -107,10 +117,19 @@ export default function Navbar({ onSearch }) {
   };
 
   return (
-    <header className="sticky top-0 z-40 bg-[#222432]/96 backdrop-blur-xl text-white shadow-[0_10px_30px_-10px_rgba(0,0,0,0.5)] border-b border-white/[0.08] select-none transition-all duration-300">
+    <header 
+      className={`sticky top-0 z-40 text-white select-none transition-all duration-500 ${
+        isScrolled
+          ? 'bg-[#0E1019]/98 backdrop-blur-2xl shadow-[0_15px_35px_-10px_rgba(0,0,0,0.85)] border-b border-white/[0.08]'
+          : 'bg-[#181A26]/96 backdrop-blur-xl shadow-[0_10px_30px_-10px_rgba(0,0,0,0.5)] border-b border-white/[0.06]'
+      }`}
+    >
       
-      {/* Top Ambient Laser Underglow Beam */}
-      <div className="h-[1.5px] w-full bg-gradient-to-r from-transparent via-[#F84464]/80 to-transparent shadow-[0_0_12px_rgba(248,68,100,0.8)]" />
+      {/* Theatrical Ambient Projector Laser Underglow Beam */}
+      <div className="relative h-[2px] w-full overflow-hidden">
+        <div className="absolute inset-0 bg-gradient-to-r from-transparent via-[#F84464] to-transparent opacity-85 shadow-[0_0_15px_rgba(248,68,100,0.9)]" />
+        <div className="absolute inset-0 bg-gradient-to-r from-transparent via-[#ff5f7e] to-transparent animate-pulse opacity-75" />
+      </div>
 
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
         <div className="flex items-center justify-between h-[68px] gap-4 sm:gap-6">
@@ -296,6 +315,17 @@ export default function Navbar({ onSearch }) {
                 </span>
               )}
             </button>
+
+            {/* Smart M-Ticket Gate Pass Shortcut */}
+            <Link
+              to="/my-bookings"
+              onClick={() => playPop()}
+              className="hidden lg:flex items-center gap-1.5 text-xs text-amber-300 hover:text-amber-100 transition-all cursor-pointer py-1.5 px-3 rounded-full bg-amber-500/15 hover:bg-amber-500/25 border border-amber-500/35 active:scale-95 shadow-[0_0_12px_rgba(245,158,11,0.2)] group"
+              title="View Digital M-Ticket & Gate Pass"
+            >
+              <Ticket className="w-3.5 h-3.5 text-amber-400 group-hover:rotate-12 transition-transform" />
+              <span className="font-bold text-[11px] tracking-wide">M-Pass</span>
+            </Link>
 
             {/* Auth Button or VIP Profile Avatar */}
             {isAuthenticated ? (
