@@ -28,8 +28,18 @@ export default function SubNav() {
   const currentPath = location.pathname;
 
   const [activeMegaMenu, setActiveMegaMenu] = useState(null);
+  const [isScrolled, setIsScrolled] = useState(false);
   const closeTimeoutRef = useRef(null);
   const subnavRef = useRef(null);
+
+  // Scroll listener for dynamic transparent morphing
+  useEffect(() => {
+    const handleScroll = () => {
+      setIsScrolled(window.scrollY > 20);
+    };
+    window.addEventListener('scroll', handleScroll, { passive: true });
+    return () => window.removeEventListener('scroll', handleScroll);
+  }, []);
 
   const categories = [
     { label: 'Movies', path: '/movies', menuKey: 'movies' },
@@ -89,7 +99,11 @@ export default function SubNav() {
     <nav 
       ref={subnavRef}
       onMouseLeave={handleMouseLeave}
-      className="bg-[#181A24]/95 backdrop-blur-xl text-gray-300 text-xs border-b border-white/[0.06] sticky top-[68px] z-30 shadow-[0_4px_20px_-4px_rgba(0,0,0,0.35)] select-none"
+      className={`sticky top-[68px] z-30 select-none text-xs transition-all duration-500 ${
+        isScrolled
+          ? 'bg-[#0B0D14]/80 backdrop-blur-xl border-b border-white/[0.08] text-gray-300 shadow-[0_4px_20px_-4px_rgba(0,0,0,0.4)]'
+          : 'bg-gradient-to-b from-black/50 via-black/20 to-transparent backdrop-blur-[3px] border-b border-white/[0.03] text-gray-200'
+      }`}
     >
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
         <div className="flex items-center justify-between h-11">
@@ -169,8 +183,8 @@ export default function SubNav() {
                   }}
                   className={`transition-all flex items-center gap-1.5 font-semibold cursor-pointer text-xs ${
                     item.highlight 
-                      ? 'bg-white/[0.08] hover:bg-white/[0.15] border border-white/10 px-3 py-1 rounded-full text-gray-200 hover:text-white shadow-xs hover:border-[#F84464]/50' 
-                      : (currentPath === item.path ? 'text-white font-black' : 'text-gray-400 hover:text-white')
+                      ? 'bg-white/[0.10] hover:bg-white/[0.18] border border-white/20 px-3 py-1 rounded-full text-gray-100 hover:text-white shadow-sm hover:border-[#F84464]/50 backdrop-blur-md' 
+                      : (currentPath === item.path ? 'text-white font-black' : 'text-gray-300 hover:text-white')
                   }`}
                 >
                   {Icon && <Icon className={`w-3 h-3 ${item.highlight ? 'text-[#F84464]' : 'text-gray-400'}`} />}

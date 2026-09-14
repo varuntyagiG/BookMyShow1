@@ -120,13 +120,13 @@ export default function Navbar({ onSearch }) {
     <header 
       className={`sticky top-0 z-40 text-white select-none transition-all duration-500 ${
         isScrolled
-          ? 'bg-[#0E1019]/98 backdrop-blur-2xl shadow-[0_15px_35px_-10px_rgba(0,0,0,0.85)] border-b border-white/[0.08]'
-          : 'bg-[#181A26]/96 backdrop-blur-xl shadow-[0_10px_30px_-10px_rgba(0,0,0,0.5)] border-b border-white/[0.06]'
+          ? 'bg-[#0B0D14]/85 backdrop-blur-xl shadow-[0_15px_35px_-10px_rgba(0,0,0,0.85)] border-b border-white/[0.08]'
+          : 'bg-gradient-to-b from-black/90 via-black/50 to-transparent backdrop-blur-[4px] border-b border-white/[0.05]'
       }`}
     >
       
       {/* Theatrical Ambient Projector Laser Underglow Beam */}
-      <div className="relative h-[2px] w-full overflow-hidden">
+      <div className={`relative h-[2px] w-full overflow-hidden transition-opacity duration-500 ${isScrolled ? 'opacity-90' : 'opacity-60'}`}>
         <div className="absolute inset-0 bg-gradient-to-r from-transparent via-[#F84464] to-transparent opacity-85 shadow-[0_0_15px_rgba(248,68,100,0.9)]" />
         <div className="absolute inset-0 bg-gradient-to-r from-transparent via-[#ff5f7e] to-transparent animate-pulse opacity-75" />
       </div>
@@ -149,7 +149,7 @@ export default function Navbar({ onSearch }) {
                 <span className="text-xl sm:text-2xl font-black tracking-tight text-white flex items-center transition-transform group-hover:scale-[1.01] leading-none">
                   book<span className="bg-gradient-to-r from-[#F84464] via-[#ff5f7e] to-[#F84464] bg-clip-text text-transparent">my</span>show
                 </span>
-                <span className="text-[8px] font-extrabold uppercase tracking-[0.18em] text-gray-400 group-hover:text-gray-300 transition-colors mt-0.5">
+                <span className="text-[8px] font-extrabold uppercase tracking-[0.18em] text-gray-300 group-hover:text-white transition-colors mt-0.5">
                   CINEMA &bull; EXPERIENCES
                 </span>
               </div>
@@ -159,15 +159,15 @@ export default function Navbar({ onSearch }) {
             <div ref={searchBoxRef} className="relative flex-1 hidden sm:block max-w-xl">
               <form onSubmit={handleSearchSubmit} className="relative">
                 <div 
-                  className={`relative flex items-center rounded-xl transition-all duration-300 ${
+                  className={`relative flex items-center rounded-xl transition-all duration-300 backdrop-blur-md ${
                     searchFocused 
-                      ? 'bg-white/[0.14] ring-2 ring-[#F84464]/60 border-transparent shadow-[0_0_20px_rgba(248,68,100,0.25)]' 
-                      : 'bg-white/[0.08] hover:bg-white/[0.12] border border-white/10'
+                      ? 'bg-white/[0.20] ring-2 ring-[#F84464]/70 border-transparent shadow-[0_0_25px_rgba(248,68,100,0.35)]' 
+                      : 'bg-white/[0.10] hover:bg-white/[0.16] border border-white/20'
                   }`}
                 >
                   <Search 
                     className={`absolute left-3.5 w-4 h-4 transition-colors pointer-events-none ${
-                      searchFocused ? 'text-[#F84464]' : 'text-gray-400'
+                      searchFocused ? 'text-[#F84464]' : 'text-gray-300'
                     }`} 
                   />
                   <input
@@ -180,7 +180,7 @@ export default function Navbar({ onSearch }) {
                       setSearchInput(e.target.value);
                       if (onSearch) onSearch(e.target.value);
                     }}
-                    className="w-full pl-10 pr-20 py-2.5 bg-transparent text-white text-xs placeholder-gray-400 focus:outline-none transition-all"
+                    className="w-full pl-10 pr-20 py-2.5 bg-transparent text-white text-xs placeholder-gray-300 focus:outline-none transition-all"
                   />
                   
                   {/* Right side helper (clear or Ctrl+K shortcut) */}
@@ -256,8 +256,8 @@ export default function Navbar({ onSearch }) {
             </div>
           </div>
 
-          {/* Right: Interactive Action Dock */}
-          <div className="flex items-center gap-2.5 sm:gap-3.5 shrink-0">
+          {/* Right: Interactive Action Dock (Translucent Glass Beads) */}
+          <div className="flex items-center gap-2 sm:gap-3 shrink-0">
 
             {/* City Selector Capsule with Animated Radar Beacon */}
             <button
@@ -265,7 +265,7 @@ export default function Navbar({ onSearch }) {
                 playPop();
                 setIsCityModalOpen(true);
               }}
-              className="flex items-center gap-2 text-xs text-gray-200 hover:text-white transition-all cursor-pointer py-1.5 px-3 sm:px-3.5 rounded-full bg-white/[0.07] hover:bg-white/[0.14] border border-white/10 active:scale-95 shadow-xs hover:border-[#F84464]/40"
+              className="flex items-center gap-2 text-xs text-gray-100 hover:text-white transition-all cursor-pointer py-1.5 px-3 sm:px-3.5 rounded-full bg-white/[0.09] hover:bg-white/[0.18] border border-white/20 backdrop-blur-md active:scale-95 shadow-sm hover:border-[#F84464]/50 hover:shadow-[0_0_15px_rgba(248,68,100,0.2)]"
               title="Change City"
             >
               <div className="relative flex items-center justify-center">
@@ -273,16 +273,16 @@ export default function Navbar({ onSearch }) {
                 <span className="absolute -top-0.5 -right-0.5 w-1.5 h-1.5 bg-[#F84464] rounded-full animate-ping" />
               </div>
               <span className="font-bold text-white text-[11px] sm:text-xs">{selectedCity}</span>
-              <ChevronDown className="w-3 h-3 text-gray-400" />
+              <ChevronDown className="w-3 h-3 text-gray-300" />
             </button>
 
             {/* Audio Equalizer Haptic Toggle */}
             <button
               onClick={handleSoundToggle}
-              className={`p-2 rounded-full border transition-all cursor-pointer active:scale-95 flex items-center justify-center ${
+              className={`p-2 rounded-full border transition-all cursor-pointer active:scale-95 flex items-center justify-center backdrop-blur-md ${
                 soundOn
-                  ? 'bg-white/[0.08] hover:bg-white/[0.14] text-white border-white/15 shadow-[0_0_12px_rgba(248,68,100,0.25)]'
-                  : 'bg-red-500/15 text-[#F84464] border-[#F84464]/40 hover:bg-red-500/25'
+                  ? 'bg-white/[0.09] hover:bg-white/[0.18] text-white border-white/20 shadow-[0_0_12px_rgba(248,68,100,0.25)]'
+                  : 'bg-red-500/20 text-[#F84464] border-[#F84464]/40 hover:bg-red-500/30'
               }`}
               title={soundOn ? 'Audio Haptics: ON (Click to Mute)' : 'Audio Haptics: MUTED (Click to Enable)'}
               aria-label="Toggle Audio Haptics"
@@ -294,7 +294,7 @@ export default function Navbar({ onSearch }) {
                   <span className="w-[2px] h-3.5 bg-[#F84464] rounded-full animate-pulse delay-150" />
                 </div>
               ) : (
-                <VolumeX className="w-3.5 h-3.5 text-gray-400" />
+                <VolumeX className="w-3.5 h-3.5 text-gray-300" />
               )}
             </button>
 
@@ -304,7 +304,7 @@ export default function Navbar({ onSearch }) {
                 playPop();
                 setIsOpenDrawer(true);
               }}
-              className="relative p-2 text-gray-300 hover:text-white rounded-full bg-white/[0.07] hover:bg-white/[0.14] border border-white/10 transition-all cursor-pointer active:scale-95 hover:border-[#F84464]/40"
+              className="relative p-2 text-gray-200 hover:text-white rounded-full bg-white/[0.09] hover:bg-white/[0.18] border border-white/20 backdrop-blur-md transition-all cursor-pointer active:scale-95 hover:border-[#F84464]/50"
               title="Notifications"
               aria-label="Notifications"
             >
@@ -320,7 +320,7 @@ export default function Navbar({ onSearch }) {
             <Link
               to="/my-bookings"
               onClick={() => playPop()}
-              className="hidden lg:flex items-center gap-1.5 text-xs text-amber-300 hover:text-amber-100 transition-all cursor-pointer py-1.5 px-3 rounded-full bg-amber-500/15 hover:bg-amber-500/25 border border-amber-500/35 active:scale-95 shadow-[0_0_12px_rgba(245,158,11,0.2)] group"
+              className="hidden lg:flex items-center gap-1.5 text-xs text-amber-300 hover:text-amber-100 transition-all cursor-pointer py-1.5 px-3 rounded-full bg-amber-500/15 hover:bg-amber-500/25 border border-amber-500/35 backdrop-blur-md active:scale-95 shadow-[0_0_12px_rgba(245,158,11,0.2)] group"
               title="View Digital M-Ticket & Gate Pass"
             >
               <Ticket className="w-3.5 h-3.5 text-amber-400 group-hover:rotate-12 transition-transform" />
@@ -335,7 +335,7 @@ export default function Navbar({ onSearch }) {
                     playPop();
                     setUserDropdownOpen(!userDropdownOpen);
                   }}
-                  className="flex items-center gap-2 py-1 px-1.5 sm:px-2.5 rounded-full bg-white/[0.07] hover:bg-white/[0.14] transition-all cursor-pointer border border-white/10 active:scale-95 hover:border-[#F84464]/50 group"
+                  className="flex items-center gap-2 py-1 px-1.5 sm:px-2.5 rounded-full bg-white/[0.09] hover:bg-white/[0.18] backdrop-blur-md transition-all cursor-pointer border border-white/20 active:scale-95 hover:border-[#F84464]/50 group"
                 >
                   {/* Square-Curved Avatar Tile */}
                   <div className="relative">
