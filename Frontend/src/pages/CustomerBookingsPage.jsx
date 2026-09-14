@@ -20,7 +20,10 @@ import {
   Sparkles,
   ArrowRight,
   ShieldCheck,
-  X
+  X,
+  Navigation,
+  Sun,
+  ExternalLink
 } from 'lucide-react';
 
 export default function CustomerBookingsPage() {
@@ -33,6 +36,21 @@ export default function CustomerBookingsPage() {
   const [activeTicketModal, setActiveTicketModal] = useState(null);
   const [cancelModal, setCancelModal] = useState({ isOpen: false, booking: null, loading: false, error: '' });
   const [filterStatus, setFilterStatus] = useState('all');
+  const [isScannerBright, setIsScannerBright] = useState(false);
+
+  const handleCalendar = (booking) => {
+    const title = `${booking.movieTitle || 'Movie'} - BookMyShow Ticket`;
+    const details = `Booking ID: ${booking.bookingId || 'BMS'}\nTheatre: ${booking.theatreName || 'Multiplex'}\nShowtime: ${booking.showtime || '10:00 AM'}\nDate: ${booking.showDate || 'Today'}\nSeats: ${(Array.isArray(booking.seats) ? booking.seats : []).join(', ')}`;
+    const locationStr = booking.theatreName || 'Cinema';
+    const calUrl = `https://calendar.google.com/calendar/render?action=TEMPLATE&text=${encodeURIComponent(title)}&details=${encodeURIComponent(details)}&location=${encodeURIComponent(locationStr)}`;
+    window.open(calUrl, '_blank');
+  };
+
+  const handleDirections = (theatreName) => {
+    const query = theatreName || 'Cinema';
+    const mapsUrl = `https://www.google.com/maps/search/?api=1&query=${encodeURIComponent(query)}`;
+    window.open(mapsUrl, '_blank');
+  };
 
   useEffect(() => {
     if (!isAuthenticated) {
@@ -339,6 +357,42 @@ export default function CustomerBookingsPage() {
                     ₹{Number(activeTicketModal.totalPrice || activeTicketModal.amount || 0).toLocaleString('en-IN')}
                   </span>
                 </div>
+              </div>
+
+              {/* Post-Booking Ticket Utilities Ribbon */}
+              <div className="flex flex-wrap items-center gap-2 mb-4">
+                <button
+                  type="button"
+                  onClick={() => handleCalendar(activeTicketModal)}
+                  className="flex-1 min-w-[130px] py-2 px-3 bg-slate-50 hover:bg-slate-100 text-slate-700 border border-slate-200 rounded-xl text-xs font-bold flex items-center justify-center gap-1.5 transition-colors cursor-pointer"
+                >
+                  <Calendar className="w-3.5 h-3.5 text-[#F84464]" />
+                  <span>Google Calendar</span>
+                </button>
+
+                <button
+                  type="button"
+                  onClick={() => handleDirections(activeTicketModal.theatreName)}
+                  className="flex-1 min-w-[110px] py-2 px-3 bg-slate-50 hover:bg-slate-100 text-slate-700 border border-slate-200 rounded-xl text-xs font-bold flex items-center justify-center gap-1.5 transition-colors cursor-pointer"
+                >
+                  <Navigation className="w-3.5 h-3.5 text-cyan-600" />
+                  <span>Directions</span>
+                  <ExternalLink className="w-2.5 h-2.5 opacity-60" />
+                </button>
+
+                <button
+                  type="button"
+                  onClick={() => setIsScannerBright(!isScannerBright)}
+                  className={`py-2 px-3 rounded-xl text-xs font-bold flex items-center justify-center gap-1.5 transition-colors cursor-pointer border ${
+                    isScannerBright
+                      ? 'bg-amber-400 text-black border-amber-300 font-black shadow-md'
+                      : 'bg-slate-50 hover:bg-slate-100 text-slate-700 border-slate-200'
+                  }`}
+                  title="Maximize screen brightness for optical scanner turnstile"
+                >
+                  <Sun className={`w-3.5 h-3.5 ${isScannerBright ? 'text-black fill-black' : 'text-amber-500'}`} />
+                  <span>{isScannerBright ? 'Scanner Mode On' : 'Scanner Mode'}</span>
+                </button>
               </div>
 
               {/* Action Buttons */}

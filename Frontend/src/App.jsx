@@ -54,10 +54,11 @@ import AdminMoviesPage from './pages/admin/AdminMoviesPage';
 import AdminBookingsPage from './pages/admin/AdminBookingsPage';
 import AdminOffersPage from './pages/admin/AdminOffersPage';
 import AdminSettlementsPage from './pages/admin/AdminSettlementsPage';
+import MobileBottomNav from './components/common/MobileBottomNav';
 
 const CustomerLayout = React.memo(function CustomerLayout({ onSearch }) {
   return (
-    <div className="flex flex-col min-h-screen bg-[#F5F5FA] text-[#222432] relative">
+    <div className="flex flex-col min-h-screen bg-[#F5F5FA] text-[#222432] relative pb-16 md:pb-0">
       {/* Ambient Cinema Cursor Spotlight FX */}
       <CursorSpotlight />
 
@@ -74,6 +75,9 @@ const CustomerLayout = React.memo(function CustomerLayout({ onSearch }) {
 
       {/* BookMyShow Footer */}
       <Footer />
+
+      {/* Responsive Mobile Bottom Navigation Dock */}
+      <MobileBottomNav />
 
       {/* Global Modals */}
       <CityModal />
