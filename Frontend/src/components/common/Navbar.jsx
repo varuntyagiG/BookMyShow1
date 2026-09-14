@@ -118,16 +118,16 @@ export default function Navbar({ onSearch }) {
 
   return (
     <header 
-      className={`sticky top-0 z-40 text-white select-none transition-all duration-500 ${
+      className={`sticky top-0 z-40 text-white select-none transition-all duration-300 ${
         isScrolled
-          ? 'bg-[#0B0D14]/85 backdrop-blur-xl shadow-[0_15px_35px_-10px_rgba(0,0,0,0.85)] border-b border-white/[0.08]'
-          : 'bg-gradient-to-b from-black/90 via-black/50 to-transparent backdrop-blur-[4px] border-b border-white/[0.05]'
+          ? 'bg-[#0E1019]/96 backdrop-blur-2xl shadow-[0_15px_35px_-10px_rgba(0,0,0,0.85)] border-b border-white/[0.08]'
+          : 'bg-[#12141F]/94 backdrop-blur-2xl shadow-[0_12px_30px_-10px_rgba(0,0,0,0.5)] border-b border-white/[0.08]'
       }`}
     >
       
       {/* Theatrical Ambient Projector Laser Underglow Beam */}
-      <div className={`relative h-[2px] w-full overflow-hidden transition-opacity duration-500 ${isScrolled ? 'opacity-90' : 'opacity-60'}`}>
-        <div className="absolute inset-0 bg-gradient-to-r from-transparent via-[#F84464] to-transparent opacity-85 shadow-[0_0_15px_rgba(248,68,100,0.9)]" />
+      <div className="relative h-[1.5px] w-full overflow-hidden">
+        <div className="absolute inset-0 bg-gradient-to-r from-transparent via-[#F84464]/85 to-transparent opacity-90 shadow-[0_0_15px_rgba(248,68,100,0.9)]" />
         <div className="absolute inset-0 bg-gradient-to-r from-transparent via-[#ff5f7e] to-transparent animate-pulse opacity-75" />
       </div>
 

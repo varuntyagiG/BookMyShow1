@@ -99,10 +99,10 @@ export default function SubNav() {
     <nav 
       ref={subnavRef}
       onMouseLeave={handleMouseLeave}
-      className={`sticky top-[68px] z-30 select-none text-xs transition-all duration-500 ${
+      className={`sticky top-[68px] z-30 select-none text-xs transition-all duration-300 ${
         isScrolled
-          ? 'bg-[#0B0D14]/80 backdrop-blur-xl border-b border-white/[0.08] text-gray-300 shadow-[0_4px_20px_-4px_rgba(0,0,0,0.4)]'
-          : 'bg-gradient-to-b from-black/50 via-black/20 to-transparent backdrop-blur-[3px] border-b border-white/[0.03] text-gray-200'
+          ? 'bg-[#0A0C14]/96 backdrop-blur-2xl border-b border-white/[0.08] text-gray-200 shadow-[0_6px_25px_-5px_rgba(0,0,0,0.5)]'
+          : 'bg-[#0E1018]/94 backdrop-blur-2xl border-b border-white/[0.08] text-gray-200 shadow-[0_4px_20px_-4px_rgba(0,0,0,0.35)]'
       }`}
     >
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
