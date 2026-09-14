@@ -11,13 +11,21 @@ import {
   Bell, 
   Crown,
   Sparkles,
-  ArrowRight
+  ArrowRight,
+  Volume2,
+  VolumeX,
+  Compass
 } from 'lucide-react';
 import { useAuth } from '../../context/AuthContext';
 import { useCity } from '../../context/CityContext';
 import { useNotification } from '../../context/NotificationContext';
 import { Link, useNavigate } from 'react-router-dom';
-import { playPop } from '../../utils/soundEffects';
+import { 
+  isSoundEnabled, 
+  toggleSound, 
+  subscribeSoundChange, 
+  playPop 
+} from '../../utils/soundEffects';
 
 export default function Navbar({ onSearch }) {
   const { user, isAuthenticated, logout, openAuthModal } = useAuth();
@@ -26,18 +34,23 @@ export default function Navbar({ onSearch }) {
   const [userDropdownOpen, setUserDropdownOpen] = useState(false);
   const [searchInput, setSearchInput] = useState('');
   const [searchFocused, setSearchFocused] = useState(false);
+  const [soundOn, setSoundOn] = useState(isSoundEnabled());
   const dropdownRef = useRef(null);
   const searchBoxRef = useRef(null);
   const searchInputRef = useRef(null);
   const navigate = useNavigate();
 
-  // Quick suggestions for BookMyShow search
+  useEffect(() => {
+    return subscribeSoundChange(setSoundOn);
+  }, []);
+
+  // Curated suggestions for the Grand Omnisearch
   const quickSearches = [
-    { title: 'Dune: Part Two', type: 'Movies', languages: 'English, Hindi', rating: '9.4', path: '/movies/m1' },
-    { title: 'Kalki 2898 AD', type: 'Movies', languages: 'Telugu, Hindi', rating: '9.1', path: '/movies/m2' },
-    { title: 'Stree 2: Sarkate Ka Aatank', type: 'Movies', languages: 'Hindi', rating: '9.3', path: '/movies/m3' },
-    { title: 'Deadpool & Wolverine', type: 'Movies', languages: 'English, Hindi', rating: '9.0', path: '/movies/m4' },
-    { title: 'Sunburn Arena ft. Alan Walker', type: 'Events', languages: 'Live Concert', rating: '9.8', path: '/events' },
+    { title: 'Dune: Part Two', type: 'IMAX 3D', category: 'Sci-Fi / Adventure', rating: '9.4', path: '/movies/m1' },
+    { title: 'Kalki 2898 AD', type: 'Dolby Atmos', category: 'Mythological Sci-Fi', rating: '9.1', path: '/movies/m2' },
+    { title: 'Stree 2: Sarkate Ka Aatank', type: 'Multiplex Blockbuster', category: 'Comedy / Horror', rating: '9.3', path: '/movies/m3' },
+    { title: 'Deadpool & Wolverine', type: '4DX Laser', category: 'Action / Comedy', rating: '9.0', path: '/movies/m4' },
+    { title: 'Sunburn Arena ft. Alan Walker', type: 'VIP Festival', category: 'Live Concert', rating: '9.8', path: '/events' },
   ];
 
   const filteredQuickSearches = searchInput.trim()
@@ -87,40 +100,68 @@ export default function Navbar({ onSearch }) {
     if (onSearch) onSearch('');
   };
 
-  return (
-    <header className="sticky top-0 z-40 bg-[#333545] text-white shadow-sm border-b border-gray-700/40 select-none">
-      <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-        <div className="flex items-center justify-between h-16 gap-4 sm:gap-6">
+  const handleSoundToggle = () => {
+    const next = toggleSound();
+    setSoundOn(next);
+    playPop();
+  };
 
-          {/* Left: Brand Logo & Search Bar */}
+  return (
+    <header className="sticky top-0 z-40 bg-[#222432]/96 backdrop-blur-xl text-white shadow-[0_10px_30px_-10px_rgba(0,0,0,0.5)] border-b border-white/[0.08] select-none transition-all duration-300">
+      
+      {/* Top Ambient Laser Underglow Beam */}
+      <div className="h-[1.5px] w-full bg-gradient-to-r from-transparent via-[#F84464]/80 to-transparent shadow-[0_0_12px_rgba(248,68,100,0.8)]" />
+
+      <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+        <div className="flex items-center justify-between h-[68px] gap-4 sm:gap-6">
+
+          {/* Left: Brand Identity & Grand Omnisearch */}
           <div className="flex items-center gap-6 sm:gap-8 flex-1 max-w-3xl">
             
-            {/* BookMyShow Official Logo */}
-            <Link to="/" className="flex items-center gap-2 shrink-0 group py-1">
-              <div className="w-8 h-8 rounded-lg bg-[#F84464] flex items-center justify-center text-white shadow-sm group-hover:scale-105 transition-transform duration-200">
-                <Film className="w-4.5 h-4.5 text-white" />
+            {/* BookMyShow High-Impact Logo */}
+            <Link to="/" className="flex items-center gap-3 shrink-0 group py-1">
+              <div className="relative">
+                <div className="w-9 h-9 rounded-xl bg-gradient-to-tr from-[#F84464] via-[#ff385c] to-[#e0183e] flex items-center justify-center text-white shadow-[0_4px_16px_rgba(248,68,100,0.5)] group-hover:scale-105 transition-all duration-300 group-hover:shadow-[0_0_24px_rgba(248,68,100,0.7)]">
+                  <Film className="w-4.5 h-4.5 text-white" />
+                </div>
               </div>
-              <span className="text-xl sm:text-2xl font-black tracking-tight text-white flex items-center">
-                book<span className="text-[#F84464]">my</span>show
-              </span>
+
+              <div className="flex flex-col">
+                <span className="text-xl sm:text-2xl font-black tracking-tight text-white flex items-center transition-transform group-hover:scale-[1.01] leading-none">
+                  book<span className="bg-gradient-to-r from-[#F84464] via-[#ff5f7e] to-[#F84464] bg-clip-text text-transparent">my</span>show
+                </span>
+                <span className="text-[8px] font-extrabold uppercase tracking-[0.18em] text-gray-400 group-hover:text-gray-300 transition-colors mt-0.5">
+                  CINEMA &bull; EXPERIENCES
+                </span>
+              </div>
             </Link>
 
-            {/* BookMyShow White Search Capsule */}
+            {/* Grand Omnisearch Capsule */}
             <div ref={searchBoxRef} className="relative flex-1 hidden sm:block max-w-xl">
               <form onSubmit={handleSearchSubmit} className="relative">
-                <div className="relative flex items-center bg-white rounded-md border border-gray-200 shadow-xs focus-within:border-[#F84464] focus-within:ring-1 focus-within:ring-[#F84464] transition-all">
-                  <Search className="absolute left-3.5 w-4 h-4 text-gray-400 pointer-events-none" />
+                <div 
+                  className={`relative flex items-center rounded-xl transition-all duration-300 ${
+                    searchFocused 
+                      ? 'bg-white/[0.14] ring-2 ring-[#F84464]/60 border-transparent shadow-[0_0_20px_rgba(248,68,100,0.25)]' 
+                      : 'bg-white/[0.08] hover:bg-white/[0.12] border border-white/10'
+                  }`}
+                >
+                  <Search 
+                    className={`absolute left-3.5 w-4 h-4 transition-colors pointer-events-none ${
+                      searchFocused ? 'text-[#F84464]' : 'text-gray-400'
+                    }`} 
+                  />
                   <input
                     ref={searchInputRef}
                     type="text"
-                    placeholder="Search for Movies, Events, Plays, Sports and Activities"
+                    placeholder="Search for Movies, Events, Plays, Sports and Activities..."
                     value={searchInput}
                     onFocus={() => setSearchFocused(true)}
                     onChange={(e) => {
                       setSearchInput(e.target.value);
                       if (onSearch) onSearch(e.target.value);
                     }}
-                    className="w-full pl-10 pr-16 py-2 bg-transparent text-gray-800 text-xs placeholder-gray-400 focus:outline-none"
+                    className="w-full pl-10 pr-20 py-2.5 bg-transparent text-white text-xs placeholder-gray-400 focus:outline-none transition-all"
                   />
                   
                   {/* Right side helper (clear or Ctrl+K shortcut) */}
@@ -129,14 +170,14 @@ export default function Navbar({ onSearch }) {
                       <button
                         type="button"
                         onClick={handleClearSearch}
-                        className="p-1 text-gray-400 hover:text-gray-700 rounded-full cursor-pointer transition-colors"
+                        className="p-1 text-gray-400 hover:text-white rounded-full cursor-pointer transition-colors"
                         title="Clear search"
                       >
                         <X className="w-3.5 h-3.5" />
                       </button>
                     ) : (
-                      <kbd className="hidden lg:inline-flex items-center px-1.5 py-0.5 text-[9px] font-semibold text-gray-400 bg-gray-100 border border-gray-200 rounded select-none">
-                        Ctrl K
+                      <kbd className="hidden lg:inline-flex items-center gap-0.5 px-1.5 py-0.5 text-[9px] font-semibold text-gray-400 bg-white/10 border border-white/15 rounded-md select-none">
+                        <span>Ctrl</span> K
                       </kbd>
                     )}
                   </div>
@@ -145,16 +186,16 @@ export default function Navbar({ onSearch }) {
 
               {/* Suggestions Popup Dropdown */}
               {searchFocused && (
-                <div className="absolute top-full left-0 right-0 mt-1.5 bg-white text-gray-800 rounded-lg shadow-xl border border-gray-200 py-2.5 z-50 animate-in fade-in duration-100">
-                  <div className="px-4 py-1 text-[10px] uppercase font-bold text-gray-400 tracking-wider flex items-center justify-between border-b border-gray-100 pb-2">
+                <div className="absolute top-full left-0 right-0 mt-2 bg-[#1B1D28]/98 backdrop-blur-2xl text-white rounded-2xl shadow-[0_25px_60px_-15px_rgba(0,0,0,0.8)] border border-white/10 py-3 z-50 animate-in fade-in zoom-in-95 duration-150">
+                  <div className="px-4 py-1.5 text-[10px] uppercase font-bold text-gray-400 tracking-wider flex items-center justify-between border-b border-white/5 pb-2">
                     <span className="flex items-center gap-1.5 text-[#F84464]">
                       <Sparkles className="w-3.5 h-3.5" />
-                      <span>{searchInput ? 'Matching Results' : 'Trending Blockbusters'}</span>
+                      <span>{searchInput ? 'Matching Results' : 'Trending Blockbusters & Events'}</span>
                     </span>
-                    <span className="text-[9px] text-gray-400 font-normal">Esc to close</span>
+                    <span className="text-[9px] text-gray-500 font-normal">Esc to dismiss</span>
                   </div>
 
-                  <div className="mt-1 divide-y divide-gray-100 max-h-72 overflow-y-auto no-scrollbar">
+                  <div className="mt-1 divide-y divide-white/5 max-h-80 overflow-y-auto no-scrollbar">
                     {filteredQuickSearches.map((item) => (
                       <button
                         key={item.title}
@@ -166,25 +207,28 @@ export default function Navbar({ onSearch }) {
                           playPop();
                           navigate(item.path);
                         }}
-                        className="w-full px-4 py-2.5 text-left hover:bg-gray-50 flex items-center justify-between text-xs cursor-pointer transition-colors group"
+                        className="w-full px-4 py-2.5 text-left hover:bg-white/[0.08] flex items-center justify-between text-xs cursor-pointer transition-colors group"
                       >
                         <div className="flex items-center gap-3">
-                          <div className="w-7 h-7 rounded bg-red-50 border border-red-100 flex items-center justify-center text-[#F84464] shrink-0">
-                            <Film className="w-3.5 h-3.5" />
+                          <div className="w-8 h-8 rounded-lg bg-[#F84464]/15 border border-[#F84464]/30 flex items-center justify-center text-[#F84464] shrink-0 group-hover:scale-105 group-hover:bg-[#F84464]/25 transition-all">
+                            <Film className="w-4 h-4" />
                           </div>
                           <div>
-                            <span className="font-semibold text-gray-800 group-hover:text-[#F84464] transition-colors block">
+                            <span className="font-semibold text-gray-200 group-hover:text-white transition-colors block leading-snug">
                               {item.title}
                             </span>
-                            <span className="text-[10px] text-gray-500">
-                              {item.languages}
+                            <span className="text-[10px] text-gray-400">
+                              {item.category}
                             </span>
                           </div>
                         </div>
 
-                        <span className="text-[10px] px-2 py-0.5 rounded bg-gray-100 text-gray-600 font-semibold">
-                          {item.type}
-                        </span>
+                        <div className="flex items-center gap-2">
+                          <span className="text-[10px] px-2 py-0.5 rounded-full bg-white/10 border border-white/10 text-gray-300 font-semibold group-hover:bg-[#F84464]/20 group-hover:text-[#F84464] group-hover:border-[#F84464]/30 transition-all">
+                            {item.type}
+                          </span>
+                          <ArrowRight className="w-3.5 h-3.5 text-gray-500 opacity-0 group-hover:opacity-100 group-hover:translate-x-0.5 transition-all" />
+                        </div>
                       </button>
                     ))}
                   </div>
@@ -193,42 +237,67 @@ export default function Navbar({ onSearch }) {
             </div>
           </div>
 
-          {/* Right: City Selector, Notifications, Sign In / Profile */}
-          <div className="flex items-center gap-3 sm:gap-5 shrink-0">
+          {/* Right: Interactive Action Dock */}
+          <div className="flex items-center gap-2.5 sm:gap-3.5 shrink-0">
 
-            {/* City Selector Pill */}
+            {/* City Selector Capsule with Animated Radar Beacon */}
             <button
               onClick={() => {
                 playPop();
                 setIsCityModalOpen(true);
               }}
-              className="flex items-center gap-1.5 text-xs text-gray-300 hover:text-white transition-colors cursor-pointer py-1 px-2.5 rounded hover:bg-white/10"
+              className="flex items-center gap-2 text-xs text-gray-200 hover:text-white transition-all cursor-pointer py-1.5 px-3 sm:px-3.5 rounded-full bg-white/[0.07] hover:bg-white/[0.14] border border-white/10 active:scale-95 shadow-xs hover:border-[#F84464]/40"
               title="Change City"
             >
-              <MapPin className="w-3.5 h-3.5 text-[#F84464]" />
-              <span className="font-medium">{selectedCity}</span>
+              <div className="relative flex items-center justify-center">
+                <MapPin className="w-3.5 h-3.5 text-[#F84464]" />
+                <span className="absolute -top-0.5 -right-0.5 w-1.5 h-1.5 bg-[#F84464] rounded-full animate-ping" />
+              </div>
+              <span className="font-bold text-white text-[11px] sm:text-xs">{selectedCity}</span>
               <ChevronDown className="w-3 h-3 text-gray-400" />
             </button>
 
-            {/* Notification Bell */}
+            {/* Audio Equalizer Haptic Toggle */}
+            <button
+              onClick={handleSoundToggle}
+              className={`p-2 rounded-full border transition-all cursor-pointer active:scale-95 flex items-center justify-center ${
+                soundOn
+                  ? 'bg-white/[0.08] hover:bg-white/[0.14] text-white border-white/15 shadow-[0_0_12px_rgba(248,68,100,0.25)]'
+                  : 'bg-red-500/15 text-[#F84464] border-[#F84464]/40 hover:bg-red-500/25'
+              }`}
+              title={soundOn ? 'Audio Haptics: ON (Click to Mute)' : 'Audio Haptics: MUTED (Click to Enable)'}
+              aria-label="Toggle Audio Haptics"
+            >
+              {soundOn ? (
+                <div className="flex items-end gap-0.5 h-3 w-3 justify-center">
+                  <span className="w-[2px] h-3 bg-[#F84464] rounded-full animate-pulse" />
+                  <span className="w-[2px] h-2 bg-[#F84464] rounded-full animate-pulse delay-75" />
+                  <span className="w-[2px] h-3.5 bg-[#F84464] rounded-full animate-pulse delay-150" />
+                </div>
+              ) : (
+                <VolumeX className="w-3.5 h-3.5 text-gray-400" />
+              )}
+            </button>
+
+            {/* Live Notification Bell */}
             <button
               onClick={() => {
                 playPop();
                 setIsOpenDrawer(true);
               }}
-              className="relative p-1.5 text-gray-300 hover:text-white rounded-full hover:bg-white/10 transition-colors cursor-pointer"
+              className="relative p-2 text-gray-300 hover:text-white rounded-full bg-white/[0.07] hover:bg-white/[0.14] border border-white/10 transition-all cursor-pointer active:scale-95 hover:border-[#F84464]/40"
               title="Notifications"
               aria-label="Notifications"
             >
               <Bell className="w-4 h-4" />
               {unreadCount > 0 && (
-                <span className="absolute -top-0.5 -right-0.5 min-w-[16px] h-[16px] px-1 bg-[#F84464] text-white text-[9px] font-black rounded-full flex items-center justify-center shadow-xs">
+                <span className="absolute -top-1 -right-1 min-w-[18px] h-[18px] px-1 bg-gradient-to-r from-[#F84464] to-[#ff4767] text-white text-[9px] font-black rounded-full flex items-center justify-center shadow-lg shadow-[#F84464]/50 animate-pulse">
                   {unreadCount > 9 ? '9+' : unreadCount}
                 </span>
               )}
             </button>
 
-            {/* Auth Button or User Profile */}
+            {/* Auth Button or VIP Profile Avatar */}
             {isAuthenticated ? (
               <div className="relative" ref={dropdownRef}>
                 <button
@@ -236,40 +305,55 @@ export default function Navbar({ onSearch }) {
                     playPop();
                     setUserDropdownOpen(!userDropdownOpen);
                   }}
-                  className="flex items-center gap-2 py-1 px-2 rounded-full hover:bg-white/10 transition-colors cursor-pointer border border-transparent hover:border-gray-600"
+                  className="flex items-center gap-2 py-1 px-1.5 sm:px-2.5 rounded-full bg-white/[0.07] hover:bg-white/[0.14] transition-all cursor-pointer border border-white/10 active:scale-95 hover:border-[#F84464]/50 group"
                 >
-                  <div className="w-7 h-7 rounded-full bg-[#F84464] flex items-center justify-center text-white text-xs font-bold shadow-xs">
-                    {user?.name ? user.name.charAt(0).toUpperCase() : 'U'}
+                  {/* Square-Curved Avatar Tile */}
+                  <div className="relative">
+                    <div className="w-7 h-7 sm:w-8 sm:h-8 rounded-lg bg-gradient-to-tr from-[#F84464] via-[#ff3b5c] to-[#e0183e] flex items-center justify-center text-white text-xs font-black shadow-md ring-2 ring-[#F84464]/50 group-hover:ring-[#F84464] transition-all">
+                      {user?.name ? user.name.charAt(0).toUpperCase() : 'U'}
+                    </div>
+                    <span className="absolute -top-1 -right-1 w-2.5 h-2.5 bg-amber-400 rounded-full border border-black flex items-center justify-center shadow-xs">
+                      <Crown className="w-1.5 h-1.5 text-black" />
+                    </span>
                   </div>
-                  <span className="text-xs font-medium max-w-[100px] truncate hidden md:inline text-gray-200">
-                    Hi, {user?.name?.split(' ')[0] || 'User'}
+
+                  <span className="text-xs font-bold max-w-[100px] truncate hidden md:inline text-gray-100 group-hover:text-white transition-colors">
+                    {user?.name?.split(' ')[0] || 'Member'}
                   </span>
-                  <ChevronDown className="w-3 h-3 text-gray-400" />
+                  <ChevronDown className="w-3 h-3 text-gray-400 group-hover:text-white transition-colors" />
                 </button>
 
                 {/* Dropdown Menu */}
                 {userDropdownOpen && (
-                  <div className="absolute right-0 mt-2 w-64 bg-white rounded-lg shadow-xl py-2 text-gray-800 border border-gray-200 z-50 animate-in fade-in duration-100 divide-y divide-gray-100">
-                    <div className="px-4 py-3 bg-gray-50 rounded-t-lg">
-                      <div className="flex items-center gap-1.5 text-[10px] text-[#F84464] font-bold uppercase tracking-wider mb-1">
+                  <div className="absolute right-0 mt-2.5 w-68 bg-[#1B1D28]/98 backdrop-blur-2xl rounded-2xl shadow-[0_20px_50px_rgba(0,0,0,0.8)] py-2 text-white border border-white/10 z-50 animate-in fade-in zoom-in-95 duration-150 divide-y divide-white/10">
+                    
+                    {/* Header Banner */}
+                    <div className="px-4 py-3.5 bg-gradient-to-b from-white/[0.06] to-transparent">
+                      <div className="flex items-center gap-1.5 text-[10px] text-amber-400 font-extrabold uppercase tracking-wider mb-1.5">
                         <Crown className="w-3.5 h-3.5" />
-                        <span>BookMyShow Superstar</span>
+                        <span>BookMyShow Superstar Member</span>
                       </div>
-                      <p className="text-sm font-bold text-gray-900 truncate">{user?.name}</p>
-                      <p className="text-xs text-gray-500 truncate mt-0.5">{user?.email}</p>
+                      <p className="text-sm font-black text-white truncate">{user?.name}</p>
+                      <p className="text-xs text-gray-400 truncate mt-0.5">{user?.email}</p>
                     </div>
 
-                    <div className="py-1">
+                    {/* Quick Access Links */}
+                    <div className="py-2">
                       <Link
                         to="/my-bookings"
                         onClick={() => {
                           playPop();
                           setUserDropdownOpen(false);
                         }}
-                        className="w-full flex items-center gap-3 px-4 py-2.5 text-xs font-medium text-gray-700 hover:bg-gray-50 hover:text-[#F84464] cursor-pointer transition-colors"
+                        className="w-full flex items-center gap-3 px-4 py-2.5 text-xs font-semibold text-gray-200 hover:bg-white/10 hover:text-[#F84464] cursor-pointer transition-colors group"
                       >
-                        <Ticket className="w-4 h-4 text-[#F84464]" />
-                        <span>Your Orders &amp; Bookings</span>
+                        <div className="w-7 h-7 rounded-lg bg-[#F84464]/15 flex items-center justify-center text-[#F84464] group-hover:scale-110 transition-transform">
+                          <Ticket className="w-3.5 h-3.5" />
+                        </div>
+                        <div className="flex-1">
+                          <span className="block font-bold">Your Orders &amp; Tickets</span>
+                          <span className="text-[10px] text-gray-400 font-normal">Digital M-Pass &amp; QR Turnstile</span>
+                        </div>
                       </Link>
 
                       <Link
@@ -278,44 +362,53 @@ export default function Navbar({ onSearch }) {
                           playPop();
                           setUserDropdownOpen(false);
                         }}
-                        className="w-full flex items-center gap-3 px-4 py-2.5 text-xs font-medium text-gray-700 hover:bg-gray-50 hover:text-[#F84464] cursor-pointer transition-colors"
+                        className="w-full flex items-center gap-3 px-4 py-2.5 text-xs font-semibold text-gray-200 hover:bg-white/10 hover:text-[#F84464] cursor-pointer transition-colors group"
                       >
-                        <Settings className="w-4 h-4 text-gray-400" />
-                        <span>Accounts &amp; Settings</span>
+                        <div className="w-7 h-7 rounded-lg bg-white/10 flex items-center justify-center text-gray-300 group-hover:scale-110 transition-transform">
+                          <Settings className="w-3.5 h-3.5" />
+                        </div>
+                        <div className="flex-1">
+                          <span className="block font-bold">Account &amp; Security</span>
+                          <span className="text-[10px] text-gray-400 font-normal">Manage payment &amp; profile</span>
+                        </div>
                       </Link>
                     </div>
 
-                    <div className="p-1">
+                    {/* Sign Out Action */}
+                    <div className="p-2">
                       <button
                         onClick={() => {
                           playPop();
                           setUserDropdownOpen(false);
                           logout();
                         }}
-                        className="w-full flex items-center gap-2.5 px-3 py-2 text-xs font-bold text-red-600 hover:bg-red-50 rounded cursor-pointer transition-colors"
+                        className="w-full flex items-center gap-2.5 px-3 py-2 text-xs font-black text-red-400 hover:bg-red-500/15 rounded-xl cursor-pointer transition-colors"
                       >
                         <LogOut className="w-3.5 h-3.5" />
                         <span>Sign Out</span>
                       </button>
                     </div>
+
                   </div>
                 )}
               </div>
             ) : (
-              <button
-                onClick={(e) => {
-                  playPop();
-                  if (window.innerWidth > 640) {
-                    e.preventDefault();
-                    openAuthModal('signin');
-                  } else {
-                    navigate('/signin');
-                  }
-                }}
-                className="bg-[#F84464] hover:bg-[#E03A58] text-white text-xs font-semibold px-4 py-1.5 rounded-md transition-colors shadow-xs active:scale-95 cursor-pointer"
-              >
-                Sign In
-              </button>
+              <div className="flex items-center gap-2">
+                <button
+                  onClick={(e) => {
+                    playPop();
+                    if (window.innerWidth > 640) {
+                      e.preventDefault();
+                      openAuthModal('signin');
+                    } else {
+                      navigate('/signin');
+                    }
+                  }}
+                  className="bg-gradient-to-r from-[#F84464] via-[#ff4769] to-[#e03a58] hover:from-[#ff5274] hover:to-[#eb4363] text-white text-xs font-black px-4 sm:px-5 py-2 rounded-xl transition-all shadow-[0_4px_16px_rgba(248,68,100,0.4)] hover:shadow-[0_6px_24px_rgba(248,68,100,0.6)] active:scale-95 cursor-pointer flex items-center gap-1.5"
+                >
+                  <span>Sign In</span>
+                </button>
+              </div>
             )}
 
           </div>
@@ -325,8 +418,8 @@ export default function Navbar({ onSearch }) {
         {/* Mobile Search Bar */}
         <div className="pb-3 sm:hidden">
           <form onSubmit={handleSearchSubmit} className="relative">
-            <div className="relative flex items-center bg-white rounded-md">
-              <Search className="absolute left-3 w-4 h-4 text-gray-400 pointer-events-none" />
+            <div className="relative flex items-center">
+              <Search className="absolute left-3.5 w-4 h-4 text-gray-400 pointer-events-none" />
               <input
                 type="text"
                 placeholder="Search movies, events, sports..."
@@ -335,13 +428,13 @@ export default function Navbar({ onSearch }) {
                   setSearchInput(e.target.value);
                   if (onSearch) onSearch(e.target.value);
                 }}
-                className="w-full pl-9 pr-8 py-2 text-gray-800 text-xs placeholder-gray-400 rounded-md focus:outline-none"
+                className="w-full pl-10 pr-9 py-2 bg-white/[0.08] text-white text-xs rounded-xl placeholder-gray-400 border border-white/10 focus:outline-none focus:ring-2 focus:ring-[#F84464]/50"
               />
               {searchInput && (
                 <button
                   type="button"
                   onClick={handleClearSearch}
-                  className="absolute right-2.5 p-1 text-gray-400 hover:text-gray-700"
+                  className="absolute right-2.5 p-1 text-gray-400 hover:text-white"
                 >
                   <X className="w-3.5 h-3.5" />
                 </button>
