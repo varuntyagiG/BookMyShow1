@@ -10,6 +10,8 @@ import StreamSection from '../components/home/StreamSection';
 import PromoBanner from '../components/home/PromoBanner';
 import VIPCinema3DSection from '../components/home/VIPCinema3DSection';
 import MultiplexTicker from '../components/home/MultiplexTicker';
+import CategoryDiscovery3D from '../components/home/CategoryDiscovery3D';
+import ConcessionsShowcase3D from '../components/home/ConcessionsShowcase3D';
 import { Loader2, AlertCircle, RefreshCw, Sparkles, ChevronRight } from 'lucide-react';
 
 export default function HomePage({ searchQuery }) {
@@ -211,6 +213,13 @@ export default function HomePage({ searchQuery }) {
       <MultiplexTicker />
 
       {/* =========================
+          3D QUICK CATEGORY DISCOVERY RIBBON
+      ========================= */}
+      {!searchQuery && (
+        <CategoryDiscovery3D />
+      )}
+
+      {/* =========================
           MOVIES SECTION
       ========================= */}
 
@@ -220,6 +229,13 @@ export default function HomePage({ searchQuery }) {
           navigate(`/movies/${movie.id}`);
         }}
       />
+
+      {/* =========================
+          3D GOURMET CONCESSIONS STRIP
+      ========================= */}
+      {!searchQuery && (
+        <ConcessionsShowcase3D />
+      )}
 
       {/* =========================
           PROMOTIONAL BANNER
