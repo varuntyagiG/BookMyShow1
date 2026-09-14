@@ -57,7 +57,7 @@ import AdminSettlementsPage from './pages/admin/AdminSettlementsPage';
 
 const CustomerLayout = React.memo(function CustomerLayout({ onSearch }) {
   return (
-    <div className="flex flex-col min-h-screen bg-[#141414] text-white relative">
+    <div className="flex flex-col min-h-screen bg-[#F5F5FA] text-[#222432] relative">
       {/* Ambient Cinema Cursor Spotlight FX */}
       <CursorSpotlight />
 

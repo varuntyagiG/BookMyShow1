@@ -66,34 +66,34 @@ export default function HomePage({ searchQuery }) {
 
   if (loading && !data.movies.length) {
     return (
-      <main className="flex-1 min-h-screen bg-[#141414] text-white py-6 px-4 sm:px-6 lg:px-8 max-w-7xl mx-auto w-full">
+      <main className="flex-1 min-h-screen bg-[#F5F5FA] py-6 px-4 sm:px-6 lg:px-8 max-w-7xl mx-auto w-full">
         {/* Shimmer Status */}
         <div className="flex items-center gap-2 mb-6 px-1">
           <span className="w-2 h-2 rounded-full bg-[#F84464] animate-pulse" />
-          <span className="text-xs font-semibold text-gray-400">
-            Fetching blockbusters &amp; experiences in <strong className="text-white">{selectedCity}</strong>...
+          <span className="text-xs font-semibold text-gray-500">
+            Fetching blockbusters &amp; experiences in <strong className="text-gray-800">{selectedCity}</strong>...
           </span>
         </div>
 
         {/* Hero Carousel Skeleton */}
-        <div className="w-full h-56 sm:h-72 md:h-80 rounded-2xl bg-white/[0.05] animate-pulse mb-10 border border-white/5" />
+        <div className="w-full h-56 sm:h-72 md:h-80 rounded-2xl bg-gray-200 animate-pulse mb-10 shadow-xs" />
 
         {/* Recommended Movies Header Skeleton */}
         <div className="flex items-center justify-between mb-5 px-1">
           <div className="flex items-center gap-2.5">
             <div className="w-1.5 h-6 bg-[#F84464] rounded-full" />
-            <div className="w-48 h-6 rounded-lg bg-white/[0.05] animate-pulse" />
+            <div className="w-48 h-6 rounded-lg bg-gray-200 animate-pulse" />
           </div>
-          <div className="w-16 h-4 rounded-md bg-white/[0.05] animate-pulse hidden sm:block" />
+          <div className="w-16 h-4 rounded-md bg-gray-200 animate-pulse hidden sm:block" />
         </div>
 
         {/* 5-Column Movie Poster Grid Skeleton */}
         <div className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-5 gap-5 mb-12">
           {[1, 2, 3, 4, 5].map((item) => (
             <div key={item} className="flex flex-col gap-2.5">
-              <div className="w-full aspect-[2/3] rounded-2xl bg-white/[0.05] animate-pulse border border-white/5" />
-              <div className="w-4/5 h-4 rounded-md bg-white/[0.05] animate-pulse" />
-              <div className="w-1/2 h-3 rounded-md bg-white/[0.05] animate-pulse" />
+              <div className="w-full aspect-[2/3] rounded-xl bg-gray-200 animate-pulse shadow-xs" />
+              <div className="w-4/5 h-4 rounded-md bg-gray-200 animate-pulse" />
+              <div className="w-1/2 h-3 rounded-md bg-gray-200 animate-pulse" />
             </div>
           ))}
         </div>
@@ -102,15 +102,15 @@ export default function HomePage({ searchQuery }) {
         <div className="flex items-center justify-between mb-5 px-1">
           <div className="flex items-center gap-2.5">
             <div className="w-1.5 h-6 bg-[#F84464] rounded-full" />
-            <div className="w-40 h-6 rounded-lg bg-white/[0.05] animate-pulse" />
+            <div className="w-40 h-6 rounded-lg bg-gray-200 animate-pulse" />
           </div>
         </div>
         <div className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-5 gap-5">
           {[1, 2, 3, 4, 5].map((item) => (
             <div key={item} className="flex flex-col gap-2.5">
-              <div className="w-full aspect-[2/3] rounded-2xl bg-white/[0.05] animate-pulse border border-white/5" />
-              <div className="w-3/4 h-4 rounded-md bg-white/[0.05] animate-pulse" />
-              <div className="w-2/5 h-3 rounded-md bg-white/[0.05] animate-pulse" />
+              <div className="w-full aspect-[2/3] rounded-xl bg-gray-200 animate-pulse shadow-xs" />
+              <div className="w-3/4 h-4 rounded-md bg-gray-200 animate-pulse" />
+              <div className="w-2/5 h-3 rounded-md bg-gray-200 animate-pulse" />
             </div>
           ))}
         </div>
@@ -119,7 +119,7 @@ export default function HomePage({ searchQuery }) {
   }
 
   return (
-    <main className="flex-1 min-h-screen bg-[#141414] text-white">
+    <main className="flex-1 min-h-screen bg-[#F5F5FA] text-[#222432]">
 
       {/* =========================
           BACKEND ERROR
@@ -168,12 +168,12 @@ export default function HomePage({ searchQuery }) {
       ========================= */}
 
       {searchQuery && (
-        <div className="bg-[#181A26] border-b border-white/[0.08] shadow-sm">
-          <div className="max-w-[1200px] mx-auto px-4 sm:px-6 py-4">
+        <div className="bg-white border-b border-gray-200 shadow-xs">
+          <div className="max-w-[1200px] mx-auto px-4 sm:px-6 py-3.5">
 
             <div className="flex flex-wrap items-center justify-center gap-1.5 text-xs sm:text-sm">
 
-              <span className="text-gray-400">
+              <span className="text-gray-500">
                 Showing search results for
               </span>
 
@@ -181,11 +181,11 @@ export default function HomePage({ searchQuery }) {
                 "{searchQuery}"
               </span>
 
-              <span className="text-gray-400">
+              <span className="text-gray-500">
                 in
               </span>
 
-              <span className="font-semibold text-white">
+              <span className="font-semibold text-gray-800">
                 {selectedCity}
               </span>
 
@@ -200,7 +200,7 @@ export default function HomePage({ searchQuery }) {
       ========================= */}
 
       {!searchQuery && data.banners && (
-        <section className="w-full bg-[#141414]">
+        <section className="w-full bg-[#EBEBF2]">
           <HeroCarousel banners={data.banners} />
         </section>
       )}

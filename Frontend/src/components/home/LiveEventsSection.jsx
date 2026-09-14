@@ -38,20 +38,10 @@ function EventPassCard({ event, onClick }) {
         }}
         transition={{ type: 'spring', stiffness: 350, damping: 25 }}
         style={{ transformStyle: 'preserve-3d' }}
-        className="relative bg-[#1A1D2B] rounded-2xl overflow-hidden shadow-lg hover:shadow-2xl hover:shadow-black/40 border border-white/10 hover:border-[#F84464]/50 transition-all duration-300 flex flex-col"
+        className="relative bg-white rounded-xl overflow-hidden shadow-xs hover:shadow-md border border-gray-200 transition-all duration-300 flex flex-col"
       >
-        {/* Holographic Rainbow Foil Sheen */}
-        {isHovered && (
-          <div
-            className="pointer-events-none absolute inset-0 mix-blend-color-dodge opacity-60 z-20 transition-opacity duration-300"
-            style={{
-              background: `linear-gradient(${mousePos.x * 360}deg, rgba(255,0,128,0.2) 0%, rgba(0,255,255,0.2) 50%, rgba(255,215,0,0.2) 100%)`,
-            }}
-          />
-        )}
-
         {/* Event Banner */}
-        <div className="relative aspect-[16/9] w-full overflow-hidden bg-black/40">
+        <div className="relative aspect-[16/9] w-full overflow-hidden bg-gray-100">
           <img
             src={event.imageUrl}
             alt={event.title}
@@ -59,37 +49,36 @@ function EventPassCard({ event, onClick }) {
             className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-500"
           />
           <div 
-            className="absolute top-3 left-3 bg-black/80 backdrop-blur-md text-white text-[10px] font-black px-3 py-1 rounded-full shadow-md uppercase tracking-wider z-10 border border-white/10"
-            style={{ transform: 'translateZ(25px)' }}
+            className="absolute top-2.5 left-2.5 bg-black/75 backdrop-blur-xs text-white text-[10px] font-bold px-2.5 py-0.5 rounded-full uppercase tracking-wider z-10"
           >
             {event.category}
           </div>
         </div>
 
         {/* Event Info */}
-        <div className="p-4.5 flex-1 flex flex-col justify-between" style={{ transform: 'translateZ(15px)' }}>
+        <div className="p-4 flex-1 flex flex-col justify-between">
           <div>
-            <h3 className="text-sm font-black text-white hover:text-[#F84464] transition-colors line-clamp-1 tracking-tight">
+            <h3 className="text-sm font-bold text-gray-900 hover:text-[#F84464] transition-colors line-clamp-1">
               {event.title}
             </h3>
 
-            <div className="flex items-center gap-2 text-xs text-gray-300 mt-2.5 font-semibold">
+            <div className="flex items-center gap-2 text-xs text-gray-600 mt-2 font-medium">
               <Calendar className="w-3.5 h-3.5 text-[#F84464] shrink-0" />
               <span className="truncate">{event.date}</span>
             </div>
 
-            <div className="flex items-center gap-2 text-xs text-gray-400 mt-1">
-              <MapPin className="w-3.5 h-3.5 text-gray-500 shrink-0" />
+            <div className="flex items-center gap-2 text-xs text-gray-500 mt-1">
+              <MapPin className="w-3.5 h-3.5 text-gray-400 shrink-0" />
               <span className="truncate">{event.venue}</span>
             </div>
           </div>
 
-          <div className="mt-4 pt-3 border-t border-dashed border-white/10 flex items-center justify-between">
+          <div className="mt-4 pt-3 border-t border-gray-100 flex items-center justify-between">
             <div>
-              <span className="text-[10px] text-gray-400 block uppercase font-bold">Starts From</span>
-              <span className="text-xs font-black text-white">{event.price}</span>
+              <span className="text-[10px] text-gray-400 block uppercase font-medium">Starts From</span>
+              <span className="text-xs font-bold text-gray-900">{event.price}</span>
             </div>
-            <span className="text-xs font-black text-white bg-gradient-to-r from-[#F84464] to-[#E03A58] px-3.5 py-1.5 rounded-xl transition-all shadow-[0_4px_12px_rgba(248,68,100,0.35)] flex items-center gap-1">
+            <span className="text-xs font-bold text-white bg-[#F84464] hover:bg-[#E03A58] px-3 py-1.5 rounded-md transition-colors flex items-center gap-1 shadow-xs">
               <Ticket className="w-3 h-3" />
               <span>Book</span>
             </span>
@@ -105,26 +94,22 @@ export default function LiveEventsSection({ events = [] }) {
   if (!events.length) return null;
 
   return (
-    <section className="py-12 bg-[#141414] text-white">
+    <section className="py-12 bg-[#F5F5FA] text-[#222432]">
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
 
         {/* Section Title */}
         <div className="flex items-center justify-between mb-6">
           <div>
             <div className="flex items-center gap-2">
-              <h2 className="text-xl sm:text-2xl font-black text-white tracking-tight">
+              <h2 className="text-xl sm:text-2xl font-bold text-gray-900 tracking-tight">
                 The Best Of Live Events
               </h2>
-              <span className="hidden sm:inline-flex items-center gap-1 text-[10px] font-black uppercase tracking-wider px-2.5 py-0.5 rounded-full bg-[#F84464]/20 border border-[#F84464]/30 text-[#F84464]">
-                <Sparkles className="w-3 h-3" /> Popular
-              </span>
             </div>
-            <div className="w-10 h-1 bg-[#F84464] rounded-full mt-1.5" />
-            <p className="text-xs text-gray-400 mt-1.5 font-medium">Top concerts, comedy gigs, live sports and theatrical performances</p>
+            <p className="text-xs text-gray-500 mt-1 font-medium">Top concerts, comedy gigs, live sports and theatrical performances</p>
           </div>
           <button
             onClick={() => navigate('/events')}
-            className="flex items-center gap-1 text-xs sm:text-sm font-bold text-[#F84464] hover:text-[#e03a58] transition-colors cursor-pointer group"
+            className="flex items-center gap-1 text-xs sm:text-sm font-semibold text-[#F84464] hover:text-[#e03a58] transition-colors cursor-pointer group"
           >
             <span>See All</span>
             <ChevronRight className="w-4 h-4 transform group-hover:translate-x-0.5 transition-transform" />
