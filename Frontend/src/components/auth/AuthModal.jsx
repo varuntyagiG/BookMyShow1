@@ -91,7 +91,9 @@ export default function AuthModal() {
 
   return (
     <div className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-black/75 backdrop-blur-xs">
-      <div className="relative w-full max-w-md bg-white rounded-2xl shadow-2xl overflow-hidden animate-in fade-in zoom-in-95 duration-200">
+      <div className="relative w-full max-w-md bg-white rounded-3xl shadow-[0_25px_60px_-15px_rgba(0,0,0,0.5)] overflow-hidden animate-in fade-in zoom-in-95 duration-200 border border-slate-100">
+        {/* Top 3D Neon Projection Accent Line */}
+        <div className="h-1 w-full bg-gradient-to-r from-transparent via-[#F84464] to-transparent shadow-[0_0_12px_rgba(248,68,100,0.8)]" />
 
         {/* Top Header */}
         <div className="px-6 pt-6 pb-4 border-b border-gray-100 flex items-center justify-between">

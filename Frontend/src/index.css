@@ -44,9 +44,9 @@
 
   body {
     margin: 0;
-    font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, 'Inter', 'Helvetica Neue', Arial, sans-serif;
-    background-color: var(--bms-light-bg);
-    color: var(--bms-text);
+    font-family: 'Inter', Roboto, -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif;
+    background-color: #141414;
+    color: #ffffff;
     -webkit-font-smoothing: antialiased;
     -moz-osx-font-smoothing: grayscale;
     overflow-x: hidden;
@@ -105,12 +105,41 @@
 /* BookMyShow Screen Curved Perspective Effect */
 .cinema-screen-curve {
   position: relative;
-  height: 36px;
-  width: 75%;
-  margin: 0 auto 30px;
-  border-top: 4px solid var(--bms-primary);
-  border-radius: 50% / 12px 12px 0 0;
-  box-shadow: 0 -8px 24px -4px rgba(248, 68, 100, 0.45);
+  height: 26px;
+  width: 82%;
+  margin: 0 auto 6px;
+  border-top: 5px solid #F84464;
+  border-radius: 50% / 14px 14px 0 0;
+  box-shadow: 0 -8px 24px 2px rgba(248, 68, 100, 0.45);
+}
+
+.cinema-screen-light {
+  position: relative;
+  width: 88%;
+  height: 42px;
+  margin: 0 auto 20px;
+  background: linear-gradient(180deg, rgba(248, 68, 100, 0.22) 0%, rgba(248, 68, 100, 0.04) 75%, transparent 100%);
+  clip-path: polygon(5% 0%, 95% 0%, 100% 100%, 0% 100%);
+  pointer-events: none;
+}
+
+/* BookMyShow Perforated Ticket Cutouts */
+.ticket-notch-left {
+  position: absolute;
+  left: -12px;
+  width: 24px;
+  height: 24px;
+  border-radius: 50%;
+  background-color: white;
+}
+
+.ticket-notch-right {
+  position: absolute;
+  right: -12px;
+  width: 24px;
+  height: 24px;
+  border-radius: 50%;
+  background-color: white;
 }
 
 /* Seat map legend / status swatches */
@@ -134,4 +163,27 @@
   background-color: var(--bms-green);
   color: white;
   transition: background-color var(--bms-transition-fast);
+}
+
+/* 3D Cinema Depth Utilities */
+.perspective-stage {
+  perspective: 1000px;
+  transform-style: preserve-3d;
+}
+
+.cinema-floor-reflect {
+  -webkit-box-reflect: below 6px linear-gradient(transparent 72%, rgba(0,0,0,0.25));
+}
+
+.holo-card-shine {
+  background: linear-gradient(135deg, rgba(255,255,255,0.25) 0%, rgba(255,255,255,0) 45%, rgba(248,68,100,0.18) 100%);
+}
+
+.preserve-3d {
+  transform-style: preserve-3d;
+}
+
+.backface-hidden {
+  backface-visibility: hidden;
+  -webkit-backface-visibility: hidden;
 }

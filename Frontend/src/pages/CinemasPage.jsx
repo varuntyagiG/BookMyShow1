@@ -258,7 +258,7 @@ export default function CinemasPage() {
               return (
                 <div
                   key={cinema._id || cinema.id}
-                  className="bg-white rounded-xl border border-gray-200 shadow-xs hover:shadow-md transition duration-200 overflow-hidden"
+                  className="bg-white rounded-2xl border border-slate-200/80 shadow-[0_4px_16px_-4px_rgba(0,0,0,0.06)] hover:shadow-[0_16px_32px_-8px_rgba(248,68,100,0.18)] hover:border-[#F84464]/30 hover:-translate-y-1 transition-all duration-300 overflow-hidden"
                 >
                   {/* Cinema Header */}
                   <div className="p-5 sm:p-6 border-b border-gray-100 flex flex-col md:flex-row md:items-center justify-between gap-4">
@@ -371,13 +371,13 @@ export default function CinemasPage() {
                                 <Link
                                   key={sIdx}
                                   to={group.movieId ? `/movies/${group.movieId}` : '/movies'}
-                                  className="group flex flex-col items-center px-3 py-1.5 bg-gray-50 hover:bg-rose-50 border border-gray-200 hover:border-[#F84464] rounded-lg transition text-center cursor-pointer shadow-2xs"
+                                  className="group flex flex-col items-center px-3.5 py-1.5 bg-white hover:bg-red-50/70 border border-gray-200/90 hover:border-[#F84464] rounded-xl transition-all duration-200 text-center cursor-pointer hover:scale-105 hover:shadow-[0_6px_14px_-3px_rgba(248,68,100,0.22)] shadow-xs"
                                   title={`Book ${show.movieTitle} at ${show.startTime} (${show.format || '2D'})`}
                                 >
-                                  <span className="text-xs font-bold text-gray-800 group-hover:text-[#F84464] transition">
+                                  <span className="text-xs font-black text-gray-800 group-hover:text-[#F84464] transition-colors">
                                     {show.startTime}
                                   </span>
-                                  <span className="text-[10px] text-gray-500 font-medium group-hover:text-gray-700">
+                                  <span className="text-[10px] text-gray-500 font-semibold group-hover:text-gray-800">
                                     {show.format || '2D'} • ₹{show.ticketPrice || 250}
                                   </span>
                                 </Link>

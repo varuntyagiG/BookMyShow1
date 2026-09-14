@@ -12,6 +12,7 @@ import SubNav from './components/common/SubNav';
 import Footer from './components/common/Footer';
 import CityModal from './components/common/CityModal';
 import AuthModal from './components/auth/AuthModal';
+import CursorSpotlight from './components/common/CursorSpotlight';
 
 // Customer Pages
 import HomePage from './pages/HomePage';
@@ -56,7 +57,10 @@ import AdminSettlementsPage from './pages/admin/AdminSettlementsPage';
 
 const CustomerLayout = React.memo(function CustomerLayout({ onSearch }) {
   return (
-    <div className="flex flex-col min-h-screen bg-[#F5F5FA]">
+    <div className="flex flex-col min-h-screen bg-[#141414] text-white relative">
+      {/* Ambient Cinema Cursor Spotlight FX */}
+      <CursorSpotlight />
+
       {/* Top Navbar */}
       <Navbar onSearch={onSearch} />
 

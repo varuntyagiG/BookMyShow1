@@ -1,9 +1,34 @@
 import React, { useState, useRef, useEffect } from 'react';
-import { Search, ChevronDown, LogOut, Ticket, Settings, MapPin, X, Film, Sparkles, Bell } from 'lucide-react';
+import { 
+  Search, 
+  ChevronDown, 
+  LogOut, 
+  Ticket, 
+  Settings, 
+  MapPin, 
+  X, 
+  Film, 
+  Sparkles, 
+  Bell, 
+  Crown, 
+  Volume2, 
+  VolumeX, 
+  Heart,
+  Popcorn,
+  Flame,
+  ArrowRight
+} from 'lucide-react';
 import { useAuth } from '../../context/AuthContext';
 import { useCity } from '../../context/CityContext';
 import { useNotification } from '../../context/NotificationContext';
 import { Link, useNavigate } from 'react-router-dom';
+import { 
+  isSoundEnabled, 
+  toggleSound, 
+  subscribeSoundChange, 
+  playPop, 
+  playTudum 
+} from '../../utils/soundEffects';
 
 export default function Navbar({ onSearch }) {
   const { user, isAuthenticated, logout, openAuthModal } = useAuth();
@@ -12,22 +37,54 @@ export default function Navbar({ onSearch }) {
   const [userDropdownOpen, setUserDropdownOpen] = useState(false);
   const [searchInput, setSearchInput] = useState('');
   const [searchFocused, setSearchFocused] = useState(false);
+  const [soundOn, setSoundOn] = useState(isSoundEnabled());
+  const [isScrolled, setIsScrolled] = useState(false);
   const dropdownRef = useRef(null);
   const searchBoxRef = useRef(null);
+  const searchInputRef = useRef(null);
   const navigate = useNavigate();
 
-  // Popular quick searches
+  // Track scroll position to transition from transparent glass to deep obsidian
+  useEffect(() => {
+    const handleScroll = () => {
+      setIsScrolled(window.scrollY > 20);
+    };
+    window.addEventListener('scroll', handleScroll, { passive: true });
+    return () => window.removeEventListener('scroll', handleScroll);
+  }, []);
+
+  useEffect(() => {
+    return subscribeSoundChange((enabled) => setSoundOn(enabled));
+  }, []);
+
+  // Popular quick searches with rich metadata
   const quickSearches = [
-    { title: 'Dune: Part Two', type: 'Movie', path: '/movies/m1' },
-    { title: 'Kalki 2898 AD', type: 'Movie', path: '/movies/m2' },
-    { title: 'Stree 2: Sarkate Ka Aatank', type: 'Movie', path: '/movies/m3' },
-    { title: 'Deadpool & Wolverine', type: 'Movie', path: '/movies/m4' },
-    { title: 'Sunburn Arena ft. Alan Walker', type: 'Event', path: '/events' },
+    { title: 'Dune: Part Two', type: 'IMAX 3D', category: 'Sci-Fi / Adventure', rating: '9.4', path: '/movies/m1' },
+    { title: 'Kalki 2898 AD', type: 'Dolby Atmos', category: 'Mythological Sci-Fi', rating: '9.1', path: '/movies/m2' },
+    { title: 'Stree 2: Sarkate Ka Aatank', type: 'Multiplex Blockbuster', category: 'Comedy / Horror', rating: '9.3', path: '/movies/m3' },
+    { title: 'Deadpool & Wolverine', type: '4DX Laser', category: 'Action / Comedy', rating: '9.0', path: '/movies/m4' },
+    { title: 'Sunburn Arena ft. Alan Walker', type: 'VIP Festival', category: 'Live Concert', rating: '9.8', path: '/events' },
   ];
 
   const filteredQuickSearches = searchInput.trim()
     ? quickSearches.filter((s) => s.title.toLowerCase().includes(searchInput.toLowerCase()))
-    : quickSearches.slice(0, 3);
+    : quickSearches.slice(0, 4);
+
+  // Global keyboard shortcut (Ctrl+K / Cmd+K) to focus search
+  useEffect(() => {
+    const handleKeyDown = (e) => {
+      if ((e.metaKey || e.ctrlKey) && e.key === 'k') {
+        e.preventDefault();
+        searchInputRef.current?.focus();
+        setSearchFocused(true);
+      }
+      if (e.key === 'Escape') {
+        setSearchFocused(false);
+      }
+    };
+    window.addEventListener('keydown', handleKeyDown);
+    return () => window.removeEventListener('keydown', handleKeyDown);
+  }, []);
 
   // Close dropdown on click outside
   useEffect(() => {
@@ -56,56 +113,119 @@ export default function Navbar({ onSearch }) {
     if (onSearch) onSearch('');
   };
 
+  const handleSoundToggle = () => {
+    const next = toggleSound();
+    setSoundOn(next);
+    if (next) {
+      playTudum();
+    } else {
+      playPop();
+    }
+  };
+
   return (
-    <header className="sticky top-0 z-40 bg-[#333545] text-white shadow-md border-b border-[#2b2d3c]">
+    <header 
+      className={`sticky top-0 z-40 transition-all duration-300 select-none ${
+        isScrolled 
+          ? 'bg-[#0E1019]/96 backdrop-blur-2xl shadow-[0_15px_35px_-10px_rgba(0,0,0,0.85)] border-b border-white/[0.08]' 
+          : 'bg-gradient-to-b from-black/95 via-[#12141F]/90 to-[#12141F]/80 backdrop-blur-xl border-b border-white/[0.04]'
+      }`}
+    >
+      {/* Top Ambient Laser Underglow Beam */}
+      <div 
+        className={`h-[1.5px] w-full bg-gradient-to-r from-transparent via-[#F84464]/80 to-transparent transition-opacity duration-300 ${
+          isScrolled ? 'opacity-100 shadow-[0_0_12px_rgba(248,68,100,0.8)]' : 'opacity-40'
+        }`} 
+      />
+
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
         <div className="flex items-center justify-between h-16 gap-3 sm:gap-6">
 
-          {/* Brand Logo & Search */}
-          <div className="flex items-center gap-4 sm:gap-8 flex-1 max-w-2xl">
-            {/* BookMyShow Logo */}
-            <Link to="/" className="flex items-center gap-1 shrink-0 group py-1">
-              <span className="text-xl sm:text-2xl font-black tracking-tight text-white flex items-center transition-transform group-hover:scale-[1.02]">
-                book<span className="text-[#F84464]">my</span>show
-              </span>
+          {/* Left: Brand Logo & Search */}
+          <div className="flex items-center gap-5 sm:gap-7 flex-1 max-w-2xl">
+            
+            {/* BookMyShow Premium Logo */}
+            <Link to="/" className="flex items-center gap-3 shrink-0 group py-1">
+              <div className="relative">
+                <div className="w-9 h-9 rounded-xl bg-gradient-to-tr from-[#F84464] via-[#ff385c] to-[#e0183e] flex items-center justify-center text-white shadow-[0_4px_16px_rgba(248,68,100,0.5)] group-hover:scale-105 transition-all duration-300 group-hover:shadow-[0_0_24px_rgba(248,68,100,0.7)]">
+                  <Film className="w-4.5 h-4.5 text-white" />
+                </div>
+                {/* Netflix-style Mini VIP Flag */}
+                <span className="absolute -bottom-1 -right-1 bg-black/90 backdrop-blur-xs border border-white/20 text-[7.5px] font-black text-amber-400 px-1 py-0.2 rounded shadow-sm">
+                  VIP
+                </span>
+              </div>
+
+              <div className="flex flex-col">
+                <span className="text-xl sm:text-2xl font-black tracking-tight text-white flex items-center transition-transform group-hover:scale-[1.01] leading-none">
+                  book<span className="bg-gradient-to-r from-[#F84464] via-[#ff5f7e] to-[#F84464] bg-clip-text text-transparent">my</span>show
+                </span>
+                <span className="text-[8px] font-black uppercase tracking-[0.18em] text-gray-400 group-hover:text-gray-300 transition-colors mt-0.5">
+                  CINEMA &bull; STREAM
+                </span>
+              </div>
             </Link>
 
-            {/* Global Search Bar with Live Suggestions Dropdown */}
+            {/* Global Search Bar with Expanding Dark Glass Capsule & Suggestions */}
             <div ref={searchBoxRef} className="relative flex-1 hidden sm:block">
               <form onSubmit={handleSearchSubmit} className="relative">
-                <div className="relative flex items-center">
-                  <Search className="absolute left-3.5 w-4 h-4 text-gray-400 pointer-events-none" />
+                <div 
+                  className={`relative flex items-center rounded-xl transition-all duration-300 ${
+                    searchFocused 
+                      ? 'bg-white/[0.12] ring-2 ring-[#F84464]/60 border-transparent shadow-[0_0_20px_rgba(248,68,100,0.25)]' 
+                      : 'bg-white/[0.06] hover:bg-white/[0.09] border border-white/10'
+                  }`}
+                >
+                  <Search 
+                    className={`absolute left-3.5 w-4 h-4 transition-colors pointer-events-none ${
+                      searchFocused ? 'text-[#F84464]' : 'text-gray-400'
+                    }`} 
+                  />
                   <input
+                    ref={searchInputRef}
                     type="text"
-                    placeholder="Search for Movies, Events, Plays, Sports and Activities"
+                    placeholder="Search for Movies, Events, Plays, Sports & Activities..."
                     value={searchInput}
                     onFocus={() => setSearchFocused(true)}
                     onChange={(e) => {
                       setSearchInput(e.target.value);
                       if (onSearch) onSearch(e.target.value);
                     }}
-                    className="w-full pl-10 pr-9 py-2 bg-white text-gray-900 text-xs rounded-md placeholder-gray-400 focus:outline-none focus:ring-2 focus:ring-[#F84464]/60 transition-all shadow-inner"
+                    className="w-full pl-10 pr-20 py-2.5 bg-transparent text-white text-xs placeholder-gray-400 focus:outline-none transition-all"
                   />
-                  {searchInput && (
-                    <button
-                      type="button"
-                      onClick={handleClearSearch}
-                      className="absolute right-2.5 p-1 text-gray-400 hover:text-gray-600 rounded-full cursor-pointer"
-                    >
-                      <X className="w-3.5 h-3.5" />
-                    </button>
-                  )}
+                  
+                  {/* Right side helper (clear or Ctrl+K shortcut) */}
+                  <div className="absolute right-2.5 flex items-center gap-1.5">
+                    {searchInput ? (
+                      <button
+                        type="button"
+                        onClick={handleClearSearch}
+                        className="p-1 text-gray-400 hover:text-white rounded-full cursor-pointer transition-colors"
+                        title="Clear search"
+                      >
+                        <X className="w-3.5 h-3.5" />
+                      </button>
+                    ) : (
+                      <kbd className="hidden lg:inline-flex items-center gap-0.5 px-1.5 py-0.5 text-[9px] font-semibold text-gray-400 bg-white/10 border border-white/15 rounded-md select-none">
+                        <span>Ctrl</span> K
+                      </kbd>
+                    )}
+                  </div>
                 </div>
               </form>
 
-              {/* Suggestions Popup */}
+              {/* Suggestions Popup Dropdown */}
               {searchFocused && (
-                <div className="absolute top-full left-0 right-0 mt-1.5 bg-white text-gray-800 rounded-lg shadow-2xl border border-gray-100 py-2 z-50 animate-in fade-in zoom-in-95 duration-100">
-                  <div className="px-3.5 py-1.5 text-[10px] uppercase font-bold text-gray-400 tracking-wider flex items-center gap-1">
-                    <Sparkles className="w-3 h-3 text-[#F84464]" />
-                    <span>{searchInput ? 'Matching Results' : 'Trending Searches'}</span>
+                <div className="absolute top-full left-0 right-0 mt-2 bg-[#171926]/98 backdrop-blur-2xl text-white rounded-2xl shadow-[0_25px_60px_-15px_rgba(0,0,0,0.85)] border border-white/10 py-3 z-50 animate-in fade-in zoom-in-95 duration-150">
+                  <div className="px-4 py-1.5 text-[10px] uppercase font-bold text-gray-400 tracking-wider flex items-center justify-between border-b border-white/5 pb-2">
+                    <span className="flex items-center gap-1.5 text-[#F84464]">
+                      <Sparkles className="w-3.5 h-3.5" />
+                      <span>{searchInput ? 'Matching Results' : 'Trending Blockbusters Today'}</span>
+                    </span>
+                    <span className="text-[9px] text-gray-500 font-normal">Esc to dismiss</span>
                   </div>
-                  <div className="divide-y divide-gray-50">
+
+                  <div className="mt-1 divide-y divide-white/5 max-h-80 overflow-y-auto no-scrollbar">
                     {filteredQuickSearches.map((item) => (
                       <button
                         key={item.title}
@@ -114,17 +234,31 @@ export default function Navbar({ onSearch }) {
                           setSearchInput(item.title);
                           setSearchFocused(false);
                           if (onSearch) onSearch(item.title);
+                          playPop();
                           navigate(item.path);
                         }}
-                        className="w-full px-3.5 py-2 text-left hover:bg-red-50/60 flex items-center justify-between text-xs cursor-pointer transition-colors"
+                        className="w-full px-4 py-2.5 text-left hover:bg-white/[0.08] flex items-center justify-between text-xs cursor-pointer transition-colors group"
                       >
-                        <div className="flex items-center gap-2.5">
-                          <Film className="w-3.5 h-3.5 text-gray-400" />
-                          <span className="font-semibold text-gray-800">{item.title}</span>
+                        <div className="flex items-center gap-3">
+                          <div className="w-8 h-8 rounded-lg bg-[#F84464]/15 border border-[#F84464]/30 flex items-center justify-center text-[#F84464] shrink-0 group-hover:scale-105 group-hover:bg-[#F84464]/25 transition-all">
+                            <Film className="w-4 h-4" />
+                          </div>
+                          <div>
+                            <span className="font-semibold text-gray-200 group-hover:text-white transition-colors block leading-snug">
+                              {item.title}
+                            </span>
+                            <span className="text-[10px] text-gray-400">
+                              {item.category}
+                            </span>
+                          </div>
                         </div>
-                        <span className="text-[10px] px-2 py-0.5 rounded bg-gray-100 text-gray-500 font-medium">
-                          {item.type}
-                        </span>
+
+                        <div className="flex items-center gap-2">
+                          <span className="text-[10px] px-2 py-0.5 rounded-full bg-white/10 border border-white/10 text-gray-300 font-semibold group-hover:bg-[#F84464]/20 group-hover:text-[#F84464] group-hover:border-[#F84464]/30 transition-all">
+                            {item.type}
+                          </span>
+                          <ArrowRight className="w-3.5 h-3.5 text-gray-500 opacity-0 group-hover:opacity-100 group-hover:translate-x-0.5 transition-all" />
+                        </div>
                       </button>
                     ))}
                   </div>
@@ -133,92 +267,165 @@ export default function Navbar({ onSearch }) {
             </div>
           </div>
 
-          {/* Right Actions: City Selector & Auth */}
-          <div className="flex items-center gap-3 sm:gap-4 shrink-0">
+          {/* Right Actions: City Selector, Soundwave Equalizer, Notifications, Auth */}
+          <div className="flex items-center gap-2.5 sm:gap-3.5 shrink-0">
 
-            {/* City Selector Button with Pin Icon */}
+            {/* City Selector Pill with Radar Beacon */}
             <button
-              onClick={() => setIsCityModalOpen(true)}
-              className="flex items-center gap-1.5 text-xs text-gray-200 hover:text-white transition-all cursor-pointer py-1.5 px-2.5 rounded-md hover:bg-white/10 active:scale-95"
-              title="Select City"
+              onClick={() => {
+                playPop();
+                setIsCityModalOpen(true);
+              }}
+              className="flex items-center gap-2 text-xs text-gray-200 hover:text-white transition-all cursor-pointer py-1.5 px-3 sm:px-3.5 rounded-full bg-white/[0.07] hover:bg-white/[0.14] border border-white/10 active:scale-95 shadow-sm hover:shadow-[0_0_15px_rgba(248,68,100,0.2)]"
+              title="Change City"
             >
-              <MapPin className="w-3.5 h-3.5 text-[#F84464]" />
-              <span className="font-medium">{selectedCity}</span>
-              <ChevronDown className="w-3.5 h-3.5 text-gray-400" />
+              <div className="relative flex items-center justify-center">
+                <MapPin className="w-3.5 h-3.5 text-[#F84464]" />
+                <span className="absolute -top-0.5 -right-0.5 w-1.5 h-1.5 bg-[#F84464] rounded-full animate-ping" />
+              </div>
+              <span className="font-bold text-white text-[11px] sm:text-xs">{selectedCity}</span>
+              <ChevronDown className="w-3 h-3 text-gray-400" />
+            </button>
+
+            {/* Cinema Audio Haptic Equalizer Toggle */}
+            <button
+              onClick={handleSoundToggle}
+              className={`py-1.5 px-2.5 rounded-full border transition-all cursor-pointer active:scale-95 flex items-center gap-1.5 ${
+                soundOn
+                  ? 'bg-white/[0.08] hover:bg-white/[0.14] text-white border-white/15 shadow-[0_0_12px_rgba(248,68,100,0.25)]'
+                  : 'bg-red-500/15 text-[#F84464] border-[#F84464]/40 hover:bg-red-500/25'
+              }`}
+              title={soundOn ? 'Cinema Haptics: ON (Ta-Dum Sound Active - Click to Mute)' : 'Cinema Haptics: MUTED (Click to Enable)'}
+              aria-label="Toggle Cinema Audio Haptics"
+            >
+              {soundOn ? (
+                <>
+                  {/* Dynamic 3-Bar Equalizer */}
+                  <div className="flex items-end gap-0.5 h-3 w-3 justify-center">
+                    <span className="w-[2px] h-3 bg-[#F84464] rounded-full animate-pulse" />
+                    <span className="w-[2px] h-2 bg-[#F84464] rounded-full animate-pulse delay-75" />
+                    <span className="w-[2px] h-3.5 bg-[#F84464] rounded-full animate-pulse delay-150" />
+                  </div>
+                  <span className="text-[10px] font-extrabold uppercase text-gray-300 hidden lg:inline">Audio</span>
+                </>
+              ) : (
+                <>
+                  <VolumeX className="w-3.5 h-3.5 text-gray-400" />
+                  <span className="text-[10px] font-semibold text-gray-400 hidden lg:inline">Muted</span>
+                </>
+              )}
             </button>
 
             {/* Real-time Notification Bell */}
             <button
-              onClick={() => setIsOpenDrawer(true)}
-              className="relative p-2 text-gray-200 hover:text-white rounded-full hover:bg-white/10 transition-all cursor-pointer active:scale-95"
+              onClick={() => {
+                playPop();
+                setIsOpenDrawer(true);
+              }}
+              className="relative p-2 text-gray-300 hover:text-white rounded-full bg-white/[0.07] hover:bg-white/[0.14] border border-white/10 transition-all cursor-pointer active:scale-95 hover:shadow-[0_0_15px_rgba(248,68,100,0.25)]"
               title="Real-time Notifications"
               aria-label="Notifications"
             >
-              <Bell className="w-4 h-4 sm:w-4.5 sm:h-4.5" />
+              <Bell className="w-4 h-4" />
               {unreadCount > 0 && (
-                <span className="absolute -top-0.5 -right-0.5 min-w-[17px] h-[17px] px-1 bg-[#F84464] text-white text-[9px] font-black rounded-full flex items-center justify-center shadow-xs animate-pulse">
+                <span className="absolute -top-1 -right-1 min-w-[18px] h-[18px] px-1 bg-gradient-to-r from-[#F84464] to-[#ff4767] text-white text-[9px] font-black rounded-full flex items-center justify-center shadow-lg shadow-[#F84464]/50 animate-pulse">
                   {unreadCount > 9 ? '9+' : unreadCount}
                 </span>
               )}
             </button>
 
-            {/* Auth Button or User Menu */}
+            {/* Auth Button or Netflix-Style VIP Profile Avatar */}
             {isAuthenticated ? (
               <div className="relative" ref={dropdownRef}>
                 <button
-                  onClick={() => setUserDropdownOpen(!userDropdownOpen)}
-                  className="flex items-center gap-2 py-1 px-2.5 rounded-full bg-white/10 hover:bg-white/20 transition-all cursor-pointer border border-white/10 active:scale-95"
+                  onClick={() => {
+                    playPop();
+                    setUserDropdownOpen(!userDropdownOpen);
+                  }}
+                  className="flex items-center gap-2 py-1 px-1.5 sm:px-2.5 rounded-full bg-white/[0.07] hover:bg-white/[0.14] transition-all cursor-pointer border border-white/10 active:scale-95 hover:border-[#F84464]/50 group"
                 >
-                  <div className="w-7 h-7 rounded-full bg-gradient-to-tr from-[#F84464] to-[#ff6b85] flex items-center justify-center text-white text-xs font-bold shadow-xs">
-                    {user?.name ? user.name.charAt(0).toUpperCase() : 'U'}
+                  {/* Netflix Square-Curved Avatar Tile */}
+                  <div className="relative">
+                    <div className="w-7 h-7 sm:w-8 sm:h-8 rounded-lg bg-gradient-to-tr from-[#E50914] via-[#F84464] to-[#ff5978] flex items-center justify-center text-white text-xs font-black shadow-md ring-2 ring-[#F84464]/50 group-hover:ring-[#F84464] transition-all">
+                      {user?.name ? user.name.charAt(0).toUpperCase() : 'U'}
+                    </div>
+                    <span className="absolute -top-1 -right-1 w-2.5 h-2.5 bg-amber-400 rounded-full border border-black flex items-center justify-center shadow-xs">
+                      <Crown className="w-1.5 h-1.5 text-black" />
+                    </span>
                   </div>
-                  <span className="text-xs font-semibold max-w-[100px] truncate hidden md:inline text-gray-100">
-                    {user?.name?.split(' ')[0] || 'User'}
+
+                  <span className="text-xs font-bold max-w-[100px] truncate hidden md:inline text-gray-100 group-hover:text-white transition-colors">
+                    {user?.name?.split(' ')[0] || 'Member'}
                   </span>
-                  <ChevronDown className="w-3 h-3 text-gray-300" />
+                  <ChevronDown className="w-3 h-3 text-gray-400 group-hover:text-white transition-colors" />
                 </button>
 
                 {/* Dropdown Menu */}
                 {userDropdownOpen && (
-                  <div className="absolute right-0 mt-2 w-60 bg-white rounded-xl shadow-2xl py-2 text-gray-800 border border-gray-100 z-50 animate-in fade-in zoom-in-95 duration-150">
-                    <div className="px-4 py-3 border-b border-gray-100 bg-gray-50/70 rounded-t-xl">
-                      <p className="text-[11px] text-gray-400 font-semibold uppercase tracking-wider">Signed in as</p>
-                      <p className="text-sm font-bold text-gray-900 truncate mt-0.5">{user?.name}</p>
-                      <p className="text-xs text-gray-500 truncate">{user?.email}</p>
+                  <div className="absolute right-0 mt-2.5 w-68 bg-[#181A26]/98 backdrop-blur-2xl rounded-2xl shadow-[0_20px_50px_rgba(0,0,0,0.8)] py-2 text-white border border-white/10 z-50 animate-in fade-in zoom-in-95 duration-150 divide-y divide-white/10">
+                    
+                    {/* Header Banner */}
+                    <div className="px-4 py-3.5 bg-gradient-to-b from-white/[0.06] to-transparent">
+                      <div className="flex items-center gap-1.5 text-[10px] text-amber-400 font-extrabold uppercase tracking-wider mb-1.5">
+                        <Crown className="w-3.5 h-3.5" />
+                        <span>BMS VIP Platinum Pass</span>
+                      </div>
+                      <p className="text-sm font-black text-white truncate">{user?.name}</p>
+                      <p className="text-xs text-gray-400 truncate mt-0.5">{user?.email}</p>
                     </div>
 
-                    <div className="py-1.5">
+                    {/* Quick Access Links */}
+                    <div className="py-2">
                       <Link
                         to="/my-bookings"
-                        onClick={() => setUserDropdownOpen(false)}
-                        className="w-full flex items-center gap-3 px-4 py-2 text-xs font-medium text-gray-700 hover:bg-gray-50 hover:text-[#F84464] cursor-pointer transition-colors"
+                        onClick={() => {
+                          playPop();
+                          setUserDropdownOpen(false);
+                        }}
+                        className="w-full flex items-center gap-3 px-4 py-2.5 text-xs font-semibold text-gray-200 hover:bg-white/10 hover:text-[#F84464] cursor-pointer transition-colors group"
                       >
-                        <Ticket className="w-4 h-4 text-gray-400" />
-                        <span>Your Orders &amp; Bookings</span>
+                        <div className="w-7 h-7 rounded-lg bg-[#F84464]/15 flex items-center justify-center text-[#F84464] group-hover:scale-110 transition-transform">
+                          <Ticket className="w-3.5 h-3.5" />
+                        </div>
+                        <div className="flex-1">
+                          <span className="block font-bold">Your Orders &amp; Tickets</span>
+                          <span className="text-[10px] text-gray-400 font-normal">Digital M-Pass &amp; QR Turnstile</span>
+                        </div>
                       </Link>
 
                       <Link
                         to="/profile"
-                        onClick={() => setUserDropdownOpen(false)}
-                        className="w-full flex items-center gap-3 px-4 py-2 text-xs font-medium text-gray-700 hover:bg-gray-50 hover:text-[#F84464] cursor-pointer transition-colors"
+                        onClick={() => {
+                          playPop();
+                          setUserDropdownOpen(false);
+                        }}
+                        className="w-full flex items-center gap-3 px-4 py-2.5 text-xs font-semibold text-gray-200 hover:bg-white/10 hover:text-[#F84464] cursor-pointer transition-colors group"
                       >
-                        <Settings className="w-4 h-4 text-gray-400" />
-                        <span>Accounts &amp; Settings</span>
+                        <div className="w-7 h-7 rounded-lg bg-white/10 flex items-center justify-center text-gray-300 group-hover:scale-110 transition-transform">
+                          <Settings className="w-3.5 h-3.5" />
+                        </div>
+                        <div className="flex-1">
+                          <span className="block font-bold">Account &amp; Security</span>
+                          <span className="text-[10px] text-gray-400 font-normal">Manage payment &amp; profile</span>
+                        </div>
                       </Link>
                     </div>
 
-                    <div className="border-t border-gray-100 pt-1">
+                    {/* Sign Out Action */}
+                    <div className="p-2">
                       <button
                         onClick={() => {
+                          playPop();
                           setUserDropdownOpen(false);
                           logout();
                         }}
-                        className="w-full flex items-center gap-3 px-4 py-2 text-xs font-semibold text-red-600 hover:bg-red-50 cursor-pointer transition-colors"
+                        className="w-full flex items-center gap-2.5 px-3 py-2 text-xs font-black text-red-400 hover:bg-red-500/15 rounded-xl cursor-pointer transition-colors"
                       >
-                        <LogOut className="w-4 h-4" />
+                        <LogOut className="w-3.5 h-3.5" />
                         <span>Sign Out</span>
                       </button>
                     </div>
+
                   </div>
                 )}
               </div>
@@ -227,26 +434,15 @@ export default function Navbar({ onSearch }) {
                 <Link
                   to="/signin"
                   onClick={(e) => {
+                    playPop();
                     if (window.innerWidth > 640) {
                       e.preventDefault();
                       openAuthModal('signin');
                     }
                   }}
-                  className="text-xs font-semibold text-gray-200 hover:text-white px-3 py-1.5 rounded-md hover:bg-white/10 transition-colors cursor-pointer"
+                  className="bg-gradient-to-r from-[#F84464] via-[#ff4769] to-[#e03a58] hover:from-[#ff5274] hover:to-[#eb4363] text-white text-xs font-black px-4 sm:px-5 py-2 rounded-xl transition-all shadow-[0_4px_16px_rgba(248,68,100,0.4)] hover:shadow-[0_6px_24px_rgba(248,68,100,0.6)] active:scale-95 cursor-pointer flex items-center gap-1.5"
                 >
-                  Sign In
-                </Link>
-                <Link
-                  to="/signup"
-                  onClick={(e) => {
-                    if (window.innerWidth > 640) {
-                      e.preventDefault();
-                      openAuthModal('signup');
-                    }
-                  }}
-                  className="bg-[#F84464] hover:bg-[#e03a58] text-white text-xs font-bold px-3.5 py-1.5 rounded-md transition-all shadow-sm hover:shadow active:scale-95 cursor-pointer"
-                >
-                  Sign Up
+                  <span>Sign In</span>
                 </Link>
               </div>
             )}
@@ -258,26 +454,28 @@ export default function Navbar({ onSearch }) {
         {/* Mobile Search Bar */}
         <div className="pb-3 sm:hidden">
           <form onSubmit={handleSearchSubmit} className="relative">
-            <Search className="absolute left-3 top-2.5 w-4 h-4 text-gray-400" />
-            <input
-              type="text"
-              placeholder="Search for Movies, Events, Plays..."
-              value={searchInput}
-              onChange={(e) => {
-                setSearchInput(e.target.value);
-                if (onSearch) onSearch(e.target.value);
-              }}
-              className="w-full pl-9 pr-8 py-2 bg-white text-gray-900 text-xs rounded-md placeholder-gray-400 focus:outline-none focus:ring-1 focus:ring-[#F84464]"
-            />
-            {searchInput && (
-              <button
-                type="button"
-                onClick={handleClearSearch}
-                className="absolute right-2 top-2 p-1 text-gray-400 hover:text-gray-600"
-              >
-                <X className="w-3.5 h-3.5" />
-              </button>
-            )}
+            <div className="relative flex items-center">
+              <Search className="absolute left-3.5 w-4 h-4 text-gray-400 pointer-events-none" />
+              <input
+                type="text"
+                placeholder="Search movies, events, sports..."
+                value={searchInput}
+                onChange={(e) => {
+                  setSearchInput(e.target.value);
+                  if (onSearch) onSearch(e.target.value);
+                }}
+                className="w-full pl-10 pr-9 py-2 bg-white/[0.08] text-white text-xs rounded-xl placeholder-gray-400 border border-white/10 focus:outline-none focus:ring-2 focus:ring-[#F84464]/50"
+              />
+              {searchInput && (
+                <button
+                  type="button"
+                  onClick={handleClearSearch}
+                  className="absolute right-2.5 p-1 text-gray-400 hover:text-white"
+                >
+                  <X className="w-3.5 h-3.5" />
+                </button>
+              )}
+            </div>
           </form>
         </div>
 
@@ -285,4 +483,3 @@ export default function Navbar({ onSearch }) {
     </header>
   );
 }
-

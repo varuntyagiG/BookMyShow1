@@ -1,5 +1,5 @@
 import React, { useState, useEffect, useRef } from 'react';
-import { useParams, Link } from 'react-router-dom';
+import { useParams, Link, useLocation } from 'react-router-dom';
 import { contentApi, bookingApi } from '../services/api';
 import { useRealtimeRefresh, broadcastSync } from '../services/realtimeSync';
 import { getSocket } from '../services/socketClient';
@@ -18,10 +18,18 @@ import {
   Ticket,
   Popcorn,
   QrCode,
-  Check
+  Check,
+  ChevronLeft,
+  Plus,
+  Minus,
+  Sparkles,
+  Download,
+  PlayCircle,
+  RefreshCw
 } from 'lucide-react';
 import confetti from 'canvas-confetti';
 import { motion } from 'framer-motion';
+import { playSeatClick, playPop, playFlip, playChime } from '../utils/soundEffects';
 
 const generateBookingId = () => 'BMS-' + Date.now().toString().slice(-6);
 
@@ -29,6 +37,7 @@ export default function MovieDetailsPage() {
   const { id } = useParams();
   const { selectedCity } = useCity();
   const { isAuthenticated, openAuthModal } = useAuth();
+  const location = useLocation();
 
   const [movie, setMovie] = useState(null);
   const [loading, setLoading] = useState(true);
@@ -37,11 +46,54 @@ export default function MovieDetailsPage() {
   const [selectedTimeFilter, setSelectedTimeFilter] = useState('All');
   const [favoriteTheatres, setFavoriteTheatres] = useState({});
   const [copiedShare, setCopiedShare] = useState(false);
+  const [trailerOpen, setTrailerOpen] = useState(false);
+  const [showStickyBar, setShowStickyBar] = useState(false);
 
   // User Rating Modal State
   const [ratingModalOpen, setRatingModalOpen] = useState(false);
   const [userRatingScore, setUserRatingScore] = useState(8);
   const [ratingSubmitted, setRatingSubmitted] = useState(false);
+
+  // Scroll listener for floating booking bar
+  useEffect(() => {
+    const handleScroll = () => {
+      setShowStickyBar(window.scrollY > 400);
+    };
+    window.addEventListener('scroll', handleScroll, { passive: true });
+    return () => window.removeEventListener('scroll', handleScroll);
+  }, []);
+
+  // Adaptive movie color palette based on movie theme/genre
+  const movieTheme = React.useMemo(() => {
+    if (!movie) return { primary: '#F84464', glow: 'rgba(248, 68, 100, 0.32)', secondary: '#ff6b85', badge: 'BMS CORAL' };
+    const title = (movie.title || '').toLowerCase();
+    const genreStr = Array.isArray(movie.genre) ? movie.genre.join(' ').toLowerCase() : (movie.genre || '').toLowerCase();
+
+    if (title.includes('dune') || title.includes('kalki') || genreStr.includes('sci-fi') || genreStr.includes('adventure')) {
+      return { primary: '#F59E0B', glow: 'rgba(245, 158, 11, 0.35)', secondary: '#D97706', badge: 'AMBER NEBULA' };
+    }
+    if (title.includes('deadpool') || genreStr.includes('action')) {
+      return { primary: '#F84464', glow: 'rgba(248, 68, 100, 0.35)', secondary: '#E03A58', badge: 'CRIMSON BLOCKBUSTER' };
+    }
+    if (title.includes('stree') || genreStr.includes('horror') || genreStr.includes('thriller')) {
+      return { primary: '#A855F7', glow: 'rgba(168, 85, 247, 0.32)', secondary: '#9333EA', badge: 'VIOLET MOONLIGHT' };
+    }
+    if (genreStr.includes('comedy') || genreStr.includes('drama')) {
+      return { primary: '#06B6D4', glow: 'rgba(6, 182, 212, 0.30)', secondary: '#0891B2', badge: 'CYAN OCEAN' };
+    }
+    return { primary: '#F84464', glow: 'rgba(248, 68, 100, 0.30)', secondary: '#E03A58', badge: 'BMS CORAL' };
+  }, [movie]);
+
+  // HD Trailer preview link
+  const trailerEmbedUrl = React.useMemo(() => {
+    if (!movie) return 'https://www.youtube.com/embed/Way9Dexny3w?autoplay=1';
+    const title = (movie.title || '').toLowerCase();
+    if (title.includes('dune')) return 'https://www.youtube.com/embed/Way9Dexny3w?autoplay=1';
+    if (title.includes('kalki')) return 'https://www.youtube.com/embed/kQDd1AhGIHk?autoplay=1';
+    if (title.includes('deadpool')) return 'https://www.youtube.com/embed/73_1biulkYk?autoplay=1';
+    if (title.includes('stree')) return 'https://www.youtube.com/embed/KVnheCN7vjY?autoplay=1';
+    return 'https://www.youtube.com/embed/Way9Dexny3w?autoplay=1';
+  }, [movie]);
 
   // Seat Booking Modal State
   const [bookingModal, setBookingModal] = useState({
@@ -54,6 +106,8 @@ export default function MovieDetailsPage() {
     confirmed: false,
     bookingId: null,
   });
+
+  const [isTicketFlipped, setIsTicketFlipped] = useState(false);
 
   const [bookingLoading, setBookingLoading] = useState(false);
   const [bookingError, setBookingError] = useState('');
@@ -265,21 +319,38 @@ export default function MovieDetailsPage() {
       if (initialSeats.length >= 2) break;
     }
 
+    setIsTicketFlipped(false);
     setBookingModal({
       isOpen: true,
+      step: 'vehicle',
       theatre,
       showtime: { ...showtime, basePrice },
       occupiedSeats: occupied,
       seatsCount: initialSeats.length || 2,
       selectedSeats: initialSeats,
       includeSnacks: false,
+      snacksTotal: 0,
       confirmed: false,
       bookingId: generateBookingId(),
       bookingData: null,
     });
   };
 
+  // Fast Quick-Book auto launch from ?book=true query parameter
+  useEffect(() => {
+    if (!loading && movie && movie.theatres && movie.theatres.length > 0) {
+      const searchParams = new URLSearchParams(location.search);
+      if (searchParams.get('book') === 'true' && !bookingModal.isOpen) {
+        const firstTheatre = movie.theatres[0];
+        if (firstTheatre?.showtimes?.length > 0) {
+          handleShowtimeClick(firstTheatre, firstTheatre.showtimes[0]);
+        }
+      }
+    }
+  }, [location.search, loading, movie]);
+
   const handleSeatsCountChange = (count) => {
+    playPop();
     setBookingError('');
     const occupied = bookingModal.occupiedSeats || [];
     const availableSeats = [];
@@ -304,6 +375,7 @@ export default function MovieDetailsPage() {
 
   const handleSeatClick = (seatId, isOccupied) => {
     if (isOccupied) return;
+    playSeatClick();
     setBookingError('');
 
     setBookingModal((prev) => {
@@ -404,6 +476,17 @@ export default function MovieDetailsPage() {
           }
         } catch (_syncErr) {}
 
+        // Golden Victory Chime & Confetti Celebration
+        playChime();
+        try {
+          confetti({
+            particleCount: 110,
+            spread: 80,
+            origin: { y: 0.6 },
+            colors: ['#F84464', '#FFD700', '#FFA500', '#FFFFFF', '#06B6D4']
+          });
+        } catch (_) {}
+
         setBookingModal((prev) => ({
           ...prev,
           confirmed: true,
@@ -471,7 +554,7 @@ export default function MovieDetailsPage() {
   const ticketBasePrice = bookingModal.showtime?.basePrice || 450;
   const ticketsSubtotal = ticketBasePrice * (bookingModal.selectedSeats.length || bookingModal.seatsCount);
   const convenienceFee = Math.round(35.4 * (bookingModal.selectedSeats.length || bookingModal.seatsCount));
-  const snacksTotal = bookingModal.includeSnacks ? 250 : 0;
+  const snacksTotal = bookingModal.includeSnacks ? (bookingModal.snacksTotal || 250) : 0;
   const grandTotal = ticketsSubtotal + convenienceFee + snacksTotal;
 
   // Filter theatres client side
@@ -503,7 +586,56 @@ export default function MovieDetailsPage() {
   return (
     <div className="bg-[#F5F5FA] min-h-screen">
 
-      {/* 1. Hero Backdrop Section */}
+      {/* Floating Sticky Booking Bar on Scroll */}
+      <div
+        className={`fixed top-0 left-0 right-0 z-40 bg-[#1e202d]/95 backdrop-blur-xl border-b border-white/10 shadow-2xl transition-all duration-300 transform ${
+          showStickyBar ? 'translate-y-0 opacity-100' : '-translate-y-full opacity-0 pointer-events-none'
+        }`}
+      >
+        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-2.5 flex items-center justify-between gap-4">
+          <div className="flex items-center gap-3 min-w-0">
+            <img
+              src={movie.posterUrl}
+              alt={movie.title}
+              className="w-9 h-12 object-cover rounded-lg shadow-sm border border-white/15 shrink-0"
+            />
+            <div className="min-w-0">
+              <h4 className="text-sm font-black text-white truncate m-0">{movie.title}</h4>
+              <div className="flex items-center gap-2 text-[11px] text-gray-300 font-medium">
+                <span className="flex items-center gap-1 text-[#F84464] font-bold">
+                  <Star className="w-3 h-3 fill-[#F84464]" /> {movie.rating}
+                </span>
+                <span>•</span>
+                <span className="truncate">{movie.language}</span>
+                <span>•</span>
+                <span>{selectedCity}</span>
+              </div>
+            </div>
+          </div>
+
+          <div className="flex items-center gap-3 shrink-0">
+            <button
+              type="button"
+              onClick={() => setTrailerOpen(true)}
+              className="hidden sm:flex items-center gap-1.5 px-3.5 py-2 rounded-xl bg-white/10 hover:bg-white/20 text-white text-xs font-bold transition-all cursor-pointer"
+            >
+              <PlayCircle className="w-3.5 h-3.5 text-[#F84464]" />
+              <span>Trailer</span>
+            </button>
+
+            <button
+              type="button"
+              onClick={scrollToBooking}
+              className="px-6 py-2.5 rounded-xl bg-[#F84464] hover:bg-[#E03A58] text-white text-xs font-black shadow-[0_4px_16px_rgba(248,68,100,0.5)] transition-all duration-150 cursor-pointer active:scale-95 flex items-center gap-1.5"
+            >
+              <Ticket className="w-3.5 h-3.5" />
+              <span>Book Tickets</span>
+            </button>
+          </div>
+        </div>
+      </div>
+
+      {/* 1. Hero Backdrop Section with Adaptive Movie Aura */}
       <div className="relative bg-[#121216] text-white overflow-hidden">
         {/* Atmospheric Blurred Backdrop */}
         <div
@@ -511,7 +643,16 @@ export default function MovieDetailsPage() {
           style={{ backgroundImage: `url(${movie.backdropUrl || movie.posterUrl})` }}
         />
         <div className="absolute inset-0 bg-gradient-to-r from-[#121216] via-[#121216]/90 to-transparent" />
-        <div className="pointer-events-none absolute top-0 right-0 w-96 h-96 bg-[#F84464]/10 rounded-full blur-3xl" />
+
+        {/* Adaptive Dynamic Movie Glow Auroras */}
+        <div
+          className="pointer-events-none absolute -top-24 -right-24 w-[550px] h-[550px] rounded-full blur-3xl opacity-40 transition-all duration-700"
+          style={{ background: movieTheme.glow }}
+        />
+        <div
+          className="pointer-events-none absolute -bottom-32 -left-20 w-[450px] h-[450px] rounded-full blur-3xl opacity-25 transition-all duration-700"
+          style={{ background: movieTheme.secondary }}
+        />
 
         <div className="relative max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-10 sm:py-14">
           <div className="flex flex-col md:flex-row gap-8 lg:gap-10 items-start">
@@ -628,14 +769,23 @@ export default function MovieDetailsPage() {
                 </div>
               </div>
 
-              {/* Book Tickets CTA Button */}
-              <div className="mt-8 pt-4">
+              {/* Book Tickets & Watch Trailer CTAs */}
+              <div className="mt-8 pt-4 flex flex-wrap items-center gap-4">
                 <button
                   onClick={scrollToBooking}
-                  className="w-full sm:w-auto bg-[#F84464] hover:bg-[#E03A58] text-white text-sm font-extrabold px-10 py-3.5 rounded-xl shadow-[0_10px_30px_-8px_rgba(248,68,100,0.5)] transition-all duration-200 hover:scale-[1.03] active:scale-95 cursor-pointer flex items-center justify-center gap-2 focus-visible:outline focus-visible:outline-2 focus-visible:outline-white focus-visible:outline-offset-2"
+                  className="w-full sm:w-auto bg-[#F84464] hover:bg-[#E03A58] text-white text-sm font-black px-10 py-3.5 rounded-2xl shadow-[0_10px_30px_-8px_rgba(248,68,100,0.5)] transition-all duration-200 hover:scale-[1.03] active:scale-95 cursor-pointer flex items-center justify-center gap-2 focus-visible:outline focus-visible:outline-2 focus-visible:outline-white focus-visible:outline-offset-2"
                 >
                   <Ticket className="w-4 h-4" />
                   <span>Book tickets</span>
+                </button>
+
+                <button
+                  type="button"
+                  onClick={() => setTrailerOpen(true)}
+                  className="w-full sm:w-auto bg-white/10 hover:bg-white/20 border border-white/20 text-white text-sm font-bold px-7 py-3.5 rounded-2xl backdrop-blur-md transition-all duration-200 hover:scale-[1.03] active:scale-95 cursor-pointer flex items-center justify-center gap-2"
+                >
+                  <PlayCircle className="w-4 h-4 text-[#F84464]" />
+                  <span>Watch Trailer</span>
                 </button>
               </div>
 
@@ -712,6 +862,33 @@ export default function MovieDetailsPage() {
 
             {/* Date Selector Tabs */}
             <div className="flex items-center gap-2.5 overflow-x-auto no-scrollbar pb-1">
+              {/* Smart "This Weekend" Quick Shortcut */}
+              {(() => {
+                const satIdx = dates.findIndex(d => d.day === 'SAT');
+                const sunIdx = dates.findIndex(d => d.day === 'SUN');
+                const targetIdx = satIdx !== -1 ? satIdx : sunIdx;
+                if (targetIdx !== -1 && targetIdx > 1) {
+                  const isWkndActive = selectedDateIndex === targetIdx;
+                  return (
+                    <button
+                      type="button"
+                      onClick={() => setSelectedDateIndex(targetIdx)}
+                      className={`flex flex-col items-center px-4 py-2 rounded-xl text-xs transition-all duration-150 cursor-pointer shrink-0 border ${
+                        isWkndActive
+                          ? 'bg-amber-500 border-amber-500 text-white font-black shadow-md scale-[1.02]'
+                          : 'bg-amber-50/80 border-amber-200 text-amber-900 hover:bg-amber-100 font-bold'
+                      }`}
+                    >
+                      <span className="text-[9px] uppercase font-black tracking-wider flex items-center gap-1">
+                        <Sparkles className="w-2.5 h-2.5 text-amber-500" /> WEEKEND
+                      </span>
+                      <span className="text-xs font-black">{dates[targetIdx].date}</span>
+                    </button>
+                  );
+                }
+                return null;
+              })()}
+
               {dates.map((d, index) => {
                 const isSelected = selectedDateIndex === index;
                 return (
@@ -817,301 +994,703 @@ export default function MovieDetailsPage() {
 
       {/* 4. Interactive Seat-Selection & Booking Engine Modal */}
       {bookingModal.isOpen && (
-        <div className="fixed inset-0 z-50 flex items-center justify-center p-3 sm:p-4 bg-black/75 backdrop-blur-sm overflow-y-auto">
-          <div className="relative w-full max-w-2xl bg-white rounded-2xl shadow-[0_25px_70px_-15px_rgba(0,0,0,0.5)] overflow-hidden animate-in fade-in zoom-in-95 duration-200 my-8">
+        <div className="fixed inset-0 z-50 flex items-center justify-center p-3 sm:p-4 bg-black/80 backdrop-blur-md overflow-y-auto">
+          <div className="relative w-full max-w-2xl bg-white rounded-3xl shadow-[0_25px_80px_-15px_rgba(0,0,0,0.6)] overflow-hidden animate-in fade-in zoom-in-95 duration-200 my-8 border border-gray-100">
 
             {/* Modal Header */}
-            <div className="bg-[#333545] text-white p-4 sm:p-5 flex items-center justify-between">
-              <div>
-                <span className="text-[10px] uppercase font-bold text-[#F84464] tracking-wider block">
-                  Select Seats
-                </span>
-                <h3 className="text-base sm:text-lg font-bold text-white leading-tight">
-                  {movie.title}
-                </h3>
-                <p className="text-xs text-gray-300 mt-0.5">
-                  {bookingModal.theatre?.name} • <span className="text-[#F84464] font-semibold">{bookingModal.showtime?.time}</span> ({bookingModal.showtime?.format})
-                </p>
+            <div className="bg-[#333545] text-white p-4 sm:p-5 flex items-center justify-between border-b border-[#2b2d3c]">
+              <div className="flex items-center gap-3">
+                {bookingModal.step === 'seats' && !bookingModal.confirmed && (
+                  <button
+                    onClick={() => setBookingModal((prev) => ({ ...prev, step: 'vehicle' }))}
+                    className="p-1.5 text-gray-300 hover:text-white hover:bg-white/10 rounded-lg transition-colors cursor-pointer"
+                    title="Change Seat Count"
+                  >
+                    <ChevronLeft className="w-5 h-5" />
+                  </button>
+                )}
+                {bookingModal.step === 'snacks' && !bookingModal.confirmed && (
+                  <button
+                    onClick={() => setBookingModal((prev) => ({ ...prev, step: 'seats' }))}
+                    className="p-1.5 text-gray-300 hover:text-white hover:bg-white/10 rounded-lg transition-colors cursor-pointer"
+                    title="Back to Seats"
+                  >
+                    <ChevronLeft className="w-5 h-5" />
+                  </button>
+                )}
+                <div>
+                  <span className="text-[10px] uppercase font-black text-[#F84464] tracking-widest block">
+                    {bookingModal.step === 'vehicle' ? 'Step 1 of 3 • Seat Count' : bookingModal.step === 'snacks' ? 'Step 3 of 3 • Concessions' : 'Step 2 of 3 • Select Seats'}
+                  </span>
+                  <h3 className="text-base sm:text-lg font-black text-white leading-tight">
+                    {movie.title}
+                  </h3>
+                  <p className="text-xs text-gray-300 mt-0.5 font-medium">
+                    {bookingModal.theatre?.name} • <span className="text-[#F84464] font-bold">{bookingModal.showtime?.time}</span> ({bookingModal.showtime?.format})
+                  </p>
+                </div>
               </div>
               <button
                 onClick={() => setBookingModal({ ...bookingModal, isOpen: false })}
-                className="p-1.5 text-gray-300 hover:text-white hover:bg-white/10 rounded-full transition-colors cursor-pointer focus-visible:outline focus-visible:outline-2 focus-visible:outline-white shrink-0"
+                className="p-1.5 text-gray-300 hover:text-white hover:bg-white/10 rounded-full transition-colors cursor-pointer shrink-0"
               >
                 <X className="w-5 h-5" />
               </button>
             </div>
 
             {!bookingModal.confirmed ? (
-              <div className="p-5 sm:p-6 max-h-[80vh] overflow-y-auto">
+              <div className="p-5 sm:p-7 max-h-[82vh] overflow-y-auto">
 
-                {/* How Many Seats? Vehicle Selector */}
-                <div className="mb-6 pb-5 border-b border-gray-100">
-                  <div className="flex items-center justify-between mb-3">
-                    <label className="text-xs font-bold text-gray-800 uppercase tracking-wider">
-                      How many seats?
-                    </label>
-                    <span className="text-xs font-semibold text-[#F84464]">
-                      {bookingModal.seatsCount} {bookingModal.seatsCount === 1 ? 'Seat' : 'Seats'}
-                    </span>
-                  </div>
-
-                  <div className="flex items-center gap-2 overflow-x-auto no-scrollbar pb-1">
-                    {transportIcons.map((t) => (
-                      <button
-                        key={t.count}
-                        onClick={() => handleSeatsCountChange(t.count)}
-                        className={`flex flex-col items-center justify-center w-12 h-12 rounded-xl text-xs font-bold transition-all duration-150 cursor-pointer shrink-0 focus-visible:outline focus-visible:outline-2 focus-visible:outline-[#F84464] ${bookingModal.seatsCount === t.count
-                            ? 'bg-[#F84464] text-white shadow-[0_6px_16px_-4px_rgba(248,68,100,0.45)] scale-105'
-                            : 'bg-gray-100 text-gray-700 hover:bg-gray-200'
-                          }`}
-                      >
-                        <span className="text-base leading-none mb-1">{t.emoji}</span>
-                        <span className="text-[11px]">{t.count}</span>
-                      </button>
-                    ))}
-                  </div>
-                </div>
-
-                {/* Cinema Curved Screen Indicator */}
-                <div className="my-6 text-center">
-                  <div className="cinema-screen-curve" />
-                  <p className="text-[10px] uppercase font-bold tracking-widest text-gray-400">
-                    All eyes this way please (Screen)
-                  </p>
-                </div>
-
-                {/* Interactive Seat Matrix */}
-                <div className="mb-6 space-y-4">
-                  {activeSeatLayout.map((rowItem) => (
-                    <div key={rowItem.row} className="space-y-1.5">
-                      <div className="flex items-center justify-between text-[11px] font-bold text-gray-500 px-2">
-                        <span>{rowItem.tier} - ₹{rowItem.price}</span>
+                {/* ========================================================
+                    STEP 1: THE ICONIC BOOKMYSHOW VEHICLE SEAT SELECTOR
+                ======================================================== */}
+                {bookingModal.step === 'vehicle' && (
+                  <div className="py-2 animate-in fade-in slide-in-from-bottom-2 duration-200">
+                    <div className="text-center mb-6">
+                      <div className="inline-flex items-center gap-1.5 px-3 py-1 rounded-full bg-red-50 text-[#F84464] text-[11px] font-bold uppercase tracking-wider mb-2">
+                        <Sparkles className="w-3 h-3" /> BookMyShow Classic
                       </div>
-                      <div className="flex items-center justify-center gap-1.5">
-                        {/* Row letter */}
-                        <span className="w-5 text-[11px] font-bold text-gray-400 text-center">
-                          {rowItem.row}
-                        </span>
+                      <h3 className="text-xl sm:text-2xl font-black text-[#222432] tracking-tight">
+                        How Many Seats?
+                      </h3>
+                      <p className="text-xs text-gray-500 mt-1">
+                        Select party size to auto-assign best adjacent multiplex seats
+                      </p>
+                    </div>
 
-                        {/* Seat buttons */}
-                        <div className="flex items-center gap-1 sm:gap-1.5">
-                          {rowItem.seats.map((num) => {
-                            const seatId = `${rowItem.row}${num}`;
-                            const isOccupied = rowItem.occupied.includes(seatId);
-                            const isSelected = bookingModal.selectedSeats.includes(seatId);
-                            const isAisle = num === 6;
+                    {/* Vehicle Cards Grid */}
+                    <div className="grid grid-cols-4 sm:grid-cols-8 gap-2.5 sm:gap-3 mb-8">
+                      {transportIcons.map((t) => {
+                        const isSelected = bookingModal.seatsCount === t.count;
+                        return (
+                          <motion.button
+                            key={t.count}
+                            type="button"
+                            onPointerDown={() => handleSeatsCountChange(t.count)}
+                            onClick={() => handleSeatsCountChange(t.count)}
+                            whileTap={{ scale: 0.9 }}
+                            animate={isSelected ? { scale: [1, 1.15, 1.05] } : { scale: 1 }}
+                            transition={{ type: 'spring', stiffness: 500, damping: 20 }}
+                            className={`flex flex-col items-center justify-center p-2 sm:p-2.5 rounded-2xl border transition-all cursor-pointer ${
+                              isSelected
+                                ? 'bg-[#F84464] border-[#F84464] text-white shadow-[0_8px_20px_-4px_rgba(248,68,100,0.5)]'
+                                : 'bg-gray-50 hover:bg-gray-100 border-gray-200 text-gray-800'
+                            }`}
+                          >
+                            <span className="text-2xl sm:text-3xl mb-1 filter drop-shadow-sm">{t.emoji}</span>
+                            <span className="text-xs font-black">{t.count}</span>
+                            <span className={`text-[9px] font-semibold truncate max-w-full ${isSelected ? 'text-white/90' : 'text-gray-500'}`}>
+                              {t.name}
+                            </span>
+                          </motion.button>
+                        );
+                      })}
+                    </div>
 
-                            return (
-                              <React.Fragment key={num}>
-                                <motion.button
-                                  type="button"
-                                  disabled={isOccupied}
-                                  onClick={() => handleSeatClick(seatId, isOccupied)}
-                                  whileTap={!isOccupied ? { scale: 0.8 } : undefined}
-                                  animate={isSelected ? { scale: [1, 1.22, 1] } : { scale: 1 }}
-                                  transition={{ type: 'spring', stiffness: 500, damping: 18 }}
-                                  className={`w-6 h-6 sm:w-7 sm:h-7 rounded text-[10px] font-bold transition-colors duration-150 cursor-pointer flex items-center justify-center focus-visible:outline focus-visible:outline-2 focus-visible:outline-[#F84464] ${isOccupied
-                                      ? 'bg-gray-200 text-gray-400 cursor-not-allowed border border-gray-200'
-                                      : isSelected
-                                        ? 'bg-[#F84464] text-white shadow-sm border border-[#F84464]'
-                                        : 'bg-white border border-gray-300 text-gray-700 hover:border-[#F84464] hover:text-[#F84464]'
-                                    }`}
-                                  title={`${seatId} (${rowItem.tier}) - ₹${rowItem.price}`}
-                                >
-                                  {num}
-                                </motion.button>
-                                {/* Center aisle gap */}
-                                {isAisle && <div className="w-3 sm:w-5" />}
-                              </React.Fragment>
-                            );
-                          })}
+                    {/* Price Tiers for this Cinema */}
+                    <div className="bg-gray-50 rounded-2xl p-4 sm:p-5 border border-gray-100 mb-6">
+                      <p className="text-xs font-black uppercase tracking-wider text-gray-500 mb-3">
+                        Auditorium Tiers &amp; Pricing
+                      </p>
+                      <div className="grid grid-cols-1 sm:grid-cols-3 gap-3">
+                        <div className="bg-white p-3 rounded-xl border border-gray-200 flex items-center justify-between">
+                          <div>
+                            <span className="text-xs font-bold text-gray-900 block">RECLINER VIP</span>
+                            <span className="text-[10px] text-emerald-600 font-bold">Plush Luxury</span>
+                          </div>
+                          <span className="text-sm font-black text-[#F84464]">₹450</span>
+                        </div>
+                        <div className="bg-white p-3 rounded-xl border border-gray-200 flex items-center justify-between">
+                          <div>
+                            <span className="text-xs font-bold text-gray-900 block">PRIME PLUS</span>
+                            <span className="text-[10px] text-amber-600 font-bold">Filling Fast</span>
+                          </div>
+                          <span className="text-sm font-black text-[#F84464]">₹280</span>
+                        </div>
+                        <div className="bg-white p-3 rounded-xl border border-gray-200 flex items-center justify-between">
+                          <div>
+                            <span className="text-xs font-bold text-gray-900 block">CLASSIC</span>
+                            <span className="text-[10px] text-emerald-600 font-bold">Available</span>
+                          </div>
+                          <span className="text-sm font-black text-[#F84464]">₹180</span>
                         </div>
                       </div>
                     </div>
-                  ))}
 
-                  {/* Seat Legend */}
-                  <div className="flex items-center justify-center gap-6 pt-4 text-xs font-medium text-gray-500 border-t border-gray-100">
-                    <div className="flex items-center gap-1.5">
-                      <div className="w-4 h-4 rounded border border-gray-300 bg-white" />
-                      <span>Available</span>
-                    </div>
-                    <div className="flex items-center gap-1.5">
-                      <div className="w-4 h-4 rounded bg-[#F84464]" />
-                      <span className="text-[#F84464] font-bold">Selected</span>
-                    </div>
-                    <div className="flex items-center gap-1.5">
-                      <div className="w-4 h-4 rounded bg-gray-200 border border-gray-200" />
-                      <span>Sold</span>
-                    </div>
-                  </div>
-                </div>
-
-                {/* Snack / F&B Add-on Section */}
-                <div className="bg-amber-50/70 border border-amber-200 rounded-xl p-4 mb-5 flex items-center justify-between">
-                  <div className="flex items-center gap-3">
-                    <div className="w-9 h-9 rounded-lg bg-amber-100 flex items-center justify-center text-amber-700 shrink-0">
-                      <Popcorn className="w-5 h-5" />
-                    </div>
-                    <div>
-                      <p className="text-xs font-bold text-gray-900">Add Cinema Snack Combo</p>
-                      <p className="text-[11px] text-gray-500">1 Large Popcorn + 2 Pepsis for only ₹250</p>
-                    </div>
-                  </div>
-                  <input
-                    type="checkbox"
-                    id="snacks"
-                    checked={bookingModal.includeSnacks}
-                    onChange={(e) => setBookingModal({ ...bookingModal, includeSnacks: e.target.checked })}
-                    className="w-4 h-4 text-[#F84464] rounded focus:ring-[#F84464] cursor-pointer shrink-0"
-                  />
-                </div>
-
-                {/* Detailed Order Breakdown */}
-                <div className="bg-gray-50 p-4 rounded-xl mb-5 text-xs text-gray-600 space-y-2.5 border border-gray-100">
-                  <div className="flex justify-between items-center text-gray-800">
-                    <span>
-                      Seats: <strong className="text-gray-900">{bookingModal.selectedSeats.join(', ') || 'None selected'}</strong>
-                    </span>
-                    <span className="font-bold">₹{ticketsSubtotal}</span>
-                  </div>
-                  <div className="flex justify-between items-center text-gray-500 text-[11px]">
-                    <span>Convenience Fees &amp; GST:</span>
-                    <span>₹{convenienceFee}</span>
-                  </div>
-                  {bookingModal.includeSnacks && (
-                    <div className="flex justify-between items-center text-amber-700 text-[11px]">
-                      <span>Popcorn &amp; Pepsi Combo:</span>
-                      <span>+₹250</span>
-                    </div>
-                  )}
-                  <div className="pt-2.5 border-t border-gray-200 flex justify-between items-center text-sm">
-                    <span className="font-bold text-gray-900">Total Amount Payable:</span>
-                    <span className="text-base font-black text-[#F84464]">₹{grandTotal}</span>
-                  </div>
-                </div>
-
-                {/* Booking Error Banner */}
-                {bookingError && (
-                  <div className="mb-4 p-3.5 bg-red-50 border border-red-200 text-red-600 rounded-xl text-xs font-semibold text-center animate-in fade-in">
-                    {bookingError}
+                    {/* Proceed Button */}
+                    <button
+                      onClick={() => setBookingModal((prev) => ({ ...prev, step: 'seats' }))}
+                      className="w-full py-4 bg-[#F84464] hover:bg-[#E03A58] text-white text-sm font-black rounded-2xl shadow-[0_10px_30px_-6px_rgba(248,68,100,0.5)] transition-all active:scale-[0.98] cursor-pointer flex items-center justify-center gap-2"
+                    >
+                      <span>Select {bookingModal.seatsCount} {bookingModal.seatsCount === 1 ? 'Seat' : 'Seats'}</span>
+                      <ChevronLeft className="w-4 h-4 rotate-180" />
+                    </button>
                   </div>
                 )}
 
-                {/* Checkout CTA */}
-                <button
-                  onClick={confirmBooking}
-                  disabled={bookingLoading}
-                  className="w-full py-3.5 bg-[#F84464] hover:bg-[#E03A58] disabled:opacity-70 text-white text-xs sm:text-sm font-extrabold rounded-xl shadow-[0_10px_30px_-8px_rgba(248,68,100,0.5)] transition-all duration-200 active:scale-[0.98] cursor-pointer flex items-center justify-center gap-2 focus-visible:outline focus-visible:outline-2 focus-visible:outline-[#F84464] focus-visible:outline-offset-2"
-                >
-                  {bookingLoading ? (
-                    <>
-                      <Loader2 className="w-4 h-4 animate-spin" />
-                      <span>Confirming your seats...</span>
-                    </>
-                  ) : (
-                    <>
-                      <Ticket className="w-4 h-4" />
-                      <span>
-                        {isAuthenticated ? `Pay ₹${grandTotal} & Confirm Booking` : 'Sign In to Complete Booking'}
-                      </span>
-                    </>
-                  )}
-                </button>
+                {/* ========================================================
+                    STEP 2: 3D THEATRICAL CURVED SCREEN & SEATING MAP
+                ======================================================== */}
+                {bookingModal.step === 'seats' && (
+                  <div className="animate-in fade-in slide-in-from-right-2 duration-200">
+                    {/* Cinema 3D Curved Projection Screen */}
+                    <div className="my-6 text-center">
+                      <div className="inline-flex items-center gap-1.5 px-3 py-1 rounded-full bg-[#F84464]/10 border border-[#F84464]/20 text-[#F84464] text-[10px] font-black uppercase tracking-wider mb-3 shadow-xs">
+                        <Sparkles className="w-3 h-3" />
+                        <span>IMAX 3D Laser Stadium Auditorium</span>
+                      </div>
+
+                      {/* Photorealistic IMAX Stage Preview */}
+                      <div className="relative w-full max-w-xl mx-auto h-24 sm:h-28 rounded-2xl overflow-hidden border border-cyan-500/30 shadow-[0_10px_30px_rgba(0,0,0,0.3)] mb-4 group">
+                        <img
+                          src="/assets/graphics/imax_auditorium.jpg"
+                          alt="IMAX 3D Curved Projection Stage"
+                          className="w-full h-full object-cover object-center group-hover:scale-105 transition-transform duration-700"
+                        />
+                        <div className="absolute inset-0 bg-gradient-to-t from-black/80 via-black/20 to-transparent pointer-events-none" />
+                        <div className="absolute bottom-2 left-0 right-0 text-center">
+                          <p className="text-[10px] uppercase font-mono font-bold tracking-[0.25em] text-cyan-300 drop-shadow-md">
+                            All Eyes This Way Please (Projection Screen)
+                          </p>
+                        </div>
+                      </div>
+
+                      <div className="cinema-screen-curve" />
+                      <div className="cinema-screen-light" />
+                    </div>
+
+                    {/* 3D Stadium Auditorium Seating Perspective */}
+                    <div className="mb-6 overflow-x-auto no-scrollbar py-3 px-2" style={{ perspective: '850px' }}>
+                      <div 
+                        className="space-y-3 origin-top transition-transform duration-300"
+                        style={{
+                          transform: 'rotateX(13deg)',
+                          transformStyle: 'preserve-3d',
+                        }}
+                      >
+                        {activeSeatLayout.map((rowItem) => (
+                          <div key={rowItem.row} className="space-y-1.5">
+                            <div className="flex items-center justify-between text-[11px] font-bold text-gray-500 px-2">
+                              <span>{rowItem.tier} - ₹{rowItem.price}</span>
+                            </div>
+                            <div className="flex items-center justify-center gap-1.5">
+                              {/* Row letter */}
+                              <span className="w-5 text-[11px] font-bold text-gray-400 text-center">
+                                {rowItem.row}
+                              </span>
+
+                              {/* Seat buttons */}
+                              <div className="flex items-center gap-1 sm:gap-1.5">
+                                {rowItem.seats.map((num) => {
+                                  const seatId = `${rowItem.row}${num}`;
+                                  const isOccupied = rowItem.occupied.includes(seatId);
+                                  const isSelected = bookingModal.selectedSeats.includes(seatId);
+                                  const isAisle = num === 6;
+
+                                  return (
+                                    <React.Fragment key={num}>
+                                      <motion.button
+                                        type="button"
+                                        disabled={isOccupied}
+                                        onPointerDown={() => handleSeatClick(seatId, isOccupied)}
+                                        onClick={() => handleSeatClick(seatId, isOccupied)}
+                                        whileTap={!isOccupied ? { scale: 0.8 } : undefined}
+                                        animate={isSelected ? { scale: [1, 1.25, 1.05] } : { scale: 1 }}
+                                        transition={{ type: 'spring', stiffness: 500, damping: 18 }}
+                                        className={`w-6 h-6 sm:w-7 sm:h-7 rounded-lg text-[10px] font-bold transition-colors cursor-pointer flex items-center justify-center ${
+                                          isOccupied
+                                            ? 'bg-gray-200 text-gray-400 cursor-not-allowed border border-gray-200'
+                                            : isSelected
+                                            ? 'bg-[#F84464] text-white shadow-sm border border-[#F84464]'
+                                            : 'bg-white border border-gray-300 text-gray-700 hover:border-[#F84464] hover:text-[#F84464]'
+                                        }`}
+                                        title={`${seatId} (${rowItem.tier}) - ₹${rowItem.price}`}
+                                      >
+                                        {num}
+                                      </motion.button>
+                                      {/* Center aisle gap */}
+                                      {isAisle && <div className="w-3 sm:w-6" />}
+                                    </React.Fragment>
+                                  );
+                                })}
+                              </div>
+                            </div>
+                          </div>
+                        ))}
+                      </div>
+                    </div>
+
+                    {/* Seat Legend */}
+                    <div className="flex items-center justify-center gap-6 pt-4 text-xs font-semibold text-gray-500 border-t border-gray-100 mb-6">
+                      <div className="flex items-center gap-1.5">
+                        <div className="w-4 h-4 rounded border border-gray-300 bg-white" />
+                        <span>Available</span>
+                      </div>
+                      <div className="flex items-center gap-1.5">
+                        <div className="w-4 h-4 rounded bg-[#F84464]" />
+                        <span className="text-[#F84464] font-bold">Selected</span>
+                      </div>
+                      <div className="flex items-center gap-1.5">
+                        <div className="w-4 h-4 rounded bg-gray-200 border border-gray-200" />
+                        <span>Sold</span>
+                      </div>
+                    </div>
+
+                    {/* Bottom Summary Bar & Advance to Snacks Button */}
+                    <div className="bg-gray-50 p-4 rounded-2xl border border-gray-100 mb-4 flex flex-col sm:flex-row sm:items-center justify-between gap-3">
+                      <div>
+                        <span className="text-xs text-gray-500 font-medium block">Selected Seats:</span>
+                        <span className="text-sm font-black text-gray-900">
+                          {bookingModal.selectedSeats.join(', ') || 'None selected'}
+                        </span>
+                      </div>
+                      <div className="text-right">
+                        <span className="text-xs text-gray-500 font-medium block">Tickets Subtotal:</span>
+                        <span className="text-base font-black text-[#F84464]">₹{ticketsSubtotal}</span>
+                      </div>
+                    </div>
+
+                    <button
+                      onClick={() => setBookingModal((prev) => ({ ...prev, step: 'snacks' }))}
+                      disabled={bookingModal.selectedSeats.length === 0}
+                      className="w-full py-4 bg-[#F84464] hover:bg-[#E03A58] disabled:opacity-60 text-white text-xs sm:text-sm font-black rounded-2xl shadow-[0_10px_30px_-6px_rgba(248,68,100,0.5)] transition-all active:scale-[0.98] cursor-pointer flex items-center justify-center gap-2"
+                    >
+                      <Popcorn className="w-4 h-4" />
+                      <span>Proceed to Concessions &amp; Snacks ➔</span>
+                    </button>
+                  </div>
+                )}
+
+                {/* ========================================================
+                    STEP 3: MULTIPLEX F&B CONCESSIONS ("GRAB A BITE!")
+                ======================================================== */}
+                {bookingModal.step === 'snacks' && (
+                  <div className="animate-in fade-in slide-in-from-right-2 duration-200">
+                    <div className="text-center mb-4">
+                      <div className="inline-flex items-center gap-1.5 px-3 py-1 rounded-full bg-amber-50 text-amber-700 text-[11px] font-bold uppercase tracking-wider mb-2">
+                        🍿 Multiplex Fresh Concessions
+                      </div>
+                      <h3 className="text-xl sm:text-2xl font-black text-[#222432] tracking-tight">
+                        Grab a Bite!
+                      </h3>
+                      <p className="text-xs text-gray-500 mt-1">
+                        Pre-book fresh popcorn &amp; beverages and save up to 20% compared to counter prices
+                      </p>
+                    </div>
+
+                    {/* 3D Gourmet Multiplex Concessions Showcase */}
+                    <div className="relative rounded-2xl overflow-hidden mb-5 border border-amber-300/40 shadow-lg group">
+                      <div className="h-32 sm:h-36 w-full overflow-hidden bg-slate-900 relative">
+                        <img
+                          src="/assets/graphics/concessions_combo.jpg"
+                          alt="Gourmet Cinema Concessions Combo"
+                          className="w-full h-full object-cover object-center group-hover:scale-105 transition-transform duration-700"
+                        />
+                        <div className="absolute inset-0 bg-gradient-to-t from-black/85 via-black/30 to-transparent pointer-events-none" />
+                        <div className="absolute bottom-2.5 left-3.5 right-3.5 flex items-center justify-between">
+                          <div>
+                            <span className="text-[10px] font-black uppercase tracking-wider text-amber-300 bg-amber-500/30 backdrop-blur-md px-2 py-0.5 rounded-full border border-amber-400/30">
+                              Chef's Signature Combo
+                            </span>
+                            <p className="text-xs font-bold text-white mt-1 drop-shadow-sm">
+                              Fresh Butter Popcorn, Ice-Cold Cola &amp; Cheesy Nachos
+                            </p>
+                          </div>
+                          <span className="bg-[#F84464] text-white text-[10px] font-black px-2.5 py-1 rounded-lg shadow-sm">
+                            SAVE 20%
+                          </span>
+                        </div>
+                      </div>
+                    </div>
+
+                    {/* Snack Combos Cards */}
+                    <div className="space-y-3 mb-6">
+                      {[
+                        {
+                          id: 'combo-duo',
+                          name: 'Popcorn & Chilled Pepsi Duo',
+                          desc: '1 Jumbo Salted Popcorn Tub + 2 Chilled Pepsis (400ml)',
+                          price: 250,
+                          badge: 'BMS BESTSELLER',
+                          emoji: '🍿🥤',
+                        },
+                        {
+                          id: 'caramel-tub',
+                          name: 'Jumbo Golden Caramel Tub',
+                          desc: 'Signature crunchy golden caramel popcorn prepared fresh',
+                          price: 210,
+                          badge: 'CHEF CHOICE',
+                          emoji: '🍿✨',
+                        },
+                        {
+                          id: 'nachos-cheese',
+                          name: 'Nachos with Warm Cheese Dip',
+                          desc: 'Crispy salted corn tortilla chips served with warm melted cheddar',
+                          price: 180,
+                          badge: 'CRISPY SNACK',
+                          emoji: '🧀🌮',
+                        }
+                      ].map((snack) => {
+                        const isAdded = bookingModal.includeSnacks && (bookingModal.selectedSnackId === snack.id || !bookingModal.selectedSnackId);
+                        return (
+                          <div
+                            key={snack.id}
+                            className={`p-4 rounded-2xl border transition-all flex items-center justify-between gap-4 ${
+                              isAdded
+                                ? 'bg-amber-50/80 border-amber-300 ring-2 ring-amber-400/20'
+                                : 'bg-white border-gray-200 hover:border-gray-300'
+                            }`}
+                          >
+                            <div className="flex items-center gap-3.5">
+                              <span className="text-3xl filter drop-shadow-sm">{snack.emoji}</span>
+                              <div>
+                                <div className="flex items-center gap-2">
+                                  <span className="text-xs font-bold text-gray-900">{snack.name}</span>
+                                  <span className="text-[9px] font-black px-2 py-0.2 rounded-full bg-amber-100 text-amber-800 uppercase">
+                                    {snack.badge}
+                                  </span>
+                                </div>
+                                <p className="text-[11px] text-gray-500 mt-0.5">{snack.desc}</p>
+                                <span className="text-xs font-black text-gray-900 mt-1 block">₹{snack.price}</span>
+                              </div>
+                            </div>
+
+                            <button
+                              type="button"
+                              onPointerDown={() => {
+                                setBookingModal((prev) => ({
+                                  ...prev,
+                                  includeSnacks: !isAdded,
+                                  selectedSnackId: isAdded ? null : snack.id,
+                                  snacksTotal: !isAdded ? snack.price : 0,
+                                }));
+                              }}
+                              onClick={() => {
+                                setBookingModal((prev) => ({
+                                  ...prev,
+                                  includeSnacks: !isAdded,
+                                  selectedSnackId: isAdded ? null : snack.id,
+                                  snacksTotal: !isAdded ? snack.price : 0,
+                                }));
+                              }}
+                              className={`px-4 py-2 rounded-xl text-xs font-bold transition-all cursor-pointer ${
+                                isAdded
+                                  ? 'bg-amber-500 hover:bg-amber-600 text-white shadow-xs'
+                                  : 'bg-gray-100 hover:bg-gray-200 text-gray-700'
+                              }`}
+                            >
+                              {isAdded ? 'Added ✓' : '+ Add'}
+                            </button>
+                          </div>
+                        );
+                      })}
+                    </div>
+
+                    {/* Final Order Breakdown */}
+                    <div className="bg-gray-50 p-4 rounded-2xl mb-6 text-xs text-gray-600 space-y-2 border border-gray-100">
+                      <div className="flex justify-between items-center text-gray-800">
+                        <span>Seats ({bookingModal.selectedSeats.join(', ')}):</span>
+                        <span className="font-bold">₹{ticketsSubtotal}</span>
+                      </div>
+                      <div className="flex justify-between items-center text-gray-500 text-[11px]">
+                        <span>Convenience Fees &amp; Integrated GST:</span>
+                        <span>₹{convenienceFee}</span>
+                      </div>
+                      {bookingModal.includeSnacks && (
+                        <div className="flex justify-between items-center text-amber-700 font-bold text-[11px]">
+                          <span>Multiplex Snack Combo:</span>
+                          <span>+₹{snacksTotal}</span>
+                        </div>
+                      )}
+                      <div className="pt-2 border-t border-gray-200 flex justify-between items-center text-sm">
+                        <span className="font-black text-gray-900">Total Amount:</span>
+                        <span className="text-base font-black text-[#F84464]">₹{grandTotal}</span>
+                      </div>
+                    </div>
+
+                    {/* Booking Error Banner */}
+                    {bookingError && (
+                      <div className="mb-4 p-3.5 bg-red-50 border border-red-200 text-red-600 rounded-xl text-xs font-semibold text-center animate-in fade-in">
+                        {bookingError}
+                      </div>
+                    )}
+
+                    {/* Action Buttons */}
+                    <div className="flex flex-col sm:flex-row items-center gap-3">
+                      <button
+                        type="button"
+                        onClick={() => {
+                          setBookingModal((prev) => ({ ...prev, includeSnacks: false, snacksTotal: 0 }));
+                          confirmBooking();
+                        }}
+                        disabled={bookingLoading}
+                        className="w-full sm:w-1/3 py-3.5 bg-gray-100 hover:bg-gray-200 text-gray-700 text-xs font-bold rounded-2xl transition-colors cursor-pointer"
+                      >
+                        Skip Snacks
+                      </button>
+
+                      <button
+                        type="button"
+                        onClick={confirmBooking}
+                        disabled={bookingLoading}
+                        className="w-full sm:w-2/3 py-3.5 bg-[#F84464] hover:bg-[#E03A58] disabled:opacity-70 text-white text-xs sm:text-sm font-black rounded-2xl shadow-[0_10px_30px_-6px_rgba(248,68,100,0.5)] transition-all active:scale-[0.98] cursor-pointer flex items-center justify-center gap-2"
+                      >
+                        {bookingLoading ? (
+                          <>
+                            <Loader2 className="w-4 h-4 animate-spin" />
+                            <span>Confirming your seats...</span>
+                          </>
+                        ) : (
+                          <>
+                            <Ticket className="w-4 h-4" />
+                            <span>
+                              {isAuthenticated ? `Pay ₹{grandTotal} & Book` : 'Sign In & Book'}
+                            </span>
+                          </>
+                        )}
+                      </button>
+                    </div>
+                  </div>
+                )}
+
               </div>
             ) : (
-              /* Digital M-Ticket Confirmation View */
-              <div className="p-6 text-center">
-                <div className="w-14 h-14 bg-emerald-50 border border-emerald-200 rounded-full flex items-center justify-center mx-auto mb-4">
+              /* ========================================================
+                  STEP 4: AUTHENTIC PERFORATED DIGITAL M-TICKET PASS
+              ======================================================== */
+              <div className="p-6 sm:p-8 text-center animate-in fade-in zoom-in-95 duration-200">
+                <div className="w-14 h-14 bg-emerald-50 border border-emerald-200 rounded-full flex items-center justify-center mx-auto mb-3">
                   <CheckCircle className="w-7 h-7 text-emerald-500" />
                 </div>
-                <h3 className="text-xl font-black text-[#222432] mb-1.5">
+                <h3 className="text-xl sm:text-2xl font-black text-[#222432] mb-1">
                   Booking Confirmed!
                 </h3>
                 <p className="text-xs text-gray-500 mb-6">
-                  Your electronic M-Ticket has been generated and confirmed.
+                  Your official electronic M-Ticket has been generated and activated.
                 </p>
 
-                {/* Digital Ticket Card */}
-                <motion.div
-                  initial={{ opacity: 0, scale: 0.94, y: 15 }}
-                  animate={{ opacity: 1, scale: 1, y: 0 }}
-                  transition={{ type: 'spring', stiffness: 320, damping: 24 }}
-                  className="bg-gradient-to-b from-[#222432] to-[#121216] text-white rounded-2xl p-5 text-left text-xs mb-6 shadow-[0_20px_50px_-15px_rgba(0,0,0,0.5)] border border-white/10 relative overflow-hidden"
-                >
-                  <div className="pointer-events-none absolute -top-10 -right-10 w-40 h-40 bg-[#F84464]/15 rounded-full blur-3xl" />
-                  <div className="relative flex items-start justify-between gap-4 pb-4 border-b border-white/10">
-                    <div>
-                      <span className="text-[10px] uppercase font-bold text-[#F84464] tracking-widest">
-                        Official Cinema M-Ticket
-                      </span>
-                      <h4 className="text-base sm:text-lg font-black text-white mt-0.5">
-                        {movie.title}
-                      </h4>
-                      <p className="text-xs text-gray-300">
-                        {movie.language} • {bookingModal.showtime?.format}
-                      </p>
-                    </div>
-                    <div className="text-right shrink-0">
-                      <span className="text-[10px] text-gray-400 block">Booking ID</span>
-                      <span className="text-xs font-mono font-bold text-[#F84464]">
-                        {bookingModal.bookingId}
-                      </span>
-                    </div>
-                  </div>
+                <div className="flex items-center justify-between mb-3 px-1">
+                  <span className="text-xs font-bold text-gray-500">
+                    {isTicketFlipped ? 'Pass Back: Directions & Snacks' : 'Pass Front: Show Entry & QR'}
+                  </span>
+                  <button
+                    type="button"
+                    onClick={() => {
+                      playFlip();
+                      setIsTicketFlipped(!isTicketFlipped);
+                    }}
+                    className="inline-flex items-center gap-1.5 px-3 py-1 rounded-full bg-gray-100 hover:bg-gray-200 text-gray-800 text-xs font-bold transition-all cursor-pointer shadow-xs active:scale-95"
+                  >
+                    <RefreshCw className={`w-3.5 h-3.5 text-[#F84464] transition-transform duration-500 ${isTicketFlipped ? 'rotate-180' : ''}`} />
+                    <span>{isTicketFlipped ? 'Show Front' : 'Flip Ticket (3D)'}</span>
+                  </button>
+                </div>
 
-                  <div className="relative py-4 grid grid-cols-2 gap-3 text-xs border-b border-white/10">
-                    <div>
-                      <span className="text-[10px] text-gray-400 block uppercase">Cinema</span>
-                      <span className="font-semibold text-gray-100">{bookingModal.theatre?.name}</span>
-                    </div>
-                    <div>
-                      <span className="text-[10px] text-gray-400 block uppercase">Time &amp; Date</span>
-                      <span className="font-semibold text-gray-100">
-                        {bookingModal.showtime?.time} • {dates[selectedDateIndex].date}
-                      </span>
-                    </div>
-                    <div>
-                      <span className="text-[10px] text-gray-400 block uppercase">Seats ({bookingModal.selectedSeats.length})</span>
-                      <span className="font-black text-[#F84464] text-sm">
-                        {bookingModal.selectedSeats.join(', ')}
-                      </span>
-                    </div>
-                    <div>
-                      <span className="text-[10px] text-gray-400 block uppercase">Total Paid</span>
-                      <span className="font-bold text-white">₹{grandTotal}</span>
-                    </div>
-                  </div>
+                {/* 3D Flippable Perforated M-Ticket Container */}
+                <div style={{ perspective: '1200px' }} className="mb-6">
+                  <div
+                    style={{
+                      transformStyle: 'preserve-3d',
+                      transform: isTicketFlipped ? 'rotateY(180deg)' : 'rotateY(0deg)',
+                      transition: 'transform 0.65s cubic-bezier(0.4, 0, 0.2, 1)',
+                    }}
+                    className="relative w-full min-h-[360px]"
+                  >
+                    {/* FRONT FACE OF M-TICKET */}
+                    <div
+                      style={{
+                        backfaceVisibility: 'hidden',
+                        WebkitBackfaceVisibility: 'hidden',
+                      }}
+                      className="relative bg-gradient-to-b from-[#242738] via-[#1c1e2b] to-[#12131b] text-white rounded-3xl p-6 text-left text-xs shadow-2xl border border-white/10 overflow-hidden"
+                    >
+                      {/* Decorative Glow */}
+                      <div className="pointer-events-none absolute -top-12 -right-12 w-48 h-48 bg-[#F84464]/20 rounded-full blur-3xl" />
 
-                  {/* QR Code Validation Box */}
-                  <div className="relative pt-4 flex items-center justify-between">
-                    <div className="flex items-center gap-3">
-                      <div className="w-12 h-12 bg-white rounded-lg p-1 flex items-center justify-center text-gray-900 shadow-sm shrink-0">
-                        <QrCode className="w-10 h-10" />
+                      {/* Left & Right Perforated Notch Cut-Outs */}
+                      <div className="ticket-notch-left top-[42%]" />
+                      <div className="ticket-notch-right top-[42%]" />
+
+                      {/* Ticket Header */}
+                      <div className="relative flex items-start justify-between gap-4 pb-4">
+                        <div>
+                          <div className="flex items-center gap-1.5 mb-1">
+                            <span className="text-[10px] uppercase font-black text-[#F84464] tracking-widest">
+                              BookMyShow M-Ticket
+                            </span>
+                            <span className="text-[9px] bg-emerald-500/20 text-emerald-400 font-black px-2 py-0.2 rounded-full border border-emerald-500/30">
+                              CONFIRMED
+                            </span>
+                          </div>
+                          <h4 className="text-lg sm:text-xl font-black text-white leading-tight">
+                            {movie.title}
+                          </h4>
+                          <p className="text-xs text-gray-300 mt-0.5">
+                            {movie.language} • {bookingModal.showtime?.format}
+                          </p>
+                        </div>
+
+                        <div className="text-right shrink-0">
+                          <span className="text-[10px] text-gray-400 block uppercase font-bold">Booking ID</span>
+                          <span className="text-xs font-mono font-black text-[#F84464]">
+                            {bookingModal.bookingId}
+                          </span>
+                        </div>
                       </div>
+
+                      {/* Dashed Perforated Tear Line */}
+                      <div className="relative my-4 border-b-2 border-dashed border-white/20" />
+
+                      {/* Multiplex Details Grid */}
+                      <div className="relative py-2 grid grid-cols-2 gap-4 text-xs">
+                        <div>
+                          <span className="text-[10px] text-gray-400 block uppercase font-bold">Cinema</span>
+                          <span className="font-bold text-gray-100">{bookingModal.theatre?.name}</span>
+                          <p className="text-[10px] text-gray-400 mt-0.5">Audi 2 • Gate 3</p>
+                        </div>
+                        <div>
+                          <span className="text-[10px] text-gray-400 block uppercase font-bold">Date &amp; Time</span>
+                          <span className="font-bold text-gray-100">
+                            {dates[selectedDateIndex].date} • {bookingModal.showtime?.time}
+                          </span>
+                        </div>
+                        <div>
+                          <span className="text-[10px] text-gray-400 block uppercase font-bold">Seats ({bookingModal.selectedSeats.length})</span>
+                          <span className="font-black text-[#F84464] text-base sm:text-lg">
+                            {bookingModal.selectedSeats.join(', ')}
+                          </span>
+                        </div>
+                        <div>
+                          <span className="text-[10px] text-gray-400 block uppercase font-bold">Total Paid</span>
+                          <span className="font-black text-white text-sm">₹{grandTotal}</span>
+                        </div>
+                      </div>
+
+                      {/* QR Code & Turnstile Optical Barcode Scanner Area */}
+                      <div className="relative mt-4 pt-4 border-t border-white/10 flex items-center justify-between">
+                        <div className="flex items-center gap-3">
+                          <div className="w-12 h-12 bg-white rounded-xl p-1 flex items-center justify-center text-gray-900 shadow-sm shrink-0">
+                            <QrCode className="w-10 h-10" />
+                          </div>
+                          <div>
+                            <p className="text-[11px] font-bold text-white">Scan at Cinema Turnstile</p>
+                            <p className="text-[10px] font-mono tracking-widest text-gray-400">|||| | || ||| |||| |</p>
+                          </div>
+                        </div>
+
+                        <button
+                          type="button"
+                          onClick={() => {
+                            const msg = `🎟️ My BookMyShow Ticket: ${movie.title} at ${bookingModal.theatre?.name}, ${dates[selectedDateIndex].date} ${bookingModal.showtime?.time}. Seats: ${bookingModal.selectedSeats.join(', ')}. Booking ID: ${bookingModal.bookingId}`;
+                            window.open(`https://api.whatsapp.com/send?text=${encodeURIComponent(msg)}`, '_blank');
+                          }}
+                          className="px-3 py-1.5 bg-emerald-600 hover:bg-emerald-500 text-white rounded-xl text-xs font-bold flex items-center gap-1.5 transition-colors cursor-pointer shadow-sm"
+                        >
+                          <span>Share on WhatsApp</span>
+                        </button>
+                      </div>
+                    </div>
+
+                    {/* BACK FACE OF M-TICKET (3D REVERSE) */}
+                    <div
+                      style={{
+                        backfaceVisibility: 'hidden',
+                        WebkitBackfaceVisibility: 'hidden',
+                        transform: 'rotateY(180deg)',
+                      }}
+                      className="absolute inset-0 bg-gradient-to-b from-[#1c2234] via-[#161a29] to-[#0f111c] text-white rounded-3xl p-6 text-left text-xs shadow-2xl border border-white/10 overflow-hidden flex flex-col justify-between"
+                    >
+                      {/* Decorative Glow */}
+                      <div className="pointer-events-none absolute -bottom-12 -left-12 w-48 h-48 bg-[#F84464]/20 rounded-full blur-3xl" />
+
+                      {/* Left & Right Perforated Notch Cut-Outs */}
+                      <div className="ticket-notch-left top-[42%]" />
+                      <div className="ticket-notch-right top-[42%]" />
+
                       <div>
-                        <p className="text-[11px] font-bold text-white">Scan at Cinema Entrance</p>
-                        <p className="text-[10px] text-gray-400">Audi 2 • Gate 3</p>
+                        <div className="flex items-center justify-between pb-3 border-b border-white/10">
+                          <div>
+                            <span className="text-[10px] uppercase font-black text-[#F84464] tracking-widest block">
+                              Cinema Venue &amp; Concessions Pass
+                            </span>
+                            <h4 className="text-base font-black text-white mt-0.5">{bookingModal.theatre?.name}</h4>
+                          </div>
+                          <span className="text-[10px] font-mono bg-white/10 px-2.5 py-0.5 rounded-full text-gray-300 font-bold border border-white/10">
+                            AUDI 2
+                          </span>
+                        </div>
+
+                        {/* Concessions / Food Voucher Status */}
+                        <div className="py-3 border-b border-white/10">
+                          <span className="text-[10px] uppercase font-bold text-gray-400 block mb-1">
+                            F&amp;B Concession Counter
+                          </span>
+                          {bookingModal.includeSnacks ? (
+                            <div className="p-2.5 rounded-xl bg-amber-500/15 border border-amber-400/30 flex items-center justify-between">
+                              <div>
+                                <span className="text-xs font-bold text-amber-300 block">🍿 Snack Combo Voucher Included</span>
+                                <span className="text-[10px] text-gray-300">Collect at Refreshment Counter #3</span>
+                              </div>
+                              <span className="text-xs font-mono font-black text-amber-300">PAID ₹{snacksTotal}</span>
+                            </div>
+                          ) : (
+                            <div className="p-2 rounded-xl bg-white/5 text-gray-400 text-[11px]">
+                              No snacks pre-booked. Counter purchases available in the cinema foyer.
+                            </div>
+                          )}
+                        </div>
+
+                        {/* Multiplex Safety & Directions */}
+                        <div className="py-2.5 space-y-1.5 text-[11px] text-gray-300">
+                          <div className="flex items-center gap-2">
+                            <span className="w-1.5 h-1.5 rounded-full bg-emerald-400" />
+                            <span>Gate opens 15 mins prior to showtime</span>
+                          </div>
+                          <div className="flex items-center gap-2">
+                            <span className="w-1.5 h-1.5 rounded-full bg-emerald-400" />
+                            <span>Outside food &amp; beverages strictly restricted</span>
+                          </div>
+                          <div className="flex items-center gap-2">
+                            <span className="w-1.5 h-1.5 rounded-full bg-emerald-400" />
+                            <span>Wheelchair assistance available at Gate 3</span>
+                          </div>
+                        </div>
+                      </div>
+
+                      {/* Optical Turnstile Barcode */}
+                      <div className="pt-3 border-t border-white/10 flex items-center justify-between">
+                        <div>
+                          <span className="text-[9px] text-gray-400 uppercase font-bold block">Optical Turnstile Code</span>
+                          <p className="text-sm font-mono tracking-[0.25em] text-white">|||| | | ||| |||| | |||</p>
+                        </div>
+                        <button
+                          type="button"
+                          onClick={() => {
+                            playFlip();
+                            setIsTicketFlipped(false);
+                          }}
+                          className="px-3 py-1.5 bg-white/10 hover:bg-white/20 text-white rounded-xl text-xs font-bold cursor-pointer transition-colors active:scale-95"
+                        >
+                          <span>Flip to Front</span>
+                        </button>
                       </div>
                     </div>
-                    <span className="text-[10px] bg-emerald-500/15 text-emerald-400 border border-emerald-500/30 font-bold px-2 py-0.5 rounded shrink-0">
-                      PAID &amp; ACTIVE
-                    </span>
                   </div>
-                </motion.div>
+                </div>
 
+                {/* Footer Actions */}
                 <div className="flex items-center gap-3">
                   <Link
                     to="/my-bookings"
                     onClick={() => setBookingModal({ ...bookingModal, isOpen: false })}
-                    className="flex-1 py-3 bg-gray-100 hover:bg-gray-200 text-gray-800 text-xs font-bold rounded-xl transition-colors duration-150 cursor-pointer flex items-center justify-center gap-1.5 focus-visible:outline focus-visible:outline-2 focus-visible:outline-[#F84464]"
+                    className="flex-1 py-3.5 bg-gray-100 hover:bg-gray-200 text-gray-800 text-xs font-bold rounded-2xl transition-colors cursor-pointer flex items-center justify-center gap-1.5"
                   >
                     <Ticket className="w-4 h-4 text-[#F84464]" />
                     <span>View in My Bookings</span>
                   </Link>
                   <button
                     onClick={() => setBookingModal({ ...bookingModal, isOpen: false })}
-                    className="flex-1 py-3 bg-[#F84464] hover:bg-[#E03A58] active:scale-[0.98] text-white text-xs font-bold rounded-xl transition-all duration-200 cursor-pointer focus-visible:outline focus-visible:outline-2 focus-visible:outline-[#F84464] focus-visible:outline-offset-2"
+                    className="flex-1 py-3.5 bg-[#F84464] hover:bg-[#E03A58] text-white text-xs font-black rounded-2xl transition-all cursor-pointer shadow-md"
                   >
                     Done
                   </button>
@@ -1193,6 +1772,48 @@ export default function MovieDetailsPage() {
                 </button>
               </div>
             )}
+          </div>
+        </div>
+      )}
+
+      {/* 6. Theater Mode HD Trailer Modal */}
+      {trailerOpen && (
+        <div
+          className="fixed inset-0 z-50 flex items-center justify-center p-3 sm:p-6 bg-black/85 backdrop-blur-md animate-in fade-in duration-200"
+          onClick={() => setTrailerOpen(false)}
+        >
+          <div
+            className="relative w-full max-w-4xl bg-black rounded-2xl overflow-hidden shadow-2xl border border-white/20 animate-in zoom-in-95 duration-200"
+            onClick={(e) => e.stopPropagation()}
+          >
+            {/* Header bar */}
+            <div className="flex items-center justify-between px-5 py-3.5 bg-gradient-to-r from-gray-900 via-gray-900 to-black border-b border-white/10">
+              <div className="flex items-center gap-2">
+                <span className="w-2.5 h-2.5 rounded-full bg-[#F84464] animate-pulse" />
+                <h3 className="text-sm font-bold text-white tracking-wide">
+                  {movie.title} <span className="text-gray-400 font-normal ml-1">— Official Trailer</span>
+                </h3>
+              </div>
+              <button
+                type="button"
+                onClick={() => setTrailerOpen(false)}
+                className="p-1 text-gray-400 hover:text-white hover:bg-white/10 rounded-full transition-colors cursor-pointer"
+                aria-label="Close trailer"
+              >
+                <X className="w-5 h-5" />
+              </button>
+            </div>
+
+            {/* Video container 16:9 */}
+            <div className="relative w-full aspect-video bg-black">
+              <iframe
+                src={trailerEmbedUrl}
+                title={`${movie.title} Trailer`}
+                className="absolute inset-0 w-full h-full border-0"
+                allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture"
+                allowFullScreen
+              />
+            </div>
           </div>
         </div>
       )}

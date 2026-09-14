@@ -9,7 +9,8 @@ import LiveEventsSection from '../components/home/LiveEventsSection';
 import StreamSection from '../components/home/StreamSection';
 import PromoBanner from '../components/home/PromoBanner';
 import VIPCinema3DSection from '../components/home/VIPCinema3DSection';
-import { Loader2, AlertCircle, RefreshCw } from 'lucide-react';
+import MultiplexTicker from '../components/home/MultiplexTicker';
+import { Loader2, AlertCircle, RefreshCw, Sparkles, ChevronRight } from 'lucide-react';
 
 export default function HomePage({ searchQuery }) {
   const { selectedCity } = useCity();
@@ -65,36 +66,60 @@ export default function HomePage({ searchQuery }) {
 
   if (loading && !data.movies.length) {
     return (
-      <div className="min-h-[65vh] flex flex-col items-center justify-center bg-[#F5F5FA] px-4">
-        <div className="flex flex-col items-center justify-center bg-white rounded-2xl px-10 py-9 shadow-[0_8px_30px_-8px_rgba(0,0,0,0.1)] border border-gray-100">
+      <main className="flex-1 min-h-screen bg-[#141414] text-white py-6 px-4 sm:px-6 lg:px-8 max-w-7xl mx-auto w-full">
+        {/* Shimmer Status */}
+        <div className="flex items-center gap-2 mb-6 px-1">
+          <span className="w-2 h-2 rounded-full bg-[#F84464] animate-pulse" />
+          <span className="text-xs font-semibold text-gray-400">
+            Fetching blockbusters &amp; experiences in <strong className="text-white">{selectedCity}</strong>...
+          </span>
+        </div>
 
-          <div className="w-16 h-16 rounded-full bg-[#F84464]/10 flex items-center justify-center mb-5">
-            <Loader2 className="w-8 h-8 text-[#F84464] animate-spin" />
+        {/* Hero Carousel Skeleton */}
+        <div className="w-full h-56 sm:h-72 md:h-80 rounded-2xl bg-white/[0.05] animate-pulse mb-10 border border-white/5" />
+
+        {/* Recommended Movies Header Skeleton */}
+        <div className="flex items-center justify-between mb-5 px-1">
+          <div className="flex items-center gap-2.5">
+            <div className="w-1.5 h-6 bg-[#F84464] rounded-full" />
+            <div className="w-48 h-6 rounded-lg bg-white/[0.05] animate-pulse" />
           </div>
+          <div className="w-16 h-4 rounded-md bg-white/[0.05] animate-pulse hidden sm:block" />
+        </div>
 
-          <p className="text-base font-semibold text-[#222432]">
-            Discovering entertainment
-          </p>
+        {/* 5-Column Movie Poster Grid Skeleton */}
+        <div className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-5 gap-5 mb-12">
+          {[1, 2, 3, 4, 5].map((item) => (
+            <div key={item} className="flex flex-col gap-2.5">
+              <div className="w-full aspect-[2/3] rounded-2xl bg-white/[0.05] animate-pulse border border-white/5" />
+              <div className="w-4/5 h-4 rounded-md bg-white/[0.05] animate-pulse" />
+              <div className="w-1/2 h-3 rounded-md bg-white/[0.05] animate-pulse" />
+            </div>
+          ))}
+        </div>
 
-          <p className="text-sm text-gray-500 mt-2 text-center">
-            Finding movies, shows &amp; events in{' '}
-            <span className="font-semibold text-gray-700">
-              {selectedCity}
-            </span>
-          </p>
-
-          <div className="flex items-center gap-1.5 mt-5">
-            <span className="w-1.5 h-1.5 rounded-full bg-[#F84464] animate-pulse" />
-            <span className="w-1.5 h-1.5 rounded-full bg-[#F84464] animate-pulse [animation-delay:150ms]" />
-            <span className="w-1.5 h-1.5 rounded-full bg-[#F84464] animate-pulse [animation-delay:300ms]" />
+        {/* Live Events Section Skeleton */}
+        <div className="flex items-center justify-between mb-5 px-1">
+          <div className="flex items-center gap-2.5">
+            <div className="w-1.5 h-6 bg-[#F84464] rounded-full" />
+            <div className="w-40 h-6 rounded-lg bg-white/[0.05] animate-pulse" />
           </div>
         </div>
-      </div>
+        <div className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-5 gap-5">
+          {[1, 2, 3, 4, 5].map((item) => (
+            <div key={item} className="flex flex-col gap-2.5">
+              <div className="w-full aspect-[2/3] rounded-2xl bg-white/[0.05] animate-pulse border border-white/5" />
+              <div className="w-3/4 h-4 rounded-md bg-white/[0.05] animate-pulse" />
+              <div className="w-2/5 h-3 rounded-md bg-white/[0.05] animate-pulse" />
+            </div>
+          ))}
+        </div>
+      </main>
     );
   }
 
   return (
-    <main className="flex-1 min-h-screen bg-[#F5F5FA] text-[#333545]">
+    <main className="flex-1 min-h-screen bg-[#141414] text-white">
 
       {/* =========================
           BACKEND ERROR
@@ -143,12 +168,12 @@ export default function HomePage({ searchQuery }) {
       ========================= */}
 
       {searchQuery && (
-        <div className="bg-white border-b border-gray-100 shadow-sm">
+        <div className="bg-[#181A26] border-b border-white/[0.08] shadow-sm">
           <div className="max-w-[1200px] mx-auto px-4 sm:px-6 py-4">
 
             <div className="flex flex-wrap items-center justify-center gap-1.5 text-xs sm:text-sm">
 
-              <span className="text-gray-500">
+              <span className="text-gray-400">
                 Showing search results for
               </span>
 
@@ -156,11 +181,11 @@ export default function HomePage({ searchQuery }) {
                 "{searchQuery}"
               </span>
 
-              <span className="text-gray-500">
+              <span className="text-gray-400">
                 in
               </span>
 
-              <span className="font-semibold text-[#222432]">
+              <span className="font-semibold text-white">
                 {selectedCity}
               </span>
 
@@ -175,85 +200,33 @@ export default function HomePage({ searchQuery }) {
       ========================= */}
 
       {!searchQuery && data.banners && (
-        <section className="w-full bg-[#222432]">
+        <section className="w-full bg-[#141414]">
           <HeroCarousel banners={data.banners} />
         </section>
       )}
 
       {/* =========================
+          REAL-TIME MULTIPLEX VITALITY TICKER
+      ========================= */}
+      <MultiplexTicker />
+
+      {/* =========================
           MOVIES SECTION
       ========================= */}
 
-      <section className="max-w-[1200px] mx-auto px-4 sm:px-6 lg:px-8 py-8 sm:py-10">
-
-        <div className="mb-6">
-
-          <div className="flex items-center justify-between">
-
-            <div>
-              <p className="text-[11px] sm:text-xs uppercase tracking-[1.5px] text-gray-400 font-bold mb-1.5">
-                Top picks for you
-              </p>
-
-              <h2 className="text-xl sm:text-2xl font-bold text-[#222432] tracking-tight">
-                Recommended Movies
-              </h2>
-            </div>
-
-            <button
-              onClick={() => navigate('/movies')}
-              className="
-                hidden sm:flex
-                items-center
-                gap-1
-                text-sm
-                font-semibold
-                text-[#F84464]
-                hover:text-[#E03A58]
-                transition-colors duration-150
-                cursor-pointer
-                focus-visible:outline focus-visible:outline-2 focus-visible:outline-[#F84464] focus-visible:outline-offset-2 rounded
-              "
-            >
-              See All
-              <span className="text-base leading-none">›</span>
-            </button>
-
-          </div>
-
-          <div className="w-10 h-1 bg-[#F84464] rounded-full mt-3" />
-
-        </div>
-
-        <div className="rounded-xl">
-          <MovieSection
-            movies={data.movies}
-            onMovieClick={(movie) => {
-              navigate(`/movies/${movie.id}`);
-            }}
-          />
-        </div>
-
-      </section>
+      <MovieSection
+        movies={data.movies}
+        onMovieClick={(movie) => {
+          navigate(`/movies/${movie.id}`);
+        }}
+      />
 
       {/* =========================
           PROMOTIONAL BANNER
       ========================= */}
 
       {!searchQuery && (
-        <section className="max-w-[1200px] mx-auto px-4 sm:px-6 lg:px-8 pb-9">
-
-          <div className="
-            rounded-xl
-            overflow-hidden
-            shadow-[0_4px_16px_-6px_rgba(0,0,0,0.1)]
-            hover:shadow-[0_10px_28px_-8px_rgba(0,0,0,0.15)]
-            transition-shadow duration-300
-          ">
-            <PromoBanner />
-          </div>
-
-        </section>
+        <PromoBanner />
       )}
 
       {/* =========================
@@ -267,86 +240,56 @@ export default function HomePage({ searchQuery }) {
           LIVE EVENTS
       ========================= */}
 
-      <section className="py-9 sm:py-11">
-
-        <div className="max-w-[1200px] mx-auto px-4 sm:px-6 lg:px-8">
-
-          <div className="mb-6">
-
-            <p className="text-[11px] sm:text-xs uppercase tracking-[1.5px] text-gray-400 font-bold mb-1.5">
-              Explore something new
-            </p>
-
-            <div className="flex items-center justify-between">
-
-              <h2 className="text-xl sm:text-2xl font-bold text-[#222432] tracking-tight">
-                The Best Of Live Events
-              </h2>
-
-              <span className="hidden sm:block text-sm text-[#F84464] font-semibold">
-                Explore All ›
-              </span>
-
-            </div>
-
-            <div className="w-10 h-1 bg-[#F84464] rounded-full mt-3" />
-
-          </div>
-
-          <LiveEventsSection events={data.events} />
-
-        </div>
-
-      </section>
+      <LiveEventsSection events={data.events} />
 
       {/* =========================
           STREAM / PREMIERES
       ========================= */}
 
       {!searchQuery && (
-        <section className="
-          relative
-          bg-[#121216]
-          py-10 sm:py-12
-          overflow-hidden
-        ">
+        <StreamSection premieres={data.premieres} />
+      )}
 
-          {/* Background decoration */}
-          <div className="
-            absolute
-            -top-24
-            -right-24
-            w-72
-            h-72
-            rounded-full
-            bg-[#F84464]/10
-            blur-3xl
-            pointer-events-none
-          " />
+      {/* =========================
+          CINEBOT VIP CONCIERGE SPOTLIGHT
+      ========================= */}
+      {!searchQuery && (
+        <section className="py-10 px-4 sm:px-6 lg:px-8 max-w-7xl mx-auto">
+          <div className="rounded-3xl bg-gradient-to-r from-[#171A29] via-[#202538] to-[#171A29] p-6 sm:p-8 border border-white/10 shadow-2xl relative overflow-hidden flex flex-col md:flex-row items-center justify-between gap-6">
+            <div className="absolute -left-10 -bottom-10 w-48 h-48 bg-[#F84464]/15 rounded-full blur-3xl pointer-events-none" />
+            
+            <div className="flex flex-col sm:flex-row items-center gap-6 z-10 text-center sm:text-left">
+              <div className="w-28 h-28 sm:w-32 sm:h-32 rounded-2xl overflow-hidden p-1 bg-gradient-to-tr from-[#F84464]/40 via-white/20 to-amber-400/40 border border-white/20 shadow-[0_12px_28px_rgba(0,0,0,0.5)] shrink-0 group">
+                <img
+                  src="/assets/graphics/cinema_mascot.jpg"
+                  alt="CineBot 3D Cinema Concierge"
+                  className="w-full h-full object-cover rounded-[14px] group-hover:scale-105 transition-transform duration-500"
+                />
+              </div>
 
-          <div className="
-            absolute
-            -bottom-32
-            -left-20
-            w-80
-            h-80
-            rounded-full
-            bg-[#333545]/40
-            blur-3xl
-            pointer-events-none
-          " />
+              <div>
+                <div className="inline-flex items-center gap-1.5 px-3 py-0.5 rounded-full bg-[#F84464]/15 border border-[#F84464]/30 text-[#F84464] text-[10px] font-black uppercase tracking-wider mb-2">
+                  <Sparkles className="w-3 h-3" />
+                  <span>Meet CineBot • Your Movie Companion</span>
+                </div>
+                <h3 className="text-xl sm:text-2xl font-black text-white tracking-tight">
+                  Hosting a Corporate Premiere or Private Screen?
+                </h3>
+                <p className="text-xs text-gray-300 mt-1 max-w-xl leading-relaxed">
+                  Book entire IMAX or Gold Class auditoriums with custom F&amp;B catering, dedicated red-carpet reception, and priority gate access.
+                </p>
+              </div>
+            </div>
 
-          <div className="
-            relative
-            max-w-[1200px]
-            mx-auto
-            px-4
-            sm:px-6
-            lg:px-8
-          ">
-            <StreamSection premieres={data.premieres} />
+            <button
+              type="button"
+              onClick={() => alert('BookMyShow Private Screenings: Connect with our VIP Concierge team at vip@bookmyshow.com or +91 22 6144 5050 for custom auditoriums.')}
+              className="shrink-0 bg-gradient-to-r from-[#F84464] to-[#E03A58] hover:from-[#ff5576] hover:to-[#eb4464] text-white text-xs font-black py-3.5 px-6 rounded-2xl transition-all shadow-[0_6px_20px_rgba(248,68,100,0.4)] active:scale-95 flex items-center gap-2 cursor-pointer z-10"
+            >
+              <span>Enquire Private Screen</span>
+              <ChevronRight className="w-4 h-4" />
+            </button>
           </div>
-
         </section>
       )}
 

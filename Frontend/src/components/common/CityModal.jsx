@@ -52,7 +52,9 @@ export default function CityModal() {
 
   return (
     <div className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-black/75 backdrop-blur-xs animate-in fade-in duration-200">
-      <div className="relative w-full max-w-2xl bg-white rounded-3xl shadow-2xl overflow-hidden border border-slate-100 flex flex-col max-h-[85vh]">
+      <div className="relative w-full max-w-2xl bg-white rounded-3xl shadow-[0_25px_60px_-15px_rgba(0,0,0,0.5)] overflow-hidden border border-slate-100 flex flex-col max-h-[85vh] animate-in zoom-in-95 duration-200">
+        {/* Top 3D Neon Projection Accent Line */}
+        <div className="h-1 w-full bg-gradient-to-r from-transparent via-[#F84464] to-transparent shadow-[0_0_12px_rgba(248,68,100,0.8)]" />
 
         {/* Top Header Search Bar */}
         <div className="p-4 sm:p-5 border-b border-gray-100 bg-slate-50/70">
@@ -153,7 +155,7 @@ export default function CityModal() {
               </span>
             </div>
 
-            <div className="grid grid-cols-3 sm:grid-cols-5 gap-2.5 sm:gap-3">
+            <div className="grid grid-cols-3 sm:grid-cols-5 gap-3" style={{ perspective: '900px' }}>
               {popularCities.map((city) => {
                 const isSelected = selectedCity.toLowerCase() === city.name.toLowerCase();
                 const isDetectedTarget = detectionFeedback?.cityName?.toLowerCase() === city.name.toLowerCase();
@@ -162,23 +164,41 @@ export default function CityModal() {
                   <button
                     key={city.name}
                     onClick={() => handleSelect(city.name)}
-                    className={`flex flex-col items-center p-3 sm:p-4 rounded-2xl border transition-all cursor-pointer relative group ${
+                    style={{ transformStyle: 'preserve-3d' }}
+                    className={`flex flex-col items-center p-3 sm:p-4 rounded-2xl border transition-all duration-300 cursor-pointer relative group ${
                       isDetectedTarget
-                        ? 'border-emerald-500 bg-emerald-50 text-emerald-700 font-black ring-4 ring-emerald-400/20 scale-102'
+                        ? 'border-emerald-500 bg-emerald-50 text-emerald-700 font-black ring-4 ring-emerald-400/20 scale-105 shadow-lg'
                         : isSelected
-                        ? 'border-[#F84464] bg-red-50/70 text-[#F84464] font-black ring-2 ring-[#F84464]/20 shadow-xs'
-                        : 'border-slate-100 hover:border-slate-300 hover:bg-slate-50/80 text-slate-700'
+                        ? 'border-[#F84464] bg-gradient-to-b from-red-50 to-white text-[#F84464] font-black ring-2 ring-[#F84464]/30 shadow-[0_12px_24px_-6px_rgba(248,68,100,0.25)] -translate-y-1'
+                        : 'border-slate-200/80 bg-white hover:border-[#F84464]/40 hover:bg-slate-50/90 text-slate-700 hover:-translate-y-1.5 hover:shadow-[0_14px_24px_-6px_rgba(248,68,100,0.18)]'
                     }`}
                   >
                     {isSelected && (
-                      <span className="absolute top-2 right-2 w-4 h-4 bg-[#F84464] rounded-full flex items-center justify-center text-white shadow-2xs">
-                        <Check className="w-2.5 h-2.5" />
+                      <span
+                        style={{ transform: 'translateZ(26px)' }}
+                        className="absolute -top-1.5 -right-1.5 w-5 h-5 bg-[#F84464] rounded-full flex items-center justify-center text-white shadow-md ring-2 ring-white animate-in zoom-in-50"
+                      >
+                        <Check className="w-3 h-3 stroke-[3]" />
                       </span>
                     )}
-                    <span className="text-2xl sm:text-3xl mb-1.5 group-hover:scale-110 transition-transform duration-200">
-                      {city.icon}
+                    <div
+                      style={{ transform: 'translateZ(20px)' }}
+                      className={`w-12 h-12 rounded-2xl flex items-center justify-center mb-2 transition-all duration-300 ${
+                        isSelected
+                          ? 'bg-[#F84464]/10 shadow-[0_0_15px_rgba(248,68,100,0.25)] scale-110'
+                          : 'bg-slate-100/80 group-hover:bg-red-50 group-hover:shadow-[0_0_16px_rgba(248,68,100,0.2)] group-hover:scale-115'
+                      }`}
+                    >
+                      <span className="text-2xl sm:text-3xl filter drop-shadow-sm select-none">
+                        {city.icon}
+                      </span>
+                    </div>
+                    <span
+                      style={{ transform: 'translateZ(15px)' }}
+                      className="text-xs text-center font-bold line-clamp-1 transition-colors group-hover:text-[#F84464]"
+                    >
+                      {city.name}
                     </span>
-                    <span className="text-xs text-center font-bold line-clamp-1">{city.name}</span>
                   </button>
                 );
               })}

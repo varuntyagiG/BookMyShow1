@@ -523,20 +523,20 @@ export default function VendorShowsPage() {
   return (
     <div className="space-y-6 max-w-7xl mx-auto px-2 sm:px-4 pb-12">
       {/* Top Header */}
-      <div className="flex flex-col md:flex-row md:items-center justify-between gap-4 bg-white p-5 sm:p-6 rounded-2xl border border-slate-200/90 shadow-xs">
+      <div className="flex flex-col md:flex-row md:items-center justify-between gap-4 bg-[#131624]/90 backdrop-blur-xl p-5 sm:p-6 rounded-2xl border border-white/[0.08] shadow-xl text-white">
         <div>
-          <div className="flex items-center gap-2 mb-1">
-            <span className="inline-flex items-center gap-1.5 px-2.5 py-0.5 rounded-full text-[11px] font-bold tracking-wide uppercase bg-rose-50 text-[#F84464] border border-rose-100">
+          <div className="flex items-center gap-2 mb-1.5">
+            <span className="inline-flex items-center gap-1.5 px-2.5 py-0.5 rounded-full text-[11px] font-bold tracking-wide uppercase bg-rose-500/10 text-[#F84464] border border-rose-500/20">
               <Film size={12} />
               Box Office Programming
             </span>
-            <span className="text-slate-300">•</span>
-            <span className="text-xs text-slate-500 font-medium">Real-Time Sync</span>
+            <span className="text-white/20">•</span>
+            <span className="text-xs text-slate-400 font-medium">Real-Time Sync</span>
           </div>
-          <h1 className="text-2xl sm:text-3xl font-black text-slate-900 tracking-tight">
+          <h1 className="text-2xl sm:text-3xl font-black text-white tracking-tight">
             Show Schedules & Timetables
           </h1>
-          <p className="text-sm text-slate-500 mt-1 max-w-2xl">
+          <p className="text-sm text-slate-400 mt-1 max-w-2xl leading-relaxed">
             Program cinema showtimes across auditoriums. Published schedules immediately reflect on the BookMyTrip customer booking app.
           </p>
         </div>
@@ -545,7 +545,7 @@ export default function VendorShowsPage() {
           <button
             onClick={() => loadAllData(true)}
             disabled={refreshing}
-            className="p-2.5 text-slate-600 hover:text-slate-900 bg-slate-50 hover:bg-slate-100 border border-slate-200 rounded-xl transition shadow-2xs"
+            className="p-2.5 text-slate-300 hover:text-white bg-white/[0.04] hover:bg-white/[0.08] border border-white/10 rounded-xl transition shadow-2xs cursor-pointer"
             title="Refresh Schedules"
           >
             <RefreshCw size={17} className={refreshing ? 'animate-spin text-[#F84464]' : ''} />
@@ -555,7 +555,7 @@ export default function VendorShowsPage() {
             variant="primary"
             onClick={openAddModal}
             disabled={cinemas.length === 0}
-            className="inline-flex items-center gap-2 shadow-sm font-bold bg-[#F84464] hover:bg-[#E23454] px-4 py-2.5 rounded-xl text-white transition"
+            className="inline-flex items-center gap-2 shadow-[0_4px_20px_rgba(248,68,100,0.35)] font-bold bg-[#F84464] hover:bg-[#E23454] px-4 py-2.5 rounded-xl text-white transition"
           >
             <Plus size={18} />
             <span>Schedule New Show</span>
@@ -566,8 +566,8 @@ export default function VendorShowsPage() {
       {/* KPI Performance Bar */}
       <div className="grid grid-cols-2 lg:grid-cols-4 gap-3 sm:gap-4">
         {/* Metric 1: Scheduled Shows */}
-        <div className="bg-white p-4 rounded-2xl border border-slate-200/90 shadow-xs hover:border-slate-300 transition-all flex items-center gap-3.5">
-          <div className="w-12 h-12 rounded-xl bg-indigo-50 text-indigo-600 border border-indigo-100 flex items-center justify-center shrink-0">
+        <div className="bg-[#131624]/90 backdrop-blur-xl p-4.5 rounded-2xl border border-white/[0.08] shadow-xl hover:border-white/20 transition-all flex items-center gap-3.5 text-white">
+          <div className="w-12 h-12 rounded-xl bg-indigo-500/10 text-indigo-400 border border-indigo-500/20 flex items-center justify-center shrink-0">
             <Calendar size={22} />
           </div>
           <div className="min-w-0 flex-1">
@@ -575,10 +575,10 @@ export default function VendorShowsPage() {
               Total Shows
             </p>
             <div className="flex items-baseline gap-2 mt-0.5">
-              <span className="text-xl sm:text-2xl font-black text-slate-900">
+              <span className="text-xl sm:text-2xl font-black text-white">
                 {metrics.totalShowsCount}
               </span>
-              <span className="text-[11px] font-bold text-emerald-600">
+              <span className="text-[11px] font-bold text-emerald-400">
                 {metrics.activeShowsCount} Live
               </span>
             </div>
@@ -586,8 +586,8 @@ export default function VendorShowsPage() {
         </div>
 
         {/* Metric 2: Tickets Booked */}
-        <div className="bg-white p-4 rounded-2xl border border-slate-200/90 shadow-xs hover:border-slate-300 transition-all flex items-center gap-3.5">
-          <div className="w-12 h-12 rounded-xl bg-rose-50 text-[#F84464] border border-rose-100 flex items-center justify-center shrink-0">
+        <div className="bg-[#131624]/90 backdrop-blur-xl p-4.5 rounded-2xl border border-white/[0.08] shadow-xl hover:border-white/20 transition-all flex items-center gap-3.5 text-white">
+          <div className="w-12 h-12 rounded-xl bg-rose-500/10 text-[#F84464] border border-rose-500/20 flex items-center justify-center shrink-0">
             <Ticket size={22} />
           </div>
           <div className="min-w-0 flex-1">
@@ -595,10 +595,10 @@ export default function VendorShowsPage() {
               Tickets Booked
             </p>
             <div className="flex items-baseline gap-2 mt-0.5">
-              <span className="text-xl sm:text-2xl font-black text-slate-900">
+              <span className="text-xl sm:text-2xl font-black text-white">
                 {metrics.totalTicketsSold}
               </span>
-              <span className="text-[11px] font-medium text-slate-500">
+              <span className="text-[11px] font-medium text-slate-400">
                 Admissions
               </span>
             </div>
@@ -606,8 +606,8 @@ export default function VendorShowsPage() {
         </div>
 
         {/* Metric 3: Avg Occupancy */}
-        <div className="bg-white p-4 rounded-2xl border border-slate-200/90 shadow-xs hover:border-slate-300 transition-all flex items-center gap-3.5">
-          <div className="w-12 h-12 rounded-xl bg-amber-50 text-amber-600 border border-amber-100 flex items-center justify-center shrink-0">
+        <div className="bg-[#131624]/90 backdrop-blur-xl p-4.5 rounded-2xl border border-white/[0.08] shadow-xl hover:border-white/20 transition-all flex items-center gap-3.5 text-white">
+          <div className="w-12 h-12 rounded-xl bg-amber-500/10 text-amber-400 border border-amber-500/20 flex items-center justify-center shrink-0">
             <Users size={22} />
           </div>
           <div className="min-w-0 flex-1">
@@ -615,10 +615,10 @@ export default function VendorShowsPage() {
               Avg. Occupancy
             </p>
             <div className="flex items-baseline gap-2 mt-0.5">
-              <span className="text-xl sm:text-2xl font-black text-slate-900">
+              <span className="text-xl sm:text-2xl font-black text-white">
                 {metrics.avgOccupancy}%
               </span>
-              <div className="w-16 h-2 bg-slate-100 rounded-full overflow-hidden shrink-0">
+              <div className="w-16 h-2 bg-white/10 rounded-full overflow-hidden shrink-0">
                 <div
                   className="h-full bg-amber-500 rounded-full"
                   style={{ width: `${Math.min(metrics.avgOccupancy, 100)}%` }}
@@ -629,8 +629,8 @@ export default function VendorShowsPage() {
         </div>
 
         {/* Metric 4: Est. Revenue */}
-        <div className="bg-white p-4 rounded-2xl border border-slate-200/90 shadow-xs hover:border-slate-300 transition-all flex items-center gap-3.5">
-          <div className="w-12 h-12 rounded-xl bg-emerald-50 text-emerald-600 border border-emerald-100 flex items-center justify-center shrink-0">
+        <div className="bg-[#131624]/90 backdrop-blur-xl p-4.5 rounded-2xl border border-white/[0.08] shadow-xl hover:border-white/20 transition-all flex items-center gap-3.5 text-white">
+          <div className="w-12 h-12 rounded-xl bg-emerald-500/10 text-emerald-400 border border-emerald-500/20 flex items-center justify-center shrink-0">
             <TrendingUp size={22} />
           </div>
           <div className="min-w-0 flex-1">
@@ -638,10 +638,10 @@ export default function VendorShowsPage() {
               Est. Box Office
             </p>
             <div className="flex items-baseline gap-2 mt-0.5">
-              <span className="text-xl sm:text-2xl font-black text-slate-900">
+              <span className="text-xl sm:text-2xl font-black text-white">
                 ₹{metrics.estRevenue.toLocaleString('en-IN')}
               </span>
-              <span className="text-[10px] font-bold px-1.5 py-0.5 rounded bg-emerald-50 text-emerald-700">
+              <span className="text-[10px] font-bold px-1.5 py-0.5 rounded bg-emerald-500/15 text-emerald-300 border border-emerald-500/20">
                 Gross
               </span>
             </div>
@@ -650,11 +650,11 @@ export default function VendorShowsPage() {
       </div>
 
       {/* Interactive Filter & View Controls */}
-      <div className="bg-white p-3.5 sm:p-4 rounded-2xl border border-slate-200/90 shadow-xs flex flex-col xl:flex-row xl:items-center justify-between gap-3.5 relative z-20">
+      <div className="bg-[#131624]/90 backdrop-blur-xl p-3.5 sm:p-4 rounded-2xl border border-white/[0.08] shadow-xl flex flex-col xl:flex-row xl:items-center justify-between gap-3.5 relative z-20 text-white">
         {/* Left: Date Selector & Search Input */}
         <div className="flex flex-wrap items-center gap-2.5 flex-1">
           {/* Date Segmented Control */}
-          <div className="inline-flex p-1 bg-slate-100/90 rounded-xl border border-slate-200/70">
+          <div className="inline-flex p-1 bg-[#0b0d17] rounded-xl border border-white/[0.08]">
             {[
               { id: 'All', label: 'All Dates' },
               { id: 'Today', label: 'Today (Live)' },
@@ -670,16 +670,16 @@ export default function VendorShowsPage() {
                   onClick={() => setSelectedDate(tab.id)}
                   className={`flex items-center gap-1.5 px-3 py-1.5 rounded-lg text-xs font-bold transition cursor-pointer ${
                     selectedDate === tab.id
-                      ? 'bg-white text-slate-900 shadow-xs'
-                      : 'text-slate-600 hover:text-slate-900'
+                      ? 'bg-[#F84464] text-white shadow-[0_2px_10px_rgba(248,68,100,0.35)]'
+                      : 'text-slate-400 hover:text-white'
                   }`}
                 >
                   <span>{tab.label}</span>
                   <span
                     className={`text-[10px] px-1.5 py-0.2 rounded-full font-mono ${
                       selectedDate === tab.id
-                        ? 'bg-[#F84464] text-white'
-                        : 'bg-slate-200 text-slate-600'
+                        ? 'bg-white/20 text-white'
+                        : 'bg-white/10 text-slate-400'
                     }`}
                   >
                     {count}
@@ -697,13 +697,13 @@ export default function VendorShowsPage() {
               placeholder="Search movie, venue, screen..."
               value={searchQuery}
               onChange={(e) => setSearchQuery(e.target.value)}
-              className="w-full text-xs pl-8 pr-7 py-2.5 bg-slate-50 border border-slate-200 rounded-xl focus:bg-white focus:outline-none focus:ring-2 focus:ring-[#F84464]/20 focus:border-[#F84464] transition"
+              className="w-full text-xs pl-8 pr-7 py-2.5 bg-white/[0.04] border border-white/10 rounded-xl text-white placeholder-slate-400 focus:bg-[#0c0e17] focus:outline-none focus:ring-2 focus:ring-[#F84464]/30 focus:border-[#F84464] transition"
             />
             {searchQuery && (
               <button
                 type="button"
                 onClick={() => setSearchQuery('')}
-                className="absolute right-2.5 top-1/2 -translate-y-1/2 text-xs text-slate-400 hover:text-slate-600 cursor-pointer"
+                className="absolute right-2.5 top-1/2 -translate-y-1/2 text-xs text-slate-400 hover:text-white cursor-pointer"
               >
                 ✕
               </button>
@@ -720,33 +720,33 @@ export default function VendorShowsPage() {
               onClick={() => setIsVenueDropdownOpen(prev => !prev)}
               className={`px-3.5 py-2 rounded-xl border text-left transition-all duration-200 flex items-center justify-between gap-2.5 cursor-pointer text-xs shadow-2xs ${
                 selectedCinemaId
-                  ? 'bg-rose-50/50 border-[#F84464] ring-2 ring-[#F84464]/15'
-                  : 'bg-slate-50/80 hover:bg-white border-slate-200 hover:border-slate-300'
+                  ? 'bg-rose-500/10 border-[#F84464] ring-2 ring-[#F84464]/20 text-white'
+                  : 'bg-white/[0.04] hover:bg-white/[0.07] border-white/10 text-white'
               }`}
             >
               <div className="flex items-center gap-2 min-w-0">
                 <div className={`w-6 h-6 rounded-lg flex items-center justify-center shrink-0 border transition-colors ${
                   selectedCinemaId
                     ? 'bg-[#F84464] text-white border-[#F84464]'
-                    : 'bg-white text-slate-700 border-slate-200'
+                    : 'bg-white/10 text-slate-300 border-white/10'
                 }`}>
                   {selectedCinemaId ? <MapPin size={12} /> : <Building2 size={12} />}
                 </div>
-                <span className="font-bold text-slate-900 truncate max-w-[150px]">
+                <span className="font-bold text-white truncate max-w-[150px]">
                   {activeCinema ? activeCinema.name : 'All Multiplexes'}
                 </span>
               </div>
               <ChevronDown
                 size={14}
                 className={`text-slate-400 transition-transform duration-200 ${
-                  isVenueDropdownOpen ? 'rotate-180 text-slate-800' : ''
+                  isVenueDropdownOpen ? 'rotate-180 text-white' : ''
                 }`}
               />
             </button>
 
             {isVenueDropdownOpen && (
-              <div className="absolute left-0 top-full mt-2 w-72 bg-white rounded-2xl border border-slate-200 shadow-xl py-2 z-50 animate-in fade-in slide-in-from-top-2 duration-150">
-                <div className="px-3.5 py-1.5 border-b border-slate-100 flex items-center justify-between text-[11px] font-bold text-slate-400 uppercase tracking-wider">
+              <div className="absolute left-0 top-full mt-2 w-72 bg-[#121524]/98 backdrop-blur-2xl rounded-2xl border border-white/10 shadow-[0_20px_50px_rgba(0,0,0,0.8)] py-2 z-50 animate-in fade-in slide-in-from-top-2 duration-150">
+                <div className="px-3.5 py-1.5 border-b border-white/[0.08] flex items-center justify-between text-[11px] font-bold text-slate-400 uppercase tracking-wider">
                   <span>Multiplex Venues</span>
                   <span>{cinemas.length} Venues</span>
                 </div>
@@ -759,8 +759,8 @@ export default function VendorShowsPage() {
                     }}
                     className={`w-full px-3.5 py-2 flex items-center justify-between text-left transition text-xs cursor-pointer ${
                       !selectedCinemaId
-                        ? 'bg-rose-50 text-[#F84464] font-bold'
-                        : 'hover:bg-slate-50 text-slate-700 font-medium'
+                        ? 'bg-rose-500/15 text-[#F84464] font-bold'
+                        : 'hover:bg-white/[0.06] text-slate-300 font-medium'
                     }`}
                   >
                     <div className="flex items-center gap-2">
@@ -770,7 +770,7 @@ export default function VendorShowsPage() {
                     {!selectedCinemaId && <Check size={14} className="text-[#F84464]" />}
                   </button>
 
-                  <div className="my-1 border-t border-slate-100" />
+                  <div className="my-1 border-t border-white/[0.06]" />
 
                   {cinemas.map(c => {
                     const id = c.id || c._id;
@@ -785,14 +785,14 @@ export default function VendorShowsPage() {
                         }}
                         className={`w-full px-3.5 py-2 flex items-center justify-between text-left transition text-xs cursor-pointer ${
                           isSelected
-                            ? 'bg-rose-50 text-[#F84464] font-bold'
-                            : 'hover:bg-slate-50 text-slate-800 font-medium'
+                            ? 'bg-rose-500/15 text-[#F84464] font-bold'
+                            : 'hover:bg-white/[0.06] text-slate-300 font-medium'
                         }`}
                       >
                         <div className="flex items-center gap-2 min-w-0">
                           <MapPin size={14} className={isSelected ? 'text-[#F84464]' : 'text-slate-400'} />
                           <div className="truncate">
-                            <p className="font-bold truncate">{c.name}</p>
+                            <p className="font-bold truncate text-white">{c.name}</p>
                             <p className="text-[10px] text-slate-400 truncate">{c.city}</p>
                           </div>
                         </div>
@@ -809,7 +809,7 @@ export default function VendorShowsPage() {
             <button
               type="button"
               onClick={() => setSelectedCinemaId('')}
-              className="p-2 text-slate-400 hover:text-slate-600 hover:bg-slate-100 rounded-xl transition cursor-pointer"
+              className="p-2 text-slate-400 hover:text-[#F84464] hover:bg-rose-500/10 rounded-xl transition cursor-pointer"
               title="Clear cinema filter"
             >
               <X size={14} />
@@ -817,14 +817,14 @@ export default function VendorShowsPage() {
           )}
 
           {/* Status Filter */}
-          <div className="inline-flex p-1 bg-slate-100/90 rounded-xl border border-slate-200/70 text-xs">
+          <div className="inline-flex p-1 bg-[#0b0d17] rounded-xl border border-white/[0.08] text-xs">
             <button
               type="button"
               onClick={() => setStatusFilter('all')}
               className={`px-2.5 py-1.5 rounded-lg font-bold transition cursor-pointer ${
                 statusFilter === 'all'
-                  ? 'bg-white text-slate-900 shadow-xs'
-                  : 'text-slate-600 hover:text-slate-900'
+                  ? 'bg-white/10 text-white shadow-xs'
+                  : 'text-slate-400 hover:text-white'
               }`}
             >
               All
@@ -834,8 +834,8 @@ export default function VendorShowsPage() {
               onClick={() => setStatusFilter('active')}
               className={`px-2.5 py-1.5 rounded-lg font-bold transition cursor-pointer ${
                 statusFilter === 'active'
-                  ? 'bg-white text-emerald-700 shadow-xs'
-                  : 'text-slate-600 hover:text-slate-900'
+                  ? 'bg-emerald-500/20 text-emerald-300 border border-emerald-500/30'
+                  : 'text-slate-400 hover:text-white'
               }`}
             >
               Live
@@ -845,8 +845,8 @@ export default function VendorShowsPage() {
               onClick={() => setStatusFilter('filling_fast')}
               className={`px-2.5 py-1.5 rounded-lg font-bold transition cursor-pointer ${
                 statusFilter === 'filling_fast'
-                  ? 'bg-white text-amber-700 shadow-xs'
-                  : 'text-slate-600 hover:text-slate-900'
+                  ? 'bg-amber-500/20 text-amber-300 border border-amber-500/30'
+                  : 'text-slate-400 hover:text-white'
               }`}
             >
               &gt;70%
@@ -856,8 +856,8 @@ export default function VendorShowsPage() {
               onClick={() => setStatusFilter('cancelled')}
               className={`px-2.5 py-1.5 rounded-lg font-bold transition cursor-pointer ${
                 statusFilter === 'cancelled'
-                  ? 'bg-white text-rose-700 shadow-xs'
-                  : 'text-slate-600 hover:text-slate-900'
+                  ? 'bg-rose-500/20 text-rose-300 border border-rose-500/30'
+                  : 'text-slate-400 hover:text-white'
               }`}
             >
               Cancelled
@@ -865,14 +865,14 @@ export default function VendorShowsPage() {
           </div>
 
           {/* 4-Way View Mode Switcher */}
-          <div className="inline-flex p-1 bg-slate-100 rounded-xl border border-slate-200/70 text-xs">
+          <div className="inline-flex p-1 bg-[#0b0d17] rounded-xl border border-white/[0.08] text-xs">
             <button
               type="button"
               onClick={() => setViewMode('cards')}
               className={`flex items-center gap-1.5 px-2.5 py-1.5 rounded-lg font-bold transition cursor-pointer ${
                 viewMode === 'cards'
-                  ? 'bg-white text-slate-900 shadow-xs'
-                  : 'text-slate-500 hover:text-slate-900'
+                  ? 'bg-[#F84464] text-white shadow-[0_2px_10px_rgba(248,68,100,0.3)]'
+                  : 'text-slate-400 hover:text-white'
               }`}
               title="Detailed Wide Cards"
             >
@@ -884,8 +884,8 @@ export default function VendorShowsPage() {
               onClick={() => setViewMode('grid')}
               className={`flex items-center gap-1.5 px-2.5 py-1.5 rounded-lg font-bold transition cursor-pointer ${
                 viewMode === 'grid'
-                  ? 'bg-white text-slate-900 shadow-xs'
-                  : 'text-slate-500 hover:text-slate-900'
+                  ? 'bg-[#F84464] text-white shadow-[0_2px_10px_rgba(248,68,100,0.3)]'
+                  : 'text-slate-400 hover:text-white'
               }`}
               title="Compact Poster Grid"
             >
@@ -897,8 +897,8 @@ export default function VendorShowsPage() {
               onClick={() => setViewMode('timeline')}
               className={`flex items-center gap-1.5 px-2.5 py-1.5 rounded-lg font-bold transition cursor-pointer ${
                 viewMode === 'timeline'
-                  ? 'bg-white text-slate-900 shadow-xs'
-                  : 'text-slate-500 hover:text-slate-900'
+                  ? 'bg-[#F84464] text-white shadow-[0_2px_10px_rgba(248,68,100,0.3)]'
+                  : 'text-slate-400 hover:text-white'
               }`}
               title="Auditorium Screen Board"
             >
@@ -910,8 +910,8 @@ export default function VendorShowsPage() {
               onClick={() => setViewMode('by_movie')}
               className={`flex items-center gap-1.5 px-2.5 py-1.5 rounded-lg font-bold transition cursor-pointer ${
                 viewMode === 'by_movie'
-                  ? 'bg-white text-slate-900 shadow-xs'
-                  : 'text-slate-500 hover:text-slate-900'
+                  ? 'bg-[#F84464] text-white shadow-[0_2px_10px_rgba(248,68,100,0.3)]'
+                  : 'text-slate-400 hover:text-white'
               }`}
               title="Grouped by Movie Showcase"
             >
@@ -924,9 +924,9 @@ export default function VendorShowsPage() {
 
       {/* Main Content Area */}
       {loading ? (
-        <div className="bg-white rounded-2xl border border-slate-200 p-16 text-center space-y-3">
+        <div className="bg-[#131624]/90 backdrop-blur-xl rounded-2xl border border-white/[0.08] p-16 text-center space-y-3">
           <div className="w-10 h-10 border-3 border-[#F84464] border-t-transparent rounded-full animate-spin mx-auto" />
-          <p className="text-sm font-bold text-slate-700">Loading Scheduled Timetables...</p>
+          <p className="text-sm font-bold text-white">Loading Scheduled Timetables...</p>
           <p className="text-xs text-slate-400">Connecting to cloud auditoriums & live seat matrices</p>
         </div>
       ) : cinemas.length === 0 ? (
@@ -937,15 +937,15 @@ export default function VendorShowsPage() {
           onAction={() => window.location.href = '/vendor/cinemas'}
         />
       ) : filteredShows.length === 0 ? (
-        <div className="bg-white rounded-2xl border border-slate-200/90 p-12 text-center space-y-4 shadow-xs">
-          <div className="w-14 h-14 rounded-2xl bg-rose-50 border border-rose-100 text-[#F84464] flex items-center justify-center mx-auto shadow-2xs">
+        <div className="bg-[#131624]/90 backdrop-blur-xl rounded-2xl border border-white/[0.08] p-12 text-center space-y-4 shadow-xl">
+          <div className="w-14 h-14 rounded-2xl bg-white/5 border border-white/10 text-[#F84464] flex items-center justify-center mx-auto shadow-2xs">
             <Calendar size={26} />
           </div>
           <div>
-            <h3 className="text-base font-bold text-slate-900">
+            <h3 className="text-base font-bold text-white">
               No Showtimes Found for Current Filters
             </h3>
-            <p className="text-xs text-slate-500 mt-1 max-w-md mx-auto">
+            <p className="text-xs text-slate-400 mt-1 max-w-md mx-auto">
               {searchQuery
                 ? `No scheduled show matches "${searchQuery}". Try changing search terms or filters.`
                 : 'No movie shows match your selected date and status filters. Schedule a new show to start selling tickets.'}
@@ -954,7 +954,7 @@ export default function VendorShowsPage() {
           <Button
             variant="primary"
             onClick={openAddModal}
-            className="inline-flex items-center gap-2 bg-[#F84464] hover:bg-[#E23454] text-white px-4 py-2 rounded-xl text-xs font-bold"
+            className="inline-flex items-center gap-2 bg-[#F84464] hover:bg-[#E23454] text-white px-4 py-2 rounded-xl text-xs font-bold shadow-[0_4px_16px_rgba(248,68,100,0.35)]"
           >
             <Plus size={15} />
             <span>Schedule Show Now</span>
@@ -973,19 +973,19 @@ export default function VendorShowsPage() {
             return (
               <div
                 key={show.id || show._id}
-                className="bg-white rounded-2xl border border-slate-200/90 hover:border-slate-300 shadow-xs hover:shadow-md transition-all duration-200 overflow-hidden flex flex-col justify-between group"
+                className="bg-[#131624]/90 backdrop-blur-xl rounded-2xl border border-white/[0.08] hover:border-white/20 shadow-xl hover:shadow-2xl transition-all duration-200 overflow-hidden flex flex-col justify-between group text-white"
               >
                 {/* Poster Header */}
-                <div className="relative aspect-[16/10] bg-slate-900 overflow-hidden">
+                <div className="relative aspect-[16/10] bg-slate-950 overflow-hidden">
                   <img
                     src={
                       show.movie?.posterUrl ||
                       'https://images.unsplash.com/photo-1489599849927-2ee91cede3ba?auto=format&fit=crop&w=400&q=80'
                     }
                     alt={show.movieTitle}
-                    className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-300 opacity-90"
+                    className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-300 opacity-85"
                   />
-                  <div className="absolute inset-0 bg-gradient-to-t from-black/80 via-black/20 to-transparent" />
+                  <div className="absolute inset-0 bg-gradient-to-t from-[#0d0f1a] via-[#0d0f1a]/30 to-transparent" />
 
                   {/* Top Badges */}
                   <div className="absolute top-2.5 left-2.5 right-2.5 flex items-center justify-between gap-1.5">
@@ -993,7 +993,7 @@ export default function VendorShowsPage() {
                       {show.format || '2D'}
                     </span>
                     {isCancelled ? (
-                      <span className="text-[10px] font-bold px-2 py-0.5 rounded-md bg-slate-900/90 text-slate-300 border border-slate-700">
+                      <span className="text-[10px] font-bold px-2 py-0.5 rounded-md bg-white/10 text-slate-300 border border-white/10">
                         Cancelled
                       </span>
                     ) : isFillingFast ? (
@@ -1009,11 +1009,11 @@ export default function VendorShowsPage() {
 
                   {/* Showtime Overlay on Poster Bottom */}
                   <div className="absolute bottom-2.5 left-2.5 right-2.5 flex items-center justify-between text-white text-xs">
-                    <span className="font-mono font-bold flex items-center gap-1 drop-shadow-sm">
+                    <span className="font-mono font-bold flex items-center gap-1 drop-shadow-sm text-white">
                       <Clock size={12} className="text-[#F84464]" />
                       {show.startTime}
                     </span>
-                    <span className="text-[11px] font-medium bg-white/20 backdrop-blur-xs px-2 py-0.5 rounded text-white">
+                    <span className="text-[11px] font-medium bg-white/15 backdrop-blur-xs px-2 py-0.5 rounded text-slate-200">
                       {show.showDate}
                     </span>
                   </div>
@@ -1022,7 +1022,7 @@ export default function VendorShowsPage() {
                 {/* Card Body */}
                 <div className="p-4 flex-1 flex flex-col justify-between space-y-3">
                   <div>
-                    <h3 className="font-black text-slate-900 text-sm leading-snug group-hover:text-[#F84464] transition truncate" title={show.movieTitle}>
+                    <h3 className="font-black text-white text-sm leading-snug group-hover:text-[#F84464] transition truncate" title={show.movieTitle}>
                       {show.movieTitle}
                     </h3>
                     <p className="text-[11px] text-slate-400 truncate mt-0.5">
@@ -1030,23 +1030,23 @@ export default function VendorShowsPage() {
                     </p>
 
                     {/* Venue & Screen */}
-                    <div className="flex items-center gap-1.5 text-xs text-slate-600 mt-2">
+                    <div className="flex items-center gap-1.5 text-xs text-slate-300 mt-2">
                       <MapPin size={12} className="text-[#F84464] shrink-0" />
                       <span className="truncate font-medium">{show.cinema?.name}</span>
-                      <span className="text-slate-300">•</span>
-                      <span className="font-bold text-indigo-700 text-[11px] shrink-0">{show.screen?.name}</span>
+                      <span className="text-white/20">•</span>
+                      <span className="font-bold text-indigo-400 text-[11px] shrink-0">{show.screen?.name}</span>
                     </div>
                   </div>
 
                   {/* Occupancy Progress */}
-                  <div className="space-y-1.5 pt-2 border-t border-slate-100">
+                  <div className="space-y-1.5 pt-2 border-t border-white/[0.06]">
                     <div className="flex items-center justify-between text-[11px]">
-                      <span className="text-slate-500 font-medium">Occupancy</span>
-                      <span className="font-mono font-bold text-slate-800">
+                      <span className="text-slate-400 font-medium">Occupancy</span>
+                      <span className="font-mono font-bold text-white">
                         {show.bookedSeatsCount}/{show.totalCapacity} ({show.occupancyRate}%)
                       </span>
                     </div>
-                    <div className="w-full h-1.5 bg-slate-100 rounded-full overflow-hidden">
+                    <div className="w-full h-1.5 bg-white/10 rounded-full overflow-hidden">
                       <div
                         className="h-full bg-emerald-500 rounded-full"
                         style={{ width: `${Math.min(show.occupancyRate, 100)}%` }}
@@ -1054,7 +1054,7 @@ export default function VendorShowsPage() {
                     </div>
                     <div className="flex items-center justify-between text-[10px] text-slate-400">
                       <span>{availableSeats} seats open</span>
-                      <span className="font-bold text-slate-700">From ₹{show.pricingTiers?.normal || show.ticketPrice || 200}</span>
+                      <span className="font-bold text-slate-200">From ₹{show.pricingTiers?.normal || show.ticketPrice || 200}</span>
                     </div>
                   </div>
 
@@ -1062,7 +1062,7 @@ export default function VendorShowsPage() {
                   <button
                     type="button"
                     onClick={() => openSeatMapModal(show)}
-                    className="w-full py-2 bg-rose-50 hover:bg-[#F84464] text-[#F84464] hover:text-white rounded-xl text-xs font-bold border border-rose-200/80 hover:border-[#F84464] transition-all flex items-center justify-center gap-1.5 shadow-2xs cursor-pointer group/btn"
+                    className="w-full py-2 bg-rose-500/10 hover:bg-[#F84464] text-[#F84464] hover:text-white rounded-xl text-xs font-bold border border-rose-500/20 hover:border-[#F84464] transition-all flex items-center justify-center gap-1.5 shadow-2xs cursor-pointer group/btn"
                   >
                     <Armchair size={14} className="group-hover/btn:scale-110 transition-transform" />
                     <span>View Seat Layout</span>
@@ -1080,18 +1080,18 @@ export default function VendorShowsPage() {
           {groupedByScreen.map(group => (
             <div
               key={group.key}
-              className="bg-white rounded-2xl border border-slate-200/90 shadow-xs p-5 space-y-3"
+              className="bg-[#131624]/90 backdrop-blur-xl rounded-2xl border border-white/[0.08] shadow-xl p-5 space-y-3 text-white"
             >
-              <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-2 border-b border-slate-100 pb-3">
+              <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-2 border-b border-white/[0.08] pb-3">
                 <div className="flex items-center gap-2.5">
-                  <div className="w-9 h-9 rounded-xl bg-indigo-50 text-indigo-600 border border-indigo-100 flex items-center justify-center">
+                  <div className="w-9 h-9 rounded-xl bg-indigo-500/10 text-indigo-400 border border-indigo-500/20 flex items-center justify-center">
                     <Tv size={18} />
                   </div>
                   <div>
-                    <h3 className="text-sm font-bold text-slate-900">
+                    <h3 className="text-sm font-bold text-white">
                       {group.screen?.name || 'Auditorium Screen'}
                     </h3>
-                    <p className="text-xs text-slate-500 flex items-center gap-1">
+                    <p className="text-xs text-slate-400 flex items-center gap-1">
                       <MapPin size={11} className="text-[#F84464]" />
                       <span>{group.cinema?.name}</span>
                       <span>•</span>
@@ -1100,7 +1100,7 @@ export default function VendorShowsPage() {
                   </div>
                 </div>
 
-                <span className="text-xs font-bold text-indigo-600 bg-indigo-50 px-2.5 py-1 rounded-lg self-start sm:self-auto border border-indigo-100">
+                <span className="text-xs font-bold text-indigo-300 bg-indigo-500/20 px-2.5 py-1 rounded-lg self-start sm:self-auto border border-indigo-500/30">
                   {group.shows.length} Showtimes Programmed
                 </span>
               </div>
@@ -1115,26 +1115,26 @@ export default function VendorShowsPage() {
                       onClick={() => openSeatMapModal(show)}
                       className={`p-3.5 rounded-xl border transition-all cursor-pointer group ${
                         isCancelled
-                          ? 'bg-slate-50 border-slate-200 opacity-60'
-                          : 'bg-white border-slate-200 hover:border-slate-300 hover:shadow-sm'
+                          ? 'bg-white/[0.02] border-white/5 opacity-50'
+                          : 'bg-white/[0.03] hover:bg-white/[0.06] border-white/10 hover:border-white/20'
                       }`}
                     >
                       <div className="flex items-center justify-between mb-1.5">
-                        <span className="font-mono font-bold text-xs text-slate-900 bg-slate-100 px-2 py-0.5 rounded">
+                        <span className="font-mono font-bold text-xs text-white bg-white/10 px-2 py-0.5 rounded">
                           {show.startTime}
                         </span>
-                        <span className="text-[10px] font-bold px-1.5 py-0.2 rounded bg-indigo-50 text-indigo-700">
+                        <span className="text-[10px] font-bold px-1.5 py-0.2 rounded bg-indigo-500/20 text-indigo-300">
                           {show.format || '2D'}
                         </span>
                       </div>
 
-                      <p className="text-xs font-bold text-slate-800 break-words group-hover:text-[#F84464] transition">
+                      <p className="text-xs font-bold text-slate-200 break-words group-hover:text-[#F84464] transition">
                         {show.movieTitle}
                       </p>
 
-                      <div className="flex items-center justify-between text-[10px] text-slate-500 mt-2.5 pt-2 border-t border-slate-100">
+                      <div className="flex items-center justify-between text-[10px] text-slate-400 mt-2.5 pt-2 border-t border-white/[0.06]">
                         <span>{show.bookedSeatsCount} / {show.totalCapacity} Booked</span>
-                        <span className="font-bold text-emerald-700">{show.occupancyRate}%</span>
+                        <span className="font-bold text-emerald-400">{show.occupancyRate}%</span>
                       </div>
                     </div>
                   );
@@ -1151,12 +1151,12 @@ export default function VendorShowsPage() {
           {groupedByMovie.map(group => (
             <div
               key={group.movieId}
-              className="bg-white rounded-2xl border border-slate-200/90 shadow-xs p-5 space-y-4"
+              className="bg-[#131624]/90 backdrop-blur-xl rounded-2xl border border-white/[0.08] shadow-xl p-5 space-y-4 text-white"
             >
               {/* Movie Header */}
-              <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-3 border-b border-slate-100 pb-4">
+              <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-3 border-b border-white/[0.08] pb-4">
                 <div className="flex items-center gap-3.5 min-w-0">
-                  <div className="w-12 h-16 rounded-lg overflow-hidden bg-slate-100 shrink-0 border border-slate-200 shadow-2xs">
+                  <div className="w-12 h-16 rounded-lg overflow-hidden bg-slate-900 shrink-0 border border-white/10 shadow-2xs">
                     <img
                       src={
                         group.movie?.posterUrl ||
@@ -1168,11 +1168,11 @@ export default function VendorShowsPage() {
                   </div>
                   <div className="min-w-0">
                     <div className="flex items-center gap-2">
-                      <h3 className="text-base font-black text-slate-900 truncate">
+                      <h3 className="text-base font-black text-white truncate">
                         {group.movieTitle}
                       </h3>
                       {group.movie?.certificate && (
-                        <span className="text-[10px] font-bold px-1.5 py-0.2 rounded bg-slate-100 text-slate-600 border border-slate-200 shrink-0">
+                        <span className="text-[10px] font-bold px-1.5 py-0.2 rounded bg-white/10 text-slate-300 border border-white/10 shrink-0">
                           {group.movie.certificate}
                         </span>
                       )}
@@ -1184,13 +1184,13 @@ export default function VendorShowsPage() {
                 </div>
 
                 <div className="flex items-center gap-2 flex-wrap sm:justify-end">
-                  <span className="text-xs font-bold px-2.5 py-1 rounded-lg bg-slate-100 text-slate-700">
+                  <span className="text-xs font-bold px-2.5 py-1 rounded-lg bg-white/5 text-slate-300 border border-white/10">
                     {group.shows.length} {group.shows.length === 1 ? 'Show' : 'Shows'}
                   </span>
-                  <span className="text-xs font-bold px-2.5 py-1 rounded-lg bg-emerald-50 text-emerald-700 border border-emerald-100">
+                  <span className="text-xs font-bold px-2.5 py-1 rounded-lg bg-emerald-500/15 text-emerald-300 border border-emerald-500/20">
                     {group.totalTickets} Tickets Booked ({group.occupancyRate}%)
                   </span>
-                  <span className="text-xs font-mono font-bold px-2.5 py-1 rounded-lg bg-slate-50 text-slate-800 border border-slate-200">
+                  <span className="text-xs font-mono font-bold px-2.5 py-1 rounded-lg bg-white/5 text-slate-200 border border-white/10">
                     ₹{group.totalRevenue.toLocaleString('en-IN')} Gross
                   </span>
                 </div>
@@ -1202,18 +1202,18 @@ export default function VendorShowsPage() {
                   <div
                     key={show.id || show._id}
                     onClick={() => openSeatMapModal(show)}
-                    className="p-3.5 bg-slate-50/70 hover:bg-white rounded-xl border border-slate-200/80 hover:border-slate-300 transition-all cursor-pointer group shadow-2xs"
+                    className="p-3.5 bg-white/[0.03] hover:bg-white/[0.06] rounded-xl border border-white/10 hover:border-white/20 transition-all cursor-pointer group shadow-2xs"
                   >
                     <div className="flex items-center justify-between mb-1.5">
-                      <span className="font-mono font-black text-xs text-slate-900 bg-white px-2 py-0.5 rounded border border-slate-200 shadow-2xs">
+                      <span className="font-mono font-black text-xs text-white bg-white/10 px-2 py-0.5 rounded border border-white/10 shadow-2xs">
                         {show.startTime}
                       </span>
-                      <span className="text-[10px] font-bold px-1.5 py-0.2 rounded bg-indigo-50 text-indigo-700">
+                      <span className="text-[10px] font-bold px-1.5 py-0.2 rounded bg-indigo-500/20 text-indigo-300">
                         {show.format || '2D'}
                       </span>
                     </div>
 
-                    <p className="text-xs font-bold text-slate-800 truncate mt-1">
+                    <p className="text-xs font-bold text-white truncate mt-1">
                       {show.screen?.name}
                     </p>
                     <p className="text-[10px] text-slate-400 truncate flex items-center gap-1 mt-0.5">
@@ -1221,9 +1221,9 @@ export default function VendorShowsPage() {
                       <span>{show.cinema?.name}</span>
                     </p>
 
-                    <div className="flex items-center justify-between text-[10px] mt-2.5 pt-2 border-t border-slate-200/60">
-                      <span className="text-slate-500 font-medium">{show.bookedSeatsCount}/{show.totalCapacity} Seats</span>
-                      <span className="font-bold text-emerald-700">{show.occupancyRate}%</span>
+                    <div className="flex items-center justify-between text-[10px] mt-2.5 pt-2 border-t border-white/[0.06]">
+                      <span className="text-slate-400 font-medium">{show.bookedSeatsCount}/{show.totalCapacity} Seats</span>
+                      <span className="font-bold text-emerald-400">{show.occupancyRate}%</span>
                     </div>
                   </div>
                 ))}
@@ -1246,14 +1246,14 @@ export default function VendorShowsPage() {
             return (
               <div
                 key={show.id || show._id}
-                className="bg-white rounded-2xl border border-slate-200/90 hover:border-slate-300 shadow-xs hover:shadow-md transition-all duration-200 overflow-hidden group p-5 sm:p-6 space-y-4"
+                className="bg-[#131624]/90 backdrop-blur-xl rounded-2xl border border-white/[0.08] hover:border-white/20 shadow-xl hover:shadow-[0_20px_45px_-8px_rgba(0,0,0,0.8)] transition-all duration-200 overflow-hidden group p-5 sm:p-6 space-y-4 text-white"
               >
                 {/* ROW 1: FILM IDENTITY & TIMETABLES */}
                 <div className="flex flex-col md:flex-row md:items-start justify-between gap-4">
                   {/* Left + Center: Poster & Film Metadata */}
                   <div className="flex items-start gap-4 min-w-0 flex-1">
                     {/* 2:3 Vertical Poster */}
-                    <div className="relative w-20 sm:w-24 aspect-[2/3] rounded-xl overflow-hidden bg-slate-100 shrink-0 border border-slate-200/80 shadow-xs group-hover:scale-102 transition-transform duration-300">
+                    <div className="relative w-20 sm:w-24 aspect-[2/3] rounded-xl overflow-hidden bg-slate-950 shrink-0 border border-white/10 shadow-xs group-hover:scale-102 transition-transform duration-300">
                       <img
                         src={
                           show.movie?.posterUrl ||
@@ -1264,7 +1264,7 @@ export default function VendorShowsPage() {
                       />
                       {/* Format Badge Overlay */}
                       <div className="absolute top-1.5 left-1.5">
-                        <span className="bg-black/85 backdrop-blur-xs text-white text-[9px] font-black uppercase tracking-wider px-1.5 py-0.5 rounded shadow-xs">
+                        <span className="bg-black/85 backdrop-blur-xs text-white text-[9px] font-black uppercase tracking-wider px-1.5 py-0.5 rounded shadow-xs border border-white/10">
                           {show.format || '2D'}
                         </span>
                       </div>
@@ -1274,52 +1274,52 @@ export default function VendorShowsPage() {
                     <div className="min-w-0 flex-1 space-y-1.5">
                       <div className="flex items-center gap-2 flex-wrap">
                         {isCancelled ? (
-                          <span className="text-[10px] font-bold px-2.5 py-0.5 rounded-full bg-slate-100 text-slate-600 border border-slate-200">
+                          <span className="text-[10px] font-bold px-2.5 py-0.5 rounded-full bg-white/10 text-slate-400 border border-white/10">
                             Cancelled
                           </span>
                         ) : isAlmostFull ? (
-                          <span className="text-[10px] font-bold px-2.5 py-0.5 rounded-full bg-purple-50 text-purple-700 border border-purple-200 flex items-center gap-1.5">
-                            <span className="w-1.5 h-1.5 rounded-full bg-purple-500 animate-ping" />
+                          <span className="text-[10px] font-bold px-2.5 py-0.5 rounded-full bg-purple-500/10 text-purple-300 border border-purple-500/20 flex items-center gap-1.5">
+                            <span className="w-1.5 h-1.5 rounded-full bg-purple-400 animate-ping" />
                             Almost Full ({show.occupancyRate}%)
                           </span>
                         ) : isFillingFast ? (
-                          <span className="text-[10px] font-bold px-2.5 py-0.5 rounded-full bg-amber-50 text-amber-800 border border-amber-200 flex items-center gap-1.5">
-                            <span className="w-1.5 h-1.5 rounded-full bg-amber-500 animate-pulse" />
+                          <span className="text-[10px] font-bold px-2.5 py-0.5 rounded-full bg-amber-500/10 text-amber-300 border border-amber-500/20 flex items-center gap-1.5">
+                            <span className="w-1.5 h-1.5 rounded-full bg-amber-400 animate-pulse" />
                             Filling Fast ({show.occupancyRate}%)
                           </span>
                         ) : (
-                          <span className="text-[10px] font-bold px-2.5 py-0.5 rounded-full bg-emerald-50 text-emerald-700 border border-emerald-200 flex items-center gap-1.5">
-                            <span className="w-1.5 h-1.5 rounded-full bg-emerald-500" />
+                          <span className="text-[10px] font-bold px-2.5 py-0.5 rounded-full bg-emerald-500/10 text-emerald-400 border border-emerald-500/20 flex items-center gap-1.5">
+                            <span className="w-1.5 h-1.5 rounded-full bg-emerald-400" />
                             Live on BookMyTrip
                           </span>
                         )}
 
                         {show.movie?.certificate && (
-                          <span className="text-[10px] font-bold px-2 py-0.5 rounded bg-slate-100 text-slate-700 border border-slate-200">
+                          <span className="text-[10px] font-bold px-2 py-0.5 rounded bg-white/10 text-slate-300 border border-white/10">
                             {show.movie.certificate}
                           </span>
                         )}
                       </div>
 
                       {/* Full Movie Title */}
-                      <h3 className="text-lg sm:text-xl font-black text-slate-900 leading-snug group-hover:text-[#F84464] transition-colors break-words">
+                      <h3 className="text-lg sm:text-xl font-black text-white leading-snug group-hover:text-[#F84464] transition-colors break-words">
                         {show.movieTitle}
                       </h3>
 
                       {/* Language & Runtime */}
-                      <p className="text-xs text-slate-500 font-medium">
+                      <p className="text-xs text-slate-400 font-medium">
                         {show.movie?.language || 'Hindi, English'} • {show.movie?.duration || '2h 30m'}
                       </p>
 
                       {/* Multiplex Venue & Screen */}
                       <div className="flex flex-wrap items-center gap-2 pt-1">
-                        <span className="inline-flex items-center gap-1.5 text-xs text-slate-700 font-medium">
+                        <span className="inline-flex items-center gap-1.5 text-xs text-slate-300 font-medium">
                           <MapPin size={13} className="text-[#F84464] shrink-0" />
                           <span>{show.cinema?.name || 'Multiplex Venue'}</span>
                         </span>
-                        <span className="text-slate-300">•</span>
-                        <span className="inline-flex items-center gap-1 bg-indigo-50 border border-indigo-100/80 px-2.5 py-0.5 rounded-md text-indigo-900 font-bold text-xs">
-                          <Tv size={12} className="text-indigo-600 shrink-0" />
+                        <span className="text-white/20">•</span>
+                        <span className="inline-flex items-center gap-1 bg-indigo-500/15 border border-indigo-500/30 px-2.5 py-0.5 rounded-md text-indigo-300 font-bold text-xs">
+                          <Tv size={12} className="text-indigo-400 shrink-0" />
                           <span>{show.screen?.name || 'Screen 1'}</span>
                         </span>
                       </div>
@@ -1327,27 +1327,27 @@ export default function VendorShowsPage() {
                   </div>
 
                   {/* Right: Dedicated Showtime Slot Box */}
-                  <div className="shrink-0 md:text-right flex flex-col items-start md:items-end justify-center bg-slate-50/90 border border-slate-200/80 p-3 sm:p-3.5 rounded-xl min-w-[210px]">
+                  <div className="shrink-0 md:text-right flex flex-col items-start md:items-end justify-center bg-white/[0.03] border border-white/10 p-3 sm:p-3.5 rounded-xl min-w-[210px]">
                     <div className="flex items-center gap-1.5 text-slate-400 text-xs font-semibold uppercase tracking-wider mb-1">
                       <Clock size={13} />
                       <span>Programmed Slot</span>
                     </div>
 
                     <div className="flex items-baseline gap-1.5 font-mono">
-                      <span className="text-base sm:text-lg font-black text-slate-950">
+                      <span className="text-base sm:text-lg font-black text-white">
                         {show.startTime}
                       </span>
                       <span className="text-slate-400 font-bold text-xs">to</span>
-                      <span className="text-sm sm:text-base font-bold text-slate-700">
+                      <span className="text-sm sm:text-base font-bold text-slate-300">
                         {show.endTime}
                       </span>
                     </div>
 
                     <div className="flex items-center gap-2 mt-2">
-                      <span className="text-xs font-bold bg-white px-2.5 py-0.5 rounded-md border border-slate-200 text-slate-800 shadow-2xs">
+                      <span className="text-xs font-bold bg-white/10 px-2.5 py-0.5 rounded-md border border-white/10 text-slate-200 shadow-2xs">
                         {show.showDate}
                       </span>
-                      <span className="text-[10px] font-semibold text-slate-500">
+                      <span className="text-[10px] font-semibold text-slate-400">
                         {show.format || '2D'} Format
                       </span>
                     </div>
@@ -1355,24 +1355,24 @@ export default function VendorShowsPage() {
                 </div>
 
                 {/* ROW 2: CAPACITY, PRICING TIERS & ACTIONS */}
-                <div className="border-t border-slate-100/90 pt-3.5 mt-2 bg-slate-50/60 -mx-5 sm:-mx-6 -mb-5 sm:-mb-6 p-4 sm:p-5 rounded-b-2xl flex flex-col lg:flex-row lg:items-center justify-between gap-4">
+                <div className="border-t border-white/[0.08] pt-3.5 mt-2 bg-[#0e111d]/90 -mx-5 sm:-mx-6 -mb-5 sm:-mb-6 p-4 sm:p-5 rounded-b-2xl flex flex-col lg:flex-row lg:items-center justify-between gap-4">
                   {/* Left: Capacity & Hall Occupancy Progress */}
                   <div className="lg:w-[320px] xl:w-[350px] shrink-0 space-y-1.5">
                     <div className="flex items-center justify-between text-xs">
-                      <span className="text-slate-500 font-bold text-[10px] uppercase tracking-wider">
+                      <span className="text-slate-400 font-bold text-[10px] uppercase tracking-wider">
                         Auditorium Capacity
                       </span>
-                      <span className="font-bold text-slate-900 font-mono text-xs">
+                      <span className="font-bold text-white font-mono text-xs">
                         {show.bookedSeatsCount} / {show.totalCapacity} Booked ({show.occupancyRate}%)
                       </span>
                     </div>
 
                     {/* Progress Bar */}
-                    <div className="w-full h-2.5 bg-slate-200/90 rounded-full overflow-hidden shadow-inner">
+                    <div className="w-full h-2.5 bg-white/10 rounded-full overflow-hidden shadow-inner">
                       <div
                         className={`h-full transition-all duration-500 rounded-full ${
                           isCancelled
-                            ? 'bg-slate-300'
+                            ? 'bg-slate-600'
                             : show.occupancyRate > 80
                             ? 'bg-gradient-to-r from-amber-500 to-rose-500'
                             : show.occupancyRate > 40
@@ -1384,36 +1384,36 @@ export default function VendorShowsPage() {
                     </div>
 
                     <div className="flex items-center justify-between text-xs">
-                      <span className="text-emerald-700 font-bold text-[11px]">
+                      <span className="text-emerald-400 font-bold text-[11px]">
                         {availableSeats} seats open for booking
                       </span>
-                      <span className="text-slate-500 font-mono text-[11px]">
+                      <span className="text-slate-400 font-mono text-[11px]">
                         ₹{estShowRevenue.toLocaleString('en-IN')} Gross
                       </span>
                     </div>
                   </div>
 
                   {/* Center: Ticket Pricing Matrix */}
-                  <div className="flex-1 min-w-0 lg:px-4 border-t lg:border-t-0 lg:border-l lg:border-r border-slate-200/70 pt-3 lg:pt-0">
+                  <div className="flex-1 min-w-0 lg:px-4 border-t lg:border-t-0 lg:border-l lg:border-r border-white/[0.08] pt-3 lg:pt-0">
                     <p className="text-[10px] font-bold uppercase tracking-wider text-slate-400 mb-1.5">
                       Configured Ticket Tiers
                     </p>
                     <div className="flex flex-wrap items-center gap-2">
-                      <div className="inline-flex items-center gap-1.5 bg-white px-2.5 py-1 rounded-lg border border-slate-200 shadow-2xs text-xs">
-                        <span className="text-slate-500 font-medium">Normal:</span>
-                        <span className="font-mono font-black text-slate-900">
+                      <div className="inline-flex items-center gap-1.5 bg-white/[0.04] px-2.5 py-1 rounded-lg border border-white/10 shadow-2xs text-xs">
+                        <span className="text-slate-400 font-medium">Normal:</span>
+                        <span className="font-mono font-black text-white">
                           ₹{show.pricingTiers?.normal || show.ticketPrice || 200}
                         </span>
                       </div>
-                      <div className="inline-flex items-center gap-1.5 bg-white px-2.5 py-1 rounded-lg border border-slate-200 shadow-2xs text-xs">
-                        <span className="text-slate-500 font-medium">Premium:</span>
-                        <span className="font-mono font-black text-slate-900">
+                      <div className="inline-flex items-center gap-1.5 bg-white/[0.04] px-2.5 py-1 rounded-lg border border-white/10 shadow-2xs text-xs">
+                        <span className="text-slate-400 font-medium">Premium:</span>
+                        <span className="font-mono font-black text-white">
                           ₹{show.pricingTiers?.premium || 280}
                         </span>
                       </div>
-                      <div className="inline-flex items-center gap-1.5 bg-white px-2.5 py-1 rounded-lg border border-slate-200 shadow-2xs text-xs">
-                        <span className="text-slate-500 font-medium">Recliner:</span>
-                        <span className="font-mono font-black text-slate-900">
+                      <div className="inline-flex items-center gap-1.5 bg-white/[0.04] px-2.5 py-1 rounded-lg border border-white/10 shadow-2xs text-xs">
+                        <span className="text-slate-400 font-medium">Recliner:</span>
+                        <span className="font-mono font-black text-white">
                           ₹{show.pricingTiers?.recliner || 450}
                         </span>
                       </div>
@@ -1421,11 +1421,11 @@ export default function VendorShowsPage() {
                   </div>
 
                   {/* Right: Operational Action Buttons */}
-                  <div className="flex items-center gap-2 shrink-0 pt-2 lg:pt-0 border-t lg:border-t-0 border-slate-200/70 justify-end">
+                  <div className="flex items-center gap-2 shrink-0 pt-2 lg:pt-0 border-t lg:border-t-0 border-white/[0.08] justify-end">
                     <button
                       type="button"
                       onClick={() => openSeatMapModal(show)}
-                      className="inline-flex items-center justify-center gap-1.5 text-xs font-bold text-white bg-[#F84464] hover:bg-[#E23454] px-4 py-2.5 rounded-xl transition shadow-xs cursor-pointer"
+                      className="inline-flex items-center justify-center gap-1.5 text-xs font-bold text-white bg-[#F84464] hover:bg-[#E23454] px-4 py-2.5 rounded-xl transition shadow-[0_4px_14px_rgba(248,68,100,0.3)] cursor-pointer"
                       title="View Live Seat Layout & Heatmap"
                     >
                       <Armchair size={15} />
@@ -1436,14 +1436,14 @@ export default function VendorShowsPage() {
                       <button
                         type="button"
                         onClick={() => openCancelModal(show)}
-                        className="inline-flex items-center justify-center gap-1.5 text-xs font-semibold text-slate-500 hover:text-rose-600 hover:bg-rose-50 px-3 py-2.5 rounded-xl border border-slate-200/80 hover:border-rose-200 transition cursor-pointer"
+                        className="inline-flex items-center justify-center gap-1.5 text-xs font-semibold text-slate-400 hover:text-rose-400 hover:bg-rose-500/10 px-3 py-2.5 rounded-xl border border-white/10 hover:border-rose-500/30 transition cursor-pointer"
                         title="Cancel Showtime"
                       >
                         <Ban size={14} />
                         <span>Cancel Show</span>
                       </button>
                     ) : (
-                      <span className="text-xs font-bold text-slate-500 uppercase px-3 py-2 bg-slate-100 rounded-xl border border-slate-200">
+                      <span className="text-xs font-bold text-slate-400 uppercase px-3 py-2 bg-white/5 rounded-xl border border-white/10">
                         Show Cancelled
                       </span>
                     )}
@@ -1464,28 +1464,29 @@ export default function VendorShowsPage() {
         title="Schedule Movie Showtime"
         subtitle="Assign auditorium screen, format, pricing, and timetable"
         maxWidth="max-w-xl"
+        theme="dark"
       >
         {formError && (
-          <div className="mb-4 p-3 rounded-xl bg-rose-50 border border-rose-200 flex items-start gap-2.5 text-rose-700 text-xs">
-            <AlertCircle size={16} className="shrink-0 mt-0.5" />
+          <div className="mb-4 p-3 rounded-xl bg-rose-500/10 border border-rose-500/30 flex items-start gap-2.5 text-rose-300 text-xs">
+            <AlertCircle size={16} className="shrink-0 mt-0.5 text-rose-400" />
             <span>{formError}</span>
           </div>
         )}
 
-        <form onSubmit={handleCreateShow} className="space-y-4">
+        <form onSubmit={handleCreateShow} className="space-y-4 text-white">
           {/* Movie Picker with thumbnail preview */}
           <div>
-            <label className="block text-xs font-bold text-slate-700 mb-1.5">
-              Select Film from Catalog <span className="text-rose-500">*</span>
+            <label className="block text-xs font-bold text-slate-300 mb-1.5">
+              Select Film from Catalog <span className="text-[#F84464]">*</span>
             </label>
             <select
               value={formData.movieId}
               onChange={(e) => handleMovieSelectChange(e.target.value)}
-              className="w-full text-xs p-2.5 border border-slate-300 rounded-xl bg-white font-medium focus:outline-none focus:ring-2 focus:ring-[#F84464]/20 focus:border-[#F84464]"
+              className="w-full text-xs p-2.5 border border-white/10 rounded-xl bg-[#0B0D14]/90 text-white font-medium focus:outline-none focus:ring-2 focus:ring-[#F84464]/30 focus:border-[#F84464]"
               required
             >
               {movies.map(m => (
-                <option key={m.id || m._id} value={m.id || m._id}>
+                <option key={m.id || m._id} value={m.id || m._id} className="bg-[#121524] text-white">
                   {m.title} ({m.language || 'Hindi'} • {m.duration || '2h 30m'})
                 </option>
               ))}
@@ -1495,17 +1496,17 @@ export default function VendorShowsPage() {
           {/* Cinema & Screen Selection */}
           <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
             <div>
-              <label className="block text-xs font-bold text-slate-700 mb-1.5">
-                Cinema Multiplex <span className="text-rose-500">*</span>
+              <label className="block text-xs font-bold text-slate-300 mb-1.5">
+                Cinema Multiplex <span className="text-[#F84464]">*</span>
               </label>
               <select
                 value={formData.cinemaId}
                 onChange={(e) => setFormData({ ...formData, cinemaId: e.target.value })}
-                className="w-full text-xs p-2.5 border border-slate-300 rounded-xl bg-white font-medium"
+                className="w-full text-xs p-2.5 border border-white/10 rounded-xl bg-[#0B0D14]/90 text-white font-medium focus:outline-none focus:ring-2 focus:ring-[#F84464]/30 focus:border-[#F84464]"
                 required
               >
                 {cinemas.map(c => (
-                  <option key={c.id || c._id} value={c.id || c._id}>
+                  <option key={c.id || c._id} value={c.id || c._id} className="bg-[#121524] text-white">
                     {c.name}
                   </option>
                 ))}
@@ -1513,21 +1514,21 @@ export default function VendorShowsPage() {
             </div>
 
             <div>
-              <label className="block text-xs font-bold text-slate-700 mb-1.5">
-                Auditorium Screen <span className="text-rose-500">*</span>
+              <label className="block text-xs font-bold text-slate-300 mb-1.5">
+                Auditorium Screen <span className="text-[#F84464]">*</span>
               </label>
               <select
                 value={formData.screenId}
                 onChange={(e) => setFormData({ ...formData, screenId: e.target.value })}
-                className="w-full text-xs p-2.5 border border-slate-300 rounded-xl bg-white font-medium"
+                className="w-full text-xs p-2.5 border border-white/10 rounded-xl bg-[#0B0D14]/90 text-white font-medium focus:outline-none focus:ring-2 focus:ring-[#F84464]/30 focus:border-[#F84464]"
                 required
                 disabled={screens.length === 0}
               >
                 {screens.length === 0 ? (
-                  <option value="">No screens created for cinema</option>
+                  <option value="" className="bg-[#121524] text-slate-400">No screens created for cinema</option>
                 ) : (
                   screens.map(s => (
-                    <option key={s.id || s._id} value={s.id || s._id}>
+                    <option key={s.id || s._id} value={s.id || s._id} className="bg-[#121524] text-white">
                       {s.name} ({s.totalCapacity || 120} seats)
                     </option>
                   ))
@@ -1539,85 +1540,91 @@ export default function VendorShowsPage() {
           {/* Date, Start Time & Format */}
           <div className="grid grid-cols-1 sm:grid-cols-3 gap-3">
             <div>
-              <label className="block text-xs font-bold text-slate-700 mb-1.5">
+              <label className="block text-xs font-bold text-slate-300 mb-1.5">
                 Date
               </label>
               <select
                 value={formData.showDate}
                 onChange={(e) => setFormData({ ...formData, showDate: e.target.value })}
-                className="w-full text-xs p-2.5 border border-slate-300 rounded-xl bg-white font-medium"
+                className="w-full text-xs p-2.5 border border-white/10 rounded-xl bg-[#0B0D14]/90 text-white font-medium focus:outline-none focus:ring-2 focus:ring-[#F84464]/30 focus:border-[#F84464]"
               >
-                <option value="Today">Today (Live)</option>
-                <option value="Tomorrow">Tomorrow</option>
+                <option value="Today" className="bg-[#121524] text-white">Today (Live)</option>
+                <option value="Tomorrow" className="bg-[#121524] text-white">Tomorrow</option>
               </select>
             </div>
 
             <div>
-              <label className="block text-xs font-bold text-slate-700 mb-1.5">
+              <label className="block text-xs font-bold text-slate-300 mb-1.5">
                 Start Time
               </label>
               <select
                 value={formData.startTime}
                 onChange={(e) => handleStartTimeChange(e.target.value)}
-                className="w-full text-xs p-2.5 border border-slate-300 rounded-xl bg-white font-medium"
+                className="w-full text-xs p-2.5 border border-white/10 rounded-xl bg-[#0B0D14]/90 text-white font-medium focus:outline-none focus:ring-2 focus:ring-[#F84464]/30 focus:border-[#F84464]"
               >
                 {COMMON_SHOWTIMES.map(t => (
-                  <option key={t} value={t}>{t}</option>
+                  <option key={t} value={t} className="bg-[#121524] text-white">{t}</option>
                 ))}
               </select>
             </div>
 
             <div>
-              <label className="block text-xs font-bold text-slate-700 mb-1.5">
+              <label className="block text-xs font-bold text-slate-300 mb-1.5">
                 Projection Format
               </label>
               <select
                 value={formData.format}
                 onChange={(e) => setFormData({ ...formData, format: e.target.value })}
-                className="w-full text-xs p-2.5 border border-slate-300 rounded-xl bg-white font-medium"
+                className="w-full text-xs p-2.5 border border-white/10 rounded-xl bg-[#0B0D14]/90 text-white font-medium focus:outline-none focus:ring-2 focus:ring-[#F84464]/30 focus:border-[#F84464]"
               >
-                <option value="2D">2D</option>
-                <option value="3D">3D</option>
-                <option value="IMAX 2D">IMAX 2D</option>
-                <option value="IMAX 3D">IMAX 3D</option>
-                <option value="4DX">4DX</option>
+                <option value="2D" className="bg-[#121524] text-white">2D</option>
+                <option value="3D" className="bg-[#121524] text-white">3D</option>
+                <option value="IMAX 2D" className="bg-[#121524] text-white">IMAX 2D</option>
+                <option value="IMAX 3D" className="bg-[#121524] text-white">IMAX 3D</option>
+                <option value="4DX" className="bg-[#121524] text-white">4DX</option>
               </select>
             </div>
           </div>
 
           {/* Estimated End Time Notice */}
-          <div className="flex items-center justify-between p-2.5 bg-slate-50 rounded-xl border border-slate-200 text-xs text-slate-600">
-            <span className="flex items-center gap-1.5">
-              <Clock size={14} className="text-slate-400" />
+          <div className="flex items-center justify-between p-3 bg-white/[0.03] rounded-xl border border-white/10 text-xs text-slate-300">
+            <span className="flex items-center gap-2">
+              <Clock size={14} className="text-[#F84464]" />
               <span>Calculated Runtime & End Time:</span>
             </span>
-            <span className="font-mono font-bold text-slate-900">
+            <span className="font-mono font-bold text-emerald-400">
               {formData.endTime}
             </span>
           </div>
 
           {/* Pricing Tiers */}
-          <div className="p-3.5 bg-slate-50/80 rounded-xl border border-slate-200">
-            <p className="text-xs font-bold text-slate-800 mb-2 flex items-center justify-between">
-              <span>Ticket Pricing Structure (₹)</span>
-              <span className="text-[10px] text-slate-500 font-normal">Per Seat Basis</span>
+          <div className="p-3.5 bg-white/[0.03] rounded-xl border border-white/10">
+            <p className="text-xs font-bold text-white mb-3 flex items-center justify-between">
+              <span className="flex items-center gap-1.5">
+                <Ticket size={14} className="text-[#F84464]" />
+                <span>Ticket Pricing Structure (₹)</span>
+              </span>
+              <span className="text-[10px] text-slate-400 font-normal">Per Seat Basis</span>
             </p>
             <div className="grid grid-cols-3 gap-3">
               <Input
                 label="Normal (Classic)"
                 type="number"
+                className="!bg-[#0B0D14]/90 !border-white/10 !text-white"
                 value={formData.normalPrice}
                 onChange={(e) => setFormData({ ...formData, normalPrice: e.target.value })}
               />
               <Input
                 label="Premium"
                 type="number"
+                className="!bg-[#0B0D14]/90 !border-white/10 !text-white"
                 value={formData.premiumPrice}
                 onChange={(e) => setFormData({ ...formData, premiumPrice: e.target.value })}
               />
               <Input
                 label="Recliner (VIP)"
                 type="number"
+                className="!bg-[#0B0D14]/90 !border-white/10 !text-white"
                 value={formData.reclinerPrice}
                 onChange={(e) => setFormData({ ...formData, reclinerPrice: e.target.value })}
               />
@@ -1625,11 +1632,12 @@ export default function VendorShowsPage() {
           </div>
 
           {/* Submit Actions */}
-          <div className="flex justify-end gap-2.5 pt-3 border-t border-slate-100">
+          <div className="flex justify-end gap-2.5 pt-4 border-t border-white/10">
             <Button
               type="button"
               variant="outline"
               onClick={() => setIsAddModalOpen(false)}
+              className="!border-white/10 !text-slate-300 hover:!bg-white/5"
             >
               Cancel
             </Button>
@@ -1637,7 +1645,7 @@ export default function VendorShowsPage() {
               type="submit"
               variant="primary"
               isLoading={formLoading}
-              className="bg-[#F84464] hover:bg-[#E23454] text-white font-bold"
+              className="bg-gradient-to-r from-[#F84464] to-[#ff637e] hover:from-[#E23454] hover:to-[#f04f6e] text-white font-bold shadow-[0_4px_16px_rgba(248,68,100,0.35)]"
             >
               Publish Showtime Live
             </Button>
@@ -1653,11 +1661,12 @@ export default function VendorShowsPage() {
         onClose={() => setIsSeatMapModalOpen(false)}
         title={`Auditorium Seat Manifest • ${selectedShow?.movieTitle || 'Show'}`}
         maxWidth="max-w-2xl"
+        theme="dark"
       >
         {seatMapLoading ? (
-          <div className="py-16 text-center text-xs text-slate-500 space-y-2">
-            <div className="w-8 h-8 border-2 border-indigo-600 border-t-transparent rounded-full animate-spin mx-auto" />
-            <p className="font-bold">Loading real-time auditorium matrix & bookings...</p>
+          <div className="py-16 text-center text-xs text-slate-400 space-y-3">
+            <div className="w-9 h-9 border-2 border-[#F84464] border-t-transparent rounded-full animate-spin mx-auto shadow-[0_0_15px_rgba(248,68,100,0.4)]" />
+            <p className="font-bold text-slate-200">Loading real-time auditorium matrix & bookings...</p>
           </div>
         ) : seatMapData ? (() => {
             // Aggregate all booked seats from show and confirmed bookings
@@ -1685,20 +1694,20 @@ export default function VendorShowsPage() {
             return (
               <div className="space-y-4">
                 {/* Show Header Summary */}
-                <div className="flex flex-col sm:flex-row sm:items-center justify-between p-3.5 bg-slate-50 rounded-xl border border-slate-200 text-xs gap-3">
+                <div className="flex flex-col sm:flex-row sm:items-center justify-between p-3.5 bg-white/[0.03] rounded-xl border border-white/10 text-xs gap-3">
                   <div>
-                    <p className="font-bold text-slate-900 text-sm">
+                    <p className="font-bold text-white text-sm">
                       {seatMapData.cinema?.name}
                     </p>
-                    <p className="text-slate-500 text-[11px]">
-                      {seatMapData.screen?.name} • {selectedShow?.startTime} ({selectedShow?.showDate}) • {selectedShow?.format || '2D'}
+                    <p className="text-slate-400 text-[11px] mt-0.5">
+                      {seatMapData.screen?.name} • {selectedShow?.startTime} ({selectedShow?.showDate}) • <span className="font-bold text-[#F84464]">{selectedShow?.format || '2D'}</span>
                     </p>
                   </div>
 
                   {/* Real-time Counts */}
                   <div className="flex items-center gap-2 sm:gap-2.5">
                     {liveSelectingSeats.length > 0 && (
-                      <span className="text-amber-800 font-bold bg-amber-50 px-2.5 py-1 rounded-lg border border-amber-300 animate-pulse flex items-center gap-1.5 text-[11px]">
+                      <span className="text-amber-300 font-bold bg-amber-500/10 px-2.5 py-1 rounded-lg border border-amber-500/30 animate-pulse flex items-center gap-1.5 text-[11px]">
                         <span className="relative flex h-2 w-2">
                           <span className="animate-ping absolute inline-flex h-full w-full rounded-full bg-amber-400 opacity-75"></span>
                           <span className="relative inline-flex rounded-full h-2 w-2 bg-amber-500"></span>
@@ -1706,23 +1715,23 @@ export default function VendorShowsPage() {
                         <span>{liveSelectingSeats.length} Selecting Live</span>
                       </span>
                     )}
-                    <span className="text-emerald-700 font-bold bg-emerald-50 px-2.5 py-1 rounded-lg border border-emerald-200">
+                    <span className="text-emerald-300 font-bold bg-emerald-500/10 px-2.5 py-1 rounded-lg border border-emerald-500/30">
                       {totalAvailableCount} Available
                     </span>
-                    <span className="text-rose-700 font-bold bg-rose-50 px-2.5 py-1 rounded-lg border border-rose-200">
+                    <span className="text-rose-300 font-bold bg-rose-500/10 px-2.5 py-1 rounded-lg border border-rose-500/30">
                       {totalBookedCount} Booked
                     </span>
                   </div>
                 </div>
 
                 {/* Modal Tabs: Seat Grid vs Booking Manifest */}
-                <div className="flex items-center border-b border-slate-200">
+                <div className="flex items-center border-b border-white/10">
                   <button
                     onClick={() => setSeatMapTab('seats')}
-                    className={`flex items-center gap-1.5 px-4 py-2 text-xs font-bold border-b-2 transition ${
+                    className={`flex items-center gap-1.5 px-4 py-2.5 text-xs font-bold border-b-2 transition ${
                       seatMapTab === 'seats'
-                        ? 'border-indigo-600 text-indigo-600'
-                        : 'border-transparent text-slate-500 hover:text-slate-800'
+                        ? 'border-[#F84464] text-[#F84464]'
+                        : 'border-transparent text-slate-400 hover:text-white'
                     }`}
                   >
                     <Armchair size={14} />
@@ -1730,10 +1739,10 @@ export default function VendorShowsPage() {
                   </button>
                   <button
                     onClick={() => setSeatMapTab('manifest')}
-                    className={`flex items-center gap-1.5 px-4 py-2 text-xs font-bold border-b-2 transition ${
+                    className={`flex items-center gap-1.5 px-4 py-2.5 text-xs font-bold border-b-2 transition ${
                       seatMapTab === 'manifest'
-                        ? 'border-indigo-600 text-indigo-600'
-                        : 'border-transparent text-slate-500 hover:text-slate-800'
+                        ? 'border-[#F84464] text-[#F84464]'
+                        : 'border-transparent text-slate-400 hover:text-white'
                     }`}
                   >
                     <Ticket size={14} />
@@ -1744,18 +1753,18 @@ export default function VendorShowsPage() {
                 {seatMapTab === 'seats' ? (
                   <div className="space-y-3">
                     {/* Curved Movie Screen Visual */}
-                    <div className="text-center py-2">
-                      <div className="w-3/4 mx-auto h-2 bg-gradient-to-b from-indigo-400 via-indigo-300 to-transparent rounded-t-full shadow-sm" />
-                      <p className="text-[9px] text-slate-400 uppercase tracking-widest mt-1 font-mono">
-                        All Eyes This Way Please (Screen)
+                    <div className="text-center py-3">
+                      <div className="w-3/4 mx-auto h-2 bg-gradient-to-r from-transparent via-cyan-400 to-transparent rounded-t-full shadow-[0_0_16px_rgba(34,211,238,0.6)]" />
+                      <p className="text-[9px] text-cyan-300/60 uppercase tracking-widest mt-1.5 font-mono">
+                        All Eyes This Way Please (Projection Screen)
                       </p>
                     </div>
 
                     {/* Rows and Seats Grid */}
-                    <div className="space-y-2 max-h-72 overflow-y-auto p-3 bg-slate-50/70 rounded-xl border border-slate-200/80">
+                    <div className="space-y-2 max-h-72 overflow-y-auto p-3.5 bg-[#0B0D14]/70 rounded-xl border border-white/10 custom-scrollbar">
                       {rowsToRender.map((row) => (
                         <div key={row.row} className="flex items-center gap-2 justify-center">
-                          <span className="w-5 text-center font-mono font-bold text-xs text-slate-400">
+                          <span className="w-5 text-center font-mono font-bold text-xs text-slate-500">
                             {row.row}
                           </span>
                           <div className="flex items-center gap-1.5 flex-wrap justify-center">
@@ -1778,10 +1787,10 @@ export default function VendorShowsPage() {
                                   key={codeStandard}
                                   className={`w-6 h-6 rounded text-[9px] font-mono flex items-center justify-center font-bold transition-all duration-150 ${
                                     isBooked
-                                      ? 'bg-rose-500 text-white shadow-xs'
+                                      ? 'bg-rose-500 text-white shadow-[0_0_6px_rgba(244,63,94,0.4)]'
                                       : isLiveSelecting
-                                        ? 'bg-amber-400 text-amber-950 border-2 border-amber-500 font-black animate-pulse shadow-xs'
-                                        : 'bg-white border border-slate-300 text-slate-700 hover:border-indigo-500'
+                                        ? 'bg-amber-400 text-amber-950 border-2 border-amber-300 font-black animate-pulse shadow-[0_0_8px_rgba(251,191,36,0.6)]'
+                                        : 'bg-white/5 border border-white/15 text-slate-300 hover:border-[#F84464] hover:text-white hover:bg-white/10'
                                   }`}
                                   title={`${codeStandard} • ${
                                     isBooked
@@ -1801,60 +1810,60 @@ export default function VendorShowsPage() {
                     </div>
 
                     {/* Legend */}
-                    <div className="flex items-center justify-center gap-5 pt-2 border-t border-slate-100 text-xs text-slate-500">
+                    <div className="flex items-center justify-center gap-5 pt-2 border-t border-white/10 text-xs text-slate-400">
                       <div className="flex items-center gap-1.5">
-                        <div className="w-3.5 h-3.5 bg-white border border-slate-300 rounded" />
+                        <div className="w-3.5 h-3.5 bg-white/5 border border-white/20 rounded" />
                         <span>Available Seat</span>
                       </div>
                       <div className="flex items-center gap-1.5">
-                        <div className="w-3.5 h-3.5 bg-amber-400 border border-amber-500 rounded animate-pulse" />
-                        <span className="font-semibold text-amber-800">Selecting Live</span>
+                        <div className="w-3.5 h-3.5 bg-amber-400 border border-amber-300 rounded animate-pulse" />
+                        <span className="font-semibold text-amber-300">Selecting Live</span>
                       </div>
                       <div className="flex items-center gap-1.5">
-                        <div className="w-3.5 h-3.5 bg-rose-500 rounded" />
-                        <span className="font-semibold text-rose-700">Booked</span>
+                        <div className="w-3.5 h-3.5 bg-rose-500 rounded shadow-[0_0_6px_rgba(244,63,94,0.5)]" />
+                        <span className="font-semibold text-rose-400">Booked</span>
                       </div>
                     </div>
                   </div>
                 ) : (
-              /* Manifest View */
-              <div className="space-y-2 max-h-72 overflow-y-auto">
-                {(!seatMapData.recentBookings || seatMapData.recentBookings.length === 0) ? (
-                  <p className="text-center text-xs text-slate-400 py-8">
-                    No confirmed reservations on this showtime yet.
-                  </p>
-                ) : (
-                  seatMapData.recentBookings.map((b, idx) => (
-                    <div
-                      key={b.bookingId || idx}
-                      className="p-3 bg-slate-50 rounded-xl border border-slate-200/80 flex items-center justify-between text-xs"
-                    >
-                      <div>
-                        <div className="flex items-center gap-2">
-                          <span className="font-bold text-slate-900">{b.customerName}</span>
-                          <span className="text-[10px] font-mono bg-indigo-50 text-indigo-700 px-1.5 py-0.2 rounded">
-                            {b.bookingId}
-                          </span>
-                        </div>
-                        <p className="text-[11px] text-slate-500 mt-0.5">
-                          Seats: <strong className="text-slate-800">{b.seats?.join(', ')}</strong>
-                        </p>
-                      </div>
+                  /* Manifest View */
+                  <div className="space-y-2 max-h-72 overflow-y-auto custom-scrollbar">
+                    {(!seatMapData.recentBookings || seatMapData.recentBookings.length === 0) ? (
+                      <p className="text-center text-xs text-slate-400 py-10">
+                        No confirmed reservations on this showtime yet.
+                      </p>
+                    ) : (
+                      seatMapData.recentBookings.map((b, idx) => (
+                        <div
+                          key={b.bookingId || idx}
+                          className="p-3 bg-white/[0.03] rounded-xl border border-white/10 flex items-center justify-between text-xs hover:border-white/20 transition"
+                        >
+                          <div>
+                            <div className="flex items-center gap-2">
+                              <span className="font-bold text-white">{b.customerName}</span>
+                              <span className="text-[10px] font-mono bg-white/10 text-slate-300 px-1.5 py-0.5 rounded border border-white/10">
+                                {b.bookingId}
+                              </span>
+                            </div>
+                            <p className="text-[11px] text-slate-400 mt-1">
+                              Seats: <strong className="text-white">{b.seats?.join(', ')}</strong>
+                            </p>
+                          </div>
 
-                      <div className="text-right">
-                        <span className="font-mono font-bold text-slate-900">₹{b.totalAmount}</span>
-                        <div className="text-[10px] text-emerald-600 font-semibold mt-0.5">
-                          {b.ticketValidated ? '✓ Scanned at Gate' : 'Pending Entry'}
+                          <div className="text-right">
+                            <span className="font-mono font-bold text-white">₹{b.totalAmount}</span>
+                            <div className={`text-[10px] font-semibold mt-0.5 ${b.ticketValidated ? 'text-emerald-400' : 'text-amber-400'}`}>
+                              {b.ticketValidated ? '✓ Scanned at Gate' : 'Pending Entry'}
+                            </div>
+                          </div>
                         </div>
-                      </div>
-                    </div>
-                  ))
+                      ))
+                    )}
+                  </div>
                 )}
               </div>
-            )}
-          </div>
-        );
-      })() : null}
+            );
+          })() : null}
       </Modal>
 
       {/* ========================================================
@@ -1868,7 +1877,9 @@ export default function VendorShowsPage() {
         message={`Are you sure you want to cancel '${selectedShow?.movieTitle}' at ${selectedShow?.startTime} on ${selectedShow?.showDate}? Customers will no longer be able to book this show, and current status will be marked as cancelled.`}
         confirmText="Yes, Cancel Showtime"
         type="danger"
+        theme="dark"
       />
     </div>
   );
 }
+

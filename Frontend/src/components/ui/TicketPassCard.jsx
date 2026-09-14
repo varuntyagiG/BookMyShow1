@@ -10,6 +10,7 @@ import {
   Sparkles
 } from 'lucide-react';
 import { motion } from 'framer-motion';
+import { playPop } from '../../utils/soundEffects';
 
 export default function TicketPassCard({
   booking,
@@ -33,12 +34,13 @@ export default function TicketPassCard({
     <motion.div
       initial={{ opacity: 0, y: 16 }}
       animate={{ opacity: 1, y: 0 }}
-      whileHover={{ y: -4 }}
-      transition={{ type: 'spring', stiffness: 320, damping: 24 }}
-      className={`relative bg-white rounded-2xl border transition-all duration-200 overflow-hidden shadow-xs hover:shadow-md flex flex-col justify-between group ${
+      whileHover={{ y: -6, scale: 1.01 }}
+      transition={{ type: 'spring', stiffness: 350, damping: 24 }}
+      style={{ perspective: '1000px', transformStyle: 'preserve-3d' }}
+      className={`relative bg-white rounded-3xl border transition-all duration-300 overflow-hidden shadow-[0_8px_24px_-6px_rgba(0,0,0,0.06)] hover:shadow-[0_20px_35px_-8px_rgba(248,68,100,0.22)] flex flex-col justify-between group ${
         isCancelled
           ? 'border-gray-200 bg-gray-50/50 opacity-80'
-          : 'border-slate-200/90 hover:border-red-300'
+          : 'border-slate-200/90 hover:border-[#F84464]/50'
       }`}
     >
       {/* Top Accent Strip */}
@@ -211,8 +213,11 @@ export default function TicketPassCard({
 
           <button
             type="button"
-            onClick={() => onViewTicket?.(booking)}
-            className="px-3.5 py-1.5 bg-[#222432] hover:bg-[#161822] text-white text-xs font-bold rounded-xl transition-all shadow-2xs flex items-center justify-center gap-1.5 cursor-pointer shrink-0"
+            onClick={() => {
+              playPop();
+              onViewTicket?.(booking);
+            }}
+            className="px-3.5 py-1.5 bg-[#222432] hover:bg-[#161822] text-white text-xs font-bold rounded-xl transition-all shadow-2xs flex items-center justify-center gap-1.5 cursor-pointer shrink-0 active:scale-95 hover:shadow-md"
           >
             <QrCode className="w-3.5 h-3.5 text-[#F84464]" />
             <span>M-Ticket</span>
