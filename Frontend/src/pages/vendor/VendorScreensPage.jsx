@@ -34,7 +34,9 @@ import {
   X,
   Ticket,
   Volume2,
-  CheckCircle
+  CheckCircle,
+  Edit2,
+  ArrowRight
 } from 'lucide-react';
 
 const SCREEN_TYPES = [
@@ -935,7 +937,7 @@ export default function VendorScreensPage() {
           </Button>
         </div>
       ) : (
-        <div className="grid grid-cols-1 xl:grid-cols-2 gap-6">
+        <div className="grid grid-cols-1 md:grid-cols-2 xl:grid-cols-3 gap-4 sm:gap-5 items-stretch">
           {filteredScreens.map((screen) => {
             const formatStyle = getFormatBadgeStyle(screen.screenType);
             const FormatIcon = formatStyle.icon;
@@ -965,301 +967,264 @@ export default function VendorScreensPage() {
             const normalPct = Math.max(0, 100 - reclinerPct - premiumPct);
 
             const featuresList = [
-              screen.screenType || 'Standard 2D',
-              `Tiered Layout (${rowCount} Rows A-${lastRowLetter})`,
-              'M-Ticket Instant Entry',
               'Dolby Atmos 7.1 Certified',
+              'M-Ticket Instant Entry',
               'Interactive Matrix Ready'
             ];
 
             return (
               <motion.div
                 key={screen.id || screen._id}
-                whileHover={{ y: -3 }}
+                layout
+                whileHover={{ y: -2 }}
                 transition={{ duration: 0.2 }}
-                className="bg-white rounded-xl border border-gray-200 hover:border-gray-300 shadow-sm hover:shadow-md transition-all duration-300 flex flex-col justify-between overflow-hidden group relative"
+                className="relative bg-white rounded-2xl border border-gray-200/90 shadow-xs hover:shadow-lg hover:border-gray-300 transition-all duration-200 flex flex-col justify-between overflow-hidden group p-4 sm:p-5 h-full"
               >
-                {/* Top Accent Line */}
-                <div className={`h-[2px] w-full bg-gradient-to-r ${formatStyle.ribbon} opacity-60 group-hover:opacity-100 transition-opacity`} />
+                {/* Top Format Laser Accent */}
+                <div className={`absolute top-0 left-0 right-0 h-[2px] bg-gradient-to-r ${formatStyle.ribbon}`} />
 
-                <div className="p-6 space-y-5">
-                  {/* 1. Header */}
-                  <div className="flex flex-col sm:flex-row sm:items-start justify-between gap-4">
-                    <div className="flex items-start gap-3.5 min-w-0 flex-1">
-                      <div className="w-12 h-12 rounded-xl bg-gray-100 border border-gray-200 text-gray-700 flex items-center justify-center shrink-0 shadow-xs group-hover:bg-[#F84464] group-hover:text-white transition-all duration-300">
-                        <Tv size={22} />
+                <div className="space-y-3.5">
+                  {/* Section 1: Top Identity & Quick Actions */}
+                  <div className="space-y-1.5">
+                    {/* Upper Tag Row: Hall #, Format, Live Status, Edit, Delete */}
+                    <div className="flex items-center justify-between gap-2">
+                      <div className="flex items-center gap-1.5 min-w-0 flex-wrap">
+                        <span className="text-[10px] font-black uppercase tracking-wider px-2 py-0.5 rounded-md bg-gray-100 text-gray-700 border border-gray-200 font-mono">
+                          HALL: #{screen.screenNumber || 'AUDI-1'}
+                        </span>
+                        <span className={`inline-flex items-center gap-1 text-[10px] font-bold uppercase tracking-wider px-2 py-0.5 rounded-md border ${formatStyle.badgeBg}`}>
+                          <FormatIcon size={11} />
+                          <span>{screen.screenType || 'Standard 2D'}</span>
+                        </span>
+                      </div>
+
+                      <div className="flex items-center gap-1.5 shrink-0">
+                        <span
+                          className={`inline-flex items-center gap-1 text-[10px] font-bold px-2 py-0.5 rounded-full border ${
+                            screen.status !== 'inactive'
+                              ? 'bg-emerald-50 text-emerald-700 border-emerald-200/80'
+                              : 'bg-gray-100 text-gray-600 border-gray-200'
+                          }`}
+                        >
+                          {screen.status !== 'inactive' && (
+                            <span className="w-1.5 h-1.5 rounded-full bg-emerald-500 animate-pulse shrink-0" />
+                          )}
+                          <span>{screen.status !== 'inactive' ? 'Active' : 'Offline'}</span>
+                        </span>
+
+                        <button
+                          type="button"
+                          onClick={() => openEditLayoutModal(screen)}
+                          className="w-7 h-7 rounded-lg bg-gray-50 hover:bg-gray-100 text-gray-500 hover:text-gray-900 border border-gray-200 flex items-center justify-center transition shadow-2xs cursor-pointer"
+                          title="Edit Screen Layout"
+                        >
+                          <Edit2 size={12} />
+                        </button>
+                        <button
+                          type="button"
+                          onClick={() => openDeleteModal(screen)}
+                          className="w-7 h-7 rounded-lg bg-gray-50 hover:bg-rose-50 text-gray-400 hover:text-rose-600 border border-gray-200 flex items-center justify-center transition shadow-2xs cursor-pointer"
+                          title="Delete Screen"
+                        >
+                          <Trash2 size={12} />
+                        </button>
+                      </div>
+                    </div>
+
+                    {/* Full Screen Name */}
+                    <h3 className="text-base sm:text-lg font-black text-gray-900 leading-snug tracking-tight break-words group-hover:text-[#F84464] transition-colors">
+                      {screen.name}
+                    </h3>
+
+                    {/* Host Multiplex & Location Subtitle */}
+                    <div className="flex items-center gap-1.5 text-xs text-gray-500 font-medium">
+                      <MapPin size={12} className="text-[#F84464] shrink-0" />
+                      <span className="font-bold text-gray-800 truncate">{screen.cinema?.name || 'Multiplex Venue'}</span>
+                      {screen.cinema?.city && <span className="text-gray-500 truncate">• {screen.cinema.city}</span>}
+                    </div>
+                  </div>
+
+                  {/* Section 2: 2x2 Spacious Telemetry Grid (Zero cut-offs, double width) */}
+                  <div className="grid grid-cols-1 sm:grid-cols-2 gap-2">
+                    {/* Tile 1: Capacity */}
+                    <div className="bg-gray-50/90 rounded-xl p-2.5 border border-gray-200/70 flex items-center gap-2.5">
+                      <div className="w-8 h-8 rounded-lg bg-indigo-50 text-indigo-600 border border-indigo-100 flex items-center justify-center shrink-0">
+                        <Tv size={15} />
                       </div>
                       <div className="min-w-0 flex-1">
-                        <div className="flex flex-wrap items-center gap-2 mb-1">
-                          <span className="text-[10px] font-black uppercase tracking-wider px-2 py-0.5 rounded-md bg-gray-100 text-gray-700 border border-gray-200 font-mono">
-                            HALL: #{screen.screenNumber || 'AUDI-1'}
-                          </span>
-                          <span className={`text-[10px] font-bold uppercase tracking-wider px-2 py-0.5 rounded-md border ${formatStyle.badgeBg}`}>
-                            {screen.screenType || 'Standard 2D'}
-                          </span>
+                        <div className="text-sm font-black text-gray-900 leading-tight">
+                          {screen.totalCapacity || 120} Seats
                         </div>
-
-                        <h3 className="text-lg font-black text-gray-900 leading-snug break-words group-hover:text-[#F84464] transition-colors">
-                          {screen.name}
-                        </h3>
-
-                        <div className="flex items-center gap-1.5 text-xs text-gray-500 mt-0.5">
-                          <MapPin size={13} className="text-[#F84464] shrink-0" />
-                          <span className="font-bold text-gray-800">{screen.cinema?.name || 'Multiplex Venue'}</span>
-                          {screen.cinema?.city && <span className="text-gray-500">• {screen.cinema.city}</span>}
-                        </div>
-                      </div>
-                    </div>
-
-                    <div className="flex sm:flex-col items-center sm:items-end justify-between gap-2 shrink-0">
-                      <span
-                        className={`inline-flex items-center gap-1.5 text-[11px] font-bold px-2.5 py-0.5 rounded-full border ${
-                          screen.status !== 'inactive'
-                            ? 'bg-emerald-50 text-emerald-700 border-emerald-200'
-                            : 'bg-gray-100 text-gray-600 border-gray-200'
-                        }`}
-                      >
-                        {screen.status !== 'inactive' && (
-                          <span className="relative flex h-2 w-2">
-                            <span className="animate-ping absolute inline-flex h-full w-full rounded-full bg-emerald-400 opacity-75"></span>
-                            <span className="relative inline-flex rounded-full h-2 w-2 bg-emerald-500"></span>
-                          </span>
-                        )}
-                        <span>{screen.status !== 'inactive' ? 'Active & Programmed' : 'Offline'}</span>
-                      </span>
-                    </div>
-                  </div>
-
-                  {/* 2. Full Location & Multiplex */}
-                  <div className="rounded-lg bg-gray-50 border border-gray-200 p-3.5 space-y-2.5">
-                    <div className="flex items-start gap-2.5">
-                      <div className="w-6 h-6 rounded-md bg-rose-50 border border-rose-200 flex items-center justify-center shrink-0 mt-0.5 text-[#F84464]">
-                        <Building2 size={13} />
-                      </div>
-                      <div className="flex-1 min-w-0">
-                        <span className="text-[10px] font-bold uppercase tracking-wider text-gray-500 block mb-0.5">
-                          Host Cinema Multiplex & Location
-                        </span>
-                        <p className="text-xs font-medium text-gray-700 leading-relaxed break-words">
-                          {screen.cinema?.address || `${screen.cinema?.name || 'Cinema Multiplex'}, ${screen.cinema?.city || ''}`}
-                        </p>
-                      </div>
-                    </div>
-
-                    <div className="pt-2 border-t border-gray-200 flex flex-wrap items-center gap-2.5 text-xs">
-                      <div className="inline-flex items-center gap-1.5 bg-white px-2.5 py-1 rounded-md border border-gray-200 text-gray-700 shadow-xs">
-                        <FormatIcon size={12} className="text-[#F84464] shrink-0" />
-                        <span className="font-semibold text-[11px]">{screen.screenType || 'Standard 2D'}</span>
-                      </div>
-
-                      <div className="inline-flex items-center gap-1.5 bg-white px-2.5 py-1 rounded-md border border-gray-200 text-gray-700 shadow-xs">
-                        <Layers size={12} className="text-indigo-600 shrink-0" />
-                        <span className="font-semibold text-[11px]">{rowCount} Rows ({screen.totalCapacity} Seats)</span>
-                      </div>
-
-                      <button
-                        type="button"
-                        onClick={() => openPreviewMatrixModal(screen)}
-                        className="inline-flex items-center gap-1.5 bg-white hover:bg-gray-100 px-2.5 py-1 rounded-md border border-gray-200 text-gray-700 shadow-xs transition cursor-pointer"
-                        title="Interactive Seat Layout Preview"
-                      >
-                        <Eye size={12} className="text-gray-500 shrink-0" />
-                        <span className="font-semibold text-[11px]">Seat Matrix Preview →</span>
-                      </button>
-                    </div>
-                  </div>
-
-                  {/* 3. Multiplex Telemetry Grid */}
-                  <div className="grid grid-cols-2 sm:grid-cols-4 gap-2.5">
-                    <div className="p-3 rounded-lg bg-indigo-50 border border-indigo-100 flex flex-col justify-between">
-                      <div className="flex items-center justify-between mb-1">
-                        <span className="text-[10px] font-bold uppercase tracking-wider text-indigo-700">Capacity</span>
-                        <Tv size={14} className="text-indigo-600" />
-                      </div>
-                      <div>
-                        <span className="text-lg font-black text-gray-900 leading-none">
-                          {screen.totalCapacity || 120}
-                        </span>
-                        <span className="text-[10px] font-semibold text-gray-500 block mt-0.5">
-                          Total Seats
+                        <span className="text-[10px] text-gray-500 font-medium block mt-0.5 truncate">
+                          Total Capacity
                         </span>
                       </div>
                     </div>
 
-                    <div className="p-3 rounded-lg bg-purple-50 border border-purple-100 flex flex-col justify-between">
-                      <div className="flex items-center justify-between mb-1">
-                        <span className="text-[10px] font-bold uppercase tracking-wider text-purple-700">Layout</span>
-                        <Armchair size={14} className="text-purple-600" />
+                    {/* Tile 2: Layout Rows */}
+                    <div className="bg-gray-50/90 rounded-xl p-2.5 border border-gray-200/70 flex items-center gap-2.5">
+                      <div className="w-8 h-8 rounded-lg bg-purple-50 text-purple-600 border border-purple-100 flex items-center justify-center shrink-0">
+                        <Armchair size={15} />
                       </div>
-                      <div>
-                        <span className="text-lg font-black text-gray-900 leading-none">
+                      <div className="min-w-0 flex-1">
+                        <div className="text-sm font-black text-gray-900 leading-tight">
                           {rowCount} Rows
-                        </span>
-                        <span className="text-[10px] font-semibold text-gray-500 block mt-0.5">
-                          A to {lastRowLetter}
+                        </div>
+                        <span className="text-[10px] text-gray-500 font-medium block mt-0.5 truncate">
+                          Rows A to {lastRowLetter}
                         </span>
                       </div>
                     </div>
 
-                    <div className="p-3 rounded-lg bg-amber-50 border border-amber-100 flex flex-col justify-between">
-                      <div className="flex items-center justify-between mb-1">
-                        <span className="text-[10px] font-bold uppercase tracking-wider text-amber-700">Full House</span>
-                        <TrendingUp size={14} className="text-amber-600" />
+                    {/* Tile 3: Max Potential Gross Yield */}
+                    <div className="bg-gray-50/90 rounded-xl p-2.5 border border-gray-200/70 flex items-center gap-2.5">
+                      <div className="w-8 h-8 rounded-lg bg-emerald-50 text-emerald-600 border border-emerald-100 flex items-center justify-center shrink-0">
+                        <DollarSign size={15} />
                       </div>
-                      <div>
-                        <span className="text-lg font-black text-gray-900 leading-none truncate">
+                      <div className="min-w-0 flex-1">
+                        <div className="text-sm font-black text-gray-900 leading-tight">
                           ₹{maxScreenGross.toLocaleString('en-IN')}
-                        </span>
-                        <span className="text-[10px] font-semibold text-gray-500 block mt-0.5">
+                        </div>
+                        <span className="text-[10px] text-gray-500 font-medium block mt-0.5 truncate">
                           Max Yield / Show
                         </span>
                       </div>
                     </div>
 
-                    <div className="p-3 rounded-lg bg-emerald-50 border border-emerald-100 flex flex-col justify-between">
-                      <div className="flex items-center justify-between mb-1">
-                        <span className="text-[10px] font-bold uppercase tracking-wider text-emerald-700">Ticketing</span>
-                        <Ticket size={14} className="text-emerald-600" />
+                    {/* Tile 4: Ticketing Admission */}
+                    <div className="bg-gray-50/90 rounded-xl p-2.5 border border-gray-200/70 flex items-center gap-2.5">
+                      <div className="w-8 h-8 rounded-lg bg-rose-50 text-[#F84464] border border-rose-100 flex items-center justify-center shrink-0">
+                        <Ticket size={15} />
                       </div>
-                      <div>
-                        <span className="text-xs font-black text-emerald-700 leading-none block">
+                      <div className="min-w-0 flex-1">
+                        <div className="text-sm font-black text-gray-900 leading-tight">
                           M-Ticket
-                        </span>
-                        <span className="text-[10px] font-semibold text-gray-500 block mt-0.5">
-                          Paperless Entry
+                        </div>
+                        <span className="text-[10px] text-gray-500 font-medium block mt-0.5 truncate">
+                          Digital Scan Entry
                         </span>
                       </div>
                     </div>
                   </div>
 
-                  {/* 4. Tier Breakdown */}
-                  <div className="rounded-lg border border-gray-200 bg-gray-50 p-3.5 space-y-2.5">
-                    <div className="flex items-center justify-between">
-                      <span className="text-[10px] font-bold uppercase tracking-wider text-gray-500 flex items-center gap-1.5">
-                        <Sliders size={12} className="text-gray-400" />
-                        Auditorium Seating Tiers ({reclinerCount > 0 ? '3 Tiers' : '2 Tiers'})
+                  {/* Section 3: Seating Tier Breakdown & Prices */}
+                  <div className="rounded-xl border border-gray-200/80 bg-gray-50/60 p-2.5 space-y-2">
+                    <div className="flex items-center justify-between text-[11px]">
+                      <span className="text-[10px] font-bold uppercase tracking-wider text-gray-400 flex items-center gap-1">
+                        <Sliders size={11} className="text-gray-400" />
+                        Seating Matrix ({reclinerCount > 0 ? '3 Tiers' : '2 Tiers'})
                       </span>
                       <button
                         type="button"
                         onClick={() => openEditLayoutModal(screen)}
-                        className="text-[11px] font-bold text-[#F84464] hover:underline cursor-pointer"
+                        className="text-[10px] font-bold text-[#F84464] hover:underline cursor-pointer"
                       >
-                        Configure Layout →
+                        Edit Fares →
                       </button>
                     </div>
 
-                    {/* Progress Bar */}
-                    <div className="w-full h-2 rounded-full overflow-hidden flex bg-gray-200">
+                    {/* Proportional Multi-tier Bar */}
+                    <div className="w-full h-1.5 rounded-full overflow-hidden flex bg-gray-200">
                       {reclinerCount > 0 && (
                         <div
                           style={{ width: `${reclinerPct}%` }}
-                          className="bg-[#F84464] h-full transition-all duration-300"
+                          className="bg-[#F84464] h-full"
                           title={`Recliner VIP: ${reclinerCount} seats (${reclinerPct}%)`}
                         />
                       )}
                       {premiumCount > 0 && (
                         <div
                           style={{ width: `${premiumPct}%` }}
-                          className="bg-indigo-600 h-full transition-all duration-300"
+                          className="bg-indigo-600 h-full"
                           title={`Premium: ${premiumCount} seats (${premiumPct}%)`}
                         />
                       )}
                       {normalCount > 0 && (
                         <div
                           style={{ width: `${normalPct}%` }}
-                          className="bg-gray-400 h-full transition-all duration-300"
-                          title={`Normal Classic: ${normalCount} seats (${normalPct}%)`}
+                          className="bg-gray-400 h-full"
+                          title={`Classic Normal: ${normalCount} seats (${normalPct}%)`}
                         />
                       )}
                     </div>
 
-                    {/* Tier Pills */}
-                    <div className="flex flex-wrap gap-2">
+                    {/* Tier Pills with exact count and price */}
+                    <div className="flex flex-wrap gap-1.5 text-[11px]">
                       {reclinerCount > 0 && (
-                        <div className="bg-white border border-gray-200 rounded-lg px-2.5 py-1 text-xs flex items-center gap-1.5 shadow-xs">
-                          <span className="w-2 h-2 rounded-full bg-[#F84464] shrink-0"></span>
-                          <span className="font-bold text-gray-800">Recliner VIP</span>
-                          <span className="text-[10px] font-bold text-rose-700 bg-rose-50 px-1.5 py-0.5 rounded border border-rose-200">
+                        <div className="bg-white border border-gray-200 rounded-md px-2 py-0.5 flex items-center gap-1.5 shadow-2xs">
+                          <span className="w-1.5 h-1.5 rounded-full bg-[#F84464] shrink-0" />
+                          <span className="font-bold text-gray-800">Recliner</span>
+                          <span className="text-[9px] font-bold text-rose-700 bg-rose-50 px-1 rounded border border-rose-200/60">
                             ₹{reclinerPrice}
                           </span>
-                          <span className="text-[10px] text-gray-500 font-medium">{reclinerCount} seats</span>
+                          <span className="text-[10px] text-gray-400">({reclinerCount}s)</span>
                         </div>
                       )}
-                      <div className="bg-white border border-gray-200 rounded-lg px-2.5 py-1 text-xs flex items-center gap-1.5 shadow-xs">
-                        <span className="w-2 h-2 rounded-full bg-indigo-600 shrink-0"></span>
-                        <span className="font-bold text-gray-800">Premium Tier</span>
-                        <span className="text-[10px] font-bold text-indigo-700 bg-indigo-50 px-1.5 py-0.5 rounded border border-indigo-200">
+                      <div className="bg-white border border-gray-200 rounded-md px-2 py-0.5 flex items-center gap-1.5 shadow-2xs">
+                        <span className="w-1.5 h-1.5 rounded-full bg-indigo-600 shrink-0" />
+                        <span className="font-bold text-gray-800">Premium</span>
+                        <span className="text-[9px] font-bold text-indigo-700 bg-indigo-50 px-1 rounded border border-indigo-200/60">
                           ₹{premiumPrice}
                         </span>
-                        <span className="text-[10px] text-gray-500 font-medium">{premiumCount} seats</span>
+                        <span className="text-[10px] text-gray-400">({premiumCount}s)</span>
                       </div>
-                      <div className="bg-white border border-gray-200 rounded-lg px-2.5 py-1 text-xs flex items-center gap-1.5 shadow-xs">
-                        <span className="w-2 h-2 rounded-full bg-gray-400 shrink-0"></span>
-                        <span className="font-bold text-gray-800">Classic Normal</span>
-                        <span className="text-[10px] font-bold text-gray-700 bg-gray-100 px-1.5 py-0.5 rounded border border-gray-200">
+                      <div className="bg-white border border-gray-200 rounded-md px-2 py-0.5 flex items-center gap-1.5 shadow-2xs">
+                        <span className="w-1.5 h-1.5 rounded-full bg-gray-400 shrink-0" />
+                        <span className="font-bold text-gray-800">Classic</span>
+                        <span className="text-[9px] font-bold text-gray-700 bg-gray-100 px-1 rounded border border-gray-200">
                           ₹{normalPrice}
                         </span>
-                        <span className="text-[10px] text-gray-500 font-medium">{normalCount} seats</span>
+                        <span className="text-[10px] text-gray-400">({normalCount}s)</span>
                       </div>
                     </div>
                   </div>
 
-                  {/* 5. Features */}
-                  <div>
-                    <div className="flex items-center justify-between mb-1.5">
-                      <span className="text-[10px] font-bold text-gray-500 uppercase tracking-wider">
-                        Auditorium Features & Display Specifications
+                  {/* Section 4: Compact Audio & Features Specs */}
+                  <div className="flex flex-wrap items-center gap-1 text-[10px] text-gray-500">
+                    {featuresList.map((feat, fIdx) => (
+                      <span
+                        key={fIdx}
+                        className="inline-flex items-center gap-1 px-2 py-0.5 rounded-md bg-gray-50 border border-gray-200/80 text-gray-600 font-medium"
+                      >
+                        <CheckCircle size={9} className="text-emerald-500" />
+                        <span>{feat}</span>
                       </span>
-                      <span className="text-[10px] text-gray-500 font-bold">
-                        {featuresList.length} Enabled
-                      </span>
-                    </div>
-                    <div className="flex flex-wrap gap-1.5">
-                      {featuresList.map(renderScreenFeaturePill)}
-                    </div>
+                    ))}
                   </div>
                 </div>
 
-                {/* 6. Card Footer Actions */}
-                <div className="p-4 sm:px-6 border-t border-gray-100 bg-gray-50/70 flex flex-wrap items-center justify-between gap-3">
-                  <div className="flex items-center gap-2">
-                    <button
-                      type="button"
-                      onClick={() => openEditLayoutModal(screen)}
-                      className="inline-flex items-center gap-1.5 text-xs font-bold text-white bg-[#F84464] hover:bg-[#E03A58] px-3.5 py-2 rounded-lg shadow-sm transition cursor-pointer"
-                    >
-                      <Sliders size={14} className="text-white" />
-                      <span>Configure Layout</span>
-                    </button>
-
+                {/* Section 5: Command Action Footer */}
+                <div className="mt-4 pt-3 border-t border-gray-100 flex items-center justify-between gap-2">
+                  <div className="flex items-center gap-1.5">
                     <button
                       type="button"
                       onClick={() => openPreviewMatrixModal(screen)}
-                      className="inline-flex items-center gap-1.5 text-xs font-bold text-gray-700 hover:text-gray-900 bg-white hover:bg-gray-50 px-3 py-2 rounded-lg border border-gray-300 shadow-sm transition cursor-pointer"
+                      className="inline-flex items-center gap-1 text-xs font-bold text-gray-700 hover:text-gray-900 bg-gray-50 hover:bg-gray-100 px-2.5 py-1.5 rounded-lg border border-gray-200 transition shadow-2xs cursor-pointer"
+                      title="Inspect Seating Grid Matrix"
                     >
-                      <Eye size={14} className="text-gray-400" />
-                      <span>Inspect Grid</span>
+                      <Eye size={12} className="text-gray-500" />
+                      <span>Grid</span>
                     </button>
 
                     <Link
                       to="/vendor/shows"
-                      className="inline-flex items-center gap-1.5 text-xs font-bold text-gray-700 hover:text-gray-900 bg-white hover:bg-gray-50 px-3 py-2 rounded-lg border border-gray-300 shadow-sm transition"
+                      className="inline-flex items-center gap-1 text-xs font-bold text-gray-700 hover:text-gray-900 bg-gray-50 hover:bg-gray-100 px-2.5 py-1.5 rounded-lg border border-gray-200 transition shadow-2xs"
+                      title="Schedule Shows for this Screen"
                     >
-                      <Calendar size={14} className="text-indigo-600" />
-                      <span>Schedule Shows</span>
+                      <Calendar size={12} className="text-indigo-600" />
+                      <span>Shows</span>
                     </Link>
                   </div>
 
-                  <div className="flex items-center gap-1.5">
-                    <button
-                      type="button"
-                      onClick={() => openDeleteModal(screen)}
-                      className="p-2 text-gray-400 hover:text-rose-600 hover:bg-rose-50 rounded-lg border border-gray-300 transition shadow-sm cursor-pointer"
-                      title="Delete Screen"
-                    >
-                      <Trash2 size={14} />
-                    </button>
-                  </div>
+                  <button
+                    type="button"
+                    onClick={() => openEditLayoutModal(screen)}
+                    className="inline-flex items-center gap-1.5 text-xs font-bold text-white bg-[#F84464] hover:bg-[#E03A58] px-3.5 py-1.5 rounded-lg shadow-sm transition active:scale-95 cursor-pointer"
+                  >
+                    <Sliders size={12} className="text-white" />
+                    <span>Configure Layout</span>
+                    <ArrowRight size={11} />
+                  </button>
                 </div>
               </motion.div>
             );

@@ -38,7 +38,8 @@ import {
   ExternalLink,
   Copy,
   Check,
-  Sparkles
+  Sparkles,
+  ArrowRight
 } from 'lucide-react';
 
 function renderFacilityPill(facility) {
@@ -644,439 +645,205 @@ export default function VendorCinemasPage() {
         <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-2 xl:grid-cols-3 gap-5 items-stretch">
           {filteredCinemas.map((cinema) => {
             const cinemaId = cinema.id || cinema._id;
-            const isExpanded = isCardExpanded(cinemaId);
             const screensCount = cinema.screensCount !== undefined ? cinema.screensCount : (cinema.screens ? cinema.screens.length : 0);
             const seatsCount = cinema.totalSeatsCapacity || (screensCount ? screensCount * 120 : 0);
-            const facilitiesCount = (cinema.facilities || []).length;
 
             return (
               <motion.div
                 key={cinemaId}
                 layout
-                whileHover={{ y: -3 }}
+                whileHover={{ y: -2 }}
                 transition={{ duration: 0.2 }}
-                className={`relative bg-white rounded-xl border transition-all duration-300 flex flex-col justify-between overflow-hidden group shadow-sm ${
-                  isExpanded
-                    ? 'border-[#F84464] ring-1 ring-[#F84464]/30 shadow-md'
-                    : 'border-gray-200 hover:border-gray-300 hover:shadow-md'
-                }`}
+                className="relative bg-white rounded-2xl border border-gray-200/90 shadow-xs hover:shadow-lg hover:border-gray-300 transition-all duration-200 flex flex-col justify-between overflow-hidden group p-4 sm:p-5 h-full"
               >
-                <div className="p-4 sm:p-5 space-y-3.5 flex-1 flex flex-col justify-between">
-                  <div>
-                    {/* 1. Top Header: Reference Tag, Date Added & Operational Status Badge */}
-                    <div className="flex items-center justify-between gap-2 pb-2.5 border-b border-gray-100">
-                      <div className="flex items-center gap-2 min-w-0">
-                        <span className="text-[10px] font-mono font-bold uppercase tracking-wider px-2 py-0.5 rounded-md bg-gray-100 text-gray-700 border border-gray-200 shrink-0">
-                          REF: #CIN-{(cinemaId || '').slice(-6).toUpperCase()}
-                        </span>
-                        {cinema.createdAt && (
-                          <span className="text-[10px] text-gray-500 font-medium truncate hidden sm:inline">
-                            Added {new Date(cinema.createdAt).toLocaleDateString('en-US', { month: 'short', day: 'numeric', year: 'numeric' })}
-                          </span>
-                        )}
-                      </div>
+                {/* Top Theatrical Laser Edge Accent */}
+                <div className="absolute top-0 left-0 right-0 h-[2px] bg-gradient-to-r from-[#F84464] via-rose-400 to-indigo-500" />
 
-                      <span
-                        className={`inline-flex items-center gap-1.5 text-[10px] font-bold px-2.5 py-0.5 rounded-full border shrink-0 ${
-                          cinema.status === 'active'
-                            ? 'bg-emerald-50 text-emerald-700 border-emerald-200'
-                            : 'bg-gray-100 text-gray-600 border-gray-200'
-                        }`}
-                      >
-                        {cinema.status === 'active' && (
-                          <span className="relative flex h-1.5 w-1.5">
-                            <span className="animate-ping absolute inline-flex h-full w-full rounded-full bg-emerald-400 opacity-75"></span>
-                            <span className="relative inline-flex rounded-full h-1.5 w-1.5 bg-emerald-500"></span>
-                          </span>
-                        )}
-                        <span>{cinema.status === 'active' ? 'Live & Operational' : 'Inactive Venue'}</span>
-                      </span>
-                    </div>
-
-                    {/* 2. Multiplex Name, City/State & Registered Street Address */}
-                    <div className="space-y-2 mt-3">
-                      <div
+                <div>
+                  {/* Zone 1: Multiplex Identity Header (Full-Width Title & Balanced Subtitle Row) */}
+                  <div className="space-y-2">
+                    {/* Full-Width Multiplex Name with Executive Dossier Action */}
+                    <div className="flex items-start justify-between gap-2 group/title">
+                      <h3
                         onClick={() => openDossierModal(cinema)}
-                        className="flex items-start gap-3 cursor-pointer group/title select-none"
+                        className="text-base sm:text-lg font-black text-gray-900 leading-snug tracking-tight break-words hover:text-[#F84464] transition-colors cursor-pointer flex-1"
                         title={`Click to open full executive dossier for ${cinema.name}`}
                       >
-                        <div className="w-11 h-11 rounded-xl bg-gray-100 border border-gray-200 text-gray-700 flex items-center justify-center shrink-0 shadow-xs group-hover/title:bg-[#F84464] group-hover/title:text-white transition-all duration-300">
-                          <Building2 size={21} />
-                        </div>
-                        <div className="min-w-0 flex-1">
-                          <div className="flex items-center gap-1.5">
-                            <h3 className="text-base font-black text-gray-900 leading-snug break-words group-hover/title:text-[#F84464] transition-colors">
-                              {cinema.name}
-                            </h3>
-                            <span className="inline-flex items-center gap-0.5 text-[9px] font-bold text-[#F84464] bg-red-50 border border-red-200 px-1.5 py-0.5 rounded opacity-80 group-hover/title:opacity-100 transition-opacity shrink-0">
-                              <span>Pop-up</span>
-                              <ExternalLink size={8} />
-                            </span>
-                          </div>
-                          <div className="flex items-center gap-1.5 text-xs text-gray-600 font-medium mt-0.5">
-                            <MapPin size={13} className="text-[#F84464] shrink-0" />
-                            <span className="font-bold text-gray-900">{cinema.city}</span>
-                            {cinema.state && <span className="text-gray-500 font-normal">• {cinema.state}</span>}
-                          </div>
-                        </div>
-                      </div>
+                        {cinema.name}
+                      </h3>
+                      <button
+                        onClick={() => openDossierModal(cinema)}
+                        className="p-1 rounded-md text-gray-400 hover:text-[#F84464] hover:bg-red-50 transition shrink-0 mt-0.5 cursor-pointer"
+                        title="Open Details Dossier"
+                      >
+                        <ExternalLink size={14} />
+                      </button>
+                    </div>
 
-                      {/* Full Physical Address Pill */}
-                      <div className="rounded-lg bg-gray-50 border border-gray-200 p-2.5 flex items-start gap-2 text-xs">
-                        <span className="text-[10px] font-bold text-gray-500 uppercase tracking-wider shrink-0 mt-0.5">
-                          Address:
-                        </span>
-                        <p className="text-gray-700 font-medium text-[11px] leading-relaxed break-words flex-1">
-                          {cinema.address || 'Address registered on partner file.'}
-                        </p>
+                    {/* Subtitle Row: Location on Left, Status & Actions on Right */}
+                    <div className="flex items-center justify-between gap-2 flex-wrap text-xs">
+                      {/* Location & Maps Shortcut */}
+                      <div className="flex items-center gap-1.5 text-gray-500 font-medium min-w-0">
+                        <MapPin size={12} className="text-[#F84464] shrink-0" />
+                        <span className="font-bold text-gray-800 truncate">{cinema.city}</span>
+                        {cinema.state && <span className="truncate hidden sm:inline">• {cinema.state}</span>}
                         {cinema.address && (
                           <a
                             href={`https://www.google.com/maps/search/?api=1&query=${encodeURIComponent(`${cinema.name}, ${cinema.address}, ${cinema.city}`)}`}
                             target="_blank"
                             rel="noopener noreferrer"
-                            className="text-[10px] font-bold text-[#F84464] hover:underline flex items-center gap-0.5 shrink-0 bg-white border border-gray-200 px-1.5 py-0.5 rounded shadow-xs hover:bg-gray-50 transition"
-                            title="View on Google Maps"
+                            className="text-[10px] font-semibold text-gray-400 hover:text-[#F84464] ml-1 flex items-center gap-0.5 bg-gray-50 hover:bg-red-50 px-1.5 py-0.5 rounded border border-gray-200/80 transition shrink-0"
+                            title="Open Google Maps"
                           >
-                            <span>Maps</span>
-                            <ExternalLink size={8} />
+                            <span>Map</span>
+                            <ExternalLink size={9} />
                           </a>
                         )}
                       </div>
-                    </div>
 
-                    {/* 3. Executive Consolidated Telemetry Dashboard */}
-                    <div className="mt-3 rounded-lg border border-gray-200 bg-gray-50/80 p-2 grid grid-cols-3 gap-2 text-center divide-x divide-gray-200">
-                      <div className="flex flex-col items-center justify-center">
-                        <div className="flex items-center gap-1">
-                          <Tv size={13} className="text-indigo-600" />
-                          <span className="text-sm sm:text-base font-black text-gray-900 leading-none">
-                            {screensCount}
-                          </span>
-                        </div>
-                        <span className="text-[9px] font-bold uppercase tracking-wider text-gray-500 mt-1">
-                          Audis
-                        </span>
-                      </div>
-
-                      <div className="flex flex-col items-center justify-center pl-2">
-                        <div className="flex items-center gap-1">
-                          <Armchair size={13} className="text-purple-600" />
-                          <span className="text-sm sm:text-base font-black text-gray-900 leading-none">
-                            {seatsCount}
-                          </span>
-                        </div>
-                        <span className="text-[9px] font-bold uppercase tracking-wider text-gray-500 mt-1">
-                          Total Seats
-                        </span>
-                      </div>
-
-                      <div className="flex flex-col items-center justify-center pl-2">
-                        <div className="flex items-center gap-1">
-                          <Film size={13} className="text-amber-600" />
-                          <span className="text-sm sm:text-base font-black text-gray-900 leading-none">
-                            {cinema.activeShowsCount !== undefined ? cinema.activeShowsCount : (screensCount > 0 ? 'Live' : 0)}
-                          </span>
-                        </div>
-                        <span className="text-[9px] font-bold uppercase tracking-wider text-gray-500 mt-1">
-                          Active Shows
-                        </span>
-                      </div>
-                    </div>
-
-                    {/* 4. Quick Contact Row (Phone & Email) */}
-                    {(cinema.contactPhone || cinema.contactEmail) && (
-                      <div className="mt-2.5 flex flex-wrap items-center gap-1.5 text-xs">
-                        {cinema.contactPhone && (
-                          <a
-                            href={`tel:${cinema.contactPhone}`}
-                            className="inline-flex items-center gap-1 px-2.5 py-1 rounded-lg bg-gray-50 hover:bg-gray-100 border border-gray-200 text-gray-700 text-[11px] font-semibold transition shadow-xs"
-                            title="Helpline"
-                          >
-                            <Phone size={11} className="text-[#F84464]" />
-                            <span>{cinema.contactPhone}</span>
-                          </a>
-                        )}
-                        {cinema.contactEmail && (
-                          <a
-                            href={`mailto:${cinema.contactEmail}`}
-                            className="inline-flex items-center gap-1 px-2.5 py-1 rounded-lg bg-gray-50 hover:bg-gray-100 border border-gray-200 text-gray-700 text-[11px] font-semibold transition shadow-xs truncate max-w-[190px]"
-                            title="Official Email"
-                          >
-                            <Mail size={11} className="text-gray-400 shrink-0" />
-                            <span className="truncate">{cinema.contactEmail}</span>
-                          </a>
-                        )}
-                      </div>
-                    )}
-
-                    {/* 5. Screens & Amenities Preview */}
-                    <div className="mt-3 space-y-2 pt-2 border-t border-gray-100">
-                      {cinema.screens && cinema.screens.length > 0 ? (
-                        <div className="space-y-1">
-                          <div className="flex items-center justify-between text-xs">
-                            <span className="text-[10px] font-bold text-gray-500 uppercase tracking-wider flex items-center gap-1">
-                              <Tv size={11} className="text-gray-400" />
-                              Auditoriums ({cinema.screens.length})
-                            </span>
-                            <Link
-                              to={`/vendor/screens?cinemaId=${cinemaId}`}
-                              className="text-[10px] font-bold text-[#F84464] hover:underline"
-                            >
-                              Manage Layouts →
-                            </Link>
-                          </div>
-                          <div className="flex flex-wrap gap-1">
-                            {cinema.screens.slice(0, 3).map((screen, idx) => (
-                              <span
-                                key={screen._id || idx}
-                                className="bg-gray-50 border border-gray-200 rounded-md px-2 py-0.5 text-[10px] font-bold text-gray-700 flex items-center gap-1 shadow-xs"
-                              >
-                                <span className="w-1.5 h-1.5 rounded-full bg-emerald-500 shrink-0"></span>
-                                <span>{screen.name || `Screen ${idx + 1}`}</span>
-                                <span className="text-[9px] text-gray-500 font-normal">({screen.totalCapacity || 120}s)</span>
-                              </span>
-                            ))}
-                            {cinema.screens.length > 3 && (
-                              <span className="text-[10px] font-bold text-gray-500 bg-gray-100 px-1.5 py-0.5 rounded border border-gray-200">
-                                +{cinema.screens.length - 3} more
-                              </span>
-                            )}
-                          </div>
-                        </div>
-                      ) : null}
-
-                      {/* Amenities Cloud */}
-                      <div className="space-y-1">
-                        <div className="flex items-center justify-between text-xs">
-                          <span className="text-[10px] font-bold text-gray-500 uppercase tracking-wider flex items-center gap-1">
-                            <Sparkles size={11} className="text-amber-500" />
-                            Amenities ({facilitiesCount})
-                          </span>
-                        </div>
-                        <div className="flex flex-wrap gap-1">
-                          {(cinema.facilities || []).slice(0, 4).map(renderFacilityPill)}
-                          {facilitiesCount > 4 && (
-                            <span className="text-[10px] font-semibold text-gray-500 bg-gray-100 px-1.5 py-0.5 rounded border border-gray-200">
-                              +{facilitiesCount - 4} more
-                            </span>
+                      {/* Live Status Badge & Quick Edit/Delete Icons */}
+                      <div className="flex items-center gap-1.5 shrink-0">
+                        <span
+                          className={`inline-flex items-center gap-1 text-[10px] font-bold px-2 py-0.5 rounded-full border ${
+                            cinema.status === 'active'
+                              ? 'bg-emerald-50 text-emerald-700 border-emerald-200/80'
+                              : 'bg-gray-100 text-gray-600 border-gray-200'
+                          }`}
+                        >
+                          {cinema.status === 'active' && (
+                            <span className="w-1.5 h-1.5 rounded-full bg-emerald-500 animate-pulse shrink-0" />
                           )}
-                        </div>
+                          <span>{cinema.status === 'active' ? 'Live' : 'Inactive'}</span>
+                        </span>
+
+                        {/* Quick action buttons */}
+                        <button
+                          onClick={() => openEditModal(cinema)}
+                          className="w-7 h-7 rounded-lg bg-gray-50 hover:bg-gray-100 text-gray-500 hover:text-gray-900 border border-gray-200 flex items-center justify-center transition shadow-2xs cursor-pointer"
+                          title="Edit Multiplex"
+                        >
+                          <Edit2 size={12} />
+                        </button>
+                        <button
+                          onClick={() => openDeleteModal(cinema)}
+                          className="w-7 h-7 rounded-lg bg-gray-50 hover:bg-rose-50 text-gray-400 hover:text-rose-600 border border-gray-200 flex items-center justify-center transition shadow-2xs cursor-pointer"
+                          title="Delete Multiplex"
+                        >
+                          <Trash2 size={12} />
+                        </button>
                       </div>
                     </div>
                   </div>
 
-                  {/* 6. Tactile Drop-down Accordion Toggle Bar */}
-                  <div className="mt-3">
-                    <button
-                      type="button"
-                      onClick={() => toggleCardExpand(cinemaId)}
-                      className={`w-full px-3 py-2 rounded-lg border text-xs font-semibold flex items-center justify-between transition-all duration-200 cursor-pointer select-none active:scale-[0.99] ${
-                        isExpanded
-                          ? 'bg-red-50 border-red-200 text-[#F84464] shadow-xs'
-                          : 'bg-gray-50 hover:bg-gray-100 border-gray-200 text-gray-700'
-                      }`}
-                    >
-                      <div className="flex items-center gap-1.5 min-w-0">
-                        <Layers size={13} className={isExpanded ? 'text-[#F84464]' : 'text-gray-500'} />
-                        <span className="font-bold">
-                          {isExpanded ? 'Collapse Manifest Details' : 'Drop Down Full Details'}
+                  {/* Zone 2: Multiplex Capacity & Telemetry Strip (Single Row) */}
+                  <div className="mt-3.5 grid grid-cols-3 gap-2 bg-gray-50/90 rounded-xl p-2.5 border border-gray-200/70 text-center">
+                    <div className="flex flex-col items-center">
+                      <div className="flex items-center gap-1">
+                        <Tv size={13} className="text-indigo-600" />
+                        <span className="text-sm font-black text-gray-900 leading-none">{screensCount}</span>
+                      </div>
+                      <span className="text-[9px] font-bold uppercase tracking-wider text-gray-400 mt-1">Audis</span>
+                    </div>
+
+                    <div className="flex flex-col items-center border-x border-gray-200/80">
+                      <div className="flex items-center gap-1">
+                        <Armchair size={13} className="text-purple-600" />
+                        <span className="text-sm font-black text-gray-900 leading-none">{seatsCount.toLocaleString()}</span>
+                      </div>
+                      <span className="text-[9px] font-bold uppercase tracking-wider text-gray-400 mt-1">Capacity</span>
+                    </div>
+
+                    <div className="flex flex-col items-center">
+                      <div className="flex items-center gap-1">
+                        <Film size={13} className="text-amber-600" />
+                        <span className="text-sm font-black text-gray-900 leading-none">
+                          {cinema.activeShowsCount !== undefined ? cinema.activeShowsCount : (screensCount > 0 ? 'Active' : 0)}
                         </span>
                       </div>
+                      <span className="text-[9px] font-bold uppercase tracking-wider text-gray-400 mt-1">Live Shows</span>
+                    </div>
+                  </div>
 
-                      <div className="flex items-center gap-1 text-[11px] font-bold">
-                        <span className="text-[10px] opacity-75">
-                          {isExpanded ? 'Fold' : 'Drop Down'}
-                        </span>
-                        <motion.div
-                          animate={{ rotate: isExpanded ? 180 : 0 }}
-                          transition={{ duration: 0.22, ease: 'easeInOut' }}
-                        >
-                          <ChevronDown size={14} className={isExpanded ? 'text-[#F84464]' : 'text-gray-500'} />
-                        </motion.div>
-                      </div>
-                    </button>
+                  {/* Zone 3: Multiplex Auditoriums / Screens Breakdown */}
+                  <div className="mt-3.5 space-y-1.5">
+                    <div className="flex items-center justify-between text-xs">
+                      <span className="text-[10px] font-bold uppercase tracking-wider text-gray-400 flex items-center gap-1">
+                        <Tv size={11} className="text-gray-400" />
+                        Auditoriums ({screensCount})
+                      </span>
+                      <Link
+                        to={`/vendor/screens?cinemaId=${cinemaId}`}
+                        className="text-[10px] font-bold text-[#F84464] hover:underline flex items-center gap-0.5"
+                      >
+                        <span>Layout Designer</span>
+                        <ArrowRight size={10} />
+                      </Link>
+                    </div>
 
-                    {/* 7. Dropped-Down Manifest Container */}
-                    <AnimatePresence initial={false}>
-                      {isExpanded && (
-                        <motion.div
-                          key="dropped-content"
-                          initial={{ opacity: 0, height: 0 }}
-                          animate={{ opacity: 1, height: 'auto' }}
-                          exit={{ opacity: 0, height: 0 }}
-                          transition={{ duration: 0.28, ease: 'easeInOut' }}
-                          className="overflow-hidden space-y-3 pt-2"
-                        >
-                          {/* Section Divider Badge */}
-                          <div className="flex items-center gap-2 py-0.5">
-                            <span className="text-[9px] uppercase tracking-wider font-black text-[#F84464] bg-red-50 px-2 py-0.5 rounded-md border border-red-200">
-                              Complete Venue Manifest
-                            </span>
-                            <div className="flex-1 h-px bg-gray-200"></div>
-                          </div>
-
-                          {/* Complete Physical Address & Contact Info Box */}
-                          <div className="rounded-lg bg-gray-50 border border-gray-200 p-2.5 space-y-2">
-                            <div className="flex items-start gap-1.5">
-                              <MapPin size={12} className="text-[#F84464] shrink-0 mt-0.5" />
-                              <p className="text-[11px] font-medium text-gray-700 leading-relaxed break-words flex-1">
-                                {cinema.address || 'Address registered on file.'}
-                              </p>
-                            </div>
-
-                            <div className="pt-1.5 border-t border-gray-200 flex flex-wrap items-center gap-1.5 text-xs">
-                              {cinema.contactPhone && (
-                                <a
-                                  href={`tel:${cinema.contactPhone}`}
-                                  className="inline-flex items-center gap-1.5 bg-white hover:bg-gray-100 px-2 py-1 rounded-md border border-gray-200 text-gray-700 text-[11px] font-semibold transition shadow-xs"
-                                  title="Direct Helpline"
-                                >
-                                  <Phone size={11} className="text-[#F84464] shrink-0" />
-                                  <span>{cinema.contactPhone}</span>
-                                </a>
-                              )}
-
-                              {cinema.contactEmail && (
-                                <a
-                                  href={`mailto:${cinema.contactEmail}`}
-                                  className="inline-flex items-center gap-1.5 bg-white hover:bg-gray-100 px-2 py-1 rounded-md border border-gray-200 text-gray-700 text-[11px] font-semibold transition shadow-xs break-all"
-                                  title="Official Email"
-                                >
-                                  <Mail size={11} className="text-gray-400 shrink-0" />
-                                  <span className="truncate max-w-[150px] sm:max-w-[200px]">{cinema.contactEmail}</span>
-                                </a>
-                              )}
-                            </div>
-                          </div>
-
-                          {/* Complete Auditoriums List */}
-                          {cinema.screens && cinema.screens.length > 0 ? (
-                            <div className="rounded-lg border border-gray-200 bg-gray-50 p-2 sm:p-2.5 space-y-1.5">
-                              <div className="flex items-center justify-between text-xs">
-                                <span className="text-[10px] font-bold uppercase tracking-wider text-gray-500 flex items-center gap-1">
-                                  <Tv size={11} className="text-gray-400" />
-                                  All Auditoriums ({cinema.screens.length})
-                                </span>
-                                <Link
-                                  to={`/vendor/screens?cinemaId=${cinemaId}`}
-                                  className="text-[10px] font-bold text-[#F84464] hover:underline"
-                                >
-                                  Screen Designer →
-                                </Link>
-                              </div>
-                              <div className="flex flex-wrap gap-1.5">
-                                {cinema.screens.map((screen, idx) => (
-                                  <div
-                                    key={screen._id || idx}
-                                    className="bg-white border border-gray-200 rounded-md px-2 py-1 shadow-xs text-[10px] sm:text-[11px] flex items-center gap-1.5"
-                                  >
-                                    <span className="w-1.5 h-1.5 rounded-full bg-emerald-500 shrink-0"></span>
-                                    <span className="font-bold text-gray-900">{screen.name || `Screen ${screen.screenNumber || idx + 1}`}</span>
-                                    <span className="text-[9px] font-bold text-indigo-700 bg-indigo-50 px-1 py-0.2 rounded border border-indigo-200">
-                                      {screen.screenType || 'Standard 2D'}
-                                    </span>
-                                    <span className="text-[9px] text-gray-500 font-medium">
-                                      {screen.totalCapacity || 120}s
-                                    </span>
-                                  </div>
-                                ))}
-                              </div>
-                            </div>
-                          ) : (
-                            <div className="p-2 rounded-lg bg-amber-50 border border-amber-200 text-xs text-amber-800 flex items-center justify-between gap-2 shadow-xs">
-                              <div className="flex items-center gap-1.5">
-                                <AlertCircle size={13} className="text-amber-600 shrink-0" />
-                                <span className="font-medium text-[10px] sm:text-[11px]">No auditoriums configured yet.</span>
-                              </div>
-                              <Link
-                                to={`/vendor/screens?cinemaId=${cinemaId}`}
-                                className="shrink-0 px-2 py-0.5 bg-amber-600 text-white rounded-md text-[10px] font-bold hover:bg-amber-700 transition"
-                              >
-                                + Add Screen
-                              </Link>
-                            </div>
-                          )}
-
-                          {/* All Amenities List */}
-                          <div className="space-y-1">
-                            <div className="flex items-center justify-between text-xs">
-                              <span className="text-[10px] font-bold text-gray-500 uppercase tracking-wider">
-                                All Amenities & Facilities
-                              </span>
-                              <span className="text-[10px] text-gray-500 font-semibold">
-                                {facilitiesCount} Enabled
-                              </span>
-                            </div>
-                            <div className="flex flex-wrap gap-1">
-                              {facilitiesCount === 0 ? (
-                                <span className="text-gray-400 text-[10px] italic">Standard multiplex amenities enabled on file.</span>
-                              ) : (
-                                (cinema.facilities || []).map(renderFacilityPill)
-                              )}
-                            </div>
-                          </div>
-
-                          {/* Fold Back Button */}
-                          <div className="pt-1 flex justify-center">
-                            <button
-                              type="button"
-                              onClick={() => toggleCardExpand(cinemaId)}
-                              className="inline-flex items-center gap-1 text-[10px] font-bold text-gray-500 hover:text-gray-900 py-1 px-2.5 rounded-lg hover:bg-gray-100 transition cursor-pointer"
+                    {/* Compact Audi Pills */}
+                    <div className="flex flex-wrap gap-1.5">
+                      {cinema.screens && cinema.screens.length > 0 ? (
+                        <>
+                          {cinema.screens.slice(0, 3).map((screen, idx) => (
+                            <Link
+                              key={screen._id || idx}
+                              to={`/vendor/screens?cinemaId=${cinemaId}`}
+                              className="bg-white hover:bg-gray-50 border border-gray-200/90 rounded-lg px-2 py-1 text-[11px] font-semibold text-gray-800 flex items-center gap-1.5 shadow-2xs transition group/audi"
+                              title={`${screen.name || `Screen ${idx+1}`}: ${screen.screenType || 'Standard'} with ${screen.totalCapacity || 120} seats`}
                             >
-                              <ChevronUp size={11} />
-                              <span>Fold back to summary</span>
-                            </button>
-                          </div>
-                        </motion.div>
+                              <span className="w-1.5 h-1.5 rounded-full bg-emerald-500 shrink-0" />
+                              <span className="font-bold">{screen.name || `Audi ${idx + 1}`}</span>
+                              <span className="text-[9px] font-bold px-1 py-0.2 rounded bg-indigo-50 text-indigo-700 border border-indigo-200/60">
+                                {screen.screenType || '2D'}
+                              </span>
+                              <span className="text-[10px] text-gray-400 font-normal">
+                                {screen.totalCapacity || 120}s
+                              </span>
+                            </Link>
+                          ))}
+                          {cinema.screens.length > 3 && (
+                            <Link
+                              to={`/vendor/screens?cinemaId=${cinemaId}`}
+                              className="text-[10px] font-bold text-gray-600 bg-gray-100 hover:bg-gray-200 px-2 py-1 rounded-lg border border-gray-200/80 transition"
+                            >
+                              +{cinema.screens.length - 3} more
+                            </Link>
+                          )}
+                        </>
+                      ) : (
+                        <Link
+                          to={`/vendor/screens?cinemaId=${cinemaId}`}
+                          className="w-full text-center py-2 px-3 rounded-lg border border-dashed border-gray-200 bg-gray-50/50 hover:bg-red-50/40 hover:border-red-200 text-xs font-semibold text-gray-500 hover:text-[#F84464] transition flex items-center justify-center gap-1.5"
+                        >
+                          <Plus size={12} />
+                          <span>Configure First Auditorium</span>
+                        </Link>
                       )}
-                    </AnimatePresence>
+                    </div>
                   </div>
                 </div>
 
-                {/* 8. Card Bottom Command Bar */}
-                <div className="p-3 sm:px-4 border-t border-gray-100 bg-gray-50/70 flex items-center justify-between gap-2">
+                {/* Zone 4: Command Action Footer */}
+                <div className="mt-4 pt-3 border-t border-gray-100 flex items-center justify-between gap-2">
+                  <span className="text-[10px] font-mono font-bold uppercase tracking-wider text-gray-400">
+                    #CIN-{(cinemaId || '').slice(-6).toUpperCase()}
+                  </span>
+
                   <div className="flex items-center gap-2">
                     <Link
-                      to={`/vendor/screens?cinemaId=${cinemaId}`}
-                      className="inline-flex items-center gap-1.5 text-xs font-bold text-white bg-[#F84464] hover:bg-[#E03A58] px-3 py-1.5 rounded-lg shadow-sm transition active:scale-95 shrink-0"
-                    >
-                      <Armchair size={13} className="text-white" />
-                      <span>Audis ({screensCount})</span>
-                    </Link>
-
-                    <Link
                       to={`/vendor/shows?cinemaId=${cinemaId}`}
-                      className="inline-flex items-center gap-1.5 text-xs font-bold text-gray-700 hover:text-gray-900 bg-white hover:bg-gray-50 px-3 py-1.5 rounded-lg border border-gray-300 shadow-sm transition shrink-0"
+                      className="inline-flex items-center gap-1 text-xs font-bold text-gray-700 hover:text-gray-900 bg-gray-50 hover:bg-gray-100 px-2.5 py-1.5 rounded-lg border border-gray-200 transition shadow-2xs"
                     >
-                      <Film size={13} className="text-indigo-600" />
+                      <Film size={12} className="text-indigo-600" />
                       <span>Shows</span>
                     </Link>
-                  </div>
-
-                  <div className="flex items-center gap-1.5 shrink-0">
-                    <button
-                      onClick={() => openDossierModal(cinema)}
-                      className="px-2.5 py-1.5 text-xs font-semibold text-gray-700 hover:text-[#F84464] bg-white hover:bg-red-50 rounded-lg border border-gray-300 transition flex items-center gap-1 shadow-sm cursor-pointer"
-                      title={`Open full pop-up dossier for ${cinema.name}`}
+                    <Link
+                      to={`/vendor/screens?cinemaId=${cinemaId}`}
+                      className="inline-flex items-center gap-1 text-xs font-bold text-white bg-[#F84464] hover:bg-[#E03A58] px-3 py-1.5 rounded-lg shadow-sm transition active:scale-95"
                     >
-                      <ExternalLink size={12} className="text-[#F84464]" />
-                      <span>Pop-up</span>
-                    </button>
-                    <button
-                      onClick={() => openEditModal(cinema)}
-                      className="px-2.5 py-1.5 text-xs font-semibold text-gray-700 hover:text-gray-900 bg-white hover:bg-gray-50 rounded-lg border border-gray-300 transition flex items-center gap-1 shadow-sm cursor-pointer"
-                      title="Edit Venue Details"
-                    >
-                      <Edit2 size={12} />
-                      <span>Edit</span>
-                    </button>
-                    <button
-                      onClick={() => openDeleteModal(cinema)}
-                      className="p-1.5 text-gray-400 hover:text-rose-600 hover:bg-rose-50 rounded-lg border border-gray-300 transition shadow-sm cursor-pointer"
-                      title="Delete Venue"
-                    >
-                      <Trash2 size={13} />
-                    </button>
+                      <span>Manage Audis</span>
+                      <ArrowRight size={12} />
+                    </Link>
                   </div>
                 </div>
               </motion.div>

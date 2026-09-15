@@ -129,155 +129,171 @@ export default function VendorDashboardPage() {
         </div>
       </div>
 
-      {/* Senior Executive KPI Summary Row */}
-      <div className="grid grid-cols-1 sm:grid-cols-2 xl:grid-cols-4 gap-4 sm:gap-5">
+      {/* Senior Executive KPI Summary Row - Compact Equal-Height Grid */}
+      <div className="grid grid-cols-1 sm:grid-cols-2 xl:grid-cols-4 gap-3.5 sm:gap-4 items-stretch">
         {/* Metric 1: Box Office Revenue */}
-        <div className="bg-white p-5 rounded-xl border border-gray-200 shadow-sm flex flex-col justify-between">
-          <div>
-            <div className="flex items-start justify-between gap-3">
-              <div>
-                <p className="text-[10px] font-bold uppercase tracking-wider text-gray-400">
-                  Financial Gross
-                </p>
-                <h3 className="text-sm font-bold text-gray-800 mt-0.5">
-                  Box Office Revenue
-                </h3>
-              </div>
-              <div className="w-10 h-10 rounded-xl bg-emerald-50 text-emerald-600 border border-emerald-200 flex items-center justify-center shrink-0 shadow-xs">
-                <IndianRupee size={18} />
-              </div>
-            </div>
+        <div className="relative bg-white p-3.5 sm:p-4 rounded-xl border border-gray-200/90 shadow-xs hover:shadow-md hover:border-gray-300 transition-all duration-200 h-full min-h-[142px] flex flex-col justify-between overflow-hidden group">
+          {/* Top 2px Theatrical Laser Beam */}
+          <div className="absolute top-0 left-0 right-0 h-[2px] bg-gradient-to-r from-emerald-400 via-teal-400 to-emerald-500" />
 
-            <div className="mt-3.5 flex items-baseline gap-2 flex-wrap">
-              <span className="text-2xl sm:text-3xl font-black text-gray-900 tracking-tight font-sans">
-                ₹{summary.totalRevenue.toLocaleString('en-IN')}
-              </span>
-              <span className="text-[11px] font-semibold text-emerald-700 bg-emerald-50 px-2 py-0.5 rounded-full border border-emerald-200">
-                Gross Collection
-              </span>
+          {/* Tier 1: Category & Title with Squircle Icon */}
+          <div className="flex items-start justify-between gap-2">
+            <div className="min-w-0 flex-1">
+              <p className="text-[10px] font-bold uppercase tracking-wider text-gray-400 truncate">
+                Financial Gross
+              </p>
+              <h3 className="text-xs sm:text-sm font-bold text-gray-900 mt-0.5 truncate">
+                Box Office Revenue
+              </h3>
+            </div>
+            <div className="w-8 h-8 rounded-lg bg-emerald-50 text-emerald-600 border border-emerald-200/70 flex items-center justify-center shrink-0 shadow-2xs group-hover:scale-105 transition-transform">
+              <IndianRupee size={15} />
             </div>
           </div>
 
-          <div className="mt-4 pt-3 border-t border-gray-100 flex items-center justify-between text-xs">
-            <span className="inline-flex items-center gap-1.5 text-[11px] font-medium text-gray-600">
-              <span className="w-2 h-2 rounded-full bg-emerald-500 animate-pulse" />
+          {/* Tier 2: Hero Number & Status (Guaranteed Full Display, Zero Truncation) */}
+          <div className="my-1.5 flex items-baseline justify-between gap-2 overflow-visible">
+            <span className="text-xl sm:text-2xl font-black text-gray-900 tracking-tight font-sans whitespace-nowrap shrink-0">
+              ₹{summary.totalRevenue.toLocaleString('en-IN')}
+            </span>
+            <span className="text-[10px] font-bold text-emerald-700 bg-emerald-50 px-2 py-0.5 rounded-full border border-emerald-200/80 shrink-0 whitespace-nowrap">
+              Gross
+            </span>
+          </div>
+
+          {/* Tier 3: Telemetry Footer */}
+          <div className="pt-2 border-t border-gray-100 flex items-center justify-between text-[11px]">
+            <span className="inline-flex items-center gap-1.5 font-medium text-gray-500 truncate">
+              <span className="w-1.5 h-1.5 rounded-full bg-emerald-500 animate-pulse shrink-0" />
               Live Box Office
             </span>
-            <span className="text-gray-500 font-medium text-[11px]">
+            <span className="text-gray-700 font-bold shrink-0">
               {summary.totalBookings} {summary.totalBookings === 1 ? 'Booking' : 'Bookings'}
             </span>
           </div>
         </div>
 
         {/* Metric 2: Tickets Sold */}
-        <div className="bg-white p-5 rounded-xl border border-gray-200 shadow-sm flex flex-col justify-between">
-          <div>
-            <div className="flex items-start justify-between gap-3">
-              <div>
-                <p className="text-[10px] font-bold uppercase tracking-wider text-gray-400">
-                  Admissions
-                </p>
-                <h3 className="text-sm font-bold text-gray-800 mt-0.5">
-                  Tickets Sold
-                </h3>
-              </div>
-              <div className="w-10 h-10 rounded-xl bg-rose-50 text-[#F84464] border border-rose-200 flex items-center justify-center shrink-0 shadow-xs">
-                <Ticket size={18} />
-              </div>
-            </div>
+        <div className="relative bg-white p-3.5 sm:p-4 rounded-xl border border-gray-200/90 shadow-xs hover:shadow-md hover:border-gray-300 transition-all duration-200 h-full min-h-[142px] flex flex-col justify-between overflow-hidden group">
+          {/* Top 2px Theatrical Laser Beam */}
+          <div className="absolute top-0 left-0 right-0 h-[2px] bg-gradient-to-r from-[#F84464] via-rose-400 to-[#F84464]" />
 
-            <div className="mt-3.5 flex items-baseline gap-2">
-              <span className="text-2xl sm:text-3xl font-black text-gray-900 tracking-tight font-sans">
-                {summary.totalTicketsSold.toLocaleString('en-IN')}
-              </span>
-              <span className="text-[11px] font-semibold text-[#F84464] bg-rose-50 px-2 py-0.5 rounded-full border border-rose-200">
+          {/* Tier 1: Category & Title with Squircle Icon */}
+          <div className="flex items-start justify-between gap-2">
+            <div className="min-w-0 flex-1">
+              <p className="text-[10px] font-bold uppercase tracking-wider text-gray-400 truncate">
                 Admissions
-              </span>
+              </p>
+              <h3 className="text-xs sm:text-sm font-bold text-gray-900 mt-0.5 truncate">
+                Tickets Sold
+              </h3>
+            </div>
+            <div className="w-8 h-8 rounded-lg bg-rose-50 text-[#F84464] border border-rose-200/70 flex items-center justify-center shrink-0 shadow-2xs group-hover:scale-105 transition-transform">
+              <Ticket size={15} />
             </div>
           </div>
 
-          <div className="mt-4 pt-3 border-t border-gray-100 flex items-center justify-between text-xs">
-            <span className="inline-flex items-center gap-1.5 text-[11px] font-medium text-gray-600">
-              <Ticket size={12} className="text-gray-400" />
+          {/* Tier 2: Hero Number & Status (Guaranteed Full Display, Zero Truncation) */}
+          <div className="my-1.5 flex items-baseline justify-between gap-2 overflow-visible">
+            <span className="text-xl sm:text-2xl font-black text-gray-900 tracking-tight font-sans whitespace-nowrap shrink-0">
+              {summary.totalTicketsSold.toLocaleString('en-IN')}
+            </span>
+            <span className="text-[10px] font-bold text-[#F84464] bg-rose-50 px-2 py-0.5 rounded-full border border-rose-200/80 shrink-0 whitespace-nowrap">
+              Admissions
+            </span>
+          </div>
+
+          {/* Tier 3: Telemetry Footer */}
+          <div className="pt-2 border-t border-gray-100 flex items-center justify-between text-[11px]">
+            <span className="inline-flex items-center gap-1.5 font-medium text-gray-500 truncate">
+              <Ticket size={11} className="text-gray-400 shrink-0" />
               {summary.occupancyRate}% Occupancy
             </span>
-            <span className="text-gray-500 font-medium text-[11px]">
+            <span className="text-gray-700 font-bold shrink-0">
               Across Shows
             </span>
           </div>
         </div>
 
         {/* Metric 3: Gate Check-Ins */}
-        <div className="bg-white p-5 rounded-xl border border-gray-200 shadow-sm flex flex-col justify-between">
-          <div>
-            <div className="flex items-start justify-between gap-3">
-              <div>
-                <p className="text-[10px] font-bold uppercase tracking-wider text-gray-400">
-                  Access Control
-                </p>
-                <h3 className="text-sm font-bold text-gray-800 mt-0.5">
-                  Gate Check-Ins
-                </h3>
-              </div>
-              <div className="w-10 h-10 rounded-xl bg-blue-50 text-blue-600 border border-blue-200 flex items-center justify-center shrink-0 shadow-xs">
-                <CheckCircle2 size={18} />
-              </div>
-            </div>
+        <div className="relative bg-white p-3.5 sm:p-4 rounded-xl border border-gray-200/90 shadow-xs hover:shadow-md hover:border-gray-300 transition-all duration-200 h-full min-h-[142px] flex flex-col justify-between overflow-hidden group">
+          {/* Top 2px Theatrical Laser Beam */}
+          <div className="absolute top-0 left-0 right-0 h-[2px] bg-gradient-to-r from-blue-400 via-indigo-400 to-blue-500" />
 
-            <div className="mt-3.5 flex items-baseline gap-2">
-              <span className="text-2xl sm:text-3xl font-black text-gray-900 tracking-tight font-sans">
-                {summary.validatedTicketsCount.toLocaleString('en-IN')}
-              </span>
-              <span className="text-[11px] font-semibold text-blue-700 bg-blue-50 px-2 py-0.5 rounded-full border border-blue-200">
-                Verified
-              </span>
+          {/* Tier 1: Category & Title with Squircle Icon */}
+          <div className="flex items-start justify-between gap-2">
+            <div className="min-w-0 flex-1">
+              <p className="text-[10px] font-bold uppercase tracking-wider text-gray-400 truncate">
+                Access Control
+              </p>
+              <h3 className="text-xs sm:text-sm font-bold text-gray-900 mt-0.5 truncate">
+                Gate Check-Ins
+              </h3>
+            </div>
+            <div className="w-8 h-8 rounded-lg bg-blue-50 text-blue-600 border border-blue-200/70 flex items-center justify-center shrink-0 shadow-2xs group-hover:scale-105 transition-transform">
+              <CheckCircle2 size={15} />
             </div>
           </div>
 
-          <div className="mt-4 pt-3 border-t border-gray-100 flex items-center justify-between text-xs">
-            <span className="inline-flex items-center gap-1.5 text-[11px] font-medium text-gray-600">
-              <span className="w-2 h-2 rounded-full bg-blue-500 animate-pulse" />
-              Scanner Active
+          {/* Tier 2: Hero Number & Status (Guaranteed Full Display, Zero Truncation) */}
+          <div className="my-1.5 flex items-baseline justify-between gap-2 overflow-visible">
+            <span className="text-xl sm:text-2xl font-black text-gray-900 tracking-tight font-sans whitespace-nowrap shrink-0">
+              {summary.validatedTicketsCount.toLocaleString('en-IN')}
             </span>
-            <span className="text-gray-500 font-medium text-[11px]">
-              {summary.totalBookings > 0 ? Math.round((summary.validatedTicketsCount / summary.totalBookings) * 100) : 0}% Verified
+            <span className="text-[10px] font-bold text-blue-700 bg-blue-50 px-2 py-0.5 rounded-full border border-blue-200/80 shrink-0 whitespace-nowrap">
+              Verified
+            </span>
+          </div>
+
+          {/* Tier 3: Telemetry Footer */}
+          <div className="pt-2 border-t border-gray-100 flex items-center justify-between text-[11px]">
+            <span className="inline-flex items-center gap-1.5 font-medium text-gray-500 truncate">
+              <span className="w-1.5 h-1.5 rounded-full bg-blue-500 animate-pulse shrink-0" />
+              Scanner Online
+            </span>
+            <span className="text-gray-700 font-bold shrink-0">
+              {summary.totalBookings > 0 ? Math.round((summary.validatedTicketsCount / summary.totalBookings) * 100) : 0}% Check-in
             </span>
           </div>
         </div>
 
         {/* Metric 4: Active Schedules */}
-        <div className="bg-white p-5 rounded-xl border border-gray-200 shadow-sm flex flex-col justify-between">
-          <div>
-            <div className="flex items-start justify-between gap-3">
-              <div>
-                <p className="text-[10px] font-bold uppercase tracking-wider text-gray-400">
-                  Programming
-                </p>
-                <h3 className="text-sm font-bold text-gray-800 mt-0.5">
-                  Active Schedules
-                </h3>
-              </div>
-              <div className="w-10 h-10 rounded-xl bg-purple-50 text-purple-600 border border-purple-200 flex items-center justify-center shrink-0 shadow-xs">
-                <Calendar size={18} />
-              </div>
-            </div>
+        <div className="relative bg-white p-3.5 sm:p-4 rounded-xl border border-gray-200/90 shadow-xs hover:shadow-md hover:border-gray-300 transition-all duration-200 h-full min-h-[142px] flex flex-col justify-between overflow-hidden group">
+          {/* Top 2px Theatrical Laser Beam */}
+          <div className="absolute top-0 left-0 right-0 h-[2px] bg-gradient-to-r from-purple-400 via-violet-400 to-purple-500" />
 
-            <div className="mt-3.5 flex items-baseline gap-2">
-              <span className="text-2xl sm:text-3xl font-black text-gray-900 tracking-tight font-sans">
-                {summary.activeShowsCount.toLocaleString('en-IN')}
-              </span>
-              <span className="text-[11px] font-semibold text-purple-700 bg-purple-50 px-2 py-0.5 rounded-full border border-purple-200">
-                Live Shows
-              </span>
+          {/* Tier 1: Category & Title with Squircle Icon */}
+          <div className="flex items-start justify-between gap-2">
+            <div className="min-w-0 flex-1">
+              <p className="text-[10px] font-bold uppercase tracking-wider text-gray-400 truncate">
+                Programming
+              </p>
+              <h3 className="text-xs sm:text-sm font-bold text-gray-900 mt-0.5 truncate">
+                Active Schedules
+              </h3>
+            </div>
+            <div className="w-8 h-8 rounded-lg bg-purple-50 text-purple-600 border border-purple-200/70 flex items-center justify-center shrink-0 shadow-2xs group-hover:scale-105 transition-transform">
+              <Calendar size={15} />
             </div>
           </div>
 
-          <div className="mt-4 pt-3 border-t border-gray-100 flex items-center justify-between text-xs">
-            <span className="inline-flex items-center gap-1.5 text-[11px] font-medium text-gray-600">
-              <Tv size={12} className="text-gray-400" />
+          {/* Tier 2: Hero Number & Status (Guaranteed Full Display, Zero Truncation) */}
+          <div className="my-1.5 flex items-baseline justify-between gap-2 overflow-visible">
+            <span className="text-xl sm:text-2xl font-black text-gray-900 tracking-tight font-sans whitespace-nowrap shrink-0">
+              {summary.activeShowsCount.toLocaleString('en-IN')}
+            </span>
+            <span className="text-[10px] font-bold text-purple-700 bg-purple-50 px-2 py-0.5 rounded-full border border-purple-200/80 shrink-0 whitespace-nowrap">
+              Live Shows
+            </span>
+          </div>
+
+          {/* Tier 3: Telemetry Footer */}
+          <div className="pt-2 border-t border-gray-100 flex items-center justify-between text-[11px]">
+            <span className="inline-flex items-center gap-1.5 font-medium text-gray-500 truncate">
+              <Tv size={11} className="text-gray-400 shrink-0" />
               {summary.screensCount} Audis
             </span>
-            <span className="text-gray-500 font-medium text-[11px]">
+            <span className="text-gray-700 font-bold shrink-0">
               Timetables Active
             </span>
           </div>
@@ -422,7 +438,7 @@ export default function VendorDashboardPage() {
             <div className="p-8">
               <EmptyState
                 title="No customer bookings yet"
-                description="When customers book tickets for your shows on BookMyTrip, their reservations will appear here in real-time."
+                description="When customers book tickets for your shows on BookMyShow, their reservations will appear here in real-time."
                 actionText="Schedule Show"
                 onAction={() => window.location.href = '/vendor/shows'}
               />

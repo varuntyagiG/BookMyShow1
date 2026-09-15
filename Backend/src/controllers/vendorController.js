@@ -693,18 +693,20 @@ async function createMovie(req, res) {
 
 async function getShows(req, res) {
   try {
-    const { cinemaId, date, movieId } = req.query;
+    const { cinemaId, date, movieId, sort } = req.query;
 
     const query = { partner: req.user._id };
     if (cinemaId) query.cinema = cinemaId;
     if (date && date !== 'All') query.showDate = date;
     if (movieId && mongoose.Types.ObjectId.isValid(movieId)) query.movie = movieId;
 
+    const sortOption = sort === 'oldest' ? { showDate: 1, startTime: 1 } : { createdAt: -1, _id: -1 };
+
     const shows = await Show.find(query)
       .populate('cinema', 'name city address')
       .populate('screen', 'name screenNumber screenType totalCapacity seatingLayout')
       .populate('movie', 'title posterUrl duration language formats customId')
-      .sort({ showDate: 1, startTime: 1 });
+      .sort(sortOption);
 
     const showIds = shows.map(s => s._id);
     const bookings = await Booking.find({

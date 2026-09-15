@@ -204,7 +204,7 @@ export default function VendorScannerPage() {
                     Position Customer Ticket QR Within Target Frame
                   </p>
                   <p className="text-gray-400 text-[11px] mt-1">
-                    Optical sensor verifies BookMyTrip digital vouchers instantly
+                    Optical sensor verifies BookMyShow digital vouchers instantly
                   </p>
                 </div>
               </div>

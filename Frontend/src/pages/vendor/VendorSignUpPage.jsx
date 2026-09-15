@@ -56,7 +56,7 @@ export default function VendorSignUpPage() {
       <div className="sm:mx-auto sm:w-full sm:max-w-lg text-center">
         <Link to="/" className="inline-flex items-center gap-2 mb-2">
           <span className="text-3xl font-black tracking-tight text-[#222432]">
-            book<span className="text-[#F84464]">my</span>trip
+            book<span className="text-[#F84464]">my</span>show
           </span>
           <span className="bg-[#F84464] text-white text-[11px] uppercase font-bold tracking-wider px-2.5 py-0.5 rounded-full">
             Cinema Partner
@@ -66,7 +66,7 @@ export default function VendorSignUpPage() {
           Partner Registration
         </h2>
         <p className="mt-1 text-sm text-gray-600">
-          Onboard your theatre or multiplex chain to BookMyTrip live customer network.
+          Onboard your theatre or multiplex chain to BookMyShow live customer network.
         </p>
       </div>
 

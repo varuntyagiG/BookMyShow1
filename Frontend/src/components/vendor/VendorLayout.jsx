@@ -56,7 +56,7 @@ export default function VendorLayout() {
 
             <Link to="/vendor/dashboard" className="flex items-center gap-2 group">
               <span className="text-2xl font-black tracking-tight text-white">
-                book<span className="text-[#F84464]">my</span>trip
+                book<span className="text-[#F84464]">my</span>show
               </span>
               <span className="bg-[#F84464] text-white text-[10px] uppercase font-bold tracking-wider px-2 py-0.5 rounded-full ml-1 flex items-center gap-1 shadow-sm">
                 <Sparkles size={10} className="fill-current text-white" />
@@ -136,10 +136,9 @@ export default function VendorLayout() {
                     key={item.to}
                     to={item.to}
                     className={({ isActive }) =>
-                      `flex items-center justify-between px-3 py-2.5 rounded-lg text-xs font-bold transition-all ${
-                        isActive
-                          ? 'bg-red-50 text-[#F84464] border-r-4 border-[#F84464] font-bold'
-                          : 'text-gray-600 hover:bg-gray-50 hover:text-gray-900 font-medium'
+                      `flex items-center justify-between px-3 py-2.5 rounded-lg text-xs font-bold transition-all ${isActive
+                        ? 'bg-red-50 text-[#F84464] border-r-4 border-[#F84464] font-bold'
+                        : 'text-gray-600 hover:bg-gray-50 hover:text-gray-900 font-medium'
                       }`
                     }
                   >
@@ -151,11 +150,10 @@ export default function VendorLayout() {
                         </div>
                         {item.badge && (
                           <span
-                            className={`text-[9px] font-bold px-1.5 py-0.5 rounded-md uppercase tracking-wider ${
-                              isActive
+                            className={`text-[9px] font-bold px-1.5 py-0.5 rounded-md uppercase tracking-wider ${isActive
                                 ? 'bg-[#F84464] text-white'
                                 : 'bg-emerald-50 text-emerald-700 border border-emerald-200'
-                            }`}
+                              }`}
                           >
                             {item.badge}
                           </span>
@@ -206,10 +204,9 @@ export default function VendorLayout() {
                       to={item.to}
                       onClick={() => setSidebarOpen(false)}
                       className={({ isActive }) =>
-                        `flex items-center justify-between px-3 py-2.5 rounded-lg text-sm font-medium transition ${
-                          isActive
-                            ? 'bg-red-50 text-[#F84464] border-r-4 border-[#F84464] font-bold'
-                            : 'text-gray-600 hover:bg-gray-50 hover:text-gray-900'
+                        `flex items-center justify-between px-3 py-2.5 rounded-lg text-sm font-medium transition ${isActive
+                          ? 'bg-red-50 text-[#F84464] border-r-4 border-[#F84464] font-bold'
+                          : 'text-gray-600 hover:bg-gray-50 hover:text-gray-900'
                         }`
                       }
                     >

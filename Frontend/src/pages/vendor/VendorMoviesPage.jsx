@@ -176,7 +176,7 @@ export default function VendorMoviesPage() {
             Movie Catalog & Scheduling
           </h1>
           <p className="text-xs sm:text-sm text-gray-600 mt-1">
-            Browse active platform releases or publish new titles directly to the BookMyTrip customer network.
+            Browse active platform releases or publish new titles directly to the BookMyShow customer network.
           </p>
         </div>
 

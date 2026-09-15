@@ -31,7 +31,8 @@ import {
   Building2,
   ChevronDown,
   Check,
-  X
+  X,
+  ArrowUpDown
 } from 'lucide-react';
 
 const COMMON_SHOWTIMES = [
@@ -110,6 +111,7 @@ export default function VendorShowsPage() {
   const [selectedCinemaId, setSelectedCinemaId] = useState('');
   const [statusFilter, setStatusFilter] = useState('all');
   const [searchQuery, setSearchQuery] = useState('');
+  const [sortOrder, setSortOrder] = useState('latest'); // 'latest' (Newest to Oldest) | 'oldest' (Oldest to Newest)
   const [viewMode, setViewMode] = useState('cards');
   const [isVenueDropdownOpen, setIsVenueDropdownOpen] = useState(false);
   const venueDropdownRef = useRef(null);
@@ -383,9 +385,9 @@ export default function VendorShowsPage() {
     }
   };
 
-  // Computed Filtered Shows & Key Metrics
+  // Computed Filtered Shows & Key Metrics (Arranged Latest to Old by default)
   const filteredShows = useMemo(() => {
-    return shows.filter(show => {
+    const list = shows.filter(show => {
       if (statusFilter === 'active' && show.status === 'cancelled') return false;
       if (statusFilter === 'cancelled' && show.status !== 'cancelled') return false;
       if (statusFilter === 'filling_fast' && (show.occupancyRate < 70 || show.status === 'cancelled')) return false;
@@ -401,7 +403,19 @@ export default function VendorShowsPage() {
 
       return true;
     });
-  }, [shows, statusFilter, searchQuery]);
+
+    return list.sort((a, b) => {
+      const timeA = a.createdAt ? new Date(a.createdAt).getTime() : 0;
+      const timeB = b.createdAt ? new Date(b.createdAt).getTime() : 0;
+      if (sortOrder === 'latest') {
+        if (timeA && timeB && timeA !== timeB) return timeB - timeA;
+        return String(b.id || b._id || '').localeCompare(String(a.id || a._id || ''));
+      } else {
+        if (timeA && timeB && timeA !== timeB) return timeA - timeB;
+        return String(a.id || a._id || '').localeCompare(String(b.id || b._id || ''));
+      }
+    });
+  }, [shows, statusFilter, searchQuery, sortOrder]);
 
   const metrics = useMemo(() => {
     const totalShowsCount = shows.length;
@@ -442,11 +456,16 @@ export default function VendorShowsPage() {
     });
 
     Object.values(groups).forEach(g => {
-      g.shows.sort((a, b) => (a.startTime || '').localeCompare(b.startTime || ''));
+      g.shows.sort((a, b) => {
+        if (sortOrder === 'latest') {
+          return (b.startTime || '').localeCompare(a.startTime || '');
+        }
+        return (a.startTime || '').localeCompare(b.startTime || '');
+      });
     });
 
     return Object.values(groups);
-  }, [filteredShows]);
+  }, [filteredShows, sortOrder]);
 
   const groupedByMovie = useMemo(() => {
     const groups = {};
@@ -471,12 +490,17 @@ export default function VendorShowsPage() {
     });
 
     Object.values(groups).forEach(g => {
-      g.shows.sort((a, b) => (a.startTime || '').localeCompare(b.startTime || ''));
+      g.shows.sort((a, b) => {
+        if (sortOrder === 'latest') {
+          return (b.startTime || '').localeCompare(a.startTime || '');
+        }
+        return (a.startTime || '').localeCompare(b.startTime || '');
+      });
       g.occupancyRate = g.totalCapacity > 0 ? Math.round((g.totalTickets / g.totalCapacity) * 100) : 0;
     });
 
     return Object.values(groups);
-  }, [filteredShows]);
+  }, [filteredShows, sortOrder]);
 
   return (
     <div className="space-y-6">
@@ -493,7 +517,7 @@ export default function VendorShowsPage() {
             Show Schedules & Timetables
           </h1>
           <p className="text-xs sm:text-sm text-gray-600 mt-1 max-w-2xl leading-relaxed">
-            Program cinema showtimes across auditoriums. Published schedules immediately reflect on the BookMyTrip customer booking app.
+            Program cinema showtimes across auditoriums. Published schedules immediately reflect on the BookMyShow customer booking app.
           </p>
         </div>
 
@@ -531,7 +555,7 @@ export default function VendorShowsPage() {
               Total Shows
             </p>
             <div className="flex items-baseline gap-2 mt-0.5">
-              <span className="text-xl sm:text-2xl font-black text-gray-900">
+              <span className="text-xl sm:text-2xl font-black text-gray-900 tracking-tight tabular-nums">
                 {metrics.totalShowsCount}
               </span>
               <span className="text-[11px] font-bold text-emerald-600">
@@ -551,7 +575,7 @@ export default function VendorShowsPage() {
               Tickets Booked
             </p>
             <div className="flex items-baseline gap-2 mt-0.5">
-              <span className="text-xl sm:text-2xl font-black text-gray-900">
+              <span className="text-xl sm:text-2xl font-black text-gray-900 tracking-tight tabular-nums">
                 {metrics.totalTicketsSold}
               </span>
               <span className="text-[11px] font-medium text-gray-500">
@@ -571,7 +595,7 @@ export default function VendorShowsPage() {
               Avg. Occupancy
             </p>
             <div className="flex items-baseline gap-2 mt-0.5">
-              <span className="text-xl sm:text-2xl font-black text-gray-900">
+              <span className="text-xl sm:text-2xl font-black text-gray-900 tracking-tight tabular-nums">
                 {metrics.avgOccupancy}%
               </span>
               <div className="w-16 h-2 bg-gray-100 rounded-full overflow-hidden shrink-0">
@@ -594,7 +618,7 @@ export default function VendorShowsPage() {
               Est. Box Office
             </p>
             <div className="flex items-baseline gap-2 mt-0.5">
-              <span className="text-xl sm:text-2xl font-black text-gray-900">
+              <span className="text-xl sm:text-2xl font-black text-gray-900 tracking-tight tabular-nums">
                 ₹{metrics.estRevenue.toLocaleString('en-IN')}
               </span>
               <span className="text-[10px] font-bold px-1.5 py-0.5 rounded bg-emerald-50 text-emerald-700 border border-emerald-200">
@@ -819,6 +843,21 @@ export default function VendorShowsPage() {
             </button>
           </div>
 
+          {/* Sort Order: Latest to Old (Default) */}
+          <button
+            type="button"
+            onClick={() => setSortOrder(prev => prev === 'latest' ? 'oldest' : 'latest')}
+            className={`flex items-center gap-1.5 px-3 py-1.5 rounded-lg border text-xs font-bold transition cursor-pointer ${
+              sortOrder === 'latest'
+                ? 'bg-red-50 text-[#F84464] border-red-200 hover:bg-red-100'
+                : 'bg-white text-gray-700 border-gray-200 hover:bg-gray-50'
+            }`}
+            title={sortOrder === 'latest' ? 'Currently: Latest to Old. Click for Old to Latest.' : 'Currently: Old to Latest. Click for Latest to Old.'}
+          >
+            <ArrowUpDown size={13} className={sortOrder === 'latest' ? 'text-[#F84464]' : 'text-gray-500'} />
+            <span>{sortOrder === 'latest' ? 'Latest to Old' : 'Old to Latest'}</span>
+          </button>
+
           {/* 4-Way View Mode Switcher */}
           <div className="inline-flex p-1 bg-gray-100 rounded-lg border border-gray-200 text-xs">
             <button
@@ -962,7 +1001,7 @@ export default function VendorShowsPage() {
 
                   {/* Showtime Overlay on Poster Bottom */}
                   <div className="absolute bottom-2.5 left-2.5 right-2.5 flex items-center justify-between text-white text-xs">
-                    <span className="font-mono font-bold flex items-center gap-1 drop-shadow-sm text-white">
+                    <span className="font-extrabold tracking-tight tabular-nums flex items-center gap-1 drop-shadow-sm text-white">
                       <Clock size={12} className="text-[#F84464]" />
                       {show.startTime}
                     </span>
@@ -995,9 +1034,19 @@ export default function VendorShowsPage() {
                   <div className="space-y-1.5 pt-2 border-t border-gray-100">
                     <div className="flex items-center justify-between text-[11px]">
                       <span className="text-gray-500 font-medium">Occupancy</span>
-                      <span className="font-mono font-bold text-gray-900">
-                        {show.bookedSeatsCount}/{show.totalCapacity} ({show.occupancyRate}%)
-                      </span>
+                      <div className="flex items-center gap-1">
+                        <span className="font-black text-gray-900 tabular-nums">{show.bookedSeatsCount}</span>
+                        <span className="text-gray-400 font-normal">/{show.totalCapacity}</span>
+                        <span className={`text-[10px] font-bold px-1.5 py-0.2 rounded border ml-0.5 tabular-nums ${
+                          show.occupancyRate >= 80
+                            ? 'bg-rose-50 text-rose-700 border-rose-200'
+                            : show.occupancyRate >= 50
+                            ? 'bg-amber-50 text-amber-700 border-amber-200'
+                            : 'bg-emerald-50 text-emerald-700 border-emerald-200'
+                        }`}>
+                          {show.occupancyRate}%
+                        </span>
+                      </div>
                     </div>
                     <div className="w-full h-1.5 bg-gray-100 rounded-full overflow-hidden">
                       <div
@@ -1006,8 +1055,8 @@ export default function VendorShowsPage() {
                       />
                     </div>
                     <div className="flex items-center justify-between text-[10px] text-gray-500">
-                      <span>{availableSeats} seats open</span>
-                      <span className="font-bold text-gray-800">From ₹{show.pricingTiers?.normal || show.ticketPrice || 200}</span>
+                      <span className="font-medium">{availableSeats} seats open</span>
+                      <span className="font-bold text-gray-900 tabular-nums">From ₹{show.pricingTiers?.normal || show.ticketPrice || 200}</span>
                     </div>
                   </div>
 
@@ -1071,7 +1120,7 @@ export default function VendorShowsPage() {
                       }`}
                     >
                       <div className="flex items-center justify-between mb-1.5">
-                        <span className="font-mono font-bold text-xs text-gray-900 bg-white px-2 py-0.5 rounded border border-gray-200">
+                        <span className="font-extrabold tracking-tight tabular-nums text-xs text-gray-900 bg-white px-2 py-0.5 rounded border border-gray-200">
                           {show.startTime}
                         </span>
                         <span className="text-[10px] font-bold px-1.5 py-0.2 rounded bg-indigo-50 text-indigo-700 border border-indigo-200">
@@ -1083,9 +1132,21 @@ export default function VendorShowsPage() {
                         {show.movieTitle}
                       </p>
 
-                      <div className="flex items-center justify-between text-[10px] text-gray-500 mt-2.5 pt-2 border-t border-gray-200">
-                        <span>{show.bookedSeatsCount} / {show.totalCapacity} Booked</span>
-                        <span className="font-bold text-emerald-600">{show.occupancyRate}%</span>
+                      <div className="flex items-center justify-between text-[11px] mt-2.5 pt-2 border-t border-gray-200">
+                        <div className="flex items-center gap-1">
+                          <span className="font-bold text-gray-900 tabular-nums">{show.bookedSeatsCount}</span>
+                          <span className="text-gray-400 font-normal">/{show.totalCapacity}</span>
+                          <span className="text-gray-500 font-medium text-[10px] ml-0.5">booked</span>
+                        </div>
+                        <span className={`text-[10px] font-bold px-1.5 py-0.2 rounded border tabular-nums ${
+                          show.occupancyRate >= 80
+                            ? 'bg-rose-50 text-rose-700 border-rose-200'
+                            : show.occupancyRate >= 50
+                            ? 'bg-amber-50 text-amber-700 border-amber-200'
+                            : 'bg-emerald-50 text-emerald-700 border-emerald-200'
+                        }`}>
+                          {show.occupancyRate}%
+                        </span>
                       </div>
                     </div>
                   );
@@ -1136,10 +1197,10 @@ export default function VendorShowsPage() {
                   <span className="text-xs font-bold px-2.5 py-1 rounded-lg bg-gray-50 text-gray-700 border border-gray-200">
                     {group.shows.length} {group.shows.length === 1 ? 'Show' : 'Shows'}
                   </span>
-                  <span className="text-xs font-bold px-2.5 py-1 rounded-lg bg-emerald-50 text-emerald-700 border border-emerald-200">
+                  <span className="text-xs font-bold px-2.5 py-1 rounded-lg bg-emerald-50 text-emerald-700 border border-emerald-200 tabular-nums">
                     {group.totalTickets} Tickets Booked ({group.occupancyRate}%)
                   </span>
-                  <span className="text-xs font-mono font-bold px-2.5 py-1 rounded-lg bg-gray-50 text-gray-800 border border-gray-200">
+                  <span className="text-xs font-bold px-2.5 py-1 rounded-lg bg-gray-50 text-gray-800 border border-gray-200 tabular-nums">
                     ₹{group.totalRevenue.toLocaleString('en-IN')} Gross
                   </span>
                 </div>
@@ -1154,7 +1215,7 @@ export default function VendorShowsPage() {
                     className="p-3.5 bg-gray-50 hover:bg-gray-100/80 rounded-xl border border-gray-200 hover:border-[#F84464] transition-all cursor-pointer group shadow-xs"
                   >
                     <div className="flex items-center justify-between mb-1.5">
-                      <span className="font-mono font-black text-xs text-gray-900 bg-white px-2 py-0.5 rounded border border-gray-200">
+                      <span className="font-extrabold tracking-tight text-xs text-gray-900 bg-white px-2 py-0.5 rounded border border-gray-200 tabular-nums">
                         {show.startTime}
                       </span>
                       <span className="text-[10px] font-bold px-1.5 py-0.2 rounded bg-indigo-50 text-indigo-700 border border-indigo-200">
@@ -1170,9 +1231,21 @@ export default function VendorShowsPage() {
                       <span>{show.cinema?.name}</span>
                     </p>
 
-                    <div className="flex items-center justify-between text-[10px] mt-2.5 pt-2 border-t border-gray-200">
-                      <span className="text-gray-500 font-medium">{show.bookedSeatsCount}/{show.totalCapacity} Seats</span>
-                      <span className="font-bold text-emerald-600">{show.occupancyRate}%</span>
+                    <div className="flex items-center justify-between text-[11px] mt-2.5 pt-2 border-t border-gray-200">
+                      <div className="flex items-center gap-1">
+                        <span className="font-bold text-gray-900 tabular-nums">{show.bookedSeatsCount}</span>
+                        <span className="text-gray-400 font-normal">/{show.totalCapacity}</span>
+                        <span className="text-gray-500 font-medium text-[10px] ml-0.5">seats</span>
+                      </div>
+                      <span className={`text-[10px] font-bold px-1.5 py-0.2 rounded border tabular-nums ${
+                        show.occupancyRate >= 80
+                          ? 'bg-rose-50 text-rose-700 border-rose-200'
+                          : show.occupancyRate >= 50
+                          ? 'bg-amber-50 text-amber-700 border-amber-200'
+                          : 'bg-emerald-50 text-emerald-700 border-emerald-200'
+                      }`}>
+                        {show.occupancyRate}%
+                      </span>
                     </div>
                   </div>
                 ))}
@@ -1233,7 +1306,7 @@ export default function VendorShowsPage() {
                         ) : (
                           <span className="text-[10px] font-bold px-2.5 py-0.5 rounded-full bg-emerald-50 text-emerald-700 border border-emerald-200 flex items-center gap-1.5">
                             <span className="w-1.5 h-1.5 rounded-full bg-emerald-500" />
-                            Live on BookMyTrip
+                            Live on BookMyShow
                           </span>
                         )}
 
@@ -1272,12 +1345,12 @@ export default function VendorShowsPage() {
                       <span>Programmed Slot</span>
                     </div>
 
-                    <div className="flex items-baseline gap-1.5 font-mono">
-                      <span className="text-base sm:text-lg font-black text-gray-900">
+                    <div className="flex items-baseline gap-1.5">
+                      <span className="text-base sm:text-lg font-black text-gray-900 tracking-tight tabular-nums">
                         {show.startTime}
                       </span>
-                      <span className="text-gray-500 font-bold text-xs">to</span>
-                      <span className="text-sm sm:text-base font-bold text-gray-700">
+                      <span className="text-gray-400 font-medium text-xs">to</span>
+                      <span className="text-sm sm:text-base font-bold text-gray-700 tracking-tight tabular-nums">
                         {show.endTime}
                       </span>
                     </div>
@@ -1300,9 +1373,26 @@ export default function VendorShowsPage() {
                       <span className="text-gray-500 font-bold text-[10px] uppercase tracking-wider">
                         Auditorium Capacity
                       </span>
-                      <span className="font-bold text-gray-900 font-mono text-xs">
-                        {show.bookedSeatsCount} / {show.totalCapacity} Booked ({show.occupancyRate}%)
-                      </span>
+                      <div className="flex items-center gap-1">
+                        <span className="font-black text-gray-900 text-xs sm:text-sm tabular-nums">
+                          {show.bookedSeatsCount}
+                        </span>
+                        <span className="text-gray-400 font-normal text-xs">
+                          / {show.totalCapacity}
+                        </span>
+                        <span className="text-gray-500 font-medium text-xs ml-0.5">
+                          booked
+                        </span>
+                        <span className={`text-[11px] font-bold px-1.5 py-0.5 rounded border ml-1.5 tabular-nums ${
+                          show.occupancyRate >= 80
+                            ? 'bg-rose-50 text-rose-700 border-rose-200'
+                            : show.occupancyRate >= 50
+                            ? 'bg-amber-50 text-amber-700 border-amber-200'
+                            : 'bg-emerald-50 text-emerald-700 border-emerald-200'
+                        }`}>
+                          {show.occupancyRate}%
+                        </span>
+                      </div>
                     </div>
 
                     <div className="w-full h-2 rounded-full overflow-hidden bg-gray-200">
@@ -1321,11 +1411,11 @@ export default function VendorShowsPage() {
                     </div>
 
                     <div className="flex items-center justify-between text-xs">
-                      <span className="text-emerald-700 font-bold text-[11px]">
+                      <span className="text-emerald-700 font-bold text-[11px] tabular-nums">
                         {availableSeats} seats open for booking
                       </span>
-                      <span className="text-gray-600 font-mono text-[11px]">
-                        ₹{estShowRevenue.toLocaleString('en-IN')} Gross
+                      <span className="text-gray-600 font-semibold text-[11px] tabular-nums">
+                        ₹{estShowRevenue.toLocaleString('en-IN')} <span className="text-gray-400 font-normal">Gross</span>
                       </span>
                     </div>
                   </div>
@@ -1337,19 +1427,19 @@ export default function VendorShowsPage() {
                     <div className="flex flex-wrap items-center gap-2">
                       <div className="inline-flex items-center gap-1.5 bg-white px-2.5 py-1 rounded-lg border border-gray-200 shadow-xs text-xs">
                         <span className="text-gray-500 font-medium">Normal:</span>
-                        <span className="font-mono font-black text-gray-900">
+                        <span className="font-bold text-gray-900 tabular-nums">
                           ₹{show.pricingTiers?.normal || show.ticketPrice || 200}
                         </span>
                       </div>
                       <div className="inline-flex items-center gap-1.5 bg-white px-2.5 py-1 rounded-lg border border-gray-200 shadow-xs text-xs">
                         <span className="text-gray-500 font-medium">Premium:</span>
-                        <span className="font-mono font-black text-gray-900">
+                        <span className="font-bold text-gray-900 tabular-nums">
                           ₹{show.pricingTiers?.premium || 280}
                         </span>
                       </div>
                       <div className="inline-flex items-center gap-1.5 bg-white px-2.5 py-1 rounded-lg border border-gray-200 shadow-xs text-xs">
                         <span className="text-gray-500 font-medium">Recliner:</span>
-                        <span className="font-mono font-black text-gray-900">
+                        <span className="font-bold text-gray-900 tabular-nums">
                           ₹{show.pricingTiers?.recliner || 450}
                         </span>
                       </div>

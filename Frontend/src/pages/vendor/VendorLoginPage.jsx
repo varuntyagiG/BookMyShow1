@@ -46,7 +46,7 @@ export default function VendorLoginPage() {
       <div className="sm:mx-auto sm:w-full sm:max-w-md text-center">
         <Link to="/" className="inline-flex items-center gap-2 mb-2 group">
           <span className="text-3xl font-black tracking-tight text-[#222432]">
-            book<span className="text-[#F84464]">my</span>trip
+            book<span className="text-[#F84464]">my</span>show
           </span>
           <span className="bg-[#F84464] text-white text-[11px] uppercase font-bold tracking-wider px-2.5 py-0.5 rounded-full shadow-xs">
             Cinema Partner
