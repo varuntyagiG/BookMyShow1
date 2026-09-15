@@ -42,25 +42,33 @@ export function VendorAuthProvider({ children }) {
   }, [refreshPartner]);
 
   const login = useCallback(async (email, password) => {
-    const res = await vendorApi.login({ email, password });
-    if (res.success && res.token) {
-      localStorage.setItem('bms_vendor_token', res.token);
-      setToken(res.token);
-      setPartner(res.user);
-      return { success: true, partner: res.user };
+    try {
+      const res = await vendorApi.login({ email, password });
+      if (res.success && res.token) {
+        localStorage.setItem('bms_vendor_token', res.token);
+        setToken(res.token);
+        setPartner(res.user);
+        return { success: true, partner: res.user };
+      }
+      return { success: false, message: res.message || 'Login failed' };
+    } catch (err) {
+      return { success: false, message: err.message || err.data?.message || 'Login failed' };
     }
-    return { success: false, message: res.message || 'Login failed' };
   }, []);
 
   const register = useCallback(async (partnerData) => {
-    const res = await vendorApi.register(partnerData);
-    if (res.success && res.token) {
-      localStorage.setItem('bms_vendor_token', res.token);
-      setToken(res.token);
-      setPartner(res.user);
-      return { success: true, partner: res.user };
+    try {
+      const res = await vendorApi.register(partnerData);
+      if (res.success && res.token) {
+        localStorage.setItem('bms_vendor_token', res.token);
+        setToken(res.token);
+        setPartner(res.user);
+        return { success: true, partner: res.user };
+      }
+      return { success: false, message: res.message || 'Registration failed' };
+    } catch (err) {
+      return { success: false, message: err.message || err.data?.message || 'Registration failed' };
     }
-    return { success: false, message: res.message || 'Registration failed' };
   }, []);
 
   const updateProfile = useCallback(async (updateData) => {

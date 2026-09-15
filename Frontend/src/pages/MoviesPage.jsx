@@ -158,7 +158,7 @@ export default function MoviesPage() {
         <div className="grid grid-cols-1 lg:grid-cols-4 gap-6 lg:gap-8 items-start">
 
           {/* Left Sidebar Filters */}
-          <div className={`lg:col-span-1 space-y-4 lg:sticky lg:top-20 lg:self-start lg:max-h-[calc(100vh-6rem)] lg:overflow-y-auto no-scrollbar pb-6 ${mobileFilterOpen ? 'block' : 'hidden lg:block'}`}>
+          <div className={`lg:col-span-1 space-y-4 lg:sticky lg:top-32 lg:self-start lg:max-h-[calc(100vh-9rem)] lg:overflow-y-auto no-scrollbar pb-6 ${mobileFilterOpen ? 'block' : 'hidden lg:block'}`}>
 
             {/* Filters Box */}
             <div className="bg-white rounded-xl p-5 shadow-xs border border-gray-200">

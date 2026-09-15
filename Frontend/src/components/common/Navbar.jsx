@@ -12,20 +12,13 @@ import {
   Crown,
   Sparkles,
   ArrowRight,
-  Volume2,
-  VolumeX,
   Compass
 } from 'lucide-react';
 import { useAuth } from '../../context/AuthContext';
 import { useCity } from '../../context/CityContext';
 import { useNotification } from '../../context/NotificationContext';
 import { Link, useNavigate } from 'react-router-dom';
-import { 
-  isSoundEnabled, 
-  toggleSound, 
-  subscribeSoundChange, 
-  playPop 
-} from '../../utils/soundEffects';
+import { playPop } from '../../utils/soundEffects';
 
 export default function Navbar({ onSearch }) {
   const { user, isAuthenticated, logout, openAuthModal } = useAuth();
@@ -34,16 +27,11 @@ export default function Navbar({ onSearch }) {
   const [userDropdownOpen, setUserDropdownOpen] = useState(false);
   const [searchInput, setSearchInput] = useState('');
   const [searchFocused, setSearchFocused] = useState(false);
-  const [soundOn, setSoundOn] = useState(isSoundEnabled());
   const [isScrolled, setIsScrolled] = useState(false);
   const dropdownRef = useRef(null);
   const searchBoxRef = useRef(null);
   const searchInputRef = useRef(null);
   const navigate = useNavigate();
-
-  useEffect(() => {
-    return subscribeSoundChange(setSoundOn);
-  }, []);
 
   // Listen to scroll position for dynamic obsidian glass morphing
   useEffect(() => {
@@ -108,12 +96,6 @@ export default function Navbar({ onSearch }) {
   const handleClearSearch = () => {
     setSearchInput('');
     if (onSearch) onSearch('');
-  };
-
-  const handleSoundToggle = () => {
-    const next = toggleSound();
-    setSoundOn(next);
-    playPop();
   };
 
   return (
@@ -274,28 +256,6 @@ export default function Navbar({ onSearch }) {
               </div>
               <span className="font-bold text-white text-[11px] sm:text-xs">{selectedCity}</span>
               <ChevronDown className="w-3 h-3 text-gray-300" />
-            </button>
-
-            {/* Audio Equalizer Haptic Toggle */}
-            <button
-              onClick={handleSoundToggle}
-              className={`p-2 rounded-full border transition-all cursor-pointer active:scale-95 flex items-center justify-center backdrop-blur-md ${
-                soundOn
-                  ? 'bg-white/[0.09] hover:bg-white/[0.18] text-white border-white/20 shadow-[0_0_12px_rgba(248,68,100,0.25)]'
-                  : 'bg-red-500/20 text-[#F84464] border-[#F84464]/40 hover:bg-red-500/30'
-              }`}
-              title={soundOn ? 'Audio Haptics: ON (Click to Mute)' : 'Audio Haptics: MUTED (Click to Enable)'}
-              aria-label="Toggle Audio Haptics"
-            >
-              {soundOn ? (
-                <div className="flex items-end gap-0.5 h-3 w-3 justify-center">
-                  <span className="w-[2px] h-3 bg-[#F84464] rounded-full animate-pulse" />
-                  <span className="w-[2px] h-2 bg-[#F84464] rounded-full animate-pulse delay-75" />
-                  <span className="w-[2px] h-3.5 bg-[#F84464] rounded-full animate-pulse delay-150" />
-                </div>
-              ) : (
-                <VolumeX className="w-3.5 h-3.5 text-gray-300" />
-              )}
             </button>
 
             {/* Live Notification Bell */}

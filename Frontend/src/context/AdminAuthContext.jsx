@@ -39,14 +39,18 @@ export function AdminAuthProvider({ children }) {
   }, [refreshAdmin]);
 
   const login = useCallback(async (email, password) => {
-    const res = await adminApi.login({ email, password });
-    if (res.success && res.token) {
-      localStorage.setItem('bms_admin_token', res.token);
-      setToken(res.token);
-      setAdmin(res.user);
-      return { success: true, admin: res.user };
+    try {
+      const res = await adminApi.login({ email, password });
+      if (res.success && res.token) {
+        localStorage.setItem('bms_admin_token', res.token);
+        setToken(res.token);
+        setAdmin(res.user);
+        return { success: true, admin: res.user };
+      }
+      return { success: false, message: res.message || 'Admin authentication failed' };
+    } catch (err) {
+      return { success: false, message: err.message || err.data?.message || 'Admin authentication failed' };
     }
-    return { success: false, message: res.message || 'Admin authentication failed' };
   }, []);
 
   const value = useMemo(() => ({

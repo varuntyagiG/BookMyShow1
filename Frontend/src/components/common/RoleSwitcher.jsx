@@ -114,7 +114,7 @@ export default function RoleSwitcher() {
     if (roleId === 'vendor') {
       if (!isVendorAuth) {
         try {
-          await vendorLogin('partner@cinemaworld.com', 'Partner@123');
+          await vendorLogin('partner@bookmyshow.com', 'password123');
         } catch (_err) {
           console.warn('Vendor auto-auth failed, falling back to login screen');
         }
@@ -129,7 +129,7 @@ export default function RoleSwitcher() {
     if (roleId === 'admin') {
       if (!isAdminAuth) {
         try {
-          await adminLogin('admin@bookmytrip.com', 'Admin@123');
+          await adminLogin('admin@bookmyshow.com', 'password123');
         } catch (_err) {
           console.warn('Admin auto-auth failed, falling back to login screen');
         }

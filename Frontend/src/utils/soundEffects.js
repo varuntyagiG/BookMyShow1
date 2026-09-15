@@ -5,13 +5,13 @@
  */
 
 let audioCtx = null;
-let soundEnabled = true;
+let soundEnabled = false;
 
-// Initialize from localStorage safely
+// Initialize from localStorage safely (defaults to silent)
 try {
   const saved = localStorage.getItem('bms_sound_fx');
   if (saved !== null) {
-    soundEnabled = saved !== 'false';
+    soundEnabled = saved === 'true';
   }
 } catch (_) {}
 

@@ -1,14 +1,33 @@
 import React, { useState } from 'react';
 import { Link, useNavigate } from 'react-router-dom';
 import { useAuth } from '../context/AuthContext';
-import { Mail, Lock, Eye, EyeOff, Sparkles, AlertCircle, ShieldCheck, Ticket, Bell } from 'lucide-react';
+import { useVendorAuth } from '../context/VendorAuthContext';
+import { useAdminAuth } from '../context/AdminAuthContext';
+import { playPop } from '../utils/soundEffects';
+import {
+  Mail,
+  Lock,
+  Eye,
+  EyeOff,
+  Sparkles,
+  AlertCircle,
+  ShieldCheck,
+  Ticket,
+  Bell,
+  Building2,
+  User,
+  ArrowRight
+} from 'lucide-react';
 
 export default function SignInPage() {
   const { login, quickDemoLogin } = useAuth();
+  const { login: vendorLogin } = useVendorAuth();
+  const { login: adminLogin } = useAdminAuth();
   const navigate = useNavigate();
 
   const [email, setEmail] = useState('');
   const [password, setPassword] = useState('');
+  const [selectedRole, setSelectedRole] = useState('customer'); // 'customer' | 'vendor' | 'admin'
   const [showPassword, setShowPassword] = useState(false);
   const [error, setError] = useState('');
   const [loading, setLoading] = useState(false);
@@ -19,11 +38,57 @@ export default function SignInPage() {
     setLoading(true);
 
     try {
+      const emailLower = email.trim().toLowerCase();
+
+      // 1. Admin login routing
+      if (selectedRole === 'admin' || emailLower === 'admin@bookmyshow.com' || emailLower === 'admin@bookmytrip.com') {
+        const res = await adminLogin(email, password);
+        if (res.success) {
+          navigate('/admin/dashboard');
+          return;
+        } else {
+          setError(res.message || 'Admin authentication failed');
+          setLoading(false);
+          return;
+        }
+      }
+
+      // 2. Cinema Partner login routing
+      if (selectedRole === 'vendor' || emailLower === 'partner@bookmyshow.com' || emailLower === 'partner@cinemaworld.com') {
+        const res = await vendorLogin(email, password);
+        if (res.success) {
+          navigate('/vendor/dashboard');
+          return;
+        } else {
+          setError(res.message || 'Cinema partner login failed');
+          setLoading(false);
+          return;
+        }
+      }
+
+      // 3. Customer login with smart fallbacks
       const res = await login(email, password);
       if (res.success) {
         navigate('/');
       } else {
-        setError(res.message || 'Invalid credentials');
+        // Fallback for partner/admin credentials
+        try {
+          const vRes = await vendorLogin(email, password);
+          if (vRes.success) {
+            navigate('/vendor/dashboard');
+            return;
+          }
+        } catch (_) {}
+
+        try {
+          const aRes = await adminLogin(email, password);
+          if (aRes.success) {
+            navigate('/admin/dashboard');
+            return;
+          }
+        } catch (_) {}
+
+        setError(res.message || 'Invalid credentials. Please check your email and password.');
       }
     } catch (err) {
       setError(err.message || 'Login failed');
@@ -32,18 +97,20 @@ export default function SignInPage() {
     }
   };
 
-  const handleDemo = async () => {
+  const handleRoleChipSelect = (role) => {
+    try { playPop(); } catch (_) {}
+    setSelectedRole(role);
     setError('');
-    setLoading(true);
-    try {
-      const res = await quickDemoLogin();
-      if (res.success) {
-        navigate('/');
-      }
-    } catch {
-      setError('Demo login error');
-    } finally {
-      setLoading(false);
+
+    if (role === 'customer') {
+      setEmail('demo@bookmyshow.com');
+      setPassword('password123');
+    } else if (role === 'vendor') {
+      setEmail('partner@bookmyshow.com');
+      setPassword('password123');
+    } else if (role === 'admin') {
+      setEmail('admin@bookmyshow.com');
+      setPassword('password123');
     }
   };
 
@@ -64,17 +131,68 @@ export default function SignInPage() {
             <p className="text-xs text-gray-500 mt-1">Access your tickets, saved movies, and faster checkout</p>
           </div>
 
-          {/* Demo Login Button */}
+          {/* Quick Role Demo Chips (Customer, Cinema Partner, Super Admin) */}
           <div className="mb-5">
-            <button
-              type="button"
-              onClick={handleDemo}
-              disabled={loading}
-              className="w-full py-3 px-4 bg-gradient-to-r from-amber-500 via-[#F84464] to-[#e03a58] hover:opacity-95 text-white font-bold text-xs rounded-xl shadow-md shadow-red-500/20 flex items-center justify-center gap-2 cursor-pointer transition-all active:scale-[0.99]"
-            >
-              <Sparkles className="w-4 h-4 text-amber-200" />
-              <span>1-Click Instant Demo Login (demo@bookmyshow.com)</span>
-            </button>
+            <div className="flex items-center justify-between mb-1.5 px-0.5">
+              <span className="text-[10px] font-black uppercase tracking-wider text-gray-500 flex items-center gap-1">
+                <Sparkles className="w-3 h-3 text-amber-500" />
+                <span>Choose Account Role</span>
+              </span>
+              <span className="text-[9px] text-gray-400 font-semibold">Pre-fills Credentials</span>
+            </div>
+
+            <div className="grid grid-cols-3 gap-2">
+              <button
+                type="button"
+                disabled={loading}
+                onClick={() => handleRoleChipSelect('customer')}
+                className={`p-2.5 rounded-xl border text-left transition-all cursor-pointer ${
+                  selectedRole === 'customer'
+                    ? 'bg-blue-50 border-blue-400 text-blue-800 shadow-xs'
+                    : 'bg-gray-50/80 border-gray-200 text-gray-700 hover:bg-gray-100'
+                }`}
+              >
+                <div className="flex items-center gap-1.5 text-xs font-black truncate">
+                  <User className="w-3.5 h-3.5 text-blue-600 shrink-0" />
+                  <span className="truncate">Customer</span>
+                </div>
+                <div className="text-[9px] text-gray-400 truncate mt-0.5">Tickets & Seats</div>
+              </button>
+
+              <button
+                type="button"
+                disabled={loading}
+                onClick={() => handleRoleChipSelect('vendor')}
+                className={`p-2.5 rounded-xl border text-left transition-all cursor-pointer ${
+                  selectedRole === 'vendor'
+                    ? 'bg-[#F84464]/10 border-[#F84464]/50 text-[#F84464] shadow-xs'
+                    : 'bg-gray-50/80 border-gray-200 text-gray-700 hover:bg-gray-100'
+                }`}
+              >
+                <div className="flex items-center gap-1.5 text-xs font-black truncate">
+                  <Building2 className="w-3.5 h-3.5 text-[#F84464] shrink-0" />
+                  <span className="truncate">Partner</span>
+                </div>
+                <div className="text-[9px] text-gray-400 truncate mt-0.5">Multiplex Desk</div>
+              </button>
+
+              <button
+                type="button"
+                disabled={loading}
+                onClick={() => handleRoleChipSelect('admin')}
+                className={`p-2.5 rounded-xl border text-left transition-all cursor-pointer ${
+                  selectedRole === 'admin'
+                    ? 'bg-amber-50 border-amber-400 text-amber-800 shadow-xs'
+                    : 'bg-gray-50/80 border-gray-200 text-gray-700 hover:bg-gray-100'
+                }`}
+              >
+                <div className="flex items-center gap-1.5 text-xs font-black truncate">
+                  <ShieldCheck className="w-3.5 h-3.5 text-amber-600 shrink-0" />
+                  <span className="truncate">Admin</span>
+                </div>
+                <div className="text-[9px] text-gray-400 truncate mt-0.5">GMV & KYC</div>
+              </button>
+            </div>
           </div>
 
           {/* Error notice */}
@@ -142,7 +260,13 @@ export default function SignInPage() {
               disabled={loading}
               className="w-full py-3 bg-[#F84464] hover:bg-[#e03a58] text-white text-xs sm:text-sm font-black rounded-xl shadow-lg shadow-red-500/25 transition-all cursor-pointer mt-2 disabled:opacity-70 active:scale-[0.99]"
             >
-              {loading ? 'Signing In...' : 'Sign In'}
+              {loading
+                ? 'Signing In...'
+                : selectedRole === 'vendor'
+                  ? 'Sign In as Cinema Partner'
+                  : selectedRole === 'admin'
+                    ? 'Sign In as Platform Admin'
+                    : 'Sign In'}
             </button>
           </form>
 
@@ -151,6 +275,26 @@ export default function SignInPage() {
             Don't have an account?{' '}
             <Link to="/signup" className="text-[#F84464] font-bold hover:underline">
               Create an Account
+            </Link>
+          </div>
+
+          {/* Cinema Partner Registration banner */}
+          <div className="mt-4 p-3.5 rounded-2xl bg-slate-50 border border-slate-200/80 flex items-center justify-between gap-3 text-xs">
+            <div className="flex items-center gap-2.5">
+              <div className="p-1.5 rounded-lg bg-[#F84464]/10 text-[#F84464]">
+                <Building2 className="w-4 h-4" />
+              </div>
+              <div>
+                <div className="text-gray-900 font-bold text-xs">Cinema Operator / Partner?</div>
+                <div className="text-gray-500 text-[10px]">Register your multiplexes & screens</div>
+              </div>
+            </div>
+            <Link
+              to="/vendor/signup"
+              className="px-3 py-1.5 rounded-xl bg-white border border-gray-200 text-[#F84464] font-black text-xs hover:bg-red-50 hover:border-[#F84464]/30 transition-all flex items-center gap-1 cursor-pointer shadow-xs shrink-0"
+            >
+              <span>Partner Sign Up</span>
+              <ArrowRight className="w-3 h-3" />
             </Link>
           </div>
         </div>

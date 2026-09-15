@@ -1,8 +1,27 @@
 import React, { useState } from 'react';
-import { X, Eye, EyeOff, Mail, Lock, User, Phone, Sparkles, AlertCircle } from 'lucide-react';
+import { useNavigate, Link } from 'react-router-dom';
+import {
+  X,
+  Eye,
+  EyeOff,
+  Mail,
+  Lock,
+  User,
+  Phone,
+  Sparkles,
+  AlertCircle,
+  Building2,
+  ShieldCheck,
+  ArrowRight,
+  Check
+} from 'lucide-react';
 import { useAuth } from '../../context/AuthContext';
+import { useVendorAuth } from '../../context/VendorAuthContext';
+import { useAdminAuth } from '../../context/AdminAuthContext';
+import { playPop } from '../../utils/soundEffects';
 
 export default function AuthModal() {
+  const navigate = useNavigate();
   const {
     isAuthModalOpen,
     closeAuthModal,
@@ -12,14 +31,20 @@ export default function AuthModal() {
     register,
     quickDemoLogin,
   } = useAuth();
+  const { login: vendorLogin, register: vendorRegister } = useVendorAuth();
+  const { login: adminLogin } = useAdminAuth();
 
   const [formData, setFormData] = useState({
     name: '',
     email: '',
     phone: '',
     password: '',
+    businessName: '',
+    gstin: '',
   });
 
+  const [selectedLoginRole, setSelectedLoginRole] = useState('customer'); // 'customer' | 'vendor' | 'admin'
+  const [selectedSignUpRole, setSelectedSignUpRole] = useState('customer'); // 'customer' | 'vendor'
   const [showPassword, setShowPassword] = useState(false);
   const [error, setError] = useState('');
   const [submitting, setSubmitting] = useState(false);
@@ -54,9 +79,34 @@ export default function AuthModal() {
           return;
         }
 
-        const res = await register(formData);
-        if (!res.success) {
-          setError(res.message || 'Registration failed');
+        if (selectedSignUpRole === 'vendor') {
+          if (!formData.businessName?.trim()) {
+            setError('Please enter your Cinema or Theatre Chain Name.');
+            setSubmitting(false);
+            return;
+          }
+          const res = await vendorRegister({
+            name: formData.name.trim(),
+            email: formData.email.trim(),
+            password: formData.password,
+            phone: formData.phone?.trim() || '',
+            businessName: formData.businessName.trim(),
+            gstin: formData.gstin?.trim() || ''
+          });
+          if (!res.success) {
+            setError(res.message || 'Cinema partner registration failed.');
+          } else {
+            closeAuthModal();
+            navigate('/vendor/dashboard');
+          }
+        } else {
+          // Customer Registration
+          const res = await register(formData);
+          if (!res.success) {
+            setError(res.message || 'Registration failed');
+          } else {
+            closeAuthModal();
+          }
         }
       } else {
         if (!formData.email || !formData.password) {
@@ -65,9 +115,62 @@ export default function AuthModal() {
           return;
         }
 
+        const emailLower = formData.email.trim().toLowerCase();
+
+        // 1. Admin login routing
+        if (selectedLoginRole === 'admin' || emailLower === 'admin@bookmyshow.com' || emailLower === 'admin@bookmytrip.com') {
+          const res = await adminLogin(formData.email, formData.password);
+          if (res.success) {
+            closeAuthModal();
+            navigate('/admin/dashboard');
+            return;
+          } else {
+            setError(res.message || 'Admin authentication failed');
+            setSubmitting(false);
+            return;
+          }
+        }
+
+        // 2. Cinema Partner login routing
+        if (selectedLoginRole === 'vendor' || emailLower === 'partner@bookmyshow.com' || emailLower === 'partner@cinemaworld.com') {
+          const res = await vendorLogin(formData.email, formData.password);
+          if (res.success) {
+            closeAuthModal();
+            navigate('/vendor/dashboard');
+            return;
+          } else {
+            setError(res.message || 'Cinema partner login failed');
+            setSubmitting(false);
+            return;
+          }
+        }
+
+        // 3. Customer login with smart fallbacks
         const res = await login(formData.email, formData.password);
-        if (!res.success) {
-          setError(res.message || 'Login failed');
+        if (res.success) {
+          closeAuthModal();
+        } else {
+          // Check if it's a partner trying to log in directly
+          try {
+            const vRes = await vendorLogin(formData.email, formData.password);
+            if (vRes.success) {
+              closeAuthModal();
+              navigate('/vendor/dashboard');
+              return;
+            }
+          } catch (_) {}
+
+          // Check if it's an admin trying to log in directly
+          try {
+            const aRes = await adminLogin(formData.email, formData.password);
+            if (aRes.success) {
+              closeAuthModal();
+              navigate('/admin/dashboard');
+              return;
+            }
+          } catch (_) {}
+
+          setError(res.message || 'Login failed. Please check your credentials.');
         }
       }
     } catch (err) {
@@ -77,26 +180,40 @@ export default function AuthModal() {
     }
   };
 
-  const handleDemoClick = async () => {
+  const handleRoleChipSelect = (role) => {
+    try { playPop(); } catch (_) {}
+    setSelectedLoginRole(role);
     setError('');
-    setSubmitting(true);
-    try {
-      await quickDemoLogin();
-    } catch {
-      setError('Demo login failed.');
-    } finally {
-      setSubmitting(false);
+
+    if (role === 'customer') {
+      setFormData((prev) => ({
+        ...prev,
+        email: 'demo@bookmyshow.com',
+        password: 'password123'
+      }));
+    } else if (role === 'vendor') {
+      setFormData((prev) => ({
+        ...prev,
+        email: 'partner@bookmyshow.com',
+        password: 'password123'
+      }));
+    } else if (role === 'admin') {
+      setFormData((prev) => ({
+        ...prev,
+        email: 'admin@bookmyshow.com',
+        password: 'password123'
+      }));
     }
   };
 
   return (
     <div className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-black/75 backdrop-blur-xs">
-      <div className="relative w-full max-w-md bg-white rounded-3xl shadow-[0_25px_60px_-15px_rgba(0,0,0,0.5)] overflow-hidden animate-in fade-in zoom-in-95 duration-200 border border-slate-100">
+      <div className={`relative w-full ${isSignUp ? 'max-w-lg' : 'max-w-md'} max-h-[92vh] flex flex-col bg-white rounded-3xl shadow-[0_25px_60px_-15px_rgba(0,0,0,0.5)] overflow-hidden animate-in fade-in zoom-in-95 duration-200 border border-slate-100`}>
         {/* Top 3D Neon Projection Accent Line */}
-        <div className="h-1 w-full bg-gradient-to-r from-transparent via-[#F84464] to-transparent shadow-[0_0_12px_rgba(248,68,100,0.8)]" />
+        <div className="h-1 w-full bg-gradient-to-r from-transparent via-[#F84464] to-transparent shadow-[0_0_12px_rgba(248,68,100,0.8)] shrink-0" />
 
         {/* Top Header */}
-        <div className="px-6 pt-6 pb-4 border-b border-gray-100 flex items-center justify-between">
+        <div className="px-5 pt-4 pb-3 border-b border-gray-100 flex items-center justify-between shrink-0">
           <div>
             <div className="text-xl font-black tracking-tight text-gray-900 flex items-center gap-1">
               <span>book<span className="text-[#F84464]">my</span>show</span>
@@ -116,14 +233,14 @@ export default function AuthModal() {
         </div>
 
         {/* Tab Switcher */}
-        <div className="flex border-b border-gray-100 bg-gray-50/80 p-1">
+        <div className="flex border-b border-gray-100 bg-gray-50/80 p-1 shrink-0">
           <button
             type="button"
             onClick={() => {
               setError('');
               setAuthModalMode('signin');
             }}
-            className={`flex-1 py-2.5 text-xs font-black transition-all rounded-xl cursor-pointer text-center ${!isSignUp
+            className={`flex-1 py-2 text-xs font-black transition-all rounded-xl cursor-pointer text-center ${!isSignUp
                 ? 'bg-white text-[#F84464] shadow-xs'
                 : 'text-gray-500 hover:text-gray-900'
               }`}
@@ -136,7 +253,7 @@ export default function AuthModal() {
               setError('');
               setAuthModalMode('signup');
             }}
-            className={`flex-1 py-2.5 text-xs font-black transition-all rounded-xl cursor-pointer text-center ${isSignUp
+            className={`flex-1 py-2 text-xs font-black transition-all rounded-xl cursor-pointer text-center ${isSignUp
                 ? 'bg-white text-[#F84464] shadow-xs'
                 : 'text-gray-500 hover:text-gray-900'
               }`}
@@ -145,32 +262,151 @@ export default function AuthModal() {
           </button>
         </div>
 
-        {/* Form Body */}
-        <div className="p-6">
-          {/* Quick Demo Login Option */}
-          <div className="mb-4">
-            <button
-              type="button"
-              onClick={handleDemoClick}
-              disabled={submitting}
-              className="w-full py-2.5 px-4 bg-gradient-to-r from-amber-500 via-[#F84464] to-[#e03a58] hover:opacity-95 text-white font-bold text-xs rounded-xl shadow-md shadow-red-500/20 flex items-center justify-center gap-2 transition-all cursor-pointer active:scale-[0.99]"
-            >
-              <Sparkles className="w-4 h-4 text-amber-200" />
-              <span>1-Click Instant Demo Login (demo@bookmyshow.com)</span>
-            </button>
-          </div>
+        {/* Form Body - scrollable on small screens */}
+        <div className="p-5 overflow-y-auto max-h-[calc(92vh-110px)]">
+          {/* Quick Role Demo Chips (Customer, Cinema Partner, Super Admin) */}
+          {!isSignUp && (
+            <div className="mb-4">
+              <div className="flex items-center justify-between mb-1.5 px-0.5">
+                <span className="text-[10px] font-black uppercase tracking-wider text-gray-500 flex items-center gap-1">
+                  <Sparkles className="w-3 h-3 text-amber-500" />
+                  <span>Choose Account Role</span>
+                </span>
+                <span className="text-[9px] text-gray-400 font-semibold">Pre-fills Credentials</span>
+              </div>
+
+              <div className="grid grid-cols-3 gap-2">
+                <button
+                  type="button"
+                  disabled={submitting}
+                  onClick={() => handleRoleChipSelect('customer')}
+                  className={`p-2 rounded-xl border text-left transition-all cursor-pointer ${
+                    selectedLoginRole === 'customer'
+                      ? 'bg-blue-50 border-blue-400 text-blue-800 shadow-xs'
+                      : 'bg-gray-50/80 border-gray-200 text-gray-700 hover:bg-gray-100'
+                  }`}
+                >
+                  <div className="flex items-center gap-1 text-[11px] font-black truncate">
+                    <User className="w-3.5 h-3.5 text-blue-600 shrink-0" />
+                    <span className="truncate">Customer</span>
+                  </div>
+                  <div className="text-[9px] text-gray-400 truncate mt-0.5">Tickets & Seats</div>
+                </button>
+
+                <button
+                  type="button"
+                  disabled={submitting}
+                  onClick={() => handleRoleChipSelect('vendor')}
+                  className={`p-2 rounded-xl border text-left transition-all cursor-pointer ${
+                    selectedLoginRole === 'vendor'
+                      ? 'bg-[#F84464]/10 border-[#F84464]/50 text-[#F84464] shadow-xs'
+                      : 'bg-gray-50/80 border-gray-200 text-gray-700 hover:bg-gray-100'
+                  }`}
+                >
+                  <div className="flex items-center gap-1 text-[11px] font-black truncate">
+                    <Building2 className="w-3.5 h-3.5 text-[#F84464] shrink-0" />
+                    <span className="truncate">Partner</span>
+                  </div>
+                  <div className="text-[9px] text-gray-400 truncate mt-0.5">Multiplex Desk</div>
+                </button>
+
+                <button
+                  type="button"
+                  disabled={submitting}
+                  onClick={() => handleRoleChipSelect('admin')}
+                  className={`p-2 rounded-xl border text-left transition-all cursor-pointer ${
+                    selectedLoginRole === 'admin'
+                      ? 'bg-amber-50 border-amber-400 text-amber-800 shadow-xs'
+                      : 'bg-gray-50/80 border-gray-200 text-gray-700 hover:bg-gray-100'
+                  }`}
+                >
+                  <div className="flex items-center gap-1 text-[11px] font-black truncate">
+                    <ShieldCheck className="w-3.5 h-3.5 text-amber-600 shrink-0" />
+                    <span className="truncate">Admin</span>
+                  </div>
+                  <div className="text-[9px] text-gray-400 truncate mt-0.5">GMV & KYC</div>
+                </button>
+              </div>
+            </div>
+          )}
+
+          {/* Sign Up Role Selection (Customer vs Cinema Partner) */}
+          {isSignUp && (
+            <div className="mb-3.5">
+              <div className="flex items-center justify-between mb-1.5 px-0.5">
+                <span className="text-[10px] font-black uppercase tracking-wider text-gray-500">
+                  Select Account Type
+                </span>
+                <span className={`text-[9px] font-bold ${selectedSignUpRole === 'vendor' ? 'text-[#F84464]' : 'text-blue-600'}`}>
+                  {selectedSignUpRole === 'vendor' ? 'Cinema Partner Portal' : 'Moviegoer Booking Account'}
+                </span>
+              </div>
+
+              <div className="grid grid-cols-2 gap-2">
+                <button
+                  type="button"
+                  onClick={() => {
+                    try { playPop(); } catch (_) {}
+                    setSelectedSignUpRole('customer');
+                    setError('');
+                  }}
+                  className={`p-2 rounded-xl border text-left transition-all cursor-pointer ${
+                    selectedSignUpRole === 'customer'
+                      ? 'bg-blue-50/80 border-blue-400 text-blue-900 shadow-xs'
+                      : 'bg-gray-50/80 border-gray-200 text-gray-600 hover:bg-gray-100'
+                  }`}
+                >
+                  <div className="flex items-center justify-between">
+                    <div className="flex items-center gap-1.5 text-xs font-black">
+                      <User className={`w-3.5 h-3.5 ${selectedSignUpRole === 'customer' ? 'text-blue-600' : 'text-gray-400'}`} />
+                      <span>Moviegoer</span>
+                    </div>
+                    {selectedSignUpRole === 'customer' && (
+                      <span className="w-2 h-2 rounded-full bg-blue-600 ring-2 ring-blue-200" />
+                    )}
+                  </div>
+                  <p className="text-[10px] text-gray-400 mt-0.5 truncate">Book tickets & snacks</p>
+                </button>
+
+                <button
+                  type="button"
+                  onClick={() => {
+                    try { playPop(); } catch (_) {}
+                    setSelectedSignUpRole('vendor');
+                    setError('');
+                  }}
+                  className={`p-2 rounded-xl border text-left transition-all cursor-pointer ${
+                    selectedSignUpRole === 'vendor'
+                      ? 'bg-[#F84464]/10 border-[#F84464]/50 text-[#F84464] shadow-xs'
+                      : 'bg-gray-50/80 border-gray-200 text-gray-600 hover:bg-gray-100'
+                  }`}
+                >
+                  <div className="flex items-center justify-between">
+                    <div className="flex items-center gap-1.5 text-xs font-black">
+                      <Building2 className={`w-3.5 h-3.5 ${selectedSignUpRole === 'vendor' ? 'text-[#F84464]' : 'text-gray-400'}`} />
+                      <span>Cinema Partner</span>
+                    </div>
+                    {selectedSignUpRole === 'vendor' && (
+                      <span className="w-2 h-2 rounded-full bg-[#F84464] ring-2 ring-red-200" />
+                    )}
+                  </div>
+                  <p className="text-[10px] text-gray-400 mt-0.5 truncate">List screens & theatres</p>
+                </button>
+              </div>
+            </div>
+          )}
 
           {/* Social Google button */}
-          <div className="mb-4">
+          <div className="mb-3">
             <button
               type="button"
               onClick={() => {
                 alert('Social Google Login: Logging in with test Google profile.');
                 quickDemoLogin();
               }}
-              className="w-full flex items-center justify-center gap-3 py-2.5 px-4 border border-gray-200 rounded-xl text-xs font-bold text-gray-700 hover:bg-gray-50 transition-colors cursor-pointer active:scale-[0.99]"
+              className="w-full flex items-center justify-center gap-2.5 py-2 px-3 border border-gray-200 rounded-xl text-xs font-bold text-gray-700 hover:bg-gray-50 transition-colors cursor-pointer active:scale-[0.99]"
             >
-              <svg className="w-4 h-4" viewBox="0 0 24 24">
+              <svg className="w-4 h-4 shrink-0" viewBox="0 0 24 24">
                 <path
                   fill="#4285F4"
                   d="M23.745 12.27c0-.7-.06-1.4-.19-2.07H12v4.51h6.6c-.29 1.52-1.14 2.8-2.4 3.68v3.05h3.88c2.27-2.09 3.665-5.17 3.665-9.17z"
@@ -193,120 +429,262 @@ export default function AuthModal() {
           </div>
 
           {/* Divider */}
-          <div className="relative flex items-center justify-center my-4">
+          <div className="relative flex items-center justify-center my-3">
             <div className="border-t border-gray-200 w-full" />
-            <span className="bg-white px-3 text-[10px] uppercase tracking-wider text-gray-400 font-bold absolute">
+            <span className="bg-white px-2.5 text-[9px] uppercase tracking-wider text-gray-400 font-bold absolute">
               or with email
             </span>
           </div>
 
           {/* Error Message */}
           {error && (
-            <div className="mb-4 p-3 bg-red-50 border border-red-200 rounded-xl flex items-center gap-2.5 text-xs text-red-600 font-medium animate-in fade-in">
+            <div className="mb-3 p-2.5 bg-red-50 border border-red-200 rounded-xl flex items-center gap-2 text-xs text-red-600 font-medium animate-in fade-in">
               <AlertCircle className="w-4 h-4 shrink-0 text-[#F84464]" />
               <span>{error}</span>
             </div>
           )}
 
           {/* Email / Password Form */}
-          <form onSubmit={handleSubmit} className="space-y-3.5">
-            {isSignUp && (
-              <div>
-                <label className="block text-xs font-bold text-gray-700 uppercase tracking-wider mb-1">
-                  Full Name <span className="text-[#F84464]">*</span>
-                </label>
-                <div className="relative flex items-center">
-                  <User className="absolute left-3.5 w-4 h-4 text-gray-400" />
-                  <input
-                    type="text"
-                    name="name"
-                    value={formData.name}
-                    onChange={handleChange}
-                    placeholder="Enter your full name"
-                    className="w-full pl-10 pr-4 py-2 bg-gray-50 border border-gray-200 rounded-xl text-xs text-gray-800 placeholder-gray-400 focus:bg-white focus:outline-none focus:border-[#F84464] focus:ring-2 focus:ring-[#F84464]/20 transition-all"
-                    required={isSignUp}
-                  />
+          <form onSubmit={handleSubmit} className={isSignUp ? 'space-y-2.5' : 'space-y-3'}>
+            {isSignUp ? (
+              <div className="grid grid-cols-1 sm:grid-cols-2 gap-2.5">
+                {/* Field 1: Name */}
+                <div>
+                  <label className="block text-[11px] font-bold text-gray-700 uppercase tracking-wider mb-1">
+                    {selectedSignUpRole === 'vendor' ? 'Representative Name' : 'Full Name'}{' '}
+                    <span className="text-[#F84464]">*</span>
+                  </label>
+                  <div className="relative flex items-center">
+                    <User className="absolute left-3 w-3.5 h-3.5 text-gray-400" />
+                    <input
+                      type="text"
+                      name="name"
+                      value={formData.name}
+                      onChange={handleChange}
+                      placeholder={selectedSignUpRole === 'vendor' ? 'Operator / Director' : 'Enter full name'}
+                      className="w-full pl-9 pr-3 py-2 bg-gray-50 border border-gray-200 rounded-xl text-xs text-gray-800 placeholder-gray-400 focus:bg-white focus:outline-none focus:border-[#F84464] focus:ring-2 focus:ring-[#F84464]/20 transition-all"
+                      required
+                    />
+                  </div>
                 </div>
-              </div>
-            )}
 
-            <div>
-              <label className="block text-xs font-bold text-gray-700 uppercase tracking-wider mb-1">
-                Email Address <span className="text-[#F84464]">*</span>
-              </label>
-              <div className="relative flex items-center">
-                <Mail className="absolute left-3.5 w-4 h-4 text-gray-400" />
-                <input
-                  type="email"
-                  name="email"
-                  value={formData.email}
-                  onChange={handleChange}
-                  placeholder="name@example.com"
-                  className="w-full pl-10 pr-4 py-2 bg-gray-50 border border-gray-200 rounded-xl text-xs text-gray-800 placeholder-gray-400 focus:bg-white focus:outline-none focus:border-[#F84464] focus:ring-2 focus:ring-[#F84464]/20 transition-all"
-                  required
-                />
-              </div>
-            </div>
+                {/* Field 2: Cinema Name (for vendor) or Phone (for customer) */}
+                {selectedSignUpRole === 'vendor' ? (
+                  <div>
+                    <label className="block text-[11px] font-bold text-gray-700 uppercase tracking-wider mb-1">
+                      Cinema Chain Name <span className="text-[#F84464]">*</span>
+                    </label>
+                    <div className="relative flex items-center">
+                      <Building2 className="absolute left-3 w-3.5 h-3.5 text-gray-400" />
+                      <input
+                        type="text"
+                        name="businessName"
+                        value={formData.businessName}
+                        onChange={handleChange}
+                        placeholder="e.g. CineStar Multiplex"
+                        className="w-full pl-9 pr-3 py-2 bg-gray-50 border border-gray-200 rounded-xl text-xs text-gray-800 placeholder-gray-400 focus:bg-white focus:outline-none focus:border-[#F84464] focus:ring-2 focus:ring-[#F84464]/20 transition-all"
+                        required
+                      />
+                    </div>
+                  </div>
+                ) : (
+                  <div>
+                    <label className="block text-[11px] font-bold text-gray-700 uppercase tracking-wider mb-1">
+                      Mobile Number <span className="text-gray-400 font-normal">(Optional)</span>
+                    </label>
+                    <div className="relative flex items-center">
+                      <Phone className="absolute left-3 w-3.5 h-3.5 text-gray-400" />
+                      <input
+                        type="tel"
+                        name="phone"
+                        value={formData.phone}
+                        onChange={handleChange}
+                        placeholder="10-digit mobile"
+                        className="w-full pl-9 pr-3 py-2 bg-gray-50 border border-gray-200 rounded-xl text-xs text-gray-800 placeholder-gray-400 focus:bg-white focus:outline-none focus:border-[#F84464] focus:ring-2 focus:ring-[#F84464]/20 transition-all"
+                      />
+                    </div>
+                  </div>
+                )}
 
-            {isSignUp && (
-              <div>
-                <label className="block text-xs font-bold text-gray-700 uppercase tracking-wider mb-1">
-                  Mobile Number <span className="text-gray-400 font-normal">(Optional)</span>
-                </label>
-                <div className="relative flex items-center">
-                  <Phone className="absolute left-3.5 w-4 h-4 text-gray-400" />
-                  <input
-                    type="tel"
-                    name="phone"
-                    value={formData.phone}
-                    onChange={handleChange}
-                    placeholder="10-digit mobile number"
-                    className="w-full pl-10 pr-4 py-2 bg-gray-50 border border-gray-200 rounded-xl text-xs text-gray-800 placeholder-gray-400 focus:bg-white focus:outline-none focus:border-[#F84464] focus:ring-2 focus:ring-[#F84464]/20 transition-all"
-                  />
+                {/* Field 3: Email */}
+                <div>
+                  <label className="block text-[11px] font-bold text-gray-700 uppercase tracking-wider mb-1">
+                    {selectedSignUpRole === 'vendor' ? 'Business Email' : 'Email Address'}{' '}
+                    <span className="text-[#F84464]">*</span>
+                  </label>
+                  <div className="relative flex items-center">
+                    <Mail className="absolute left-3 w-3.5 h-3.5 text-gray-400" />
+                    <input
+                      type="email"
+                      name="email"
+                      value={formData.email}
+                      onChange={handleChange}
+                      placeholder={selectedSignUpRole === 'vendor' ? 'partner@theatre.com' : 'name@example.com'}
+                      className="w-full pl-9 pr-3 py-2 bg-gray-50 border border-gray-200 rounded-xl text-xs text-gray-800 placeholder-gray-400 focus:bg-white focus:outline-none focus:border-[#F84464] focus:ring-2 focus:ring-[#F84464]/20 transition-all"
+                      required
+                    />
+                  </div>
                 </div>
-              </div>
-            )}
 
-            <div>
-              <label className="block text-xs font-bold text-gray-700 uppercase tracking-wider mb-1">
-                Password <span className="text-[#F84464]">*</span>
-              </label>
-              <div className="relative flex items-center">
-                <Lock className="absolute left-3.5 w-4 h-4 text-gray-400" />
-                <input
-                  type={showPassword ? 'text' : 'password'}
-                  name="password"
-                  value={formData.password}
-                  onChange={handleChange}
-                  placeholder={isSignUp ? 'At least 6 characters' : 'Enter your password'}
-                  className="w-full pl-10 pr-10 py-2 bg-gray-50 border border-gray-200 rounded-xl text-xs text-gray-800 placeholder-gray-400 focus:bg-white focus:outline-none focus:border-[#F84464] focus:ring-2 focus:ring-[#F84464]/20 transition-all"
-                  required
-                />
-                <button
-                  type="button"
-                  onClick={() => setShowPassword(!showPassword)}
-                  className="absolute right-3.5 text-gray-400 hover:text-gray-600 cursor-pointer p-0.5"
-                >
-                  {showPassword ? <EyeOff className="w-4 h-4" /> : <Eye className="w-4 h-4" />}
-                </button>
+                {/* Field 4: Phone (for vendor) or Password (for customer) */}
+                {selectedSignUpRole === 'vendor' ? (
+                  <div>
+                    <label className="block text-[11px] font-bold text-gray-700 uppercase tracking-wider mb-1">
+                      Mobile Number <span className="text-gray-400 font-normal">(Optional)</span>
+                    </label>
+                    <div className="relative flex items-center">
+                      <Phone className="absolute left-3 w-3.5 h-3.5 text-gray-400" />
+                      <input
+                        type="tel"
+                        name="phone"
+                        value={formData.phone}
+                        onChange={handleChange}
+                        placeholder="10-digit mobile"
+                        className="w-full pl-9 pr-3 py-2 bg-gray-50 border border-gray-200 rounded-xl text-xs text-gray-800 placeholder-gray-400 focus:bg-white focus:outline-none focus:border-[#F84464] focus:ring-2 focus:ring-[#F84464]/20 transition-all"
+                      />
+                    </div>
+                  </div>
+                ) : (
+                  <div>
+                    <label className="block text-[11px] font-bold text-gray-700 uppercase tracking-wider mb-1">
+                      Password <span className="text-[#F84464]">*</span>
+                    </label>
+                    <div className="relative flex items-center">
+                      <Lock className="absolute left-3 w-3.5 h-3.5 text-gray-400" />
+                      <input
+                        type={showPassword ? 'text' : 'password'}
+                        name="password"
+                        value={formData.password}
+                        onChange={handleChange}
+                        placeholder="Min 6 characters"
+                        className="w-full pl-9 pr-9 py-2 bg-gray-50 border border-gray-200 rounded-xl text-xs text-gray-800 placeholder-gray-400 focus:bg-white focus:outline-none focus:border-[#F84464] focus:ring-2 focus:ring-[#F84464]/20 transition-all"
+                        required
+                      />
+                      <button
+                        type="button"
+                        onClick={() => setShowPassword(!showPassword)}
+                        className="absolute right-2.5 text-gray-400 hover:text-gray-600 cursor-pointer p-0.5"
+                      >
+                        {showPassword ? <EyeOff className="w-3.5 h-3.5" /> : <Eye className="w-3.5 h-3.5" />}
+                      </button>
+                    </div>
+                  </div>
+                )}
+
+                {/* For Vendor: Row 3 (GSTIN & Password) */}
+                {selectedSignUpRole === 'vendor' && (
+                  <>
+                    <div>
+                      <label className="block text-[11px] font-bold text-gray-700 uppercase tracking-wider mb-1">
+                        GSTIN / Tax ID <span className="text-gray-400 font-normal">(Optional)</span>
+                      </label>
+                      <div className="relative flex items-center">
+                        <ShieldCheck className="absolute left-3 w-3.5 h-3.5 text-gray-400" />
+                        <input
+                          type="text"
+                          name="gstin"
+                          value={formData.gstin}
+                          onChange={handleChange}
+                          placeholder="e.g. 07AAAAA0000A1Z5"
+                          className="w-full pl-9 pr-3 py-2 bg-gray-50 border border-gray-200 rounded-xl text-xs text-gray-800 placeholder-gray-400 focus:bg-white focus:outline-none focus:border-[#F84464] focus:ring-2 focus:ring-[#F84464]/20 transition-all"
+                        />
+                      </div>
+                    </div>
+
+                    <div>
+                      <label className="block text-[11px] font-bold text-gray-700 uppercase tracking-wider mb-1">
+                        Password <span className="text-[#F84464]">*</span>
+                      </label>
+                      <div className="relative flex items-center">
+                        <Lock className="absolute left-3 w-3.5 h-3.5 text-gray-400" />
+                        <input
+                          type={showPassword ? 'text' : 'password'}
+                          name="password"
+                          value={formData.password}
+                          onChange={handleChange}
+                          placeholder="Min 6 characters"
+                          className="w-full pl-9 pr-9 py-2 bg-gray-50 border border-gray-200 rounded-xl text-xs text-gray-800 placeholder-gray-400 focus:bg-white focus:outline-none focus:border-[#F84464] focus:ring-2 focus:ring-[#F84464]/20 transition-all"
+                          required
+                        />
+                        <button
+                          type="button"
+                          onClick={() => setShowPassword(!showPassword)}
+                          className="absolute right-2.5 text-gray-400 hover:text-gray-600 cursor-pointer p-0.5"
+                        >
+                          {showPassword ? <EyeOff className="w-3.5 h-3.5" /> : <Eye className="w-3.5 h-3.5" />}
+                        </button>
+                      </div>
+                    </div>
+                  </>
+                )}
               </div>
-            </div>
+            ) : (
+              /* Sign In: Standard 1-column */
+              <>
+                <div>
+                  <label className="block text-xs font-bold text-gray-700 uppercase tracking-wider mb-1">
+                    Email Address <span className="text-[#F84464]">*</span>
+                  </label>
+                  <div className="relative flex items-center">
+                    <Mail className="absolute left-3.5 w-4 h-4 text-gray-400" />
+                    <input
+                      type="email"
+                      name="email"
+                      value={formData.email}
+                      onChange={handleChange}
+                      placeholder="name@example.com"
+                      className="w-full pl-10 pr-4 py-2 bg-gray-50 border border-gray-200 rounded-xl text-xs text-gray-800 placeholder-gray-400 focus:bg-white focus:outline-none focus:border-[#F84464] focus:ring-2 focus:ring-[#F84464]/20 transition-all"
+                      required
+                    />
+                  </div>
+                </div>
+
+                <div>
+                  <label className="block text-xs font-bold text-gray-700 uppercase tracking-wider mb-1">
+                    Password <span className="text-[#F84464]">*</span>
+                  </label>
+                  <div className="relative flex items-center">
+                    <Lock className="absolute left-3.5 w-4 h-4 text-gray-400" />
+                    <input
+                      type={showPassword ? 'text' : 'password'}
+                      name="password"
+                      value={formData.password}
+                      onChange={handleChange}
+                      placeholder="Enter your password"
+                      className="w-full pl-10 pr-10 py-2 bg-gray-50 border border-gray-200 rounded-xl text-xs text-gray-800 placeholder-gray-400 focus:bg-white focus:outline-none focus:border-[#F84464] focus:ring-2 focus:ring-[#F84464]/20 transition-all"
+                      required
+                    />
+                    <button
+                      type="button"
+                      onClick={() => setShowPassword(!showPassword)}
+                      className="absolute right-3.5 text-gray-400 hover:text-gray-600 cursor-pointer p-0.5"
+                    >
+                      {showPassword ? <EyeOff className="w-4 h-4" /> : <Eye className="w-4 h-4" />}
+                    </button>
+                  </div>
+                </div>
+              </>
+            )}
 
             <button
               type="submit"
               disabled={submitting}
-              className="w-full py-3 bg-[#F84464] hover:bg-[#e03a58] text-white text-xs font-black rounded-xl shadow-lg shadow-red-500/25 transition-all cursor-pointer mt-2 disabled:opacity-70 active:scale-[0.99]"
+              className="w-full py-2.5 sm:py-3 bg-[#F84464] hover:bg-[#e03a58] text-white text-xs font-black rounded-xl shadow-md shadow-red-500/20 transition-all cursor-pointer mt-2 disabled:opacity-70 active:scale-[0.99]"
             >
               {submitting
                 ? 'Please wait...'
                 : isSignUp
-                  ? 'Create Account'
-                  : 'Sign In'}
+                  ? (selectedSignUpRole === 'vendor' ? 'Register as Cinema Partner' : 'Create Customer Account')
+                  : selectedLoginRole === 'vendor'
+                    ? 'Sign In as Cinema Partner'
+                    : selectedLoginRole === 'admin'
+                      ? 'Sign In as Platform Admin'
+                      : 'Sign In'}
             </button>
           </form>
 
           {/* Toggle Sign In / Sign Up */}
-          <div className="mt-5 text-center">
+          <div className="mt-3.5 text-center">
             <p className="text-xs text-gray-600">
               {isSignUp ? 'Already have an account?' : "Don't have an account?"}{' '}
               <button
@@ -322,7 +700,62 @@ export default function AuthModal() {
             </p>
           </div>
 
-          <p className="text-[10px] text-gray-400 text-center mt-4 leading-relaxed">
+          {/* Role Switching Helper Bar in Sign Up */}
+          {isSignUp && (
+            <div className="mt-3 p-2.5 rounded-xl bg-slate-50 border border-slate-200/80 flex items-center justify-between gap-3 text-xs">
+              {selectedSignUpRole === 'customer' ? (
+                <>
+                  <div className="flex items-center gap-2">
+                    <div className="p-1 rounded-lg bg-[#F84464]/10 text-[#F84464]">
+                      <Building2 className="w-3.5 h-3.5" />
+                    </div>
+                    <div>
+                      <div className="text-gray-900 font-bold text-[11px]">Cinema Operator?</div>
+                      <div className="text-gray-500 text-[10px]">Register your multiplexes</div>
+                    </div>
+                  </div>
+                  <button
+                    type="button"
+                    onClick={() => {
+                      try { playPop(); } catch (_) {}
+                      setSelectedSignUpRole('vendor');
+                      setError('');
+                    }}
+                    className="px-2.5 py-1 rounded-lg bg-white border border-gray-200 text-[#F84464] font-black text-[11px] hover:bg-red-50 hover:border-[#F84464]/30 transition-all flex items-center gap-1 cursor-pointer shadow-xs shrink-0"
+                  >
+                    <span>Partner Sign Up</span>
+                    <ArrowRight className="w-3 h-3" />
+                  </button>
+                </>
+              ) : (
+                <>
+                  <div className="flex items-center gap-2">
+                    <div className="p-1 rounded-lg bg-blue-50 text-blue-600">
+                      <User className="w-3.5 h-3.5" />
+                    </div>
+                    <div>
+                      <div className="text-gray-900 font-bold text-[11px]">Moviegoer?</div>
+                      <div className="text-gray-500 text-[10px]">Customer ticket booking</div>
+                    </div>
+                  </div>
+                  <button
+                    type="button"
+                    onClick={() => {
+                      try { playPop(); } catch (_) {}
+                      setSelectedSignUpRole('customer');
+                      setError('');
+                    }}
+                    className="px-2.5 py-1 rounded-lg bg-white border border-gray-200 text-blue-600 font-black text-[11px] hover:bg-blue-50 hover:border-blue-300 transition-all flex items-center gap-1 cursor-pointer shadow-xs shrink-0"
+                  >
+                    <span>Customer Sign Up</span>
+                    <ArrowRight className="w-3 h-3" />
+                  </button>
+                </>
+              )}
+            </div>
+          )}
+
+          <p className="text-[10px] text-gray-400 text-center mt-3 leading-relaxed">
             I agree to the <span className="underline">Terms &amp; Conditions</span> &amp;{' '}
             <span className="underline">Privacy Policy</span>
           </p>

@@ -42,6 +42,21 @@ import { playSeatClick, playPop, playFlip, playChime } from '../utils/soundEffec
 
 const generateBookingId = () => 'BMS-' + Date.now().toString().slice(-6);
 
+const formatDistance = (rawDistance) => {
+  if (!rawDistance) return '2.40 km away';
+  if (typeof rawDistance === 'number') {
+    return `${rawDistance.toFixed(2)} km away`;
+  }
+  const match = String(rawDistance).match(/([\d.]+)/);
+  if (match) {
+    const val = parseFloat(match[1]);
+    if (!isNaN(val)) {
+      return `${val.toFixed(2)} km away`;
+    }
+  }
+  return String(rawDistance);
+};
+
 export default function MovieDetailsPage() {
   const { id } = useParams();
   const { selectedCity } = useCity();
@@ -1280,7 +1295,7 @@ export default function MovieDetailsPage() {
                       <div className="flex items-center gap-3 text-[11px] text-gray-500 mt-1.5 ml-6 flex-wrap">
                         <span className="flex items-center gap-1">
                           <MapPin className="w-3.5 h-3.5 text-[#F84464]" />
-                          <span>{theatre.distance || '2.4 km away'}</span>
+                          <span>{formatDistance(theatre.distance)}</span>
                         </span>
                         <span>•</span>
                         <button

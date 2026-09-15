@@ -6,26 +6,51 @@ import { playPop } from '../../utils/soundEffects';
 
 export default function MovieCard({ movie, onSelect }) {
   const navigate = useNavigate();
-  const [isLiked, setIsLiked] = useState(false);
+  const { id, title, genre, rating, voteCount, posterUrl, certificate, language } = movie;
+  const movieId = id || movie._id || movie.customId;
+
+  const [isLiked, setIsLiked] = useState(() => {
+    try {
+      const saved = localStorage.getItem('bms_favorite_movies');
+      const favorites = saved ? JSON.parse(saved) : [];
+      return movieId ? favorites.includes(movieId) : false;
+    } catch (_) {
+      return false;
+    }
+  });
+
   const [isHovered, setIsHovered] = useState(false);
   const [mousePos, setMousePos] = useState({ x: 0.5, y: 0.5 });
   const cardRef = useRef(null);
-
-  const { id, title, genre, rating, voteCount, posterUrl, certificate, language } = movie;
 
   const handleClick = () => {
     playPop();
     if (onSelect) {
       onSelect(movie);
     } else {
-      navigate(`/movies/${id}`);
+      navigate(`/movies/${id || movieId}`);
     }
   };
 
   const handleHeartClick = (e) => {
     e.stopPropagation();
     playPop();
-    setIsLiked(!isLiked);
+    setIsLiked((prev) => {
+      const nextState = !prev;
+      if (movieId) {
+        try {
+          const saved = localStorage.getItem('bms_favorite_movies');
+          let favorites = saved ? JSON.parse(saved) : [];
+          if (nextState) {
+            if (!favorites.includes(movieId)) favorites.push(movieId);
+          } else {
+            favorites = favorites.filter((favId) => favId !== movieId);
+          }
+          localStorage.setItem('bms_favorite_movies', JSON.stringify(favorites));
+        } catch (_) {}
+      }
+      return nextState;
+    });
   };
 
   const handleMouseMove = (e) => {
