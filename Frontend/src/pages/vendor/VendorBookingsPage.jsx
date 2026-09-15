@@ -196,19 +196,19 @@ export default function VendorBookingsPage() {
   return (
     <div className="space-y-6 print:p-0 print:space-y-4">
       {/* 1. Header & Quick Actions Bar */}
-      <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4 print:hidden">
+      <div className="bg-white border border-gray-200 rounded-xl p-6 shadow-sm flex flex-col sm:flex-row sm:items-center justify-between gap-4 print:hidden">
         <div>
           <div className="flex items-center gap-2 mb-1">
-            <span className="w-2.5 h-2.5 rounded-full bg-emerald-500 animate-pulse" />
-            <span className="text-[11px] font-black uppercase tracking-wider text-emerald-600 font-mono">
+            <span className="w-2.5 h-2.5 rounded-full bg-[#F84464] animate-pulse" />
+            <span className="text-[11px] font-black uppercase tracking-wider text-[#F84464] font-mono">
               Live Box Office Manifest
             </span>
           </div>
-          <h1 className="text-2xl sm:text-3xl font-black text-slate-900 tracking-tight flex items-center gap-2.5">
+          <h1 className="text-2xl sm:text-3xl font-black text-[#333545] tracking-tight flex items-center gap-2.5">
             <Ticket className="text-[#F84464]" size={28} />
             <span>Confirmed Admissions Manifest</span>
           </h1>
-          <p className="text-xs sm:text-sm text-slate-500 mt-1">
+          <p className="text-xs sm:text-sm text-gray-500 mt-1">
             Real-time gate admissions, seat inventory manifest, patron records, and check-in audit logs.
           </p>
         </div>
@@ -217,27 +217,27 @@ export default function VendorBookingsPage() {
           <Button
             variant="outline"
             onClick={handleExportCSV}
-            className="inline-flex items-center gap-1.5 text-xs font-bold bg-white text-slate-700 border-slate-300 shadow-2xs hover:bg-slate-50"
+            className="inline-flex items-center gap-1.5 text-xs font-bold bg-white text-gray-700 border-gray-300 shadow-2xs hover:bg-gray-50"
             title="Download CSV Manifest"
           >
-            <Download size={14} className="text-slate-500" />
+            <Download size={14} className="text-gray-500" />
             <span>Export CSV</span>
           </Button>
 
           <Button
             variant="outline"
             onClick={handlePrint}
-            className="inline-flex items-center gap-1.5 text-xs font-bold bg-white text-slate-700 border-slate-300 shadow-2xs hover:bg-slate-50"
+            className="inline-flex items-center gap-1.5 text-xs font-bold bg-white text-gray-700 border-gray-300 shadow-2xs hover:bg-gray-50"
             title="Print Gate Manifest Sheet"
           >
-            <Printer size={14} className="text-slate-500" />
+            <Printer size={14} className="text-gray-500" />
             <span>Print Sheet</span>
           </Button>
 
           <Button
             variant="primary"
             onClick={() => window.location.href = '/vendor/scanner'}
-            className="inline-flex items-center gap-1.5 text-xs font-bold shadow-sm"
+            className="inline-flex items-center gap-1.5 text-xs font-bold shadow-sm bg-[#F84464] hover:bg-[#E03A58] text-white"
           >
             <ScanLine size={14} />
             <span>Gate Scanner</span>

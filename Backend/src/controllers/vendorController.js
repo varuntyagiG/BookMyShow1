@@ -428,7 +428,9 @@ async function getScreens(req, res) {
   try {
     const { cinemaId } = req.query;
     const query = { partner: req.user._id };
-    if (cinemaId) query.cinema = cinemaId;
+    if (cinemaId && cinemaId !== '[object Object]' && cinemaId !== 'undefined' && cinemaId !== 'null' && mongoose.Types.ObjectId.isValid(cinemaId)) {
+      query.cinema = cinemaId;
+    }
 
     const screens = await Screen.find(query).populate('cinema', 'name city').sort({ createdAt: -1 });
 
@@ -471,9 +473,26 @@ async function createScreen(req, res) {
       });
     }
 
-    const layout = (Array.isArray(seatingLayout) && seatingLayout.length > 0)
-      ? seatingLayout
-      : generateStandardLayout();
+    let layout = [];
+    if (Array.isArray(seatingLayout) && seatingLayout.length > 0) {
+      layout = seatingLayout.map(r => ({
+        row: r.row,
+        tier: r.tier ? (r.tier.charAt(0).toUpperCase() + r.tier.slice(1).toLowerCase()) : 'Normal',
+        basePrice: Number(r.price || r.basePrice) || 200,
+        seatsCount: Array.isArray(r.seats) ? r.seats.length : (Number(r.seatsCount) || 12),
+        disabledSeats: Array.isArray(r.disabledSeats) ? r.disabledSeats : []
+      }));
+    } else if (seatingLayout && Array.isArray(seatingLayout.rows) && seatingLayout.rows.length > 0) {
+      layout = seatingLayout.rows.map(r => ({
+        row: r.row,
+        tier: r.tier ? (r.tier.charAt(0).toUpperCase() + r.tier.slice(1).toLowerCase()) : 'Normal',
+        basePrice: Number(r.price || r.basePrice) || 200,
+        seatsCount: Array.isArray(r.seats) ? r.seats.length : (Number(r.seatsCount) || 12),
+        disabledSeats: Array.isArray(r.disabledSeats) ? r.disabledSeats : []
+      }));
+    } else {
+      layout = generateStandardLayout();
+    }
 
     const calculatedCapacity = layout.reduce((acc, row) => acc + (row.seatsCount || 12), 0);
 
@@ -518,9 +537,27 @@ async function updateScreen(req, res) {
     if (name) screen.name = name.trim();
     if (screenType) screen.screenType = screenType;
     if (status) screen.status = status;
+
     if (Array.isArray(seatingLayout) && seatingLayout.length > 0) {
-      screen.seatingLayout = seatingLayout;
-      screen.totalCapacity = seatingLayout.reduce((acc, row) => acc + (row.seatsCount || 12), 0);
+      const parsed = seatingLayout.map(r => ({
+        row: r.row,
+        tier: r.tier ? (r.tier.charAt(0).toUpperCase() + r.tier.slice(1).toLowerCase()) : 'Normal',
+        basePrice: Number(r.price || r.basePrice) || 200,
+        seatsCount: Array.isArray(r.seats) ? r.seats.length : (Number(r.seatsCount) || 12),
+        disabledSeats: Array.isArray(r.disabledSeats) ? r.disabledSeats : []
+      }));
+      screen.seatingLayout = parsed;
+      screen.totalCapacity = parsed.reduce((acc, row) => acc + (row.seatsCount || 12), 0);
+    } else if (seatingLayout && Array.isArray(seatingLayout.rows) && seatingLayout.rows.length > 0) {
+      const parsed = seatingLayout.rows.map(r => ({
+        row: r.row,
+        tier: r.tier ? (r.tier.charAt(0).toUpperCase() + r.tier.slice(1).toLowerCase()) : 'Normal',
+        basePrice: Number(r.price || r.basePrice) || 200,
+        seatsCount: Array.isArray(r.seats) ? r.seats.length : (Number(r.seatsCount) || 12),
+        disabledSeats: Array.isArray(r.disabledSeats) ? r.disabledSeats : []
+      }));
+      screen.seatingLayout = parsed;
+      screen.totalCapacity = parsed.reduce((acc, row) => acc + (row.seatsCount || 12), 0);
     }
 
     await screen.save();

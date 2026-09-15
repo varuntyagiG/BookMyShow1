@@ -94,8 +94,14 @@ export const vendorApi = {
     }),
 
   // Screens
-  getScreens: (cinemaId) => {
-    const query = cinemaId ? `?cinemaId=${cinemaId}` : '';
+  getScreens: (params) => {
+    let id = '';
+    if (typeof params === 'string') {
+      id = params.trim();
+    } else if (params && typeof params === 'object') {
+      id = params.cinemaId ? String(params.cinemaId).trim() : '';
+    }
+    const query = id && id !== '[object Object]' ? `?cinemaId=${encodeURIComponent(id)}` : '';
     return vendorRequest(`/screens${query}`);
   },
 
@@ -106,6 +112,12 @@ export const vendorApi = {
     }),
 
   updateScreen: (id, data) =>
+    vendorRequest(`/screens/${id}`, {
+      method: 'PUT',
+      body: JSON.stringify(data),
+    }),
+
+  updateScreenLayout: (id, data) =>
     vendorRequest(`/screens/${id}`, {
       method: 'PUT',
       body: JSON.stringify(data),

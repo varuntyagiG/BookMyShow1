@@ -1,8 +1,7 @@
 import React, { useState } from 'react';
 import { Link, useNavigate, useLocation } from 'react-router-dom';
 import { useVendorAuth } from '../../context/VendorAuthContext';
-import { Button, Input, Card, CardHeader, CardTitle, CardDescription, CardContent, CardFooter } from '../../components/ui';
-import { Film, ShieldCheck, Zap, ArrowRight, AlertCircle, Sparkles, Building2 } from 'lucide-react';
+import { Film, ShieldCheck, Mail, Lock, ArrowRight, AlertCircle, Sparkles, Building2 } from 'lucide-react';
 
 export default function VendorLoginPage() {
   const { login } = useVendorAuth();
@@ -42,64 +41,72 @@ export default function VendorLoginPage() {
   };
 
   return (
-    <div className="min-h-screen bg-[#0B0D14] text-gray-100 flex flex-col justify-center py-12 sm:px-6 lg:px-8 relative overflow-hidden">
-      {/* Ambient Cinema Studio Glow */}
-      <div className="pointer-events-none absolute inset-0 bg-[radial-gradient(ellipse_at_top,_var(--tw-gradient-stops))] from-[#F84464]/15 via-transparent to-transparent" />
-      <div className="pointer-events-none absolute -bottom-32 -left-32 w-96 h-96 bg-[#F84464]/10 rounded-full blur-3xl" />
-
+    <div className="min-h-screen bg-[#F5F5FA] flex flex-col justify-center py-12 sm:px-6 lg:px-8">
       {/* Brand Header */}
-      <div className="sm:mx-auto sm:w-full sm:max-w-md text-center relative z-10">
+      <div className="sm:mx-auto sm:w-full sm:max-w-md text-center">
         <Link to="/" className="inline-flex items-center gap-2 mb-2 group">
-          <span className="text-3xl font-black tracking-tight text-white">
-            book<span className="text-[#F84464]">my</span>show
+          <span className="text-3xl font-black tracking-tight text-[#222432]">
+            book<span className="text-[#F84464]">my</span>trip
           </span>
-          <span className="bg-gradient-to-r from-[#F84464] to-[#ff6b85] text-white text-[10px] uppercase font-black tracking-wider px-2.5 py-0.5 rounded-full shadow-xs">
-            Studio Partner
+          <span className="bg-[#F84464] text-white text-[11px] uppercase font-bold tracking-wider px-2.5 py-0.5 rounded-full shadow-xs">
+            Cinema Partner
           </span>
         </Link>
-        <h2 className="text-2xl font-black tracking-tight text-white mt-1">
+        <h2 className="text-2xl font-bold tracking-tight text-gray-900">
           Cinema Operator Console
         </h2>
-        <p className="mt-1.5 text-xs text-gray-400">
+        <p className="mt-1 text-sm text-gray-600">
           Executive control deck for auditoriums, live box office, and gate admissions.
         </p>
       </div>
 
-      <div className="mt-8 sm:mx-auto sm:w-full sm:max-w-md px-4 sm:px-0 relative z-10">
-        <div className="bg-[#141724]/95 backdrop-blur-2xl rounded-3xl border border-white/10 shadow-[0_25px_60px_-15px_rgba(0,0,0,0.8)] overflow-hidden">
-          {/* Top 3D Neon Projection Accent Line */}
-          <div className="h-[2px] w-full bg-gradient-to-r from-transparent via-[#F84464] to-transparent shadow-[0_0_15px_rgba(248,68,100,0.85)]" />
-
-          {/* Header */}
-          <div className="p-6 pb-4 border-b border-white/[0.08] flex items-center justify-between">
+      <div className="mt-8 sm:mx-auto sm:w-full sm:max-w-md px-4 sm:px-0">
+        <div className="bg-white rounded-2xl border border-gray-200 shadow-xl p-6 sm:p-8">
+          {/* Top Title & Icon */}
+          <div className="flex items-center justify-between pb-4 mb-4 border-b border-gray-100">
             <div>
-              <h3 className="text-base font-bold text-white tracking-tight">Partner Authentication</h3>
-              <p className="text-xs text-gray-400 mt-0.5">Enter registered cinema credentials</p>
+              <h3 className="text-base font-bold text-gray-900">Partner Authentication</h3>
+              <p className="text-xs text-gray-500">Enter registered cinema operator credentials</p>
+            </div>
+            <div className="w-10 h-10 rounded-xl bg-red-50 text-[#F84464] flex items-center justify-center">
+              <Building2 size={22} />
+            </div>
+          </div>
+
+          {/* Quick Credential Helper Pill */}
+          <div className="mb-5 p-3 rounded-xl bg-gray-50 border border-gray-200 flex items-center justify-between">
+            <div className="flex items-center gap-2.5">
+              <Sparkles size={16} className="text-[#F84464]" />
+              <div className="text-left">
+                <p className="text-xs font-bold text-gray-800">Demo Partner Account</p>
+                <p className="text-[11px] text-gray-500">partner@cinemaworld.com / Partner@123</p>
+              </div>
             </div>
             <button
               type="button"
               onClick={handleDemoFill}
-              className="inline-flex items-center gap-1.5 text-xs font-black text-white bg-gradient-to-r from-amber-500 via-[#F84464] to-[#e03a58] px-3 py-1.5 rounded-xl shadow-md shadow-red-500/20 hover:opacity-95 transition-all cursor-pointer active:scale-95"
-              title="Fill verified demo partner credentials"
+              className="text-xs font-bold text-[#F84464] hover:text-white bg-red-50 hover:bg-[#F84464] px-2.5 py-1 rounded-lg border border-red-200 transition cursor-pointer"
             >
-              <Sparkles size={13} className="text-amber-200" />
-              <span>1-Click Demo</span>
+              Auto-fill
             </button>
           </div>
 
-          <div className="p-6">
-            {error && (
-              <div className="mb-5 p-3 rounded-2xl bg-red-500/10 border border-red-500/25 flex items-start gap-2.5 text-red-400 text-xs font-medium animate-in fade-in">
-                <AlertCircle size={16} className="shrink-0 mt-0.5 text-[#F84464]" />
-                <span>{error}</span>
-              </div>
-            )}
+          {/* Error Banner */}
+          {error && (
+            <div className="mb-5 p-3 rounded-xl bg-rose-50 border border-rose-200 flex items-start gap-2.5 text-rose-600 text-xs">
+              <AlertCircle size={16} className="shrink-0 mt-0.5 text-[#F84464]" />
+              <span>{error}</span>
+            </div>
+          )}
 
-            <form onSubmit={handleSubmit} className="space-y-4">
-              <div>
-                <label className="block text-xs font-bold text-gray-300 uppercase tracking-wider mb-1.5">
-                  Operator Email Address
-                </label>
+          {/* Form */}
+          <form onSubmit={handleSubmit} className="space-y-4">
+            <div>
+              <label className="block text-xs font-bold uppercase tracking-wider text-gray-700 mb-1">
+                Operator Email Address
+              </label>
+              <div className="relative">
+                <Mail className="absolute left-3.5 top-1/2 -translate-y-1/2 text-gray-400" size={16} />
                 <input
                   type="email"
                   required
@@ -107,14 +114,17 @@ export default function VendorLoginPage() {
                   value={email}
                   onChange={(e) => setEmail(e.target.value)}
                   autoComplete="email"
-                  className="w-full px-4 py-2.5 bg-white/[0.05] border border-white/10 rounded-xl text-sm text-white placeholder-gray-500 focus:outline-none focus:border-[#F84464] focus:ring-2 focus:ring-[#F84464]/20 transition-all"
+                  className="w-full bg-white border border-gray-300 focus:border-[#F84464] focus:ring-1 focus:ring-[#F84464] text-gray-900 pl-10 pr-4 py-2.5 rounded-xl text-sm transition placeholder:text-gray-400 outline-none"
                 />
               </div>
+            </div>
 
-              <div>
-                <label className="block text-xs font-bold text-gray-300 uppercase tracking-wider mb-1.5">
-                  Operator Password
-                </label>
+            <div>
+              <label className="block text-xs font-bold uppercase tracking-wider text-gray-700 mb-1">
+                Operator Password
+              </label>
+              <div className="relative">
+                <Lock className="absolute left-3.5 top-1/2 -translate-y-1/2 text-gray-400" size={16} />
                 <input
                   type="password"
                   required
@@ -122,43 +132,47 @@ export default function VendorLoginPage() {
                   value={password}
                   onChange={(e) => setPassword(e.target.value)}
                   autoComplete="current-password"
-                  className="w-full px-4 py-2.5 bg-white/[0.05] border border-white/10 rounded-xl text-sm text-white placeholder-gray-500 focus:outline-none focus:border-[#F84464] focus:ring-2 focus:ring-[#F84464]/20 transition-all"
+                  className="w-full bg-white border border-gray-300 focus:border-[#F84464] focus:ring-1 focus:ring-[#F84464] text-gray-900 pl-10 pr-4 py-2.5 rounded-xl text-sm transition placeholder:text-gray-400 outline-none"
                 />
               </div>
-
-              <button
-                type="submit"
-                disabled={loading}
-                className="w-full mt-3 py-3 font-bold text-xs rounded-xl bg-gradient-to-r from-[#F84464] to-[#E03A58] hover:from-[#ff5576] hover:to-[#eb4464] text-white shadow-[0_8px_20px_rgba(248,68,100,0.45)] transition-all cursor-pointer active:scale-[0.98] disabled:opacity-50 flex items-center justify-center gap-2"
-              >
-                {loading ? (
-                  <span>Authenticating Operator...</span>
-                ) : (
-                  <>
-                    <span>Access Executive Control Deck</span>
-                    <ArrowRight size={14} />
-                  </>
-                )}
-              </button>
-            </form>
-
-            <div className="mt-6 pt-5 border-t border-white/[0.08] flex items-center justify-between text-xs text-gray-400">
-              <span>New Theatre Operator?</span>
-              <Link
-                to="/vendor/signup"
-                className="font-bold text-[#F84464] hover:text-[#ff6b85] flex items-center gap-1 transition-colors"
-              >
-                <span>Register Cinema Chain</span>
-                <ArrowRight size={13} />
-              </Link>
             </div>
+
+            <button
+              type="submit"
+              disabled={loading}
+              className="w-full mt-2 py-3 px-4 bg-[#F84464] hover:bg-[#d83552] text-white font-bold text-sm rounded-xl shadow-md shadow-[#F84464]/20 flex items-center justify-center gap-2 transition disabled:opacity-50 cursor-pointer active:scale-[0.99]"
+            >
+              {loading ? (
+                <>
+                  <div className="w-4 h-4 border-2 border-white border-t-transparent rounded-full animate-spin" />
+                  <span>Authenticating Operator...</span>
+                </>
+              ) : (
+                <>
+                  <span>Access Partner Control Deck</span>
+                  <ArrowRight size={16} />
+                </>
+              )}
+            </button>
+          </form>
+
+          {/* Footer Links */}
+          <div className="mt-6 pt-5 border-t border-gray-100 flex items-center justify-between text-xs text-gray-500">
+            <span>New Cinema Operator?</span>
+            <Link
+              to="/vendor/signup"
+              className="font-bold text-[#F84464] hover:text-[#d83552] flex items-center gap-1 transition-colors"
+            >
+              <span>Register Multiplex Chain</span>
+              <ArrowRight size={13} />
+            </Link>
           </div>
 
-          <div className="px-6 py-4 bg-black/30 border-t border-white/[0.06] flex items-center justify-between text-xs text-gray-400">
-            <Link to="/" className="hover:text-white transition-colors flex items-center gap-1.5">
+          <div className="mt-4 pt-4 border-t border-gray-100 flex items-center justify-between text-xs text-gray-500">
+            <Link to="/" className="hover:text-gray-900 transition-colors flex items-center gap-1">
               <span>← Customer App</span>
             </Link>
-            <span className="flex items-center gap-1.5 text-emerald-400 font-bold bg-emerald-500/10 px-2.5 py-1 rounded-lg border border-emerald-500/20 text-[11px]">
+            <span className="flex items-center gap-1 text-emerald-600 font-bold bg-emerald-50 px-2 py-0.5 rounded-full border border-emerald-200 text-[11px]">
               <ShieldCheck size={13} />
               <span>Verified Studio Network</span>
             </span>

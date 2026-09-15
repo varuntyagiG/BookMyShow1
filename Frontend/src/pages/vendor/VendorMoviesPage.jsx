@@ -163,12 +163,19 @@ export default function VendorMoviesPage() {
 
   return (
     <div className="space-y-6">
-      <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4">
+      {/* Top Header (Admin Theme) */}
+      <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4 bg-white border border-gray-200 rounded-xl p-6 shadow-sm">
         <div>
-          <h1 className="text-2xl font-bold text-gray-900 tracking-tight">
+          <div className="flex items-center gap-2 mb-1">
+            <Film size={16} className="text-[#F84464]" />
+            <span className="text-[11px] font-bold uppercase tracking-wider text-gray-400">
+              Content Catalog & Film Registry
+            </span>
+          </div>
+          <h1 className="text-2xl sm:text-3xl font-black text-gray-900 tracking-tight">
             Movie Catalog & Scheduling
           </h1>
-          <p className="text-sm text-gray-500 mt-1">
+          <p className="text-xs sm:text-sm text-gray-600 mt-1">
             Browse active platform releases or publish new titles directly to the BookMyTrip customer network.
           </p>
         </div>
@@ -176,7 +183,7 @@ export default function VendorMoviesPage() {
         <Button
           variant="primary"
           onClick={openAddModal}
-          className="inline-flex items-center gap-2"
+          className="inline-flex items-center gap-2 text-xs font-bold px-4 py-2.5 shadow-sm active:scale-95 transition bg-[#F84464] hover:bg-[#E03A58] text-white rounded-lg"
         >
           <Plus size={16} />
           <span>Publish New Movie</span>
