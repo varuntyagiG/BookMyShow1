@@ -33,7 +33,8 @@ import {
   Award,
   MessageSquare,
   ShieldCheck,
-  Printer
+  Printer,
+  Tv
 } from 'lucide-react';
 import confetti from 'canvas-confetti';
 import { motion } from 'framer-motion';
@@ -1353,71 +1354,71 @@ export default function MovieDetailsPage() {
       {/* 4. Interactive Seat-Selection & Booking Engine Modal */}
       {bookingModal.isOpen && (
         <div className="fixed inset-0 z-50 flex items-center justify-center p-3 sm:p-4 bg-black/80 backdrop-blur-md overflow-y-auto">
-          <div className={`relative w-full ${bookingModal.confirmed ? 'max-w-[420px] my-3' : 'max-w-2xl my-8'} bg-white rounded-3xl shadow-[0_25px_80px_-15px_rgba(0,0,0,0.6)] overflow-hidden animate-in fade-in zoom-in-95 duration-200 border border-gray-100 transition-all`}>
+          {!bookingModal.confirmed ? (
+            <div className="relative w-full max-w-2xl bg-white rounded-3xl shadow-[0_25px_80px_-15px_rgba(0,0,0,0.6)] overflow-hidden animate-in fade-in zoom-in-95 duration-200 my-8 border border-gray-100">
 
-            {/* Modal Header */}
-            <div className={`bg-[#333545] text-white ${bookingModal.confirmed ? 'px-4 py-3' : 'p-4 sm:p-5'} flex items-center justify-between border-b border-[#2b2d3c]`}>
-              <div className="flex items-center gap-2.5">
-                {bookingModal.step === 'seats' && !bookingModal.confirmed && (
-                  <button
-                    onClick={() => setBookingModal((prev) => ({ ...prev, step: 'vehicle' }))}
-                    className="p-1.5 text-gray-300 hover:text-white hover:bg-white/10 rounded-lg transition-colors cursor-pointer"
-                    title="Change Seat Count"
-                  >
-                    <ChevronLeft className="w-5 h-5" />
-                  </button>
-                )}
-                {bookingModal.step === 'snacks' && !bookingModal.confirmed && (
-                  <button
-                    onClick={() => setBookingModal((prev) => ({ ...prev, step: 'seats' }))}
-                    className="p-1.5 text-gray-300 hover:text-white hover:bg-white/10 rounded-lg transition-colors cursor-pointer"
-                    title="Back to Seats"
-                  >
-                    <ChevronLeft className="w-5 h-5" />
-                  </button>
-                )}
-                <div>
-                  <span className={`text-[10px] uppercase font-black ${bookingModal.confirmed ? 'text-emerald-400' : 'text-[#F84464]'} tracking-widest block`}>
-                    {bookingModal.confirmed ? '✓ Booking Confirmed' : bookingModal.step === 'vehicle' ? 'Step 1 of 3 • Seat Count' : bookingModal.step === 'snacks' ? 'Step 3 of 3 • Concessions' : 'Step 2 of 3 • Select Seats'}
-                  </span>
-                  <h3 className={`${bookingModal.confirmed ? 'text-sm sm:text-base' : 'text-base sm:text-lg'} font-black text-white leading-tight`}>
-                    {movie.title}
-                  </h3>
-                  <p className="text-[11px] text-gray-300 mt-0.5 font-medium">
-                    {bookingModal.theatre?.name} • <span className="text-[#F84464] font-bold">{bookingModal.showtime?.time}</span> ({bookingModal.showtime?.format})
-                  </p>
+              {/* Modal Header */}
+              <div className="bg-[#333545] text-white p-4 sm:p-5 flex items-center justify-between border-b border-[#2b2d3c]">
+                <div className="flex items-center gap-2.5">
+                  {bookingModal.step === 'seats' && (
+                    <button
+                      onClick={() => setBookingModal((prev) => ({ ...prev, step: 'vehicle' }))}
+                      className="p-1.5 text-gray-300 hover:text-white hover:bg-white/10 rounded-lg transition-colors cursor-pointer"
+                      title="Change Seat Count"
+                    >
+                      <ChevronLeft className="w-5 h-5" />
+                    </button>
+                  )}
+                  {bookingModal.step === 'snacks' && (
+                    <button
+                      onClick={() => setBookingModal((prev) => ({ ...prev, step: 'seats' }))}
+                      className="p-1.5 text-gray-300 hover:text-white hover:bg-white/10 rounded-lg transition-colors cursor-pointer"
+                      title="Back to Seats"
+                    >
+                      <ChevronLeft className="w-5 h-5" />
+                    </button>
+                  )}
+                  <div>
+                    <span className="text-[10px] uppercase font-black text-[#F84464] tracking-widest block">
+                      {bookingModal.step === 'vehicle' ? 'Step 1 of 3 • Seat Count' : bookingModal.step === 'snacks' ? 'Step 3 of 3 • Concessions' : 'Step 2 of 3 • Select Seats'}
+                    </span>
+                    <h3 className="text-base sm:text-lg font-black text-white leading-tight">
+                      {movie.title}
+                    </h3>
+                    <p className="text-[11px] text-gray-300 mt-0.5 font-medium">
+                      {bookingModal.theatre?.name} • <span className="text-[#F84464] font-bold">{bookingModal.showtime?.time}</span> ({bookingModal.showtime?.format})
+                    </p>
+                  </div>
                 </div>
+                <button
+                  onClick={() => setBookingModal({ ...bookingModal, isOpen: false })}
+                  className="p-1.5 text-gray-300 hover:text-white hover:bg-white/10 rounded-full transition-colors cursor-pointer shrink-0"
+                >
+                  <X className="w-4 h-4 sm:w-5 sm:h-5" />
+                </button>
               </div>
-              <button
-                onClick={() => setBookingModal({ ...bookingModal, isOpen: false })}
-                className="p-1.5 text-gray-300 hover:text-white hover:bg-white/10 rounded-full transition-colors cursor-pointer shrink-0"
-              >
-                <X className="w-4 h-4 sm:w-5 sm:h-5" />
-              </button>
-            </div>
 
-            {!bookingModal.confirmed ? (
-              <div className="p-5 sm:p-7 max-h-[82vh] overflow-y-auto">
+              <div className="p-4 sm:p-5 max-h-[82vh] overflow-y-auto">
 
                 {/* ========================================================
                     STEP 1: THE ICONIC BOOKMYSHOW VEHICLE SEAT SELECTOR
                 ======================================================== */}
                 {bookingModal.step === 'vehicle' && (
-                  <div className="py-2 animate-in fade-in slide-in-from-bottom-2 duration-200">
-                    <div className="text-center mb-6">
-                      <div className="inline-flex items-center gap-1.5 px-3 py-1 rounded-full bg-red-50 text-[#F84464] text-[11px] font-bold uppercase tracking-wider mb-2">
+                  <div className="py-1 animate-in fade-in slide-in-from-bottom-2 duration-200">
+                    <div className="text-center mb-4">
+                      <div className="inline-flex items-center gap-1.5 px-2.5 py-0.5 rounded-full bg-red-50 text-[#F84464] text-[10px] font-bold uppercase tracking-wider mb-1.5">
                         <Sparkles className="w-3 h-3" /> BookMyShow Classic
                       </div>
-                      <h3 className="text-xl sm:text-2xl font-black text-[#222432] tracking-tight">
+                      <h3 className="text-lg sm:text-xl font-black text-[#222432] tracking-tight">
                         How Many Seats?
                       </h3>
-                      <p className="text-xs text-gray-500 mt-1">
+                      <p className="text-xs text-gray-500 mt-0.5">
                         Select party size to auto-assign best adjacent multiplex seats
                       </p>
                     </div>
 
                     {/* Vehicle Cards Grid */}
-                    <div className="grid grid-cols-4 sm:grid-cols-8 gap-2.5 sm:gap-3 mb-8">
+                    <div className="grid grid-cols-4 sm:grid-cols-8 gap-2 sm:gap-2.5 mb-5">
                       {transportIcons.map((t) => {
                         const isSelected = bookingModal.seatsCount === t.count;
                         return (
@@ -1429,15 +1430,15 @@ export default function MovieDetailsPage() {
                             whileTap={{ scale: 0.9 }}
                             animate={isSelected ? { scale: [1, 1.15, 1.05] } : { scale: 1 }}
                             transition={{ type: 'spring', stiffness: 500, damping: 20 }}
-                            className={`flex flex-col items-center justify-center p-2 sm:p-2.5 rounded-2xl border transition-all cursor-pointer ${
+                            className={`flex flex-col items-center justify-center p-1.5 sm:p-2 rounded-xl border transition-all cursor-pointer ${
                               isSelected
-                                ? 'bg-[#F84464] border-[#F84464] text-white shadow-[0_8px_20px_-4px_rgba(248,68,100,0.5)]'
+                                ? 'bg-[#F84464] border-[#F84464] text-white shadow-sm'
                                 : 'bg-gray-50 hover:bg-gray-100 border-gray-200 text-gray-800'
                             }`}
                           >
-                            <span className="text-2xl sm:text-3xl mb-1 filter drop-shadow-sm">{t.emoji}</span>
+                            <span className="text-xl sm:text-2xl mb-0.5 filter drop-shadow-xs">{t.emoji}</span>
                             <span className="text-xs font-black">{t.count}</span>
-                            <span className={`text-[9px] font-semibold truncate max-w-full ${isSelected ? 'text-white/90' : 'text-gray-500'}`}>
+                            <span className={`text-[8px] font-semibold truncate max-w-full ${isSelected ? 'text-white/90' : 'text-gray-500'}`}>
                               {t.name}
                             </span>
                           </motion.button>
@@ -1446,39 +1447,40 @@ export default function MovieDetailsPage() {
                     </div>
 
                     {/* Price Tiers for this Cinema */}
-                    <div className="bg-gray-50 rounded-2xl p-4 sm:p-5 border border-gray-100 mb-6">
-                      <p className="text-xs font-black uppercase tracking-wider text-gray-500 mb-3">
+                    <div className="bg-gray-50 rounded-xl p-3 sm:p-4 border border-gray-100 mb-4">
+                      <p className="text-[10px] font-black uppercase tracking-wider text-gray-500 mb-2">
                         Auditorium Tiers &amp; Pricing
                       </p>
-                      <div className="grid grid-cols-1 sm:grid-cols-3 gap-3">
-                        <div className="bg-white p-3 rounded-xl border border-gray-200 flex items-center justify-between">
+                      <div className="grid grid-cols-1 sm:grid-cols-3 gap-2">
+                        <div className="bg-white p-2.5 rounded-lg border border-gray-200 flex items-center justify-between">
                           <div>
                             <span className="text-xs font-bold text-gray-900 block">RECLINER VIP</span>
-                            <span className="text-[10px] text-emerald-600 font-bold">Plush Luxury</span>
+                            <span className="text-[9px] text-emerald-600 font-bold">Plush Luxury</span>
                           </div>
-                          <span className="text-sm font-black text-[#F84464]">₹450</span>
+                          <span className="text-xs font-black text-[#F84464]">₹450</span>
                         </div>
-                        <div className="bg-white p-3 rounded-xl border border-gray-200 flex items-center justify-between">
+                        <div className="bg-white p-2.5 rounded-lg border border-gray-200 flex items-center justify-between">
                           <div>
                             <span className="text-xs font-bold text-gray-900 block">PRIME PLUS</span>
-                            <span className="text-[10px] text-amber-600 font-bold">Filling Fast</span>
+                            <span className="text-[9px] text-amber-600 font-bold">Filling Fast</span>
                           </div>
-                          <span className="text-sm font-black text-[#F84464]">₹280</span>
+                          <span className="text-xs font-black text-[#F84464]">₹280</span>
                         </div>
-                        <div className="bg-white p-3 rounded-xl border border-gray-200 flex items-center justify-between">
+                        <div className="bg-white p-2.5 rounded-lg border border-gray-200 flex items-center justify-between">
                           <div>
                             <span className="text-xs font-bold text-gray-900 block">CLASSIC</span>
-                            <span className="text-[10px] text-emerald-600 font-bold">Available</span>
+                            <span className="text-[9px] text-emerald-600 font-bold">Available</span>
                           </div>
-                          <span className="text-sm font-black text-[#F84464]">₹180</span>
+                          <span className="text-xs font-black text-[#F84464]">₹180</span>
                         </div>
                       </div>
                     </div>
 
                     {/* Proceed Button */}
                     <button
+                      type="button"
                       onClick={() => setBookingModal((prev) => ({ ...prev, step: 'seats' }))}
-                      className="w-full py-4 bg-[#F84464] hover:bg-[#E03A58] text-white text-sm font-black rounded-2xl shadow-[0_10px_30px_-6px_rgba(248,68,100,0.5)] transition-all active:scale-[0.98] cursor-pointer flex items-center justify-center gap-2"
+                      className="w-full py-3 bg-[#F84464] hover:bg-[#E03A58] text-white text-xs sm:text-sm font-black rounded-xl shadow-sm transition-all active:scale-[0.98] cursor-pointer flex items-center justify-center gap-2"
                     >
                       <span>Select {bookingModal.seatsCount} {bookingModal.seatsCount === 1 ? 'Seat' : 'Seats'}</span>
                       <ChevronLeft className="w-4 h-4 rotate-180" />
@@ -1487,135 +1489,148 @@ export default function MovieDetailsPage() {
                 )}
 
                 {/* ========================================================
-                    STEP 2: 3D THEATRICAL CURVED SCREEN & SEATING MAP
+                    STEP 2: COMPACT 3D THEATRICAL SCREEN & SEATING MAP
                 ======================================================== */}
                 {bookingModal.step === 'seats' && (
                   <div className="animate-in fade-in slide-in-from-right-2 duration-200">
-                    {/* Cinema 3D Curved Projection Screen */}
-                    <div className="my-6 text-center">
-                      <div className="inline-flex items-center gap-1.5 px-3 py-1 rounded-full bg-[#F84464]/10 border border-[#F84464]/20 text-[#F84464] text-[10px] font-black uppercase tracking-wider mb-3 shadow-xs">
-                        <Sparkles className="w-3 h-3" />
-                        <span>IMAX 3D Laser Stadium Auditorium</span>
+                    {/* Authentic 3D Cinema Curved Projection Screen */}
+                    <div className="pt-0.5 pb-2 text-center select-none">
+                      <div className="cinema-screen-3d-wrapper">
+                        <div className="cinema-screen-3d-curve" />
+                        <div className="cinema-screen-3d-light" />
                       </div>
 
-                      {/* Photorealistic IMAX Stage Preview */}
-                      <div className="relative w-full max-w-xl mx-auto h-24 sm:h-28 rounded-2xl overflow-hidden border border-cyan-500/30 shadow-[0_10px_30px_rgba(0,0,0,0.3)] mb-4 group">
-                        <img
-                          src="/assets/graphics/imax_auditorium.jpg"
-                          alt="IMAX 3D Curved Projection Stage"
-                          className="w-full h-full object-cover object-center group-hover:scale-105 transition-transform duration-700"
-                        />
-                        <div className="absolute inset-0 bg-gradient-to-t from-black/80 via-black/20 to-transparent pointer-events-none" />
-                        <div className="absolute bottom-2 left-0 right-0 text-center">
-                          <p className="text-[10px] uppercase font-mono font-bold tracking-[0.25em] text-cyan-300 drop-shadow-md">
-                            All Eyes This Way Please (Projection Screen)
-                          </p>
-                        </div>
+                      <div className="flex items-center justify-center gap-1.5 mt-0.5">
+                        <span className="inline-flex items-center gap-1 px-2 py-0.5 rounded-full bg-slate-100 text-slate-700 text-[9px] font-black uppercase tracking-wider border border-slate-200/80 shadow-2xs">
+                          <Tv className="w-2.5 h-2.5 text-cyan-600" />
+                          <span>SCREEN THIS WAY</span>
+                        </span>
+                        <span className="inline-flex items-center gap-1 px-2 py-0.5 rounded-full bg-cyan-50 text-cyan-700 text-[9px] font-bold uppercase tracking-wider border border-cyan-200/60 shadow-2xs">
+                          <Sparkles className="w-2.5 h-2.5 text-cyan-500" />
+                          <span>{bookingModal.theatre?.name ? `${bookingModal.theatre.name} • Audi 2` : 'Audi 2 • Dolby Atmos 7.1'}</span>
+                        </span>
                       </div>
 
-                      <div className="cinema-screen-curve" />
-                      <div className="cinema-screen-light" />
+                      <p className="text-[9px] uppercase font-bold tracking-[0.22em] text-slate-400 mt-1">
+                        All eyes this way please ▾
+                      </p>
                     </div>
 
-                    {/* 3D Stadium Auditorium Seating Perspective */}
-                    <div className="mb-6 overflow-x-auto no-scrollbar py-3 px-2" style={{ perspective: '850px' }}>
-                      <div 
-                        className="space-y-3 origin-top transition-transform duration-300"
-                        style={{
-                          transform: 'rotateX(13deg)',
-                          transformStyle: 'preserve-3d',
-                        }}
-                      >
-                        {activeSeatLayout.map((rowItem) => (
-                          <div key={rowItem.row} className="space-y-1.5">
-                            <div className="flex items-center justify-between text-[11px] font-bold text-gray-500 px-2">
-                              <span>{rowItem.tier} - ₹{rowItem.price}</span>
-                            </div>
-                            <div className="flex items-center justify-center gap-1.5">
-                              {/* Row letter */}
-                              <span className="w-5 text-[11px] font-bold text-gray-400 text-center">
-                                {rowItem.row}
-                              </span>
-
-                              {/* Seat buttons */}
-                              <div className="flex items-center gap-1 sm:gap-1.5">
-                                {rowItem.seats.map((num) => {
-                                  const seatId = `${rowItem.row}${num}`;
-                                  const isOccupied = rowItem.occupied.includes(seatId);
-                                  const isSelected = bookingModal.selectedSeats.includes(seatId);
-                                  const isAisle = num === 6;
-
-                                  return (
-                                    <React.Fragment key={num}>
-                                      <motion.button
-                                        type="button"
-                                        disabled={isOccupied}
-                                        onPointerDown={() => handleSeatClick(seatId, isOccupied)}
-                                        onClick={() => handleSeatClick(seatId, isOccupied)}
-                                        whileTap={!isOccupied ? { scale: 0.8 } : undefined}
-                                        animate={isSelected ? { scale: [1, 1.25, 1.05] } : { scale: 1 }}
-                                        transition={{ type: 'spring', stiffness: 500, damping: 18 }}
-                                        className={`w-6 h-6 sm:w-7 sm:h-7 rounded-lg text-[10px] font-bold transition-colors cursor-pointer flex items-center justify-center ${
-                                          isOccupied
-                                            ? 'bg-gray-200 text-gray-400 cursor-not-allowed border border-gray-200'
-                                            : isSelected
-                                            ? 'bg-[#F84464] text-white shadow-sm border border-[#F84464]'
-                                            : 'bg-white border border-gray-300 text-gray-700 hover:border-[#F84464] hover:text-[#F84464]'
-                                        }`}
-                                        title={`${seatId} (${rowItem.tier}) - ₹${rowItem.price}`}
-                                      >
-                                        {num}
-                                      </motion.button>
-                                      {/* Center aisle gap */}
-                                      {isAisle && <div className="w-3 sm:w-6" />}
-                                    </React.Fragment>
-                                  );
-                                })}
-                              </div>
-                            </div>
-                          </div>
-                        ))}
-                      </div>
-                    </div>
-
-                    {/* Seat Legend */}
-                    <div className="flex items-center justify-center gap-6 pt-4 text-xs font-semibold text-gray-500 border-t border-gray-100 mb-6">
+                    {/* Compact Inline Seat Legend */}
+                    <div className="flex items-center justify-center gap-4 text-[10px] sm:text-[11px] font-semibold text-gray-500 py-1.5 mb-2.5 bg-gray-50 rounded-xl border border-gray-100">
                       <div className="flex items-center gap-1.5">
-                        <div className="w-4 h-4 rounded border border-gray-300 bg-white" />
+                        <div className="w-3.5 h-3.5 rounded border border-gray-300 bg-white" />
                         <span>Available</span>
                       </div>
                       <div className="flex items-center gap-1.5">
-                        <div className="w-4 h-4 rounded bg-[#F84464]" />
+                        <div className="w-3.5 h-3.5 rounded bg-[#F84464]" />
                         <span className="text-[#F84464] font-bold">Selected</span>
                       </div>
                       <div className="flex items-center gap-1.5">
-                        <div className="w-4 h-4 rounded bg-gray-200 border border-gray-200" />
+                        <div className="w-3.5 h-3.5 rounded bg-gray-200 border border-gray-200" />
                         <span>Sold</span>
                       </div>
                     </div>
 
-                    {/* Bottom Summary Bar & Advance to Snacks Button */}
-                    <div className="bg-gray-50 p-4 rounded-2xl border border-gray-100 mb-4 flex flex-col sm:flex-row sm:items-center justify-between gap-3">
-                      <div>
-                        <span className="text-xs text-gray-500 font-medium block">Selected Seats:</span>
-                        <span className="text-sm font-black text-gray-900">
-                          {bookingModal.selectedSeats.join(', ') || 'None selected'}
-                        </span>
-                      </div>
-                      <div className="text-right">
-                        <span className="text-xs text-gray-500 font-medium block">Tickets Subtotal:</span>
-                        <span className="text-base font-black text-[#F84464]">₹{ticketsSubtotal}</span>
+                    {/* Compact Auditorium Seating Matrix */}
+                    <div className="mb-2 overflow-x-auto no-scrollbar py-1 px-1" style={{ perspective: '850px' }}>
+                      <div 
+                        className="space-y-1 origin-top transition-transform duration-300"
+                        style={{
+                          transform: 'rotateX(8deg)',
+                          transformStyle: 'preserve-3d',
+                        }}
+                      >
+                        {activeSeatLayout.map((rowItem, idx) => {
+                          const prevRow = activeSeatLayout[idx - 1];
+                          const isNewTier = !prevRow || prevRow.tier !== rowItem.tier || prevRow.price !== rowItem.price;
+
+                          return (
+                            <div key={rowItem.row} className="space-y-1">
+                              {/* Group Tier Header: Only shown once per tier section */}
+                              {isNewTier && (
+                                <div className="flex items-center justify-between pt-1.5 pb-0.5 px-2 border-b border-gray-100 mb-0.5">
+                                  <span className="text-[10px] uppercase font-black tracking-wider text-gray-600">
+                                    {rowItem.tier}
+                                  </span>
+                                  <span className="text-[10px] font-bold text-[#F84464]">
+                                    ₹{rowItem.price}
+                                  </span>
+                                </div>
+                              )}
+
+                              <div className="flex items-center justify-center gap-1 sm:gap-1.5">
+                                {/* Row letter */}
+                                <span className="w-4 text-[10px] font-bold text-gray-400 text-center shrink-0">
+                                  {rowItem.row}
+                                </span>
+
+                                {/* Seat buttons */}
+                                <div className="flex items-center gap-1 sm:gap-1.5">
+                                  {rowItem.seats.map((num) => {
+                                    const seatId = `${rowItem.row}${num}`;
+                                    const isOccupied = rowItem.occupied.includes(seatId);
+                                    const isSelected = bookingModal.selectedSeats.includes(seatId);
+                                    const isAisle = num === 6;
+
+                                    return (
+                                      <React.Fragment key={num}>
+                                        <motion.button
+                                          type="button"
+                                          disabled={isOccupied}
+                                          onPointerDown={() => handleSeatClick(seatId, isOccupied)}
+                                          onClick={() => handleSeatClick(seatId, isOccupied)}
+                                          whileTap={!isOccupied ? { scale: 0.85 } : undefined}
+                                          animate={isSelected ? { scale: [1, 1.2, 1.05] } : { scale: 1 }}
+                                          transition={{ type: 'spring', stiffness: 500, damping: 18 }}
+                                          className={`w-6 h-6 sm:w-6.5 sm:h-6.5 rounded-md text-[10px] font-bold transition-colors cursor-pointer flex items-center justify-center ${
+                                            isOccupied
+                                              ? 'bg-gray-200 text-gray-400 cursor-not-allowed border border-gray-200'
+                                              : isSelected
+                                              ? 'bg-[#F84464] text-white shadow-xs border border-[#F84464]'
+                                              : 'bg-white border border-gray-300 text-gray-700 hover:border-[#F84464] hover:text-[#F84464]'
+                                          }`}
+                                          title={`${seatId} (${rowItem.tier}) - ₹${rowItem.price}`}
+                                        >
+                                          {num}
+                                        </motion.button>
+                                        {/* Center aisle gap */}
+                                        {isAisle && <div className="w-2.5 sm:w-4" />}
+                                      </React.Fragment>
+                                    );
+                                  })}
+                                </div>
+                              </div>
+                            </div>
+                          );
+                        })}
                       </div>
                     </div>
 
-                    <button
-                      onClick={() => setBookingModal((prev) => ({ ...prev, step: 'snacks' }))}
-                      disabled={bookingModal.selectedSeats.length === 0}
-                      className="w-full py-4 bg-[#F84464] hover:bg-[#E03A58] disabled:opacity-60 text-white text-xs sm:text-sm font-black rounded-2xl shadow-[0_10px_30px_-6px_rgba(248,68,100,0.5)] transition-all active:scale-[0.98] cursor-pointer flex items-center justify-center gap-2"
-                    >
-                      <Popcorn className="w-4 h-4" />
-                      <span>Proceed to Concessions &amp; Snacks ➔</span>
-                    </button>
+                    {/* Compact Unified Bottom Action Ribbon */}
+                    <div className="mt-2 pt-2.5 border-t border-gray-100 flex items-center justify-between gap-3 bg-white">
+                      <div className="min-w-0">
+                        <div className="flex items-center gap-1.5">
+                          <span className="text-[11px] font-bold text-gray-500">Seats:</span>
+                          <span className="text-xs font-black text-gray-900 truncate max-w-[140px] sm:max-w-[200px]">
+                            {bookingModal.selectedSeats.join(', ') || 'None selected'}
+                          </span>
+                        </div>
+                        <div className="text-xs font-black text-[#F84464] mt-0.5">
+                          ₹{ticketsSubtotal} <span className="text-[10px] text-gray-400 font-normal">subtotal</span>
+                        </div>
+                      </div>
+
+                      <button
+                        type="button"
+                        onClick={() => setBookingModal((prev) => ({ ...prev, step: 'snacks' }))}
+                        disabled={bookingModal.selectedSeats.length === 0}
+                        className="py-2.5 px-4 bg-[#F84464] hover:bg-[#E03A58] disabled:opacity-50 text-white text-xs font-black rounded-xl shadow-sm transition-all active:scale-[0.98] cursor-pointer flex items-center gap-1.5 shrink-0"
+                      >
+                        <Popcorn className="w-3.5 h-3.5" />
+                        <span>Proceed to Snacks ➔</span>
+                      </button>
+                    </div>
                   </div>
                 )}
 
@@ -1624,37 +1639,37 @@ export default function MovieDetailsPage() {
                 ======================================================== */}
                 {bookingModal.step === 'snacks' && (
                   <div className="animate-in fade-in slide-in-from-right-2 duration-200">
-                    <div className="text-center mb-4">
-                      <div className="inline-flex items-center gap-1.5 px-3 py-1 rounded-full bg-amber-50 text-amber-700 text-[11px] font-bold uppercase tracking-wider mb-2">
+                    <div className="text-center mb-3">
+                      <div className="inline-flex items-center gap-1.5 px-2.5 py-0.5 rounded-full bg-amber-50 text-amber-700 text-[10px] font-bold uppercase tracking-wider mb-1">
                         🍿 Multiplex Fresh Concessions
                       </div>
-                      <h3 className="text-xl sm:text-2xl font-black text-[#222432] tracking-tight">
+                      <h3 className="text-lg sm:text-xl font-black text-[#222432] tracking-tight">
                         Grab a Bite!
                       </h3>
-                      <p className="text-xs text-gray-500 mt-1">
+                      <p className="text-xs text-gray-500 mt-0.5">
                         Pre-book fresh popcorn &amp; beverages and save up to 20% compared to counter prices
                       </p>
                     </div>
 
-                    {/* 3D Gourmet Multiplex Concessions Showcase */}
-                    <div className="relative rounded-2xl overflow-hidden mb-5 border border-amber-300/40 shadow-lg group">
-                      <div className="h-32 sm:h-36 w-full overflow-hidden bg-slate-900 relative">
+                    {/* Compact Gourmet Multiplex Concessions Showcase */}
+                    <div className="relative rounded-xl overflow-hidden mb-3.5 border border-amber-300/40 shadow-sm group">
+                      <div className="h-24 sm:h-28 w-full overflow-hidden bg-slate-900 relative">
                         <img
                           src="/assets/graphics/concessions_combo.jpg"
                           alt="Gourmet Cinema Concessions Combo"
                           className="w-full h-full object-cover object-center group-hover:scale-105 transition-transform duration-700"
                         />
                         <div className="absolute inset-0 bg-gradient-to-t from-black/85 via-black/30 to-transparent pointer-events-none" />
-                        <div className="absolute bottom-2.5 left-3.5 right-3.5 flex items-center justify-between">
+                        <div className="absolute bottom-2 left-3 right-3 flex items-center justify-between">
                           <div>
-                            <span className="text-[10px] font-black uppercase tracking-wider text-amber-300 bg-amber-500/30 backdrop-blur-md px-2 py-0.5 rounded-full border border-amber-400/30">
+                            <span className="text-[9px] font-black uppercase tracking-wider text-amber-300 bg-amber-500/30 backdrop-blur-md px-2 py-0.5 rounded-full border border-amber-400/30">
                               Chef's Signature Combo
                             </span>
-                            <p className="text-xs font-bold text-white mt-1 drop-shadow-sm">
+                            <p className="text-[11px] font-bold text-white mt-0.5 drop-shadow-sm">
                               Fresh Butter Popcorn, Ice-Cold Cola &amp; Cheesy Nachos
                             </p>
                           </div>
-                          <span className="bg-[#F84464] text-white text-[10px] font-black px-2.5 py-1 rounded-lg shadow-sm">
+                          <span className="bg-[#F84464] text-white text-[9px] font-black px-2 py-0.5 rounded-md shadow-xs">
                             SAVE 20%
                           </span>
                         </div>
@@ -1662,7 +1677,7 @@ export default function MovieDetailsPage() {
                     </div>
 
                     {/* Snack Combos Cards */}
-                    <div className="space-y-3 mb-6">
+                    <div className="space-y-2 mb-4">
                       {[
                         {
                           id: 'combo-duo',
@@ -1693,23 +1708,23 @@ export default function MovieDetailsPage() {
                         return (
                           <div
                             key={snack.id}
-                            className={`p-4 rounded-2xl border transition-all flex items-center justify-between gap-4 ${
+                            className={`p-3 rounded-xl border transition-all flex items-center justify-between gap-3 ${
                               isAdded
                                 ? 'bg-amber-50/80 border-amber-300 ring-2 ring-amber-400/20'
                                 : 'bg-white border-gray-200 hover:border-gray-300'
                             }`}
                           >
-                            <div className="flex items-center gap-3.5">
-                              <span className="text-3xl filter drop-shadow-sm">{snack.emoji}</span>
+                            <div className="flex items-center gap-3">
+                              <span className="text-2xl filter drop-shadow-xs">{snack.emoji}</span>
                               <div>
-                                <div className="flex items-center gap-2">
+                                <div className="flex items-center gap-1.5">
                                   <span className="text-xs font-bold text-gray-900">{snack.name}</span>
-                                  <span className="text-[9px] font-black px-2 py-0.2 rounded-full bg-amber-100 text-amber-800 uppercase">
+                                  <span className="text-[8px] font-black px-1.5 py-0.2 rounded-full bg-amber-100 text-amber-800 uppercase">
                                     {snack.badge}
                                   </span>
                                 </div>
-                                <p className="text-[11px] text-gray-500 mt-0.5">{snack.desc}</p>
-                                <span className="text-xs font-black text-gray-900 mt-1 block">₹{snack.price}</span>
+                                <p className="text-[10px] text-gray-500 mt-0.5">{snack.desc}</p>
+                                <span className="text-xs font-black text-gray-900 mt-0.5 block">₹{snack.price}</span>
                               </div>
                             </div>
 
@@ -1731,7 +1746,7 @@ export default function MovieDetailsPage() {
                                   snacksTotal: !isAdded ? snack.price : 0,
                                 }));
                               }}
-                              className={`px-4 py-2 rounded-xl text-xs font-bold transition-all cursor-pointer ${
+                              className={`px-3 py-1.5 rounded-lg text-xs font-bold transition-all cursor-pointer shrink-0 ${
                                 isAdded
                                   ? 'bg-amber-500 hover:bg-amber-600 text-white shadow-xs'
                                   : 'bg-gray-100 hover:bg-gray-200 text-gray-700'
@@ -1745,13 +1760,13 @@ export default function MovieDetailsPage() {
                     </div>
 
                     {/* Final Order Breakdown */}
-                    <div className="bg-gray-50 p-4 rounded-2xl mb-6 text-xs text-gray-600 space-y-2 border border-gray-100">
+                    <div className="bg-gray-50 p-3 rounded-xl mb-4 text-xs text-gray-600 space-y-1.5 border border-gray-100">
                       <div className="flex justify-between items-center text-gray-800">
                         <span>Seats ({bookingModal.selectedSeats.join(', ')}):</span>
                         <span className="font-bold">₹{ticketsSubtotal}</span>
                       </div>
                       <div className="flex justify-between items-center text-gray-500 text-[11px]">
-                        <span>Convenience Fees &amp; Integrated GST:</span>
+                        <span>Convenience Fees &amp; GST:</span>
                         <span>₹{convenienceFee}</span>
                       </div>
                       {bookingModal.includeSnacks && (
@@ -1760,7 +1775,7 @@ export default function MovieDetailsPage() {
                           <span>+₹{snacksTotal}</span>
                         </div>
                       )}
-                      <div className="pt-2 border-t border-gray-200 flex justify-between items-center text-sm">
+                      <div className="pt-1.5 border-t border-gray-200 flex justify-between items-center text-sm">
                         <span className="font-black text-gray-900">Total Amount:</span>
                         <span className="text-base font-black text-[#F84464]">₹{grandTotal}</span>
                       </div>
@@ -1768,13 +1783,13 @@ export default function MovieDetailsPage() {
 
                     {/* Booking Error Banner */}
                     {bookingError && (
-                      <div className="mb-4 p-3.5 bg-red-50 border border-red-200 text-red-600 rounded-xl text-xs font-semibold text-center animate-in fade-in">
+                      <div className="mb-3 p-2.5 bg-red-50 border border-red-200 text-red-600 rounded-lg text-xs font-semibold text-center animate-in fade-in">
                         {bookingError}
                       </div>
                     )}
 
                     {/* Action Buttons */}
-                    <div className="flex flex-col sm:flex-row items-center gap-3">
+                    <div className="flex items-center gap-2.5">
                       <button
                         type="button"
                         onClick={() => {
@@ -1782,7 +1797,7 @@ export default function MovieDetailsPage() {
                           confirmBooking();
                         }}
                         disabled={bookingLoading}
-                        className="w-full sm:w-1/3 py-3.5 bg-gray-100 hover:bg-gray-200 text-gray-700 text-xs font-bold rounded-2xl transition-colors cursor-pointer"
+                        className="w-1/3 py-2.5 bg-gray-100 hover:bg-gray-200 text-gray-700 text-xs font-bold rounded-xl transition-colors cursor-pointer"
                       >
                         Skip Snacks
                       </button>
@@ -1791,18 +1806,18 @@ export default function MovieDetailsPage() {
                         type="button"
                         onClick={confirmBooking}
                         disabled={bookingLoading}
-                        className="w-full sm:w-2/3 py-3.5 bg-[#F84464] hover:bg-[#E03A58] disabled:opacity-70 text-white text-xs sm:text-sm font-black rounded-2xl shadow-[0_10px_30px_-6px_rgba(248,68,100,0.5)] transition-all active:scale-[0.98] cursor-pointer flex items-center justify-center gap-2"
+                        className="w-2/3 py-2.5 bg-[#F84464] hover:bg-[#E03A58] disabled:opacity-70 text-white text-xs sm:text-sm font-black rounded-xl shadow-sm transition-all active:scale-[0.98] cursor-pointer flex items-center justify-center gap-2"
                       >
                         {bookingLoading ? (
                           <>
                             <Loader2 className="w-4 h-4 animate-spin" />
-                            <span>Confirming your seats...</span>
+                            <span>Confirming seats...</span>
                           </>
                         ) : (
                           <>
                             <Ticket className="w-4 h-4" />
                             <span>
-                              {isAuthenticated ? `Pay ₹{grandTotal} & Book` : 'Sign In & Book'}
+                              {isAuthenticated ? `Pay ₹${grandTotal} & Book` : 'Sign In & Book'}
                             </span>
                           </>
                         )}
@@ -1812,293 +1827,172 @@ export default function MovieDetailsPage() {
                 )}
 
               </div>
-            ) : (
-              /* ========================================================
-                  STEP 4: AUTHENTIC PERFORATED DIGITAL M-TICKET PASS
-              ======================================================== */
-              <div className="p-4 sm:p-5 text-center animate-in fade-in zoom-in-95 duration-200">
-                {/* Compact Flip Toggle Ribbon */}
-                <div className="flex items-center justify-between mb-3 px-0.5">
-                  <div className="flex items-center gap-1.5">
-                    <span className="w-2 h-2 rounded-full bg-emerald-500 animate-pulse" />
-                    <span className="text-[11px] font-bold text-gray-600">
-                      {isTicketFlipped ? 'Pass Back: Directions & Snacks' : 'Official Electronic M-Ticket'}
+            </div>
+          ) : (
+            /* ========================================================
+                STEP 4: AUTHENTIC CUSTOMER-MATCHED LUXURY DIGITAL M-TICKET PASS
+            ======================================================== */
+            <div className="relative w-full max-w-[420px] bg-white rounded-3xl shadow-2xl overflow-hidden animate-in fade-in zoom-in-95 duration-200 border border-slate-200 my-4">
+              {/* Top Accent Gradient Strip */}
+              <div className="h-1.5 w-full bg-gradient-to-r from-[#F84464] via-rose-500 to-amber-400" />
+
+              {/* Digital Pass Header Strip */}
+              <div className="bg-gradient-to-br from-[#222432] via-[#2b2e40] to-[#1a1c27] text-white p-5 relative overflow-hidden">
+                <div className="pointer-events-none absolute -top-12 -right-12 w-32 h-32 bg-[#F84464]/25 rounded-full blur-2xl" />
+                <div className="flex items-start justify-between relative z-10">
+                  <div>
+                    <div className="flex items-center gap-1.5 mb-1.5">
+                      <span className="inline-flex items-center gap-1 px-2.5 py-0.5 rounded-full bg-[#F84464]/20 border border-[#F84464]/40 text-[#F84464] text-[9px] font-black uppercase tracking-widest">
+                        <Sparkles className="w-2.5 h-2.5" />
+                        <span>Official M-Pass</span>
+                      </span>
+                      <span className="inline-flex items-center gap-1 text-[9px] font-extrabold uppercase px-2 py-0.5 rounded-full bg-emerald-500/20 text-emerald-400 border border-emerald-500/30">
+                        <span className="w-1.5 h-1.5 rounded-full bg-emerald-400 animate-pulse" />
+                        <span>Confirmed</span>
+                      </span>
+                    </div>
+                    <h3 className="text-base sm:text-lg font-black text-white leading-tight">
+                      {movie.title}
+                    </h3>
+                    <div className="flex items-center gap-1.5 text-xs text-gray-300 mt-1 font-medium">
+                      <MapPin className="w-3 h-3 text-[#F84464] shrink-0" />
+                      <span className="truncate">{bookingModal.theatre?.name}</span>
+                    </div>
+                  </div>
+
+                  <button
+                    type="button"
+                    onClick={() => setBookingModal({ ...bookingModal, isOpen: false })}
+                    className="p-1.5 text-gray-400 hover:text-white rounded-full bg-white/10 hover:bg-white/20 transition-colors cursor-pointer shrink-0"
+                    title="Close Pass"
+                  >
+                    <X className="w-4 h-4" />
+                  </button>
+                </div>
+              </div>
+
+              {/* Perforated Ticket Divider with Side Half-Circles */}
+              <div className="relative flex items-center justify-between w-full h-4 bg-white overflow-hidden -my-2 z-10">
+                <div className="w-4 h-4 rounded-full bg-black/80 -ml-2 border-r border-slate-200 shadow-inner shrink-0" />
+                <div className="w-full border-t-2 border-dashed border-slate-200 mx-2" />
+                <div className="w-4 h-4 rounded-full bg-black/80 -mr-2 border-l border-slate-200 shadow-inner shrink-0" />
+              </div>
+
+              {/* Ticket Body */}
+              <div className="p-4 sm:p-5 bg-white">
+                {/* QR Code & Optical Turnstile Stub */}
+                <div className="bg-slate-50 border-2 border-dashed border-slate-200 rounded-2xl p-4 text-center mb-3.5 relative">
+                  <div className={`w-24 h-24 bg-white rounded-xl shadow-inner border border-slate-200 p-2 mx-auto flex items-center justify-center mb-2.5 transition-transform ${isTurnstileBright ? 'scale-105 ring-4 ring-amber-300' : ''}`}>
+                    <QrCode className="w-20 h-20 text-slate-900" />
+                  </div>
+                  <div className="font-mono text-xs font-black text-slate-800 tracking-widest">
+                    {bookingModal.bookingId}
+                  </div>
+                  <p className="text-[10px] font-mono tracking-widest text-slate-400 mt-0.5">
+                    |||| | || ||| |||| |
+                  </p>
+                </div>
+
+                {/* Show Details Grid (Customer Theme) */}
+                <div className="grid grid-cols-2 gap-2.5 text-xs bg-slate-50 p-3 rounded-xl border border-slate-100 mb-3.5">
+                  <div>
+                    <span className="text-[9px] text-slate-400 block uppercase font-bold">Cinema &amp; Audi</span>
+                    <span className="font-bold text-slate-900 text-xs block truncate">{bookingModal.theatre?.name}</span>
+                    <span className="text-[10px] text-slate-500 font-medium">Audi 2 • Gate 3</span>
+                  </div>
+                  <div>
+                    <span className="text-[9px] text-slate-400 block uppercase font-bold">Date &amp; Showtime</span>
+                    <span className="font-bold text-slate-900 text-xs block">
+                      {dates[selectedDateIndex]?.date || 'Today'}
+                    </span>
+                    <span className="text-[10px] text-[#F84464] font-bold">
+                      {bookingModal.showtime?.time} ({bookingModal.showtime?.format})
                     </span>
                   </div>
+                  <div>
+                    <span className="text-[9px] text-slate-400 block uppercase font-bold">Reserved Seats ({bookingModal.selectedSeats.length})</span>
+                    <span className="font-mono font-black text-[#F84464] text-xs sm:text-sm">
+                      {bookingModal.selectedSeats.join(', ')}
+                    </span>
+                  </div>
+                  <div>
+                    <span className="text-[9px] text-slate-400 block uppercase font-bold">Total Paid</span>
+                    <span className="font-black text-slate-900 text-xs sm:text-sm">
+                      ₹{grandTotal}
+                    </span>
+                  </div>
+                </div>
+
+                {/* Snack Voucher Pill if included */}
+                {bookingModal.includeSnacks && (
+                  <div className="mb-3.5 p-2.5 rounded-xl bg-amber-50 border border-amber-200 flex items-center justify-between text-xs">
+                    <div className="flex items-center gap-2">
+                      <span className="text-base">🍿</span>
+                      <div>
+                        <span className="text-[11px] font-bold text-amber-900 block">Snack Combo Voucher</span>
+                        <span className="text-[10px] text-amber-700">Collect at Refreshment Counter #3</span>
+                      </div>
+                    </div>
+                    <span className="text-[11px] font-mono font-black text-amber-900">PAID ₹{snacksTotal}</span>
+                  </div>
+                )}
+
+                {/* Utilities Ribbon */}
+                <div className="flex items-center gap-1.5 mb-3.5">
+                  <button
+                    type="button"
+                    onClick={handleAddToCalendar}
+                    className="flex-1 py-2 px-2 bg-slate-50 hover:bg-slate-100 text-slate-700 border border-slate-200 rounded-xl text-[10px] font-bold flex items-center justify-center gap-1 transition-colors cursor-pointer"
+                    title="Add to Google Calendar"
+                  >
+                    <Calendar className="w-3 h-3 text-[#F84464]" />
+                    <span>Calendar</span>
+                  </button>
+
+                  <button
+                    type="button"
+                    onClick={() => handleGetDirections()}
+                    className="flex-1 py-2 px-2 bg-slate-50 hover:bg-slate-100 text-slate-700 border border-slate-200 rounded-xl text-[10px] font-bold flex items-center justify-center gap-1 transition-colors cursor-pointer"
+                    title="Open Maps Directions"
+                  >
+                    <Navigation className="w-3 h-3 text-cyan-600" />
+                    <span>Directions</span>
+                  </button>
+
                   <button
                     type="button"
                     onClick={() => {
-                      playFlip();
-                      setIsTicketFlipped(!isTicketFlipped);
+                      const msg = `🎟️ My BookMyShow Ticket: ${movie.title} at ${bookingModal.theatre?.name}, ${dates[selectedDateIndex]?.date} ${bookingModal.showtime?.time}. Seats: ${bookingModal.selectedSeats.join(', ')}. Booking ID: ${bookingModal.bookingId}`;
+                      window.open(`https://api.whatsapp.com/send?text=${encodeURIComponent(msg)}`, '_blank');
                     }}
-                    className="inline-flex items-center gap-1 px-2.5 py-1 rounded-full bg-gray-100 hover:bg-gray-200 text-gray-800 text-[11px] font-bold transition-all cursor-pointer shadow-xs active:scale-95"
+                    className="flex-1 py-2 px-2 bg-emerald-50 hover:bg-emerald-100 text-emerald-800 border border-emerald-200 rounded-xl text-[10px] font-bold flex items-center justify-center gap-1 transition-colors cursor-pointer"
+                    title="Share on WhatsApp"
                   >
-                    <RefreshCw className={`w-3 h-3 text-[#F84464] transition-transform duration-500 ${isTicketFlipped ? 'rotate-180' : ''}`} />
-                    <span>{isTicketFlipped ? 'Show Front' : 'Flip (3D)'}</span>
+                    <span>WhatsApp</span>
                   </button>
                 </div>
 
-                {/* 3D Flippable Perforated M-Ticket Container */}
-                <div style={{ perspective: '1200px' }} className="mb-4">
-                  <div
-                    style={{
-                      transformStyle: 'preserve-3d',
-                      transform: isTicketFlipped ? 'rotateY(180deg)' : 'rotateY(0deg)',
-                      transition: 'transform 0.65s cubic-bezier(0.4, 0, 0.2, 1)',
-                    }}
-                    className="relative w-full"
-                  >
-                    {/* FRONT FACE OF M-TICKET */}
-                    <div
-                      style={{
-                        backfaceVisibility: 'hidden',
-                        WebkitBackfaceVisibility: 'hidden',
-                      }}
-                      className={`relative bg-gradient-to-b from-[#242738] via-[#1c1e2b] to-[#12131b] text-white rounded-2xl p-4 text-left text-xs shadow-xl border transition-all duration-300 overflow-hidden ${
-                        isTurnstileBright
-                          ? 'ring-4 ring-amber-300 shadow-[0_0_50px_rgba(251,191,36,0.5)] border-amber-300 filter brightness-110'
-                          : 'border-white/10'
-                      }`}
-                    >
-                      {/* Decorative Glow */}
-                      <div className="pointer-events-none absolute -top-12 -right-12 w-36 h-36 bg-[#F84464]/20 rounded-full blur-3xl" />
-
-                      {/* Left & Right Perforated Notch Cut-Outs */}
-                      <div className="ticket-notch-left top-[38%]" />
-                      <div className="ticket-notch-right top-[38%]" />
-
-                      {/* Ticket Header */}
-                      <div className="relative flex items-start justify-between gap-3 pb-2.5">
-                        <div>
-                          <div className="flex items-center gap-1.5 mb-1">
-                            <span className="text-[9px] uppercase font-black text-[#F84464] tracking-wider">
-                              BookMyShow Pass
-                            </span>
-                            <span className="text-[8px] bg-emerald-500/20 text-emerald-400 font-black px-1.5 py-0.2 rounded-full border border-emerald-500/30">
-                              ACTIVE
-                            </span>
-                          </div>
-                          <h4 className="text-sm sm:text-base font-black text-white leading-tight">
-                            {movie.title}
-                          </h4>
-                          <p className="text-[11px] text-gray-300 mt-0.5">
-                            {movie.language} • {bookingModal.showtime?.format}
-                          </p>
-                        </div>
-
-                        <div className="text-right shrink-0">
-                          <span className="text-[9px] text-gray-400 block uppercase font-bold">Booking ID</span>
-                          <span className="text-[11px] font-mono font-black text-[#F84464]">
-                            {bookingModal.bookingId}
-                          </span>
-                        </div>
-                      </div>
-
-                      {/* Dashed Perforated Tear Line */}
-                      <div className="relative my-2.5 border-b border-dashed border-white/20" />
-
-                      {/* Multiplex Details Grid */}
-                      <div className="relative py-1.5 grid grid-cols-2 gap-2 text-xs">
-                        <div>
-                          <span className="text-[9px] text-gray-400 block uppercase font-bold">Cinema</span>
-                          <span className="font-bold text-gray-100 text-[11px] line-clamp-1">{bookingModal.theatre?.name}</span>
-                          <p className="text-[9px] text-gray-400 mt-0.5">Audi 2 • Gate 3</p>
-                        </div>
-                        <div>
-                          <span className="text-[9px] text-gray-400 block uppercase font-bold">Date &amp; Time</span>
-                          <span className="font-bold text-gray-100 text-[11px]">
-                            {dates[selectedDateIndex].date} • {bookingModal.showtime?.time}
-                          </span>
-                        </div>
-                        <div>
-                          <span className="text-[9px] text-gray-400 block uppercase font-bold">Seats ({bookingModal.selectedSeats.length})</span>
-                          <span className="font-black text-[#F84464] text-sm">
-                            {bookingModal.selectedSeats.join(', ')}
-                          </span>
-                        </div>
-                        <div>
-                          <span className="text-[9px] text-gray-400 block uppercase font-bold">Total Paid</span>
-                          <span className="font-black text-white text-sm">₹{grandTotal}</span>
-                        </div>
-                      </div>
-
-                      {/* QR Code & Turnstile Optical Barcode Scanner Area */}
-                      <div className="relative mt-2.5 pt-2.5 border-t border-white/10 flex items-center justify-between gap-2">
-                        <div className="flex items-center gap-2.5">
-                          <div className={`w-10 h-10 bg-white rounded-lg p-1 flex items-center justify-center text-gray-900 shadow-xs shrink-0 transition-transform ${isTurnstileBright ? 'scale-105' : ''}`}>
-                            <QrCode className="w-8 h-8" />
-                          </div>
-                          <div>
-                            <p className="text-[10px] font-bold text-white leading-tight">Turnstile Pass</p>
-                            <p className="text-[9px] font-mono tracking-widest text-gray-400">|||| | || |||</p>
-                          </div>
-                        </div>
-
-                        <button
-                          type="button"
-                          onClick={() => {
-                            const msg = `🎟️ My BookMyShow Ticket: ${movie.title} at ${bookingModal.theatre?.name}, ${dates[selectedDateIndex].date} ${bookingModal.showtime?.time}. Seats: ${bookingModal.selectedSeats.join(', ')}. Booking ID: ${bookingModal.bookingId}`;
-                            window.open(`https://api.whatsapp.com/send?text=${encodeURIComponent(msg)}`, '_blank');
-                          }}
-                          className="px-2.5 py-1.5 bg-emerald-600 hover:bg-emerald-500 text-white rounded-lg text-[11px] font-bold flex items-center gap-1 transition-colors cursor-pointer shadow-xs shrink-0"
-                        >
-                          <span>Share</span>
-                        </button>
-                      </div>
-
-                      {/* Post-Booking Ticket Utilities Bar */}
-                      <div className="relative mt-2.5 pt-2 border-t border-white/10 flex items-center gap-1.5">
-                        <button
-                          type="button"
-                          onClick={handleAddToCalendar}
-                          className="flex-1 py-1.5 px-2 bg-white/10 hover:bg-white/20 text-white rounded-lg text-[10px] font-bold flex items-center justify-center gap-1 transition-colors cursor-pointer border border-white/10 active:scale-95"
-                          title="Save show to Google Calendar"
-                        >
-                          <Calendar className="w-3 h-3 text-[#F84464]" />
-                          <span>Calendar</span>
-                        </button>
-
-                        <button
-                          type="button"
-                          onClick={() => handleGetDirections()}
-                          className="flex-1 py-1.5 px-2 bg-white/10 hover:bg-white/20 text-white rounded-lg text-[10px] font-bold flex items-center justify-center gap-1 transition-colors cursor-pointer border border-white/10 active:scale-95"
-                          title="Open Google Maps directions to this cinema"
-                        >
-                          <Navigation className="w-3 h-3 text-cyan-400" />
-                          <span>Venue Map</span>
-                        </button>
-
-                        <button
-                          type="button"
-                          onClick={() => setIsTurnstileBright(!isTurnstileBright)}
-                          className={`py-1.5 px-2 rounded-lg text-[10px] font-bold flex items-center justify-center gap-1 transition-colors cursor-pointer border active:scale-95 ${
-                            isTurnstileBright
-                              ? 'bg-amber-400 text-black border-amber-300 font-black'
-                              : 'bg-white/10 hover:bg-white/20 text-white border-white/10'
-                          }`}
-                          title="Toggle ultra-bright screen mode for fast turnstile entry"
-                        >
-                          <Sun className={`w-3 h-3 ${isTurnstileBright ? 'text-black fill-black animate-spin' : 'text-amber-400'}`} />
-                          <span>{isTurnstileBright ? 'High Contrast' : 'Glow'}</span>
-                        </button>
-                      </div>
-                    </div>
-
-                    {/* BACK FACE OF M-TICKET (3D REVERSE) */}
-                    <div
-                      style={{
-                        backfaceVisibility: 'hidden',
-                        WebkitBackfaceVisibility: 'hidden',
-                        transform: 'rotateY(180deg)',
-                      }}
-                      className="absolute inset-0 bg-gradient-to-b from-[#1c2234] via-[#161a29] to-[#0f111c] text-white rounded-2xl p-4 text-left text-xs shadow-xl border border-white/10 overflow-hidden flex flex-col justify-between"
-                    >
-                      {/* Decorative Glow */}
-                      <div className="pointer-events-none absolute -bottom-12 -left-12 w-36 h-36 bg-[#F84464]/20 rounded-full blur-3xl" />
-
-                      {/* Left & Right Perforated Notch Cut-Outs */}
-                      <div className="ticket-notch-left top-[38%]" />
-                      <div className="ticket-notch-right top-[38%]" />
-
-                      <div>
-                        <div className="flex items-center justify-between pb-2 border-b border-white/10">
-                          <div>
-                            <span className="text-[9px] uppercase font-black text-[#F84464] tracking-wider block">
-                              Venue &amp; Pass Details
-                            </span>
-                            <h4 className="text-sm font-black text-white mt-0.5">{bookingModal.theatre?.name}</h4>
-                          </div>
-                          <span className="text-[9px] font-mono bg-white/10 px-2 py-0.5 rounded-full text-gray-300 font-bold border border-white/10">
-                            AUDI 2
-                          </span>
-                        </div>
-
-                        {/* Concessions / Food Voucher Status */}
-                        <div className="py-2 border-b border-white/10">
-                          <span className="text-[9px] uppercase font-bold text-gray-400 block mb-1">
-                            F&amp;B Concession Counter
-                          </span>
-                          {bookingModal.includeSnacks ? (
-                            <div className="p-2 rounded-lg bg-amber-500/15 border border-amber-400/30 flex items-center justify-between">
-                              <div>
-                                <span className="text-[11px] font-bold text-amber-300 block">🍿 Snack Combo Voucher</span>
-                                <span className="text-[9px] text-gray-300">Collect at Counter #3</span>
-                              </div>
-                              <span className="text-xs font-mono font-black text-amber-300">PAID ₹{snacksTotal}</span>
-                            </div>
-                          ) : (
-                            <div className="p-1.5 rounded-lg bg-white/5 text-gray-400 text-[10px]">
-                              No snacks pre-booked. Counter purchases available in cinema foyer.
-                            </div>
-                          )}
-                        </div>
-
-                        {/* Multiplex Safety & Directions */}
-                        <div className="py-2 space-y-1 text-[10px] text-gray-300">
-                          <div className="flex items-center gap-1.5">
-                            <span className="w-1.5 h-1.5 rounded-full bg-emerald-400 shrink-0" />
-                            <span>Gate opens 15 mins prior to showtime</span>
-                          </div>
-                          <div className="flex items-center gap-1.5">
-                            <span className="w-1.5 h-1.5 rounded-full bg-emerald-400 shrink-0" />
-                            <span>Outside food &amp; drinks strictly restricted</span>
-                          </div>
-                          <div className="flex items-center justify-between pt-1 border-t border-white/10">
-                            <span className="text-gray-400 text-[9px]">Venue Navigation:</span>
-                            <button
-                              type="button"
-                              onClick={() => handleGetDirections()}
-                              className="inline-flex items-center gap-1 text-[10px] text-[#F84464] hover:underline font-bold cursor-pointer"
-                            >
-                              <Navigation className="w-2.5 h-2.5 text-cyan-400" />
-                              <span>Google Maps</span>
-                            </button>
-                          </div>
-                        </div>
-                      </div>
-
-                      {/* Optical Turnstile Barcode */}
-                      <div className="pt-2 border-t border-white/10 flex items-center justify-between">
-                        <div>
-                          <span className="text-[8px] text-gray-400 uppercase font-bold block">Turnstile Gate Code</span>
-                          <p className="text-xs font-mono tracking-[0.2em] text-white">|||| | | ||| ||||</p>
-                        </div>
-                        <button
-                          type="button"
-                          onClick={() => {
-                            playFlip();
-                            setIsTicketFlipped(false);
-                          }}
-                          className="px-2.5 py-1 bg-white/10 hover:bg-white/20 text-white rounded-lg text-[10px] font-bold cursor-pointer transition-colors active:scale-95"
-                        >
-                          <span>Show Front</span>
-                        </button>
-                      </div>
-                    </div>
-                  </div>
-                </div>
-
-                {/* Footer Actions */}
+                {/* Footer Buttons */}
                 <div className="flex items-center gap-2.5">
                   <Link
                     to="/my-bookings"
                     onClick={() => setBookingModal({ ...bookingModal, isOpen: false })}
-                    className="flex-1 py-2.5 bg-gray-100 hover:bg-gray-200 text-gray-800 text-xs font-bold rounded-xl transition-colors cursor-pointer flex items-center justify-center gap-1.5"
+                    className="flex-1 py-3 bg-slate-100 hover:bg-slate-200 text-slate-800 text-xs font-bold rounded-xl transition-colors cursor-pointer flex items-center justify-center gap-1.5"
                   >
                     <Ticket className="w-3.5 h-3.5 text-[#F84464]" />
                     <span>My Bookings</span>
                   </Link>
                   <button
+                    type="button"
                     onClick={() => setBookingModal({ ...bookingModal, isOpen: false })}
-                    className="flex-1 py-2.5 bg-[#F84464] hover:bg-[#E03A58] text-white text-xs font-black rounded-xl transition-all cursor-pointer shadow-sm"
+                    className="flex-1 py-3 bg-[#F84464] hover:bg-[#E03A58] text-white text-xs font-black rounded-xl transition-all cursor-pointer shadow-sm shadow-red-500/25"
                   >
                     Done
                   </button>
                 </div>
               </div>
-            )}
-
-          </div>
+            </div>
+          )}
         </div>
       )}
 

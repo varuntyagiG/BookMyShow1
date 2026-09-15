@@ -102,24 +102,66 @@
   scrollbar-width: none;
 }
 
-/* BookMyShow Screen Curved Perspective Effect */
+/* Authentic 3D Cinema Curved Screen & Realistic Projection */
+.cinema-screen-3d-wrapper {
+  perspective: 750px;
+  position: relative;
+  width: 100%;
+  max-width: 360px;
+  margin: 0 auto;
+}
+
+.cinema-screen-3d-curve {
+  position: relative;
+  height: 14px;
+  width: 88%;
+  margin: 0 auto;
+  border-top: 4px solid #38bdf8;
+  border-radius: 50% / 10px 10px 0 0;
+  box-shadow: 0 -4px 14px 2px rgba(56, 189, 248, 0.45), 0 0 6px rgba(255, 255, 255, 0.7);
+  transform: rotateX(24deg);
+  transform-style: preserve-3d;
+}
+
+.cinema-screen-3d-curve::before {
+  content: '';
+  position: absolute;
+  top: -2px;
+  left: 12%;
+  right: 12%;
+  height: 2px;
+  background: linear-gradient(90deg, transparent, #ffffff, transparent);
+  border-radius: 9999px;
+  filter: blur(0.5px);
+}
+
+.cinema-screen-3d-light {
+  position: relative;
+  width: 94%;
+  height: 18px;
+  margin: -4px auto 3px;
+  background: linear-gradient(180deg, rgba(56, 189, 248, 0.16) 0%, rgba(56, 189, 248, 0.02) 70%, transparent 100%);
+  clip-path: polygon(6% 0%, 94% 0%, 100% 100%, 0% 100%);
+  pointer-events: none;
+}
+
 .cinema-screen-curve {
   position: relative;
-  height: 26px;
-  width: 82%;
-  margin: 0 auto 6px;
-  border-top: 5px solid #F84464;
-  border-radius: 50% / 14px 14px 0 0;
-  box-shadow: 0 -8px 24px 2px rgba(248, 68, 100, 0.45);
+  height: 16px;
+  width: 84%;
+  margin: 0 auto 2px;
+  border-top: 4px solid #38bdf8;
+  border-radius: 50% / 10px 10px 0 0;
+  box-shadow: 0 -4px 14px 2px rgba(56, 189, 248, 0.45);
 }
 
 .cinema-screen-light {
   position: relative;
   width: 88%;
-  height: 42px;
-  margin: 0 auto 20px;
-  background: linear-gradient(180deg, rgba(248, 68, 100, 0.22) 0%, rgba(248, 68, 100, 0.04) 75%, transparent 100%);
-  clip-path: polygon(5% 0%, 95% 0%, 100% 100%, 0% 100%);
+  height: 18px;
+  margin: 0 auto 4px;
+  background: linear-gradient(180deg, rgba(56, 189, 248, 0.16) 0%, rgba(56, 189, 248, 0.02) 70%, transparent 100%);
+  clip-path: polygon(6% 0%, 94% 0%, 100% 100%, 0% 100%);
   pointer-events: none;
 }
 

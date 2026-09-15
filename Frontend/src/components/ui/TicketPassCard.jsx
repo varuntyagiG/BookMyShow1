@@ -29,6 +29,8 @@ export default function TicketPassCard({
   const movieTitle = booking.movieTitle || 'Movie Experience';
   const bookingId = booking.bookingId || `BMT-${(booking._id || '').slice(-6).toUpperCase()}`;
   const totalAmount = booking.totalPrice || booking.amount || 0;
+  const posterUrl = booking.movie?.posterUrl || booking.posterUrl;
+  const screenName = booking.screen?.name || (booking.screen?.screenNumber ? `Audi ${booking.screen.screenNumber}` : '');
 
   return (
     <motion.div
@@ -50,12 +52,12 @@ export default function TicketPassCard({
             ? 'bg-gray-300'
             : isValidated
             ? 'bg-gradient-to-r from-emerald-500 to-teal-500'
-            : 'bg-gradient-to-r from-[#F84464] to-rose-600'
+            : 'bg-gradient-to-r from-[#F84464] via-rose-500 to-amber-400'
         }`}
       />
 
       {/* Main Pass Header & Information */}
-      <div className="p-5">
+      <div className="p-4 sm:p-5">
         {/* Row 1: ID, Status, and Price */}
         <div className="flex items-center justify-between gap-2 mb-3">
           <div className="flex items-center gap-2 flex-wrap">
@@ -100,15 +102,32 @@ export default function TicketPassCard({
           </div>
         </div>
 
-        {/* Movie Title */}
-        <h3 className="text-base sm:text-lg font-black text-slate-900 leading-snug line-clamp-1 group-hover:text-[#F84464] transition-colors">
-          {movieTitle}
-        </h3>
+        {/* Movie Title & Optional Poster */}
+        <div className="flex items-start gap-3">
+          {posterUrl && (
+            <img
+              src={posterUrl}
+              alt={movieTitle}
+              className="w-11 h-15 sm:w-12 sm:h-16 object-cover rounded-xl shadow-xs border border-slate-200/80 shrink-0 group-hover:scale-105 transition-transform"
+            />
+          )}
+          <div className="min-w-0 flex-1">
+            <h3 className="text-base sm:text-lg font-black text-slate-900 leading-snug line-clamp-1 group-hover:text-[#F84464] transition-colors">
+              {movieTitle}
+            </h3>
 
-        {/* Venue Info */}
-        <div className="flex items-center gap-1.5 text-xs text-slate-600 mt-1.5">
-          <MapPin className="w-3.5 h-3.5 text-[#F84464] shrink-0" />
-          <span className="font-semibold text-slate-700 truncate">{theatreName}</span>
+            {/* Venue Info */}
+            <div className="flex items-center gap-1.5 text-xs text-slate-600 mt-1">
+              <MapPin className="w-3.5 h-3.5 text-[#F84464] shrink-0" />
+              <span className="font-semibold text-slate-700 truncate">{theatreName}</span>
+              {screenName && (
+                <>
+                  <span className="text-slate-300">•</span>
+                  <span className="text-slate-500 font-mono text-[11px]">{screenName}</span>
+                </>
+              )}
+            </div>
+          </div>
         </div>
 
         {/* Showtime & Schedule Grid */}

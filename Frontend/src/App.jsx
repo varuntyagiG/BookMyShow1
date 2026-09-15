@@ -13,6 +13,8 @@ import Footer from './components/common/Footer';
 import CityModal from './components/common/CityModal';
 import AuthModal from './components/auth/AuthModal';
 import CursorSpotlight from './components/common/CursorSpotlight';
+import ScrollToTop from './components/common/ScrollToTop';
+import RoleSwitcher from './components/common/RoleSwitcher';
 
 // Customer Pages
 import HomePage from './pages/HomePage';
@@ -176,6 +178,7 @@ function AppRoutes() {
 export default function App() {
   return (
     <BrowserRouter>
+      <ScrollToTop />
       <AuthProvider>
         <VendorAuthProvider>
           <AdminAuthProvider>
@@ -183,6 +186,7 @@ export default function App() {
               <NotificationProvider>
                 <NotificationToastContainer />
                 <NotificationDrawer />
+                <RoleSwitcher />
                 <AppRoutes />
               </NotificationProvider>
             </CityProvider>

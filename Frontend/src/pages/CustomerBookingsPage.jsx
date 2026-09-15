@@ -253,23 +253,59 @@ export default function CustomerBookingsPage() {
 
       {/* Digital M-Ticket Full Modal */}
       {activeTicketModal && (
-        <div className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-black/80 backdrop-blur-xs">
-          <div className="relative w-full max-w-md bg-white rounded-3xl shadow-2xl overflow-hidden animate-in fade-in zoom-in-95 duration-150 border border-slate-200">
+        <div className="fixed inset-0 z-50 flex items-center justify-center p-3 sm:p-4 bg-black/80 backdrop-blur-md overflow-y-auto">
+          <div className="relative w-full max-w-[420px] bg-white rounded-3xl shadow-2xl overflow-hidden animate-in fade-in zoom-in-95 duration-200 border border-slate-200 my-4">
+            {/* Top Accent Gradient Strip */}
+            <div className="h-1.5 w-full bg-gradient-to-r from-[#F84464] via-rose-500 to-amber-400" />
+
             {/* Modal Header Strip */}
-            <div className="bg-gradient-to-br from-[#222432] via-[#2d3043] to-[#1e202c] text-white p-6 relative overflow-hidden">
-              <div className="pointer-events-none absolute -top-12 -right-12 w-36 h-36 bg-[#F84464]/30 rounded-full blur-2xl" />
-              <div className="flex items-start justify-between relative z-10">
-                <div>
-                  <div className="inline-flex items-center gap-1.5 px-2.5 py-0.5 rounded-full bg-[#F84464]/20 border border-[#F84464]/40 text-[#F84464] text-[9px] font-black uppercase tracking-widest mb-1.5">
-                    <Sparkles className="w-3 h-3" />
-                    <span>Official M-Pass</span>
-                  </div>
-                  <h3 className="text-xl font-black text-white leading-tight">
-                    {activeTicketModal.movieTitle || 'Movie Ticket'}
-                  </h3>
-                  <div className="flex items-center gap-1.5 text-xs text-gray-300 mt-1">
-                    <MapPin className="w-3 h-3 text-[#F84464] shrink-0" />
-                    <span className="truncate">{activeTicketModal.theatreName || 'Cinema Hall'}</span>
+            <div className="bg-gradient-to-br from-[#222432] via-[#2b2e40] to-[#1a1c27] text-white p-5 relative overflow-hidden">
+              <div className="pointer-events-none absolute -top-12 -right-12 w-32 h-32 bg-[#F84464]/25 rounded-full blur-2xl" />
+              <div className="flex items-start justify-between relative z-10 gap-3">
+                <div className="flex items-start gap-3 min-w-0">
+                  {(activeTicketModal.movie?.posterUrl || activeTicketModal.posterUrl) && (
+                    <img
+                      src={activeTicketModal.movie?.posterUrl || activeTicketModal.posterUrl}
+                      alt={activeTicketModal.movieTitle || 'Movie'}
+                      className="w-11 h-15 object-cover rounded-xl shadow-md border border-white/20 shrink-0"
+                    />
+                  )}
+                  <div className="min-w-0">
+                    <div className="flex items-center gap-1.5 mb-1.5 flex-wrap">
+                      <span className="inline-flex items-center gap-1 px-2.5 py-0.5 rounded-full bg-[#F84464]/20 border border-[#F84464]/40 text-[#F84464] text-[9px] font-black uppercase tracking-widest">
+                        <Sparkles className="w-2.5 h-2.5" />
+                        <span>Official M-Pass</span>
+                      </span>
+                      <span
+                        className={`inline-flex items-center gap-1 text-[9px] font-extrabold uppercase px-2 py-0.5 rounded-full ${
+                          activeTicketModal.status === 'cancelled'
+                            ? 'bg-gray-700 text-gray-300'
+                            : activeTicketModal.ticketValidated
+                            ? 'bg-emerald-500/20 text-emerald-400 border border-emerald-500/30'
+                            : 'bg-emerald-500/20 text-emerald-400 border border-emerald-500/30'
+                        }`}
+                      >
+                        {activeTicketModal.status === 'cancelled' ? (
+                          <span>Void / Cancelled</span>
+                        ) : activeTicketModal.ticketValidated ? (
+                          <span>Checked In</span>
+                        ) : (
+                          <>
+                            <span className="w-1.5 h-1.5 rounded-full bg-emerald-400 animate-pulse" />
+                            <span>Confirmed</span>
+                          </>
+                        )}
+                      </span>
+                    </div>
+                    <h3 className="text-base sm:text-lg font-black text-white leading-tight truncate">
+                      {activeTicketModal.movieTitle || activeTicketModal.movie?.title || 'Movie Experience'}
+                    </h3>
+                    <div className="flex items-center gap-1.5 text-xs text-gray-300 mt-1 font-medium">
+                      <MapPin className="w-3 h-3 text-[#F84464] shrink-0" />
+                      <span className="truncate">
+                        {activeTicketModal.theatreName || activeTicketModal.cinema?.name || 'Cinema Multiplex'}
+                      </span>
+                    </div>
                   </div>
                 </div>
 
@@ -279,31 +315,38 @@ export default function CustomerBookingsPage() {
                   className="p-1.5 text-gray-400 hover:text-white rounded-full bg-white/10 hover:bg-white/20 transition-colors cursor-pointer shrink-0"
                   title="Close Pass"
                 >
-                  <X className="w-5 h-5" />
+                  <X className="w-4 h-4" />
                 </button>
               </div>
             </div>
 
             {/* Ticket Perforation Notch (Top) */}
             <div className="relative flex items-center justify-between w-full h-4 bg-white overflow-hidden -my-2 z-10">
-              <div className="w-4 h-4 rounded-full bg-black/80 -ml-2 border-r border-slate-200 shadow-inner" />
+              <div className="w-4 h-4 rounded-full bg-black/80 -ml-2 border-r border-slate-200 shadow-inner shrink-0" />
               <div className="w-full border-t-2 border-dashed border-slate-200 mx-2" />
-              <div className="w-4 h-4 rounded-full bg-black/80 -mr-2 border-l border-slate-200 shadow-inner" />
+              <div className="w-4 h-4 rounded-full bg-black/80 -mr-2 border-l border-slate-200 shadow-inner shrink-0" />
             </div>
 
             {/* Ticket Body */}
-            <div className="p-6 bg-white">
+            <div className="p-4 sm:p-5 bg-white">
               {/* QR Code Validation Box */}
-              <div className="bg-slate-50 border-2 border-dashed border-slate-200 rounded-2xl p-5 text-center mb-5 relative group">
-                <div className="w-36 h-36 bg-white rounded-2xl shadow-inner border border-slate-200 p-2.5 mx-auto flex items-center justify-center mb-3">
-                  <QrCode className="w-32 h-32 text-slate-900" />
+              <div className="bg-slate-50 border-2 border-dashed border-slate-200 rounded-2xl p-4 text-center mb-3.5 relative">
+                <div
+                  className={`w-28 h-28 bg-white rounded-xl shadow-inner border border-slate-200 p-2 mx-auto flex items-center justify-center mb-2 transition-transform duration-200 ${
+                    isScannerBright ? 'scale-105 ring-4 ring-amber-300 shadow-xl' : ''
+                  }`}
+                >
+                  <QrCode className="w-24 h-24 text-slate-900" />
                 </div>
                 <div className="font-mono text-xs font-black text-slate-800 tracking-widest">
                   {activeTicketModal.bookingId || `BMT-${(activeTicketModal._id || '').slice(-6).toUpperCase()}`}
                 </div>
-                <div className="mt-2">
+                <p className="text-[10px] font-mono tracking-widest text-slate-400 mt-0.5">
+                  |||| | || ||| |||| |
+                </p>
+                <div className="mt-1.5">
                   <span
-                    className={`inline-flex items-center gap-1.5 text-[10px] font-extrabold uppercase px-3 py-1 rounded-full ${
+                    className={`inline-flex items-center gap-1.5 text-[10px] font-extrabold uppercase px-2.5 py-0.5 rounded-full ${
                       activeTicketModal.status === 'cancelled'
                         ? 'bg-gray-200 text-gray-700'
                         : activeTicketModal.ticketValidated
@@ -323,7 +366,7 @@ export default function CustomerBookingsPage() {
                       </>
                     ) : (
                       <>
-                        <span className="w-2 h-2 rounded-full bg-emerald-500 animate-pulse" />
+                        <span className="w-1.5 h-1.5 rounded-full bg-emerald-500 animate-pulse" />
                         <span>READY FOR SCANNER TURNSTILE</span>
                       </>
                     )}
@@ -332,83 +375,117 @@ export default function CustomerBookingsPage() {
               </div>
 
               {/* Show Details Grid */}
-              <div className="grid grid-cols-2 gap-3 text-xs bg-slate-50 p-4 rounded-2xl border border-slate-100 mb-5">
+              <div className="grid grid-cols-2 gap-2.5 text-xs bg-slate-50 p-3 rounded-xl border border-slate-100 mb-3.5">
                 <div>
-                  <span className="text-[10px] text-slate-400 block uppercase font-bold">Show Date</span>
-                  <span className="font-bold text-slate-900">
-                    {activeTicketModal.showDate || (activeTicketModal.createdAt ? new Date(activeTicketModal.createdAt).toLocaleDateString('en-GB') : 'Today')}
+                  <span className="text-[9px] text-slate-400 block uppercase font-bold">Cinema &amp; Audi</span>
+                  <span className="font-bold text-slate-900 text-xs block truncate">
+                    {activeTicketModal.theatreName || activeTicketModal.cinema?.name || 'Cinema Multiplex'}
+                  </span>
+                  <span className="text-[10px] text-slate-500 font-medium">
+                    {activeTicketModal.screen?.name || (activeTicketModal.screen?.screenNumber ? `Audi ${activeTicketModal.screen.screenNumber}` : 'Audi 2 • Gate 3')}
                   </span>
                 </div>
                 <div>
-                  <span className="text-[10px] text-slate-400 block uppercase font-bold">Showtime</span>
-                  <span className="font-bold text-slate-900">
+                  <span className="text-[9px] text-slate-400 block uppercase font-bold">Date &amp; Showtime</span>
+                  <span className="font-bold text-slate-900 text-xs block">
+                    {activeTicketModal.showDate || (activeTicketModal.createdAt ? new Date(activeTicketModal.createdAt).toLocaleDateString('en-GB') : 'Today')}
+                  </span>
+                  <span className="text-[10px] text-[#F84464] font-bold">
                     {activeTicketModal.showtime || '10:00 AM'}
                   </span>
                 </div>
                 <div>
-                  <span className="text-[10px] text-slate-400 block uppercase font-bold">Reserved Seats</span>
-                  <span className="font-black text-[#F84464] font-mono">
-                    {Array.isArray(activeTicketModal.seats) ? activeTicketModal.seats.join(', ') : 'Assigned'}
+                  <span className="text-[9px] text-slate-400 block uppercase font-bold">
+                    Reserved Seats ({Array.isArray(activeTicketModal.seats) ? activeTicketModal.seats.length : 1})
+                  </span>
+                  <span className="font-mono font-black text-[#F84464] text-xs sm:text-sm">
+                    {Array.isArray(activeTicketModal.seats) ? activeTicketModal.seats.join(', ') : (activeTicketModal.seats || 'Assigned')}
                   </span>
                 </div>
                 <div>
-                  <span className="text-[10px] text-slate-400 block uppercase font-bold">Total Paid</span>
-                  <span className="font-black text-slate-900">
+                  <span className="text-[9px] text-slate-400 block uppercase font-bold">Total Paid</span>
+                  <span className="font-black text-slate-900 text-xs sm:text-sm">
                     ₹{Number(activeTicketModal.totalPrice || activeTicketModal.amount || 0).toLocaleString('en-IN')}
                   </span>
                 </div>
               </div>
 
+              {/* Snack Voucher Pill if included */}
+              {activeTicketModal.includeSnacks && (
+                <div className="mb-3.5 p-2.5 rounded-xl bg-amber-50 border border-amber-200 flex items-center justify-between text-xs">
+                  <div className="flex items-center gap-2">
+                    <span className="text-base">🍿</span>
+                    <div>
+                      <span className="text-[11px] font-bold text-amber-900 block">Snack Combo Voucher</span>
+                      <span className="text-[10px] text-amber-700">Collect at Refreshment Counter #3</span>
+                    </div>
+                  </div>
+                  <span className="text-[11px] font-mono font-black text-amber-900">PAID VOUCHER</span>
+                </div>
+              )}
+
               {/* Post-Booking Ticket Utilities Ribbon */}
-              <div className="flex flex-wrap items-center gap-2 mb-4">
+              <div className="grid grid-cols-3 gap-1.5 mb-3.5">
                 <button
                   type="button"
                   onClick={() => handleCalendar(activeTicketModal)}
-                  className="flex-1 min-w-[130px] py-2 px-3 bg-slate-50 hover:bg-slate-100 text-slate-700 border border-slate-200 rounded-xl text-xs font-bold flex items-center justify-center gap-1.5 transition-colors cursor-pointer"
+                  className="py-2 px-1.5 bg-slate-50 hover:bg-slate-100 text-slate-700 border border-slate-200 rounded-xl text-[10px] font-bold flex items-center justify-center gap-1 transition-colors cursor-pointer"
+                  title="Add to Google Calendar"
                 >
-                  <Calendar className="w-3.5 h-3.5 text-[#F84464]" />
-                  <span>Google Calendar</span>
+                  <Calendar className="w-3 h-3 text-[#F84464]" />
+                  <span>Calendar</span>
                 </button>
 
                 <button
                   type="button"
-                  onClick={() => handleDirections(activeTicketModal.theatreName)}
-                  className="flex-1 min-w-[110px] py-2 px-3 bg-slate-50 hover:bg-slate-100 text-slate-700 border border-slate-200 rounded-xl text-xs font-bold flex items-center justify-center gap-1.5 transition-colors cursor-pointer"
+                  onClick={() => handleDirections(activeTicketModal.theatreName || activeTicketModal.cinema?.name)}
+                  className="py-2 px-1.5 bg-slate-50 hover:bg-slate-100 text-slate-700 border border-slate-200 rounded-xl text-[10px] font-bold flex items-center justify-center gap-1 transition-colors cursor-pointer"
+                  title="Open Maps Directions"
                 >
-                  <Navigation className="w-3.5 h-3.5 text-cyan-600" />
+                  <Navigation className="w-3 h-3 text-cyan-600" />
                   <span>Directions</span>
-                  <ExternalLink className="w-2.5 h-2.5 opacity-60" />
                 </button>
 
                 <button
                   type="button"
-                  onClick={() => setIsScannerBright(!isScannerBright)}
-                  className={`py-2 px-3 rounded-xl text-xs font-bold flex items-center justify-center gap-1.5 transition-colors cursor-pointer border ${
-                    isScannerBright
-                      ? 'bg-amber-400 text-black border-amber-300 font-black shadow-md'
-                      : 'bg-slate-50 hover:bg-slate-100 text-slate-700 border-slate-200'
-                  }`}
-                  title="Maximize screen brightness for optical scanner turnstile"
+                  onClick={() => {
+                    const msg = `🎟️ My BookMyShow Ticket: ${activeTicketModal.movieTitle || activeTicketModal.movie?.title || 'Movie'} at ${activeTicketModal.theatreName || activeTicketModal.cinema?.name || 'Multiplex'}, ${activeTicketModal.showDate || 'Today'} ${activeTicketModal.showtime || '10:00 AM'}. Seats: ${(Array.isArray(activeTicketModal.seats) ? activeTicketModal.seats : []).join(', ')}. Booking ID: ${activeTicketModal.bookingId || activeTicketModal._id}`;
+                    window.open(`https://api.whatsapp.com/send?text=${encodeURIComponent(msg)}`, '_blank');
+                  }}
+                  className="py-2 px-1.5 bg-emerald-50 hover:bg-emerald-100 text-emerald-800 border border-emerald-200 rounded-xl text-[10px] font-bold flex items-center justify-center gap-1 transition-colors cursor-pointer"
+                  title="Share on WhatsApp"
                 >
-                  <Sun className={`w-3.5 h-3.5 ${isScannerBright ? 'text-black fill-black' : 'text-amber-500'}`} />
-                  <span>{isScannerBright ? 'Scanner Mode On' : 'Scanner Mode'}</span>
+                  <span>WhatsApp</span>
                 </button>
               </div>
 
               {/* Action Buttons */}
-              <div className="flex items-center gap-3">
+              <div className="flex items-center gap-2.5">
+                <button
+                  type="button"
+                  onClick={() => setIsScannerBright(!isScannerBright)}
+                  className={`py-3 px-3 rounded-xl text-xs font-bold flex items-center justify-center gap-1.5 transition-colors cursor-pointer border shrink-0 ${
+                    isScannerBright
+                      ? 'bg-amber-400 text-black border-amber-300 font-black shadow-md'
+                      : 'bg-slate-100 hover:bg-slate-200 text-slate-700 border-slate-200'
+                  }`}
+                  title="Maximize screen brightness for optical scanner turnstile"
+                >
+                  <Sun className={`w-3.5 h-3.5 ${isScannerBright ? 'text-black fill-black' : 'text-amber-500'}`} />
+                  <span className="hidden sm:inline">{isScannerBright ? 'Bright' : 'Glow'}</span>
+                </button>
                 <button
                   type="button"
                   onClick={() => window.print()}
                   className="flex-1 py-3 bg-slate-100 hover:bg-slate-200 text-slate-800 text-xs font-bold rounded-xl transition-colors cursor-pointer flex items-center justify-center gap-1.5"
                 >
                   <Printer className="w-3.5 h-3.5" />
-                  <span>Print Ticket</span>
+                  <span>Print</span>
                 </button>
                 <button
                   type="button"
                   onClick={() => setActiveTicketModal(null)}
-                  className="flex-1 py-3 bg-[#F84464] hover:bg-[#E03A58] text-white text-xs font-bold rounded-xl transition-all shadow-sm shadow-red-500/25 cursor-pointer"
+                  className="flex-1 py-3 bg-[#F84464] hover:bg-[#E03A58] text-white text-xs font-black rounded-xl transition-all shadow-sm shadow-red-500/25 cursor-pointer"
                 >
                   Done
                 </button>
