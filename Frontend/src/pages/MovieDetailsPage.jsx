@@ -1353,11 +1353,11 @@ export default function MovieDetailsPage() {
       {/* 4. Interactive Seat-Selection & Booking Engine Modal */}
       {bookingModal.isOpen && (
         <div className="fixed inset-0 z-50 flex items-center justify-center p-3 sm:p-4 bg-black/80 backdrop-blur-md overflow-y-auto">
-          <div className="relative w-full max-w-2xl bg-white rounded-3xl shadow-[0_25px_80px_-15px_rgba(0,0,0,0.6)] overflow-hidden animate-in fade-in zoom-in-95 duration-200 my-8 border border-gray-100">
+          <div className={`relative w-full ${bookingModal.confirmed ? 'max-w-[420px] my-3' : 'max-w-2xl my-8'} bg-white rounded-3xl shadow-[0_25px_80px_-15px_rgba(0,0,0,0.6)] overflow-hidden animate-in fade-in zoom-in-95 duration-200 border border-gray-100 transition-all`}>
 
             {/* Modal Header */}
-            <div className="bg-[#333545] text-white p-4 sm:p-5 flex items-center justify-between border-b border-[#2b2d3c]">
-              <div className="flex items-center gap-3">
+            <div className={`bg-[#333545] text-white ${bookingModal.confirmed ? 'px-4 py-3' : 'p-4 sm:p-5'} flex items-center justify-between border-b border-[#2b2d3c]`}>
+              <div className="flex items-center gap-2.5">
                 {bookingModal.step === 'seats' && !bookingModal.confirmed && (
                   <button
                     onClick={() => setBookingModal((prev) => ({ ...prev, step: 'vehicle' }))}
@@ -1377,13 +1377,13 @@ export default function MovieDetailsPage() {
                   </button>
                 )}
                 <div>
-                  <span className="text-[10px] uppercase font-black text-[#F84464] tracking-widest block">
-                    {bookingModal.step === 'vehicle' ? 'Step 1 of 3 • Seat Count' : bookingModal.step === 'snacks' ? 'Step 3 of 3 • Concessions' : 'Step 2 of 3 • Select Seats'}
+                  <span className={`text-[10px] uppercase font-black ${bookingModal.confirmed ? 'text-emerald-400' : 'text-[#F84464]'} tracking-widest block`}>
+                    {bookingModal.confirmed ? '✓ Booking Confirmed' : bookingModal.step === 'vehicle' ? 'Step 1 of 3 • Seat Count' : bookingModal.step === 'snacks' ? 'Step 3 of 3 • Concessions' : 'Step 2 of 3 • Select Seats'}
                   </span>
-                  <h3 className="text-base sm:text-lg font-black text-white leading-tight">
+                  <h3 className={`${bookingModal.confirmed ? 'text-sm sm:text-base' : 'text-base sm:text-lg'} font-black text-white leading-tight`}>
                     {movie.title}
                   </h3>
-                  <p className="text-xs text-gray-300 mt-0.5 font-medium">
+                  <p className="text-[11px] text-gray-300 mt-0.5 font-medium">
                     {bookingModal.theatre?.name} • <span className="text-[#F84464] font-bold">{bookingModal.showtime?.time}</span> ({bookingModal.showtime?.format})
                   </p>
                 </div>
@@ -1392,7 +1392,7 @@ export default function MovieDetailsPage() {
                 onClick={() => setBookingModal({ ...bookingModal, isOpen: false })}
                 className="p-1.5 text-gray-300 hover:text-white hover:bg-white/10 rounded-full transition-colors cursor-pointer shrink-0"
               >
-                <X className="w-5 h-5" />
+                <X className="w-4 h-4 sm:w-5 sm:h-5" />
               </button>
             </div>
 
@@ -1816,43 +1816,37 @@ export default function MovieDetailsPage() {
               /* ========================================================
                   STEP 4: AUTHENTIC PERFORATED DIGITAL M-TICKET PASS
               ======================================================== */
-              <div className="p-6 sm:p-8 text-center animate-in fade-in zoom-in-95 duration-200">
-                <div className="w-14 h-14 bg-emerald-50 border border-emerald-200 rounded-full flex items-center justify-center mx-auto mb-3">
-                  <CheckCircle className="w-7 h-7 text-emerald-500" />
-                </div>
-                <h3 className="text-xl sm:text-2xl font-black text-[#222432] mb-1">
-                  Booking Confirmed!
-                </h3>
-                <p className="text-xs text-gray-500 mb-6">
-                  Your official electronic M-Ticket has been generated and activated.
-                </p>
-
-                <div className="flex items-center justify-between mb-3 px-1">
-                  <span className="text-xs font-bold text-gray-500">
-                    {isTicketFlipped ? 'Pass Back: Directions & Snacks' : 'Pass Front: Show Entry & QR'}
-                  </span>
+              <div className="p-4 sm:p-5 text-center animate-in fade-in zoom-in-95 duration-200">
+                {/* Compact Flip Toggle Ribbon */}
+                <div className="flex items-center justify-between mb-3 px-0.5">
+                  <div className="flex items-center gap-1.5">
+                    <span className="w-2 h-2 rounded-full bg-emerald-500 animate-pulse" />
+                    <span className="text-[11px] font-bold text-gray-600">
+                      {isTicketFlipped ? 'Pass Back: Directions & Snacks' : 'Official Electronic M-Ticket'}
+                    </span>
+                  </div>
                   <button
                     type="button"
                     onClick={() => {
                       playFlip();
                       setIsTicketFlipped(!isTicketFlipped);
                     }}
-                    className="inline-flex items-center gap-1.5 px-3 py-1 rounded-full bg-gray-100 hover:bg-gray-200 text-gray-800 text-xs font-bold transition-all cursor-pointer shadow-xs active:scale-95"
+                    className="inline-flex items-center gap-1 px-2.5 py-1 rounded-full bg-gray-100 hover:bg-gray-200 text-gray-800 text-[11px] font-bold transition-all cursor-pointer shadow-xs active:scale-95"
                   >
-                    <RefreshCw className={`w-3.5 h-3.5 text-[#F84464] transition-transform duration-500 ${isTicketFlipped ? 'rotate-180' : ''}`} />
-                    <span>{isTicketFlipped ? 'Show Front' : 'Flip Ticket (3D)'}</span>
+                    <RefreshCw className={`w-3 h-3 text-[#F84464] transition-transform duration-500 ${isTicketFlipped ? 'rotate-180' : ''}`} />
+                    <span>{isTicketFlipped ? 'Show Front' : 'Flip (3D)'}</span>
                   </button>
                 </div>
 
                 {/* 3D Flippable Perforated M-Ticket Container */}
-                <div style={{ perspective: '1200px' }} className="mb-6">
+                <div style={{ perspective: '1200px' }} className="mb-4">
                   <div
                     style={{
                       transformStyle: 'preserve-3d',
                       transform: isTicketFlipped ? 'rotateY(180deg)' : 'rotateY(0deg)',
                       transition: 'transform 0.65s cubic-bezier(0.4, 0, 0.2, 1)',
                     }}
-                    className="relative w-full min-h-[360px]"
+                    className="relative w-full"
                   >
                     {/* FRONT FACE OF M-TICKET */}
                     <div
@@ -1860,83 +1854,83 @@ export default function MovieDetailsPage() {
                         backfaceVisibility: 'hidden',
                         WebkitBackfaceVisibility: 'hidden',
                       }}
-                      className={`relative bg-gradient-to-b from-[#242738] via-[#1c1e2b] to-[#12131b] text-white rounded-3xl p-6 text-left text-xs shadow-2xl border transition-all duration-300 overflow-hidden ${
+                      className={`relative bg-gradient-to-b from-[#242738] via-[#1c1e2b] to-[#12131b] text-white rounded-2xl p-4 text-left text-xs shadow-xl border transition-all duration-300 overflow-hidden ${
                         isTurnstileBright
-                          ? 'ring-4 ring-amber-300 shadow-[0_0_60px_rgba(251,191,36,0.5)] border-amber-300 filter brightness-110'
+                          ? 'ring-4 ring-amber-300 shadow-[0_0_50px_rgba(251,191,36,0.5)] border-amber-300 filter brightness-110'
                           : 'border-white/10'
                       }`}
                     >
                       {/* Decorative Glow */}
-                      <div className="pointer-events-none absolute -top-12 -right-12 w-48 h-48 bg-[#F84464]/20 rounded-full blur-3xl" />
+                      <div className="pointer-events-none absolute -top-12 -right-12 w-36 h-36 bg-[#F84464]/20 rounded-full blur-3xl" />
 
                       {/* Left & Right Perforated Notch Cut-Outs */}
-                      <div className="ticket-notch-left top-[42%]" />
-                      <div className="ticket-notch-right top-[42%]" />
+                      <div className="ticket-notch-left top-[38%]" />
+                      <div className="ticket-notch-right top-[38%]" />
 
                       {/* Ticket Header */}
-                      <div className="relative flex items-start justify-between gap-4 pb-4">
+                      <div className="relative flex items-start justify-between gap-3 pb-2.5">
                         <div>
                           <div className="flex items-center gap-1.5 mb-1">
-                            <span className="text-[10px] uppercase font-black text-[#F84464] tracking-widest">
-                              BookMyShow M-Ticket
+                            <span className="text-[9px] uppercase font-black text-[#F84464] tracking-wider">
+                              BookMyShow Pass
                             </span>
-                            <span className="text-[9px] bg-emerald-500/20 text-emerald-400 font-black px-2 py-0.2 rounded-full border border-emerald-500/30">
-                              CONFIRMED
+                            <span className="text-[8px] bg-emerald-500/20 text-emerald-400 font-black px-1.5 py-0.2 rounded-full border border-emerald-500/30">
+                              ACTIVE
                             </span>
                           </div>
-                          <h4 className="text-lg sm:text-xl font-black text-white leading-tight">
+                          <h4 className="text-sm sm:text-base font-black text-white leading-tight">
                             {movie.title}
                           </h4>
-                          <p className="text-xs text-gray-300 mt-0.5">
+                          <p className="text-[11px] text-gray-300 mt-0.5">
                             {movie.language} • {bookingModal.showtime?.format}
                           </p>
                         </div>
 
                         <div className="text-right shrink-0">
-                          <span className="text-[10px] text-gray-400 block uppercase font-bold">Booking ID</span>
-                          <span className="text-xs font-mono font-black text-[#F84464]">
+                          <span className="text-[9px] text-gray-400 block uppercase font-bold">Booking ID</span>
+                          <span className="text-[11px] font-mono font-black text-[#F84464]">
                             {bookingModal.bookingId}
                           </span>
                         </div>
                       </div>
 
                       {/* Dashed Perforated Tear Line */}
-                      <div className="relative my-4 border-b-2 border-dashed border-white/20" />
+                      <div className="relative my-2.5 border-b border-dashed border-white/20" />
 
                       {/* Multiplex Details Grid */}
-                      <div className="relative py-2 grid grid-cols-2 gap-4 text-xs">
+                      <div className="relative py-1.5 grid grid-cols-2 gap-2 text-xs">
                         <div>
-                          <span className="text-[10px] text-gray-400 block uppercase font-bold">Cinema</span>
-                          <span className="font-bold text-gray-100">{bookingModal.theatre?.name}</span>
-                          <p className="text-[10px] text-gray-400 mt-0.5">Audi 2 • Gate 3</p>
+                          <span className="text-[9px] text-gray-400 block uppercase font-bold">Cinema</span>
+                          <span className="font-bold text-gray-100 text-[11px] line-clamp-1">{bookingModal.theatre?.name}</span>
+                          <p className="text-[9px] text-gray-400 mt-0.5">Audi 2 • Gate 3</p>
                         </div>
                         <div>
-                          <span className="text-[10px] text-gray-400 block uppercase font-bold">Date &amp; Time</span>
-                          <span className="font-bold text-gray-100">
+                          <span className="text-[9px] text-gray-400 block uppercase font-bold">Date &amp; Time</span>
+                          <span className="font-bold text-gray-100 text-[11px]">
                             {dates[selectedDateIndex].date} • {bookingModal.showtime?.time}
                           </span>
                         </div>
                         <div>
-                          <span className="text-[10px] text-gray-400 block uppercase font-bold">Seats ({bookingModal.selectedSeats.length})</span>
-                          <span className="font-black text-[#F84464] text-base sm:text-lg">
+                          <span className="text-[9px] text-gray-400 block uppercase font-bold">Seats ({bookingModal.selectedSeats.length})</span>
+                          <span className="font-black text-[#F84464] text-sm">
                             {bookingModal.selectedSeats.join(', ')}
                           </span>
                         </div>
                         <div>
-                          <span className="text-[10px] text-gray-400 block uppercase font-bold">Total Paid</span>
+                          <span className="text-[9px] text-gray-400 block uppercase font-bold">Total Paid</span>
                           <span className="font-black text-white text-sm">₹{grandTotal}</span>
                         </div>
                       </div>
 
                       {/* QR Code & Turnstile Optical Barcode Scanner Area */}
-                      <div className="relative mt-4 pt-4 border-t border-white/10 flex items-center justify-between">
-                        <div className="flex items-center gap-3">
-                          <div className={`w-12 h-12 bg-white rounded-xl p-1 flex items-center justify-center text-gray-900 shadow-sm shrink-0 transition-transform ${isTurnstileBright ? 'scale-110' : ''}`}>
-                            <QrCode className="w-10 h-10" />
+                      <div className="relative mt-2.5 pt-2.5 border-t border-white/10 flex items-center justify-between gap-2">
+                        <div className="flex items-center gap-2.5">
+                          <div className={`w-10 h-10 bg-white rounded-lg p-1 flex items-center justify-center text-gray-900 shadow-xs shrink-0 transition-transform ${isTurnstileBright ? 'scale-105' : ''}`}>
+                            <QrCode className="w-8 h-8" />
                           </div>
                           <div>
-                            <p className="text-[11px] font-bold text-white">Scan at Cinema Turnstile</p>
-                            <p className="text-[10px] font-mono tracking-widest text-gray-400">|||| | || ||| |||| |</p>
+                            <p className="text-[10px] font-bold text-white leading-tight">Turnstile Pass</p>
+                            <p className="text-[9px] font-mono tracking-widest text-gray-400">|||| | || |||</p>
                           </div>
                         </div>
 
@@ -1946,46 +1940,46 @@ export default function MovieDetailsPage() {
                             const msg = `🎟️ My BookMyShow Ticket: ${movie.title} at ${bookingModal.theatre?.name}, ${dates[selectedDateIndex].date} ${bookingModal.showtime?.time}. Seats: ${bookingModal.selectedSeats.join(', ')}. Booking ID: ${bookingModal.bookingId}`;
                             window.open(`https://api.whatsapp.com/send?text=${encodeURIComponent(msg)}`, '_blank');
                           }}
-                          className="px-3 py-1.5 bg-emerald-600 hover:bg-emerald-500 text-white rounded-xl text-xs font-bold flex items-center gap-1.5 transition-colors cursor-pointer shadow-sm"
+                          className="px-2.5 py-1.5 bg-emerald-600 hover:bg-emerald-500 text-white rounded-lg text-[11px] font-bold flex items-center gap-1 transition-colors cursor-pointer shadow-xs shrink-0"
                         >
-                          <span>Share on WhatsApp</span>
+                          <span>Share</span>
                         </button>
                       </div>
 
                       {/* Post-Booking Ticket Utilities Bar */}
-                      <div className="relative mt-3 pt-3 border-t border-white/10 flex flex-wrap items-center gap-2">
+                      <div className="relative mt-2.5 pt-2 border-t border-white/10 flex items-center gap-1.5">
                         <button
                           type="button"
                           onClick={handleAddToCalendar}
-                          className="flex-1 min-w-[130px] py-1.5 px-2.5 bg-white/10 hover:bg-white/20 text-white rounded-xl text-[11px] font-bold flex items-center justify-center gap-1.5 transition-colors cursor-pointer border border-white/10 active:scale-95"
+                          className="flex-1 py-1.5 px-2 bg-white/10 hover:bg-white/20 text-white rounded-lg text-[10px] font-bold flex items-center justify-center gap-1 transition-colors cursor-pointer border border-white/10 active:scale-95"
                           title="Save show to Google Calendar"
                         >
-                          <Calendar className="w-3.5 h-3.5 text-[#F84464]" />
-                          <span>Add to Calendar</span>
+                          <Calendar className="w-3 h-3 text-[#F84464]" />
+                          <span>Calendar</span>
                         </button>
 
                         <button
                           type="button"
                           onClick={() => handleGetDirections()}
-                          className="flex-1 min-w-[110px] py-1.5 px-2.5 bg-white/10 hover:bg-white/20 text-white rounded-xl text-[11px] font-bold flex items-center justify-center gap-1.5 transition-colors cursor-pointer border border-white/10 active:scale-95"
+                          className="flex-1 py-1.5 px-2 bg-white/10 hover:bg-white/20 text-white rounded-lg text-[10px] font-bold flex items-center justify-center gap-1 transition-colors cursor-pointer border border-white/10 active:scale-95"
                           title="Open Google Maps directions to this cinema"
                         >
-                          <Navigation className="w-3.5 h-3.5 text-cyan-400" />
+                          <Navigation className="w-3 h-3 text-cyan-400" />
                           <span>Venue Map</span>
                         </button>
 
                         <button
                           type="button"
                           onClick={() => setIsTurnstileBright(!isTurnstileBright)}
-                          className={`py-1.5 px-3 rounded-xl text-[11px] font-bold flex items-center justify-center gap-1.5 transition-colors cursor-pointer border active:scale-95 ${
+                          className={`py-1.5 px-2 rounded-lg text-[10px] font-bold flex items-center justify-center gap-1 transition-colors cursor-pointer border active:scale-95 ${
                             isTurnstileBright
-                              ? 'bg-amber-400 text-black border-amber-300 font-black shadow-md'
+                              ? 'bg-amber-400 text-black border-amber-300 font-black'
                               : 'bg-white/10 hover:bg-white/20 text-white border-white/10'
                           }`}
-                          title="Toggle ultra-bright screen mode for fast optical turnstile gate entry"
+                          title="Toggle ultra-bright screen mode for fast turnstile entry"
                         >
-                          <Sun className={`w-3.5 h-3.5 ${isTurnstileBright ? 'text-black fill-black animate-spin' : 'text-amber-400'}`} />
-                          <span>{isTurnstileBright ? 'Turnstile High Contrast' : 'Turnstile Glow'}</span>
+                          <Sun className={`w-3 h-3 ${isTurnstileBright ? 'text-black fill-black animate-spin' : 'text-amber-400'}`} />
+                          <span>{isTurnstileBright ? 'High Contrast' : 'Glow'}</span>
                         </button>
                       </div>
                     </div>
@@ -1997,82 +1991,77 @@ export default function MovieDetailsPage() {
                         WebkitBackfaceVisibility: 'hidden',
                         transform: 'rotateY(180deg)',
                       }}
-                      className="absolute inset-0 bg-gradient-to-b from-[#1c2234] via-[#161a29] to-[#0f111c] text-white rounded-3xl p-6 text-left text-xs shadow-2xl border border-white/10 overflow-hidden flex flex-col justify-between"
+                      className="absolute inset-0 bg-gradient-to-b from-[#1c2234] via-[#161a29] to-[#0f111c] text-white rounded-2xl p-4 text-left text-xs shadow-xl border border-white/10 overflow-hidden flex flex-col justify-between"
                     >
                       {/* Decorative Glow */}
-                      <div className="pointer-events-none absolute -bottom-12 -left-12 w-48 h-48 bg-[#F84464]/20 rounded-full blur-3xl" />
+                      <div className="pointer-events-none absolute -bottom-12 -left-12 w-36 h-36 bg-[#F84464]/20 rounded-full blur-3xl" />
 
                       {/* Left & Right Perforated Notch Cut-Outs */}
-                      <div className="ticket-notch-left top-[42%]" />
-                      <div className="ticket-notch-right top-[42%]" />
+                      <div className="ticket-notch-left top-[38%]" />
+                      <div className="ticket-notch-right top-[38%]" />
 
                       <div>
-                        <div className="flex items-center justify-between pb-3 border-b border-white/10">
+                        <div className="flex items-center justify-between pb-2 border-b border-white/10">
                           <div>
-                            <span className="text-[10px] uppercase font-black text-[#F84464] tracking-widest block">
-                              Cinema Venue &amp; Concessions Pass
+                            <span className="text-[9px] uppercase font-black text-[#F84464] tracking-wider block">
+                              Venue &amp; Pass Details
                             </span>
-                            <h4 className="text-base font-black text-white mt-0.5">{bookingModal.theatre?.name}</h4>
+                            <h4 className="text-sm font-black text-white mt-0.5">{bookingModal.theatre?.name}</h4>
                           </div>
-                          <span className="text-[10px] font-mono bg-white/10 px-2.5 py-0.5 rounded-full text-gray-300 font-bold border border-white/10">
+                          <span className="text-[9px] font-mono bg-white/10 px-2 py-0.5 rounded-full text-gray-300 font-bold border border-white/10">
                             AUDI 2
                           </span>
                         </div>
 
                         {/* Concessions / Food Voucher Status */}
-                        <div className="py-3 border-b border-white/10">
-                          <span className="text-[10px] uppercase font-bold text-gray-400 block mb-1">
+                        <div className="py-2 border-b border-white/10">
+                          <span className="text-[9px] uppercase font-bold text-gray-400 block mb-1">
                             F&amp;B Concession Counter
                           </span>
                           {bookingModal.includeSnacks ? (
-                            <div className="p-2.5 rounded-xl bg-amber-500/15 border border-amber-400/30 flex items-center justify-between">
+                            <div className="p-2 rounded-lg bg-amber-500/15 border border-amber-400/30 flex items-center justify-between">
                               <div>
-                                <span className="text-xs font-bold text-amber-300 block">🍿 Snack Combo Voucher Included</span>
-                                <span className="text-[10px] text-gray-300">Collect at Refreshment Counter #3</span>
+                                <span className="text-[11px] font-bold text-amber-300 block">🍿 Snack Combo Voucher</span>
+                                <span className="text-[9px] text-gray-300">Collect at Counter #3</span>
                               </div>
                               <span className="text-xs font-mono font-black text-amber-300">PAID ₹{snacksTotal}</span>
                             </div>
                           ) : (
-                            <div className="p-2 rounded-xl bg-white/5 text-gray-400 text-[11px]">
-                              No snacks pre-booked. Counter purchases available in the cinema foyer.
+                            <div className="p-1.5 rounded-lg bg-white/5 text-gray-400 text-[10px]">
+                              No snacks pre-booked. Counter purchases available in cinema foyer.
                             </div>
                           )}
                         </div>
 
                         {/* Multiplex Safety & Directions */}
-                        <div className="py-2.5 space-y-1.5 text-[11px] text-gray-300">
-                          <div className="flex items-center gap-2">
-                            <span className="w-1.5 h-1.5 rounded-full bg-emerald-400" />
+                        <div className="py-2 space-y-1 text-[10px] text-gray-300">
+                          <div className="flex items-center gap-1.5">
+                            <span className="w-1.5 h-1.5 rounded-full bg-emerald-400 shrink-0" />
                             <span>Gate opens 15 mins prior to showtime</span>
                           </div>
-                          <div className="flex items-center gap-2">
-                            <span className="w-1.5 h-1.5 rounded-full bg-emerald-400" />
-                            <span>Outside food &amp; beverages strictly restricted</span>
+                          <div className="flex items-center gap-1.5">
+                            <span className="w-1.5 h-1.5 rounded-full bg-emerald-400 shrink-0" />
+                            <span>Outside food &amp; drinks strictly restricted</span>
                           </div>
-                          <div className="flex items-center gap-2">
-                            <span className="w-1.5 h-1.5 rounded-full bg-emerald-400" />
-                            <span>Wheelchair assistance available at Gate 3</span>
-                          </div>
-                          <div className="flex items-center justify-between pt-2 border-t border-white/10">
-                            <span className="text-gray-400 text-[10px]">Cinema Venue Navigation:</span>
+                          <div className="flex items-center justify-between pt-1 border-t border-white/10">
+                            <span className="text-gray-400 text-[9px]">Venue Navigation:</span>
                             <button
                               type="button"
                               onClick={() => handleGetDirections()}
-                              className="inline-flex items-center gap-1.5 text-xs text-[#F84464] hover:underline font-bold cursor-pointer"
+                              className="inline-flex items-center gap-1 text-[10px] text-[#F84464] hover:underline font-bold cursor-pointer"
                             >
-                              <Navigation className="w-3 h-3 text-cyan-400" />
-                              <span>Open in Google Maps</span>
-                              <ExternalLink className="w-2.5 h-2.5 opacity-70" />
+                              <Navigation className="w-2.5 h-2.5 text-cyan-400" />
+                              <span>Google Maps</span>
                             </button>
                           </div>
                         </div>
                       </div>
 
                       {/* Optical Turnstile Barcode */}
-                      <div className="pt-3 border-t border-white/10 flex items-center justify-between">
+                      <div className="pt-2 border-t border-white/10 flex items-center justify-between">
                         <div>
-                          <span className="text-[9px] text-gray-400 uppercase font-bold block">Optical Turnstile Code</span>
-                          <p className="text-sm font-mono tracking-[0.25em] text-white">|||| | | ||| |||| | |||</p>
+                          <span className="text-[8px] text-gray-400 uppercase font-bold block">Turnstile Gate Code</span>
+                          <p className="text-xs font-mono tracking-[0.2em] text-white">|||| | | ||| ||||</p>
                         </div>
                         <button
                           type="button"
@@ -2080,9 +2069,9 @@ export default function MovieDetailsPage() {
                             playFlip();
                             setIsTicketFlipped(false);
                           }}
-                          className="px-3 py-1.5 bg-white/10 hover:bg-white/20 text-white rounded-xl text-xs font-bold cursor-pointer transition-colors active:scale-95"
+                          className="px-2.5 py-1 bg-white/10 hover:bg-white/20 text-white rounded-lg text-[10px] font-bold cursor-pointer transition-colors active:scale-95"
                         >
-                          <span>Flip to Front</span>
+                          <span>Show Front</span>
                         </button>
                       </div>
                     </div>
@@ -2090,18 +2079,18 @@ export default function MovieDetailsPage() {
                 </div>
 
                 {/* Footer Actions */}
-                <div className="flex items-center gap-3">
+                <div className="flex items-center gap-2.5">
                   <Link
                     to="/my-bookings"
                     onClick={() => setBookingModal({ ...bookingModal, isOpen: false })}
-                    className="flex-1 py-3.5 bg-gray-100 hover:bg-gray-200 text-gray-800 text-xs font-bold rounded-2xl transition-colors cursor-pointer flex items-center justify-center gap-1.5"
+                    className="flex-1 py-2.5 bg-gray-100 hover:bg-gray-200 text-gray-800 text-xs font-bold rounded-xl transition-colors cursor-pointer flex items-center justify-center gap-1.5"
                   >
-                    <Ticket className="w-4 h-4 text-[#F84464]" />
-                    <span>View in My Bookings</span>
+                    <Ticket className="w-3.5 h-3.5 text-[#F84464]" />
+                    <span>My Bookings</span>
                   </Link>
                   <button
                     onClick={() => setBookingModal({ ...bookingModal, isOpen: false })}
-                    className="flex-1 py-3.5 bg-[#F84464] hover:bg-[#E03A58] text-white text-xs font-black rounded-2xl transition-all cursor-pointer shadow-md"
+                    className="flex-1 py-2.5 bg-[#F84464] hover:bg-[#E03A58] text-white text-xs font-black rounded-xl transition-all cursor-pointer shadow-sm"
                   >
                     Done
                   </button>
