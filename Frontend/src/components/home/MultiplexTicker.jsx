@@ -54,7 +54,7 @@ export default function MultiplexTicker() {
             >
               <span className="text-sm shrink-0">{current.icon}</span>
               <span className="truncate">{current.text}</span>
-              <span className="hidden md:inline-flex items-center text-[9px] font-black uppercase px-2 py-0.5 rounded bg-[#F84464]/20 text-[#F84464] border border-[#F84464]/30 shrink-0">
+              <span className="hidden md:inline-flex items-center text-[9px] font-bold uppercase px-2 py-0.5 rounded bg-[#F84464]/20 text-[#F84464] border border-[#F84464]/30 shrink-0">
                 {current.highlight}
               </span>
             </motion.div>

@@ -60,7 +60,7 @@ export default function Modal({
             <div>
               {title && (
                 <h3
-                  className={`text-base font-black tracking-tight flex items-center gap-2 ${
+                  className={`text-base font-bold tracking-tight flex items-center gap-2 ${
                     isDark ? 'text-white' : 'text-[#222432]'
                   }`}
                 >

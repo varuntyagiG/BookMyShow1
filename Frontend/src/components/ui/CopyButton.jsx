@@ -168,7 +168,7 @@ export function CopyBadge({
       {prefix && <span className="opacity-60 font-sans text-[10px] font-medium mr-0.5">{prefix}</span>}
       <span className="tracking-tight">{text}</span>
       {copied ? (
-        <span className="inline-flex items-center gap-0.5 bg-white/25 px-1 py-0.2 rounded text-[9px] font-sans font-black uppercase tracking-wider animate-in fade-in zoom-in-75">
+        <span className="inline-flex items-center gap-0.5 bg-white/25 px-1 py-0.2 rounded text-[9px] font-sans font-bold uppercase tracking-wider animate-in fade-in zoom-in-75">
           <Check className="w-2.5 h-2.5" /> Copied
         </span>
       ) : (

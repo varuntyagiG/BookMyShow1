@@ -20,7 +20,7 @@ export default function EmptyState({
         </div>
       )}
 
-      <h3 className="text-sm sm:text-base font-black text-[#222432] tracking-tight mb-1">
+      <h3 className="text-sm sm:text-base font-bold text-[#222432] tracking-tight mb-1">
         {title}
       </h3>
 

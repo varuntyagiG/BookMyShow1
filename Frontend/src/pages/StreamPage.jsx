@@ -50,7 +50,7 @@ export default function StreamPage() {
               <Crown className="w-3.5 h-3.5" />
               <span>BookMyShow Stream</span>
             </div>
-            <h1 className="text-3xl sm:text-4xl lg:text-5xl font-black tracking-tight text-white my-0 leading-[1.08]">
+            <h1 className="text-3xl sm:text-4xl lg:text-5xl font-extrabold tracking-tight text-white my-0 leading-[1.08]">
               The Cinema Comes Home.
             </h1>
             <p className="text-sm text-[#9A9BA5] mt-4 leading-relaxed font-medium max-w-lg">
@@ -94,7 +94,7 @@ export default function StreamPage() {
         <div className="mb-8">
           <div className="flex items-center justify-between mb-6">
             <div>
-              <h2 className="text-xl sm:text-2xl font-black tracking-tight text-white my-0">
+              <h2 className="text-xl sm:text-2xl font-bold tracking-tight text-white my-0">
                 Weekly Premieres &amp; New Releases
               </h2>
               <p className="text-xs sm:text-sm text-[#9A9BA5] mt-1">Rent starts from ₹119 • Watch in 4K Ultra HD &amp; Dolby 5.1</p>

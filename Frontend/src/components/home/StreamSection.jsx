@@ -60,7 +60,7 @@ function StreamCard({ item, onClick }) {
             loading="lazy"
             className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-500"
           />
-          <div className="absolute top-3 left-3 bg-[#F84464] text-white text-[10px] font-black px-2.5 py-0.5 rounded-full shadow-lg uppercase tracking-wider z-10">
+          <div className="absolute top-3 left-3 bg-[#F84464] text-white text-[10px] sm:text-[11px] font-bold px-2.5 py-0.5 rounded-full shadow-lg uppercase tracking-wider z-10">
             {item.badge}
           </div>
 
@@ -79,18 +79,18 @@ function StreamCard({ item, onClick }) {
 
         <div className="p-5 flex-1 flex flex-col justify-between" style={{ transform: 'translateZ(15px)' }}>
           <div>
-            <h3 className="text-base font-bold text-white hover:text-[#F84464] transition-colors truncate tracking-tight">
+            <h3 className="text-[15px] sm:text-[17px] font-bold text-white hover:text-[#F84464] transition-colors truncate tracking-tight">
               {item.title}
             </h3>
-            <p className="text-xs text-gray-400 mt-1.5 line-clamp-2 leading-relaxed">
+            <p className="text-xs sm:text-[13px] text-gray-400 mt-1.5 line-clamp-2 leading-relaxed font-normal">
               {item.description}
             </p>
           </div>
-          <div className="mt-5 pt-4 border-t border-white/10 flex items-center justify-between text-xs">
+          <div className="mt-5 pt-4 border-t border-white/10 flex items-center justify-between text-xs sm:text-[13px]">
             <span className="text-gray-400 font-medium bg-white/5 px-2.5 py-0.5 rounded-md border border-white/5">
               {item.language}
             </span>
-            <span className="text-xs font-black text-white bg-gradient-to-r from-[#F84464] to-[#E03A58] px-4 py-1.5 rounded-xl transition-all shadow-[0_4px_14px_rgba(248,68,100,0.4)]">
+            <span className="text-xs sm:text-sm font-bold text-white bg-gradient-to-r from-[#F84464] to-[#E03A58] px-4 py-1.5 rounded-xl transition-all shadow-[0_4px_14px_rgba(248,68,100,0.4)]">
               Rent / Buy
             </span>
           </div>
@@ -111,7 +111,7 @@ export default function StreamSection({ premieres = [] }) {
 
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 relative z-10">
         
-        {/* Stream Header */}
+        {/* Stream Header (24–28px Desktop / 20–24px Mobile, Weight 700) */}
         <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4 mb-10">
           <div className="flex items-center gap-3.5">
             <div className="w-12 h-12 rounded-2xl bg-gradient-to-tr from-[#F84464] to-[#ff6b85] flex items-center justify-center text-white shadow-[0_6px_20px_rgba(248,68,100,0.45)] shrink-0">
@@ -119,12 +119,12 @@ export default function StreamSection({ premieres = [] }) {
             </div>
             <div>
               <div className="flex items-center gap-2.5">
-                <span className="text-xl sm:text-2xl font-black tracking-tight text-white">Premieres</span>
-                <span className="inline-flex items-center gap-1 bg-amber-400/20 text-amber-300 border border-amber-400/30 text-[10px] font-black px-2.5 py-0.5 rounded-full uppercase tracking-wider">
+                <span className="text-xl sm:text-2xl lg:text-[26px] font-bold tracking-tight text-white">Premieres</span>
+                <span className="inline-flex items-center gap-1 bg-amber-400/20 text-amber-300 border border-amber-400/30 text-[10px] sm:text-[11px] font-bold px-2.5 py-0.5 rounded-full uppercase tracking-wider">
                   <Crown className="w-3 h-3" /> STREAM EXCLUSIVE
                 </span>
               </div>
-              <p className="text-xs text-gray-300 mt-0.5 font-medium">
+              <p className="text-xs sm:text-[13px] text-gray-300 mt-0.5 font-normal">
                 Brand new cinematic releases delivered straight to your screen every Friday
               </p>
             </div>

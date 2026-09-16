@@ -27,11 +27,11 @@ export default function MovieSection({ movies = [], onMovieClick }) {
     <section className="py-10 bg-[#0b0c14] text-white select-none">
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
         
-        {/* Section Header */}
+        {/* Section Header (24–28px Desktop / 20–24px Mobile, Weight 700) */}
         <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-3 mb-6">
           <div className="flex items-center gap-2.5">
             <div className="w-1.5 h-6 bg-[#F84464] rounded-full shadow-[0_0_10px_rgba(248,68,100,0.8)]" />
-            <h2 className="text-xl sm:text-2xl font-black text-white tracking-tight flex items-center gap-2">
+            <h2 className="text-xl sm:text-2xl lg:text-[26px] font-bold text-white tracking-tight flex items-center gap-2">
               <span>Recommended Movies</span>
               <Sparkles className="w-4 h-4 text-[#F84464]" />
             </h2>
@@ -49,7 +49,7 @@ export default function MovieSection({ movies = [], onMovieClick }) {
           </button>
         </div>
 
-        {/* Filter Pills (Dark Glassmorphic Style) */}
+        {/* Filter Pills (12–13px, Weight 500) */}
         <div className="flex items-center gap-2 overflow-x-auto no-scrollbar pb-3 mb-5">
           {filterPills.map((pill) => {
             const isSelected = selectedFilter === pill;
@@ -60,9 +60,9 @@ export default function MovieSection({ movies = [], onMovieClick }) {
                   playPop();
                   setSelectedFilter(pill);
                 }}
-                className={`px-4 py-1.5 rounded-full text-xs font-bold shrink-0 transition-all cursor-pointer ${
+                className={`px-4 py-1.5 rounded-full text-xs sm:text-[13px] font-medium shrink-0 transition-all cursor-pointer ${
                   isSelected
-                    ? 'bg-gradient-to-r from-[#F84464] to-rose-600 text-white shadow-md shadow-rose-900/40 border border-transparent active:scale-95'
+                    ? 'bg-gradient-to-r from-[#F84464] to-rose-600 text-white shadow-md shadow-rose-900/40 border border-transparent active:scale-95 font-semibold'
                     : 'bg-slate-900/90 text-slate-300 hover:text-white hover:bg-slate-800 border border-slate-800 active:scale-95'
                 }`}
               >

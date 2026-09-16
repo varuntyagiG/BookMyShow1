@@ -220,7 +220,7 @@ export default function PaymentGatewayModal({
             </div>
             <div>
               <div className="flex items-center gap-2">
-                <h2 className="text-sm sm:text-base font-black tracking-tight text-white flex items-center gap-1.5">
+                <h2 className="text-sm sm:text-base font-bold tracking-tight text-white flex items-center gap-1.5">
                   <span>BookMyShow</span>
                   <span className="text-[#F84464] font-medium text-xs">Payment Gateway</span>
                 </h2>
@@ -271,7 +271,7 @@ export default function PaymentGatewayModal({
           </div>
           <div className="flex items-center gap-2">
             <span className="text-slate-400 text-xs">Total Payable:</span>
-            <span className="text-base font-black text-white font-mono bg-gradient-to-r from-emerald-400 to-teal-300 bg-clip-text text-transparent">
+            <span className="text-base font-bold text-white font-mono bg-gradient-to-r from-emerald-400 to-teal-300 bg-clip-text text-transparent">
               ₹{Number(amount).toLocaleString('en-IN')}
             </span>
           </div>
@@ -364,7 +364,7 @@ export default function PaymentGatewayModal({
                           level="H"
                           includeMargin={false}
                         />
-                        <div className="flex items-center gap-1.5 mt-2 text-[10px] font-black tracking-widest text-slate-900 uppercase">
+                        <div className="flex items-center gap-1.5 mt-2 text-[10px] font-bold tracking-widest text-slate-900 uppercase">
                           <span>PhonePe</span>
                           <span>•</span>
                           <span>GPay</span>
@@ -411,7 +411,7 @@ export default function PaymentGatewayModal({
                           <button
                             type="button"
                             onClick={handleProcessUPI}
-                            className="flex-1 py-2.5 px-4 bg-gradient-to-r from-[#F84464] hover:from-rose-500 to-rose-600 text-white rounded-xl text-xs font-black shadow-lg shadow-rose-900/30 active:scale-98 transition-all flex items-center justify-center gap-2 cursor-pointer"
+                            className="flex-1 py-2.5 px-4 bg-gradient-to-r from-[#F84464] hover:from-rose-500 to-rose-600 text-white rounded-xl text-xs font-bold shadow-lg shadow-rose-900/30 active:scale-98 transition-all flex items-center justify-center gap-2 cursor-pointer"
                           >
                             <CheckCircle2 className="w-4 h-4" />
                             <span>Simulate Instant Scan &amp; Pay (₹{amount})</span>
@@ -478,7 +478,7 @@ export default function PaymentGatewayModal({
                       <button
                         type="button"
                         onClick={handleProcessUPI}
-                        className="w-full py-3 bg-[#F84464] hover:bg-rose-600 text-white rounded-xl text-xs sm:text-sm font-black shadow-lg shadow-rose-900/30 transition-all active:scale-98 flex items-center justify-center gap-2 cursor-pointer"
+                        className="w-full py-3 bg-[#F84464] hover:bg-rose-600 text-white rounded-xl text-xs sm:text-sm font-bold shadow-lg shadow-rose-900/30 transition-all active:scale-98 flex items-center justify-center gap-2 cursor-pointer"
                       >
                         <span>Send Payment Request to UPI App</span>
                         <ArrowRight className="w-4 h-4" />
@@ -499,7 +499,7 @@ export default function PaymentGatewayModal({
                         <span className="w-6 h-4 bg-amber-400/30 border border-amber-300/40 rounded-sm inline-block" />
                         <span>CHIP</span>
                       </div>
-                      <span className="text-xs font-black tracking-widest text-slate-300 uppercase">
+                      <span className="text-xs font-bold tracking-widest text-slate-300 uppercase">
                         {cardNumber.startsWith('4') ? 'VISA' : cardNumber.startsWith('5') ? 'MASTERCARD' : 'RUPAY'}
                       </span>
                     </div>
@@ -610,7 +610,7 @@ export default function PaymentGatewayModal({
 
                   <button
                     type="submit"
-                    className="w-full py-3 bg-[#F84464] hover:bg-rose-600 text-white rounded-xl text-xs sm:text-sm font-black shadow-lg shadow-rose-900/30 transition-all active:scale-98 flex items-center justify-center gap-2 cursor-pointer"
+                    className="w-full py-3 bg-[#F84464] hover:bg-rose-600 text-white rounded-xl text-xs sm:text-sm font-bold shadow-lg shadow-rose-900/30 transition-all active:scale-98 flex items-center justify-center gap-2 cursor-pointer"
                   >
                     <span>Proceed to 3D Secure OTP (₹{amount})</span>
                     <ArrowRight className="w-4 h-4" />
@@ -638,7 +638,7 @@ export default function PaymentGatewayModal({
                         }`}
                       >
                         <div className="flex items-center justify-between mb-2">
-                          <span className="font-mono text-xs font-black text-white bg-slate-800 px-1.5 py-0.5 rounded">
+                          <span className="font-mono text-xs font-bold text-white bg-slate-800 px-1.5 py-0.5 rounded">
                             {bank.code}
                           </span>
                           {bank.badge && (
@@ -664,7 +664,7 @@ export default function PaymentGatewayModal({
                   <button
                     type="button"
                     onClick={handleProcessNetBanking}
-                    className="w-full py-3 bg-[#F84464] hover:bg-rose-600 text-white rounded-xl text-xs sm:text-sm font-black shadow-lg shadow-rose-900/30 transition-all active:scale-98 flex items-center justify-center gap-2 cursor-pointer"
+                    className="w-full py-3 bg-[#F84464] hover:bg-rose-600 text-white rounded-xl text-xs sm:text-sm font-bold shadow-lg shadow-rose-900/30 transition-all active:scale-98 flex items-center justify-center gap-2 cursor-pointer"
                   >
                     <span>Proceed to {POPULAR_BANKS.find(b => b.id === selectedBank)?.name}</span>
                     <ArrowRight className="w-4 h-4" />
@@ -724,7 +724,7 @@ export default function PaymentGatewayModal({
                 <button
                   type="button"
                   onClick={handleVerifyOtp}
-                  className="w-2/3 py-2.5 bg-[#F84464] hover:bg-rose-600 text-white rounded-xl text-xs font-black transition-all shadow-md active:scale-98 cursor-pointer"
+                  className="w-2/3 py-2.5 bg-[#F84464] hover:bg-rose-600 text-white rounded-xl text-xs font-bold transition-all shadow-md active:scale-98 cursor-pointer"
                 >
                   Authorize &amp; Confirm ₹{amount}
                 </button>
@@ -740,7 +740,7 @@ export default function PaymentGatewayModal({
                 <Lock className="w-6 h-6 text-[#F84464]" />
               </div>
               <div>
-                <h3 className="text-base font-black text-white">
+                <h3 className="text-base font-bold text-white">
                   Securing Transaction...
                 </h3>
                 <p className="text-xs text-slate-400 mt-1 max-w-sm">
@@ -759,7 +759,7 @@ export default function PaymentGatewayModal({
               <div className="w-16 h-16 rounded-full bg-emerald-500/20 border-2 border-emerald-500 text-emerald-400 flex items-center justify-center shadow-xl shadow-emerald-500/20 animate-bounce">
                 <CheckCircle2 className="w-10 h-10" />
               </div>
-              <h3 className="text-lg font-black text-white">
+              <h3 className="text-lg font-bold text-white">
                 Payment Authorized Successfully!
               </h3>
               <p className="text-xs text-emerald-400 font-semibold">

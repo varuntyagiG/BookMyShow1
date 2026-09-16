@@ -151,7 +151,7 @@ export default function CategoryPage() {
               <span>{currentMeta.icon}</span>
               <span>Explore {path}</span>
             </div>
-            <h1 className="text-2xl sm:text-3xl font-black text-gray-900 tracking-tight my-0">
+            <h1 className="text-2xl sm:text-3xl lg:text-[36px] font-extrabold text-gray-900 tracking-tight my-0">
               {currentMeta.title} in <span className="text-[#F84464]">{selectedCity}</span>
             </h1>
             <p className="text-xs sm:text-sm text-gray-500 mt-1">{currentMeta.desc}</p>
@@ -231,7 +231,7 @@ export default function CategoryPage() {
                   <div className="mt-5 pt-3.5 border-t border-gray-100 flex items-center justify-between">
                     <div>
                       <span className="text-[10px] text-gray-400 block uppercase font-medium">Starting from</span>
-                      <span className="text-xs sm:text-sm font-black text-gray-900">{item.price}</span>
+                      <span className="text-xs sm:text-sm font-bold text-gray-900">{item.price}</span>
                     </div>
                     <button
                       onClick={(e) => {
@@ -279,7 +279,7 @@ export default function CategoryPage() {
                 <span className="text-[10px] font-bold text-[#F84464] uppercase tracking-wider block mb-1">
                   BookPass Checkout
                 </span>
-                <h3 className="text-lg font-black text-gray-900 mb-1 leading-tight">{selectedItem.title}</h3>
+                <h3 className="text-lg font-bold text-gray-900 mb-1 leading-tight">{selectedItem.title}</h3>
                 <p className="text-xs text-gray-500 mb-4">{selectedItem.venue} • {selectedItem.date}</p>
 
                 {/* Tier Selection */}
@@ -355,9 +355,9 @@ export default function CategoryPage() {
                     <span>Delivery:</span>
                     <span className="font-semibold text-gray-900">Instant M-Pass (SMS/Email)</span>
                   </div>
-                  <div className="flex justify-between pt-2 border-t border-gray-200 font-black text-sm">
+                  <div className="flex justify-between pt-2 border-t border-gray-200 font-bold text-sm">
                     <span className="text-gray-900">Total Payable:</span>
-                    <span className="text-[#F84464] font-black">₹{totalAmount}</span>
+                    <span className="text-[#F84464] font-bold">₹{totalAmount}</span>
                   </div>
                 </div>
 
@@ -390,7 +390,7 @@ export default function CategoryPage() {
                 <div className="w-14 h-14 bg-green-100 rounded-full flex items-center justify-center mx-auto mb-3 shadow-inner">
                   <CheckCircle className="w-8 h-8 text-green-600 animate-bounce" />
                 </div>
-                <h3 className="text-xl font-black text-gray-900 mb-1">Pass Confirmed!</h3>
+                <h3 className="text-xl font-bold text-gray-900 mb-1">Pass Confirmed!</h3>
                 <p className="text-xs text-gray-500 mb-4">
                   {passCount} {passTier} Pass(es) successfully booked for <strong>{selectedItem.title}</strong>
                 </p>
@@ -398,7 +398,7 @@ export default function CategoryPage() {
                 {/* Simulated Digital Pass Card */}
                 <div className="bg-gradient-to-r from-gray-900 to-gray-800 text-white p-4 rounded-xl text-left text-xs space-y-2 mb-5 shadow-md">
                   <div className="flex justify-between items-center border-b border-gray-700/80 pb-2">
-                    <span className="font-mono text-[#F84464] font-black tracking-wider text-sm">{bookingId}</span>
+                    <span className="font-mono text-[#F84464] font-bold tracking-wider text-sm">{bookingId}</span>
                     <span className="bg-[#F84464]/30 text-red-300 text-[10px] font-bold px-2 py-0.5 rounded-full">
                       {passTier.toUpperCase()} PASS
                     </span>

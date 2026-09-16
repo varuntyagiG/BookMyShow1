@@ -41,7 +41,7 @@ export default function ConfirmModal({
         </div>
 
         <div className="space-y-1.5">
-          <h3 className={`text-base font-black tracking-tight ${isDark ? 'text-white' : 'text-[#222432]'}`}>
+          <h3 className={`text-base font-bold tracking-tight ${isDark ? 'text-white' : 'text-[#222432]'}`}>
             {title}
           </h3>
           <p className={`text-xs max-w-sm mx-auto leading-relaxed ${isDark ? 'text-slate-400' : 'text-gray-500'}`}>

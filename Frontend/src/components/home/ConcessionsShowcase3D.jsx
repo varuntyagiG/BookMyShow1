@@ -79,12 +79,12 @@ export default function ConcessionsShowcase3D() {
 
         {/* Middle Content */}
         <div className="flex-1 text-center lg:text-left z-10" style={{ transform: isHovered ? 'translateZ(25px)' : 'translateZ(0px)', transition: 'transform 0.3s ease-out' }}>
-          <div className="inline-flex items-center gap-1.5 px-3 py-1 rounded-full bg-amber-500/20 border border-amber-500/40 text-amber-300 text-[10px] font-black uppercase tracking-wider mb-2 shadow-xs">
+          <div className="inline-flex items-center gap-1.5 px-3 py-1 rounded-full bg-amber-500/20 border border-amber-500/40 text-amber-300 text-[10px] font-bold uppercase tracking-wider mb-2 shadow-xs">
             <UtensilsCrossed className="w-3 h-3" />
             <span>Multiplex Gourmet Dining</span>
           </div>
 
-          <h3 className="text-xl sm:text-2xl lg:text-3xl font-black text-white tracking-tight leading-tight">
+          <h3 className="text-xl sm:text-2xl lg:text-3xl font-bold text-white tracking-tight leading-tight">
             Grab a Bite • <span className="bg-gradient-to-r from-amber-300 via-rose-200 to-[#F84464] bg-clip-text text-transparent">Pre-Order Concessions</span>
           </h3>
 
@@ -129,7 +129,7 @@ export default function ConcessionsShowcase3D() {
               e.stopPropagation();
               handleAction();
             }}
-            className="bg-gradient-to-r from-[#F84464] via-[#ff4769] to-[#E03A58] hover:from-[#ff5576] hover:to-[#eb4464] text-white text-xs sm:text-sm font-black py-3.5 px-6 rounded-2xl transition-all shadow-[0_8px_25px_rgba(248,68,100,0.5)] active:scale-95 flex items-center gap-2 cursor-pointer border border-white/20"
+            className="bg-gradient-to-r from-[#F84464] via-[#ff4769] to-[#E03A58] hover:from-[#ff5576] hover:to-[#eb4464] text-white text-xs sm:text-sm font-bold py-3.5 px-6 rounded-2xl transition-all shadow-[0_8px_25px_rgba(248,68,100,0.5)] active:scale-95 flex items-center gap-2 cursor-pointer border border-white/20"
           >
             <span>Order with Tickets</span>
             <ChevronRight className="w-4 h-4" />

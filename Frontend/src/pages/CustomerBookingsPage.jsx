@@ -143,7 +143,7 @@ export default function CustomerBookingsPage() {
           <div className="w-16 h-16 bg-red-50 text-[#F84464] rounded-2xl flex items-center justify-center mx-auto mb-4">
             <Ticket className="w-8 h-8" />
           </div>
-          <h2 className="text-xl font-black text-gray-900 mb-2">View Your Bookings</h2>
+          <h2 className="text-xl font-bold text-gray-900 mb-2">View Your Bookings</h2>
           <p className="text-xs text-gray-500 mb-6 leading-relaxed">
             Please sign in to access your digital tickets, manage your reservations, and view pass receipts.
           </p>
@@ -169,7 +169,7 @@ export default function CustomerBookingsPage() {
                 <Ticket className="w-3 h-3" />
                 <span>Ticket Ledger &amp; M-Pass</span>
               </div>
-              <h1 className="text-2xl sm:text-3xl font-black text-white tracking-tight my-0">
+              <h1 className="text-2xl sm:text-3xl lg:text-[36px] font-extrabold text-white tracking-tight my-0">
                 My Bookings &amp; Tickets
               </h1>
               <p className="text-xs text-gray-300 mt-1">
@@ -255,7 +255,7 @@ export default function CustomerBookingsPage() {
             <div className="w-14 h-14 bg-red-50 text-[#F84464] rounded-2xl flex items-center justify-center mx-auto mb-3">
               <Ticket className="w-7 h-7" />
             </div>
-            <h3 className="text-base font-black text-gray-900 mb-1">No Bookings Found</h3>
+            <h3 className="text-base font-bold text-gray-900 mb-1">No Bookings Found</h3>
             <p className="text-xs text-gray-500 mb-6 leading-relaxed">
               You haven't reserved any showtimes or passes yet. Discover the latest blockbuster movies and events near you!
             </p>
@@ -291,7 +291,7 @@ export default function CustomerBookingsPage() {
                   )}
                   <div className="min-w-0">
                     <div className="flex items-center gap-1.5 mb-1.5 flex-wrap">
-                      <span className="inline-flex items-center gap-1 px-2.5 py-0.5 rounded-full bg-[#F84464]/20 border border-[#F84464]/40 text-[#F84464] text-[9px] font-black uppercase tracking-widest">
+                      <span className="inline-flex items-center gap-1 px-2.5 py-0.5 rounded-full bg-[#F84464]/20 border border-[#F84464]/40 text-[#F84464] text-[9px] font-bold uppercase tracking-widest">
                         <Sparkles className="w-2.5 h-2.5" />
                         <span>Official M-Pass</span>
                       </span>
@@ -316,7 +316,7 @@ export default function CustomerBookingsPage() {
                         )}
                       </span>
                     </div>
-                    <h3 className="text-base sm:text-lg font-black text-white leading-tight truncate">
+                    <h3 className="text-base sm:text-lg font-bold text-white leading-tight truncate">
                       {activeTicketModal.movieTitle || activeTicketModal.movie?.title || 'Movie Experience'}
                     </h3>
                     <div className="flex items-center gap-1.5 text-xs text-gray-300 mt-1 font-medium">
@@ -362,7 +362,7 @@ export default function CustomerBookingsPage() {
                     includeMargin={false}
                   />
                 </div>
-                <div className="font-mono text-xs font-black text-slate-800 tracking-widest">
+                <div className="font-mono text-xs font-bold text-slate-800 tracking-widest">
                   {activeTicketModal.bookingId || `BMT-${(activeTicketModal._id || '').slice(-6).toUpperCase()}`}
                 </div>
                 {activeTicketModal.paymentMethod && (
@@ -431,13 +431,13 @@ export default function CustomerBookingsPage() {
                   <span className="text-[9px] text-slate-400 block uppercase font-bold">
                     Reserved Seats ({Array.isArray(activeTicketModal.seats) ? activeTicketModal.seats.length : 1})
                   </span>
-                  <span className="font-mono font-black text-[#F84464] text-xs sm:text-sm">
+                  <span className="font-mono font-bold text-[#F84464] text-xs sm:text-sm">
                     {Array.isArray(activeTicketModal.seats) ? activeTicketModal.seats.join(', ') : (activeTicketModal.seats || 'Assigned')}
                   </span>
                 </div>
                 <div>
                   <span className="text-[9px] text-slate-400 block uppercase font-bold">Total Paid</span>
-                  <span className="font-black text-slate-900 text-xs sm:text-sm">
+                  <span className="font-bold text-slate-900 text-xs sm:text-sm">
                     ₹{Number(activeTicketModal.totalPrice || activeTicketModal.amount || 0).toLocaleString('en-IN')}
                   </span>
                 </div>
@@ -450,7 +450,7 @@ export default function CustomerBookingsPage() {
                     <div className="flex items-center gap-2">
                       <span className="text-xl">🍿</span>
                       <div>
-                        <span className="text-xs font-black text-amber-950 block">
+                        <span className="text-xs font-bold text-amber-950 block">
                           Cinema Concessions Voucher
                         </span>
                         <span className="text-[10px] text-amber-800 font-semibold">
@@ -460,7 +460,7 @@ export default function CustomerBookingsPage() {
                         </span>
                       </div>
                     </div>
-                    <span className="text-xs font-mono font-black text-amber-900 bg-amber-200/60 px-2 py-0.5 rounded-md">
+                    <span className="text-xs font-mono font-bold text-amber-900 bg-amber-200/60 px-2 py-0.5 rounded-md">
                       PAID ₹{activeTicketModal.snacksFee || 0}
                     </span>
                   </div>
@@ -534,7 +534,7 @@ export default function CustomerBookingsPage() {
                   type="button"
                   onClick={() => handleDownloadTicketPdf(activeTicketModal)}
                   disabled={pdfDownloadingId === (activeTicketModal.bookingId || activeTicketModal._id)}
-                  className="w-full py-2.5 px-4 bg-gradient-to-r from-[#222538] via-[#2a2d42] to-[#1c1e2d] hover:from-[#2a2d42] hover:to-[#222538] text-white text-xs font-black rounded-xl shadow-md border border-slate-700/80 transition-all active:scale-[0.98] cursor-pointer flex items-center justify-center gap-2 group"
+                  className="w-full py-2.5 px-4 bg-gradient-to-r from-[#222538] via-[#2a2d42] to-[#1c1e2d] hover:from-[#2a2d42] hover:to-[#222538] text-white text-xs font-bold rounded-xl shadow-md border border-slate-700/80 transition-all active:scale-[0.98] cursor-pointer flex items-center justify-center gap-2 group"
                 >
                   {pdfDownloadingId === (activeTicketModal.bookingId || activeTicketModal._id) ? (
                     <>
@@ -559,7 +559,7 @@ export default function CustomerBookingsPage() {
                   onClick={() => setIsScannerBright(!isScannerBright)}
                   className={`py-3 px-3 rounded-xl text-xs font-bold flex items-center justify-center gap-1.5 transition-colors cursor-pointer border shrink-0 ${
                     isScannerBright
-                      ? 'bg-amber-400 text-black border-amber-300 font-black shadow-md'
+                      ? 'bg-amber-400 text-black border-amber-300 font-bold shadow-md'
                       : 'bg-slate-100 hover:bg-slate-200 text-slate-700 border-slate-200'
                   }`}
                   title="Maximize screen brightness for optical scanner turnstile"
@@ -578,7 +578,7 @@ export default function CustomerBookingsPage() {
                 <button
                   type="button"
                   onClick={() => setActiveTicketModal(null)}
-                  className="flex-1 py-3 bg-[#F84464] hover:bg-[#E03A58] text-white text-xs font-black rounded-xl transition-all shadow-sm shadow-red-500/25 cursor-pointer"
+                  className="flex-1 py-3 bg-[#F84464] hover:bg-[#E03A58] text-white text-xs font-bold rounded-xl transition-all shadow-sm shadow-red-500/25 cursor-pointer"
                 >
                   Done
                 </button>
@@ -595,7 +595,7 @@ export default function CustomerBookingsPage() {
             <div className="w-12 h-12 rounded-full bg-red-50 text-red-600 flex items-center justify-center mx-auto mb-3">
               <AlertCircle className="w-6 h-6" />
             </div>
-            <h3 className="text-base font-black text-gray-900 text-center mb-1">
+            <h3 className="text-base font-bold text-gray-900 text-center mb-1">
               Cancel This Booking?
             </h3>
             <p className="text-xs text-gray-500 text-center mb-4 leading-relaxed">

@@ -258,14 +258,14 @@ export default function FnbConcessionsModal({
             </div>
             <div>
               <div className="flex items-center gap-2">
-                <span className="px-2 py-0.5 rounded-full bg-amber-400/20 text-amber-300 text-[10px] font-black tracking-widest uppercase border border-amber-400/30">
+                <span className="px-2 py-0.5 rounded-full bg-amber-400/20 text-amber-300 text-[10px] font-bold tracking-widest uppercase border border-amber-400/30">
                   Cinema Concessions
                 </span>
                 <span className="text-[10px] text-gray-400 font-medium hidden sm:inline">
                   Skip the interval queue
                 </span>
               </div>
-              <h2 className="text-lg sm:text-xl font-black text-white leading-tight">
+              <h2 className="text-lg sm:text-xl font-bold text-white leading-tight">
                 Grab a Bite &amp; Save Time
               </h2>
             </div>
@@ -412,7 +412,7 @@ export default function FnbConcessionsModal({
                       </span>
 
                       {item.badge && (
-                        <span className="px-1.5 py-0.2 rounded-full bg-amber-400/20 text-amber-300 text-[8px] font-black uppercase tracking-wider border border-amber-400/30">
+                        <span className="px-1.5 py-0.2 rounded-full bg-amber-400/20 text-amber-300 text-[8px] font-bold uppercase tracking-wider border border-amber-400/30">
                           {item.badge}
                         </span>
                       )}
@@ -423,7 +423,7 @@ export default function FnbConcessionsModal({
                     </p>
 
                     <div className="flex items-center gap-2 mt-1">
-                      <span className="text-xs sm:text-sm font-black text-amber-400">
+                      <span className="text-xs sm:text-sm font-bold text-amber-400">
                         ₹{item.price}
                       </span>
                       <span className="text-[10px] text-gray-500 font-medium">
@@ -454,7 +454,7 @@ export default function FnbConcessionsModal({
                       >
                         <Minus className="w-3 h-3 text-white" />
                       </button>
-                      <span className="text-xs font-black px-1 min-w-[16px] text-center">
+                      <span className="text-xs font-bold px-1 min-w-[16px] text-center">
                         {qty}
                       </span>
                       <button
@@ -482,7 +482,7 @@ export default function FnbConcessionsModal({
                 <span className="text-[10px] text-gray-400 block uppercase font-bold">
                   {totalItemsCount} {totalItemsCount === 1 ? 'item' : 'items'} in tray
                 </span>
-                <span className="text-base font-black text-white">
+                <span className="text-base font-bold text-white">
                   ₹{totalSnacksPrice}
                 </span>
               </div>
@@ -506,7 +506,7 @@ export default function FnbConcessionsModal({
             <button
               type="button"
               onClick={handleConfirm}
-              className="w-1/2 sm:w-auto px-5 py-2.5 rounded-xl bg-gradient-to-r from-[#F84464] to-rose-600 hover:from-[#E03A58] hover:to-rose-700 text-white text-xs sm:text-sm font-black shadow-lg shadow-[#F84464]/30 transition-all active:scale-[0.98] cursor-pointer flex items-center justify-center gap-1.5"
+              className="w-1/2 sm:w-auto px-5 py-2.5 rounded-xl bg-gradient-to-r from-[#F84464] to-rose-600 hover:from-[#E03A58] hover:to-rose-700 text-white text-xs sm:text-sm font-bold shadow-lg shadow-[#F84464]/30 transition-all active:scale-[0.98] cursor-pointer flex items-center justify-center gap-1.5"
             >
               <span>{totalItemsCount > 0 ? `Proceed with Snacks (₹${totalSnacksPrice})` : 'Continue to Payment'}</span>
               <ArrowRight className="w-4 h-4" />

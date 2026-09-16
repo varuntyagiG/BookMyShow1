@@ -88,7 +88,7 @@ export default function MetricCard({
 
       {/* Main Value & Trend Badge */}
       <div className="flex items-baseline gap-2.5 mb-2 flex-wrap relative z-10">
-        <span className="text-2xl sm:text-3xl font-black tracking-tight font-sans">
+        <span className="text-2xl sm:text-3xl font-extrabold tracking-tight font-sans">
           {value}
         </span>
 

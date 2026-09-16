@@ -135,7 +135,7 @@ export default function BoxOfficeTrendChart({
           <span className="text-[10px] uppercase font-bold text-slate-400 block">
             {metricView === 'revenue' ? 'Focus Day Revenue' : 'Focus Day Admissions'}
           </span>
-          <span className="text-sm font-black text-slate-900">
+          <span className="text-sm font-bold text-slate-900">
             {metricView === 'revenue'
               ? `₹${(activePoint?.revenue || 0).toLocaleString('en-IN')}`
               : `${activePoint?.tickets || 0} Tickets`}

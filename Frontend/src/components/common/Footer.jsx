@@ -32,7 +32,7 @@ export default function Footer() {
               </div>
               <h5
                 style={{ transform: 'translateZ(18px)' }}
-                className="text-xs font-black text-white uppercase tracking-wider group-hover:text-[#F84464] transition-colors"
+                className="text-xs font-bold text-white uppercase tracking-wider group-hover:text-[#F84464] transition-colors"
               >
                 24/7 Customer Care
               </h5>
@@ -59,7 +59,7 @@ export default function Footer() {
               </div>
               <h5
                 style={{ transform: 'translateZ(18px)' }}
-                className="text-xs font-black text-white uppercase tracking-wider group-hover:text-[#F84464] transition-colors"
+                className="text-xs font-bold text-white uppercase tracking-wider group-hover:text-[#F84464] transition-colors"
               >
                 Resend Booking Confirmation
               </h5>
@@ -86,7 +86,7 @@ export default function Footer() {
               </div>
               <h5
                 style={{ transform: 'translateZ(18px)' }}
-                className="text-xs font-black text-white uppercase tracking-wider group-hover:text-[#F84464] transition-colors"
+                className="text-xs font-bold text-white uppercase tracking-wider group-hover:text-[#F84464] transition-colors"
               >
                 Subscribe to Newsletter
               </h5>
@@ -203,7 +203,7 @@ export default function Footer() {
         {/* Brand & Copyright */}
         <div className="mt-6 pt-6 border-t border-white/[0.06] flex flex-col sm:flex-row items-center justify-between gap-4 text-[11px] text-gray-400">
           <div className="flex items-center gap-2">
-            <span className="text-xl font-black text-white tracking-tight">
+            <span className="text-xl font-extrabold text-white tracking-tight">
               book<span className="text-[#F84464]">my</span>show
             </span>
             <span className="text-gray-600">|</span>

@@ -76,14 +76,14 @@ export default function PromoBanner() {
 
           <div className="flex-1">
             <div className="flex items-center justify-center sm:justify-start gap-2 mb-1.5">
-              <span className="text-xs uppercase font-black tracking-wider text-amber-400 flex items-center gap-1">
+              <span className="text-xs uppercase font-bold tracking-wider text-amber-400 flex items-center gap-1">
                 <Sparkles className="w-3.5 h-3.5" /> Special Bank Offers
               </span>
-              <span className="bg-[#F84464] text-white text-[10px] font-black px-2.5 py-0.5 rounded-full shadow-xs">
+              <span className="bg-[#F84464] text-white text-[10px] font-bold px-2.5 py-0.5 rounded-full shadow-xs">
                 UP TO 50% OFF
               </span>
             </div>
-            <h4 className="text-base sm:text-xl font-black text-white tracking-tight leading-snug">
+            <h4 className="text-base sm:text-xl font-bold text-white tracking-tight leading-snug">
               Unlock Exclusive Movie Ticket Discounts &amp; Instant Cashback
             </h4>
             <p className="text-xs text-gray-300 mt-1.5 max-w-xl leading-relaxed">
@@ -107,7 +107,7 @@ export default function PromoBanner() {
         <button
           type="button"
           onClick={() => alert('BookMyShow Card Offers: 1. ICICI Coral/Rubyx (Buy 1 Get 1) | 2. HDFC Times Card (25% off) | 3. Axis Neo (10% off). Apply coupon at checkout!')}
-          className="shrink-0 bg-gradient-to-r from-[#F84464] to-[#E03A58] hover:from-[#ff5576] hover:to-[#eb4464] text-white text-xs font-black py-3.5 px-6 rounded-2xl transition-all shadow-[0_6px_20px_rgba(248,68,100,0.4)] hover:shadow-[0_10px_28px_rgba(248,68,100,0.55)] active:scale-95 flex items-center gap-2 cursor-pointer"
+          className="shrink-0 bg-gradient-to-r from-[#F84464] to-[#E03A58] hover:from-[#ff5576] hover:to-[#eb4464] text-white text-xs font-bold py-3.5 px-6 rounded-2xl transition-all shadow-[0_6px_20px_rgba(248,68,100,0.4)] hover:shadow-[0_10px_28px_rgba(248,68,100,0.55)] active:scale-95 flex items-center gap-2 cursor-pointer"
         >
           <span>View All Card Offers</span>
           <ArrowRight className="w-4 h-4" />

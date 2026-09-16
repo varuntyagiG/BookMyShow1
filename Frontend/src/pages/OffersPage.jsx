@@ -372,7 +372,7 @@ export default function OffersPage() {
               <span>Partner Discounts &amp; Coupons</span>
             </div>
 
-            <h1 className="text-3xl sm:text-4xl lg:text-5xl font-black text-white tracking-tight my-0 leading-tight">
+            <h1 className="text-3xl sm:text-4xl lg:text-5xl font-extrabold text-white tracking-tight my-0 leading-tight">
               Exclusive Offers &amp; Bank Discounts
             </h1>
 
@@ -478,11 +478,11 @@ export default function OffersPage() {
                       <span className="text-[10px] uppercase font-bold tracking-wider opacity-90 block">
                         {offer.bank}
                       </span>
-                      <h3 className="text-base font-black tracking-tight text-white leading-tight mt-0.5">
+                      <h3 className="text-base font-bold tracking-tight text-white leading-tight mt-0.5">
                         {offer.title}
                       </h3>
                     </div>
-                    <span className="shrink-0 bg-white/20 backdrop-blur-xs text-white border border-white/30 text-[10px] font-black px-2.5 py-1 rounded-full uppercase tracking-wider">
+                    <span className="shrink-0 bg-white/20 backdrop-blur-xs text-white border border-white/30 text-[10px] font-bold px-2.5 py-1 rounded-full uppercase tracking-wider">
                       {offer.tag}
                     </span>
                   </div>
@@ -514,7 +514,7 @@ export default function OffersPage() {
                   <div className="mt-5 pt-3.5 border-t border-gray-100 flex items-center justify-between gap-3">
                     {/* Code pill with one-click copy */}
                     <div className="flex items-center border border-dashed border-[#F84464]/60 bg-red-50/50 rounded-lg px-2.5 py-1.5">
-                      <span className="font-mono text-xs font-black text-[#F84464] tracking-wider">
+                      <span className="font-mono text-xs font-bold text-[#F84464] tracking-wider">
                         {offer.code}
                       </span>
                       <button
@@ -584,7 +584,7 @@ export default function OffersPage() {
               <span className="text-xs text-gray-500 font-bold">{activeModalOffer.bank}</span>
             </div>
 
-            <h3 className="text-lg font-black text-gray-900 leading-tight mb-2">
+            <h3 className="text-lg font-bold text-gray-900 leading-tight mb-2">
               {activeModalOffer.title}
             </h3>
 
@@ -596,7 +596,7 @@ export default function OffersPage() {
             <div className="bg-red-50/70 border border-dashed border-[#F84464]/60 rounded-xl p-4 flex items-center justify-between mb-5">
               <div>
                 <span className="text-[10px] font-bold text-gray-500 uppercase block">Coupon Code</span>
-                <span className="font-mono text-base font-black text-[#F84464] tracking-wider">
+                <span className="font-mono text-base font-bold text-[#F84464] tracking-wider">
                   {activeModalOffer.code}
                 </span>
               </div>

@@ -60,7 +60,7 @@ export default function SlideOverDrawer({
             <div>
               {title && (
                 <h3
-                  className={`text-base sm:text-lg font-black tracking-tight ${
+                  className={`text-base sm:text-lg font-bold tracking-tight ${
                     isDark ? 'text-white' : 'text-slate-900'
                   }`}
                 >

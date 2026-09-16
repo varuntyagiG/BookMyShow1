@@ -138,11 +138,11 @@ export default function SignUpPage() {
           {/* Header */}
           <div className="text-center mb-4">
             <Link to="/" className="inline-block mb-1.5">
-              <span className="text-2xl sm:text-3xl font-black tracking-tight text-gray-900">
+              <span className="text-2xl sm:text-3xl font-extrabold tracking-tight text-gray-900">
                 book<span className="text-[#F84464]">my</span>show
               </span>
             </Link>
-            <h2 className="text-lg sm:text-xl font-black text-gray-900 tracking-tight">Create a New Account</h2>
+            <h2 className="text-lg sm:text-xl font-bold text-gray-900 tracking-tight">Create a New Account</h2>
             <p className="text-xs text-gray-500 mt-0.5">
               {selectedRole === 'vendor'
                 ? 'Join India’s premier cinema ticketing & multiplex network'
@@ -152,7 +152,7 @@ export default function SignUpPage() {
 
           {/* Account Role Selector Tabs */}
           <div className="mb-3.5">
-            <label className="block text-[10px] font-black uppercase tracking-wider text-gray-500 mb-1.5">
+            <label className="block text-[10px] font-bold uppercase tracking-wider text-gray-500 mb-1.5">
               Select Account Type
             </label>
             <div className="grid grid-cols-2 gap-2">
@@ -166,7 +166,7 @@ export default function SignUpPage() {
                 }`}
               >
                 <div className="flex items-center justify-between">
-                  <div className="flex items-center gap-1.5 text-xs font-black">
+                  <div className="flex items-center gap-1.5 text-xs font-bold">
                     <User className={`w-3.5 h-3.5 ${selectedRole === 'customer' ? 'text-blue-600' : 'text-gray-400'}`} />
                     <span>Moviegoer</span>
                   </div>
@@ -187,7 +187,7 @@ export default function SignUpPage() {
                 }`}
               >
                 <div className="flex items-center justify-between">
-                  <div className="flex items-center gap-1.5 text-xs font-black">
+                  <div className="flex items-center gap-1.5 text-xs font-bold">
                     <Building2 className={`w-3.5 h-3.5 ${selectedRole === 'vendor' ? 'text-[#F84464]' : 'text-gray-400'}`} />
                     <span>Cinema Partner</span>
                   </div>
@@ -400,7 +400,7 @@ export default function SignUpPage() {
             <button
               type="submit"
               disabled={loading}
-              className="w-full py-2.5 sm:py-3 bg-[#F84464] hover:bg-[#e03a58] text-white text-xs sm:text-sm font-black rounded-xl shadow-md shadow-red-500/20 transition-all cursor-pointer mt-4 disabled:opacity-70 active:scale-[0.99]"
+              className="w-full py-2.5 sm:py-3 bg-[#F84464] hover:bg-[#e03a58] text-white text-xs sm:text-sm font-bold rounded-xl shadow-md shadow-red-500/20 transition-all cursor-pointer mt-4 disabled:opacity-70 active:scale-[0.99]"
             >
               {loading
                 ? 'Please wait...'

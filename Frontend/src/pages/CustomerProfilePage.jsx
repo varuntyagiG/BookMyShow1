@@ -97,7 +97,7 @@ export default function CustomerProfilePage() {
           <div className="w-16 h-16 bg-red-50 text-[#F84464] rounded-2xl flex items-center justify-center mx-auto mb-4">
             <User className="w-8 h-8" />
           </div>
-          <h2 className="text-xl font-black text-gray-900 mb-2">My Profile</h2>
+          <h2 className="text-xl font-bold text-gray-900 mb-2">My Profile</h2>
           <p className="text-xs text-gray-500 mb-6 leading-relaxed">
             Please sign in to manage your BookMyTrip account details and preferences.
           </p>
@@ -123,12 +123,12 @@ export default function CustomerProfilePage() {
         <div className="pointer-events-none absolute -top-20 -right-20 w-72 h-72 bg-[#F84464]/15 rounded-full blur-3xl" />
         <div className="max-w-4xl mx-auto px-4 sm:px-6 lg:px-8 relative z-10">
           <div className="flex flex-col sm:flex-row items-center sm:items-start gap-5 text-center sm:text-left">
-            <div className="w-20 h-20 rounded-2xl bg-gradient-to-tr from-[#F84464] to-rose-400 text-white flex items-center justify-center text-3xl font-black shadow-lg shadow-red-500/25 shrink-0">
+            <div className="w-20 h-20 rounded-2xl bg-gradient-to-tr from-[#F84464] to-rose-400 text-white flex items-center justify-center text-3xl font-extrabold shadow-lg shadow-red-500/25 shrink-0">
               {user?.name?.charAt(0).toUpperCase() || 'U'}
             </div>
             <div className="flex-1">
               <div className="flex flex-wrap items-center justify-center sm:justify-start gap-2 mb-1.5">
-                <h1 className="text-2xl sm:text-3xl font-black text-white tracking-tight my-0">
+                <h1 className="text-2xl sm:text-3xl lg:text-[36px] font-extrabold text-white tracking-tight my-0">
                   {user?.name || 'Customer Account'}
                 </h1>
                 <span className="inline-flex items-center gap-1 bg-emerald-500/20 text-emerald-400 border border-emerald-500/30 text-[10px] font-extrabold px-2.5 py-0.5 rounded-full uppercase">
@@ -179,7 +179,7 @@ export default function CustomerProfilePage() {
             </div>
             <div>
               <span className="text-[10px] uppercase font-bold text-gray-400 block">Total Bookings</span>
-              <span className="text-xl font-black text-[#222432]">{bookingsCount}</span>
+              <span className="text-xl font-bold text-[#222432]">{bookingsCount}</span>
             </div>
           </div>
 
@@ -189,7 +189,7 @@ export default function CustomerProfilePage() {
             </div>
             <div>
               <span className="text-[10px] uppercase font-bold text-gray-400 block">Loyalty Tier</span>
-              <span className="text-sm font-black text-[#222432]">Superstar Silver</span>
+              <span className="text-sm font-bold text-[#222432]">Superstar Silver</span>
             </div>
           </div>
 
@@ -199,7 +199,7 @@ export default function CustomerProfilePage() {
             </div>
             <div>
               <span className="text-[10px] uppercase font-bold text-gray-400 block">Available Offers</span>
-              <span className="text-sm font-black text-[#222432]">Active Discounts</span>
+              <span className="text-sm font-bold text-[#222432]">Active Discounts</span>
             </div>
           </div>
         </div>
@@ -208,7 +208,7 @@ export default function CustomerProfilePage() {
         <div className="bg-white rounded-2xl border border-gray-100 shadow-xs p-6 sm:p-8 mb-6">
           <div className="flex items-center justify-between border-b border-gray-100 pb-4 mb-6">
             <div>
-              <h2 className="text-base font-black text-[#222432] tracking-tight my-0">
+              <h2 className="text-base font-bold text-[#222432] tracking-tight my-0">
                 Personal Information
               </h2>
               <p className="text-xs text-gray-500 mt-0.5">
@@ -339,7 +339,7 @@ export default function CustomerProfilePage() {
                 <Ticket className="w-5 h-5" />
               </div>
               <div>
-                <h3 className="text-sm font-black text-[#222432] group-hover:text-[#F84464] transition-colors my-0">
+                <h3 className="text-sm font-bold text-[#222432] group-hover:text-[#F84464] transition-colors my-0">
                   Manage My Bookings
                 </h3>
                 <p className="text-[11px] text-gray-500 mt-0.5">View your tickets, download passes, and cancel</p>
@@ -357,7 +357,7 @@ export default function CustomerProfilePage() {
                 <Sparkles className="w-5 h-5" />
               </div>
               <div>
-                <h3 className="text-sm font-black text-[#222432] group-hover:text-amber-600 transition-colors my-0">
+                <h3 className="text-sm font-bold text-[#222432] group-hover:text-amber-600 transition-colors my-0">
                   Bank Offers &amp; Promo Codes
                 </h3>
                 <p className="text-[11px] text-gray-500 mt-0.5">Unlock Buy 1 Get 1 Free and cashback deals</p>

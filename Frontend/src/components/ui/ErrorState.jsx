@@ -16,7 +16,7 @@ export default function ErrorState({
         <AlertCircle className="w-6 h-6" />
       </div>
 
-      <h3 className="text-sm font-black tracking-tight mb-1 text-rose-900">
+      <h3 className="text-sm font-bold tracking-tight mb-1 text-rose-900">
         {title}
       </h3>
 

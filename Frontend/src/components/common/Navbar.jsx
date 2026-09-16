@@ -100,7 +100,7 @@ export default function Navbar({ onSearch }) {
 
   return (
     <header 
-      className={`sticky top-0 z-40 text-white select-none transition-all duration-300 font-['Plus_Jakarta_Sans',sans-serif] ${
+      className={`sticky top-0 z-40 text-white select-none transition-all duration-300 ${
         isScrolled
           ? 'bg-[#0E1019]/96 backdrop-blur-2xl shadow-[0_15px_35px_-10px_rgba(0,0,0,0.85)] border-b border-white/[0.08]'
           : 'bg-[#12141F]/94 backdrop-blur-2xl shadow-[0_12px_30px_-10px_rgba(0,0,0,0.5)] border-b border-white/[0.08]'
@@ -128,7 +128,7 @@ export default function Navbar({ onSearch }) {
               </div>
 
               <div className="flex flex-col">
-                <span className="text-xl sm:text-[22px] font-black tracking-tight text-white flex items-center transition-transform group-hover:scale-[1.01] leading-none">
+                <span className="text-xl sm:text-[22px] font-extrabold tracking-tight text-white flex items-center transition-transform group-hover:scale-[1.01] leading-none">
                   book<span className="bg-gradient-to-r from-[#F84464] via-[#ff5f7e] to-[#F84464] bg-clip-text text-transparent">my</span>show
                 </span>
                 <span className="text-[10px] font-bold uppercase tracking-[0.16em] text-slate-400 group-hover:text-slate-200 transition-colors mt-1">
@@ -270,7 +270,7 @@ export default function Navbar({ onSearch }) {
             >
               <Bell className="w-4 h-4" />
               {unreadCount > 0 && (
-                <span className="absolute -top-1 -right-1 min-w-[18px] h-[18px] px-1 bg-gradient-to-r from-[#F84464] to-[#ff4767] text-white text-[9px] font-black rounded-full flex items-center justify-center shadow-lg shadow-[#F84464]/50 animate-pulse">
+                <span className="absolute -top-1 -right-1 min-w-[18px] h-[18px] px-1 bg-gradient-to-r from-[#F84464] to-[#ff4767] text-white text-[9px] font-bold rounded-full flex items-center justify-center shadow-lg shadow-[#F84464]/50 animate-pulse">
                   {unreadCount > 9 ? '9+' : unreadCount}
                 </span>
               )}
@@ -280,11 +280,11 @@ export default function Navbar({ onSearch }) {
             <Link
               to="/my-bookings"
               onClick={() => playPop()}
-              className="hidden lg:flex items-center gap-1.5 text-[13px] text-amber-300 hover:text-amber-100 transition-all cursor-pointer py-1.5 px-3.5 rounded-full bg-amber-500/15 hover:bg-amber-500/25 border border-amber-500/35 backdrop-blur-md active:scale-95 shadow-[0_0_12px_rgba(245,158,11,0.2)] group"
+              className="hidden lg:flex items-center gap-1.5 text-[13px] sm:text-sm text-amber-300 hover:text-amber-100 transition-all cursor-pointer py-1.5 px-3.5 rounded-full bg-amber-500/15 hover:bg-amber-500/25 border border-amber-500/35 backdrop-blur-md active:scale-95 shadow-[0_0_12px_rgba(245,158,11,0.2)] group"
               title="View Digital M-Ticket & Gate Pass"
             >
               <Ticket className="w-3.5 h-3.5 text-amber-400 group-hover:rotate-12 transition-transform" />
-              <span className="font-semibold text-[13px] tracking-normal">M-Pass</span>
+              <span className="font-semibold text-[13px] sm:text-sm tracking-normal">M-Pass</span>
             </Link>
 
             {/* Auth Button or VIP Profile Avatar */}
@@ -299,7 +299,7 @@ export default function Navbar({ onSearch }) {
                 >
                   {/* Square-Curved Avatar Tile */}
                   <div className="relative">
-                    <div className="w-7 h-7 sm:w-8 sm:h-8 rounded-lg bg-gradient-to-tr from-[#F84464] via-[#ff3b5c] to-[#e0183e] flex items-center justify-center text-white text-xs font-black shadow-md ring-2 ring-[#F84464]/50 group-hover:ring-[#F84464] transition-all">
+                    <div className="w-7 h-7 sm:w-8 sm:h-8 rounded-lg bg-gradient-to-tr from-[#F84464] via-[#ff3b5c] to-[#e0183e] flex items-center justify-center text-white text-xs font-bold shadow-md ring-2 ring-[#F84464]/50 group-hover:ring-[#F84464] transition-all">
                       {user?.name ? user.name.charAt(0).toUpperCase() : 'U'}
                     </div>
                     <span className="absolute -top-1 -right-1 w-2.5 h-2.5 bg-amber-400 rounded-full border border-black flex items-center justify-center shadow-xs">
@@ -307,7 +307,7 @@ export default function Navbar({ onSearch }) {
                     </span>
                   </div>
 
-                  <span className="text-[13px] font-medium max-w-[110px] truncate hidden md:inline text-slate-200 group-hover:text-white transition-colors">
+                  <span className="text-[13px] sm:text-sm font-semibold max-w-[110px] truncate hidden md:inline text-slate-200 group-hover:text-white transition-colors">
                     {user?.name?.split(' ')[0] || 'Member'}
                   </span>
                   <ChevronDown className="w-3.5 h-3.5 text-slate-400 group-hover:text-white transition-colors" />
@@ -319,11 +319,11 @@ export default function Navbar({ onSearch }) {
                     
                     {/* Header Banner */}
                     <div className="px-4 py-3.5 bg-gradient-to-b from-white/[0.06] to-transparent">
-                      <div className="flex items-center gap-1.5 text-[10px] text-amber-400 font-extrabold uppercase tracking-wider mb-1.5">
+                      <div className="flex items-center gap-1.5 text-[10px] text-amber-400 font-bold uppercase tracking-wider mb-1.5">
                         <Crown className="w-3.5 h-3.5" />
                         <span>BookMyShow Superstar Member</span>
                       </div>
-                      <p className="text-sm font-black text-white truncate">{user?.name}</p>
+                      <p className="text-sm font-bold text-white truncate">{user?.name}</p>
                       <p className="text-xs text-gray-400 truncate mt-0.5">{user?.email}</p>
                     </div>
 
@@ -372,7 +372,7 @@ export default function Navbar({ onSearch }) {
                           setUserDropdownOpen(false);
                           logout();
                         }}
-                        className="w-full flex items-center gap-2.5 px-3 py-2 text-xs font-black text-red-400 hover:bg-red-500/15 rounded-xl cursor-pointer transition-colors"
+                        className="w-full flex items-center gap-2.5 px-3 py-2 text-xs font-bold text-red-400 hover:bg-red-500/15 rounded-xl cursor-pointer transition-colors"
                       >
                         <LogOut className="w-3.5 h-3.5" />
                         <span>Sign Out</span>
@@ -394,7 +394,7 @@ export default function Navbar({ onSearch }) {
                       navigate('/signin');
                     }
                   }}
-                  className="bg-gradient-to-r from-[#F84464] via-[#ff4769] to-[#e03a58] hover:from-[#ff5274] hover:to-[#eb4363] text-white text-[13px] font-bold px-5 py-2 rounded-xl transition-all shadow-[0_4px_16px_rgba(248,68,100,0.4)] hover:shadow-[0_6px_24px_rgba(248,68,100,0.6)] active:scale-95 cursor-pointer flex items-center gap-1.5"
+                  className="bg-gradient-to-r from-[#F84464] via-[#ff4769] to-[#e03a58] hover:from-[#ff5274] hover:to-[#eb4363] text-white text-[13px] sm:text-sm font-bold px-5 py-2 rounded-xl transition-all shadow-[0_4px_16px_rgba(248,68,100,0.4)] hover:shadow-[0_6px_24px_rgba(248,68,100,0.6)] active:scale-95 cursor-pointer flex items-center gap-1.5"
                 >
                   <span>Sign In</span>
                 </button>

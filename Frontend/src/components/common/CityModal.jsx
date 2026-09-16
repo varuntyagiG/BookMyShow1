@@ -147,7 +147,7 @@ export default function CityModal() {
           {/* Popular Cities Grid */}
           <div>
             <div className="flex items-center justify-between mb-3.5">
-              <h3 className="text-xs font-black tracking-wider text-gray-400 uppercase">
+              <h3 className="text-xs font-bold tracking-wider text-gray-400 uppercase">
                 Popular Cities
               </h3>
               <span className="text-[11px] text-gray-500 font-medium">
@@ -167,9 +167,9 @@ export default function CityModal() {
                     style={{ transformStyle: 'preserve-3d' }}
                     className={`flex flex-col items-center p-3 sm:p-4 rounded-2xl border transition-all duration-300 cursor-pointer relative group ${
                       isDetectedTarget
-                        ? 'border-emerald-500 bg-emerald-50 text-emerald-700 font-black ring-4 ring-emerald-400/20 scale-105 shadow-lg'
+                        ? 'border-emerald-500 bg-emerald-50 text-emerald-700 font-bold ring-4 ring-emerald-400/20 scale-105 shadow-lg'
                         : isSelected
-                        ? 'border-[#F84464] bg-gradient-to-b from-red-50 to-white text-[#F84464] font-black ring-2 ring-[#F84464]/30 shadow-[0_12px_24px_-6px_rgba(248,68,100,0.25)] -translate-y-1'
+                        ? 'border-[#F84464] bg-gradient-to-b from-red-50 to-white text-[#F84464] font-bold ring-2 ring-[#F84464]/30 shadow-[0_12px_24px_-6px_rgba(248,68,100,0.25)] -translate-y-1'
                         : 'border-slate-200/80 bg-white hover:border-[#F84464]/40 hover:bg-slate-50/90 text-slate-700 hover:-translate-y-1.5 hover:shadow-[0_14px_24px_-6px_rgba(248,68,100,0.18)]'
                     }`}
                   >
@@ -207,7 +207,7 @@ export default function CityModal() {
 
           {/* Other Regional Cities Section */}
           <div>
-            <h3 className="text-xs font-black tracking-wider text-gray-400 uppercase mb-3">
+            <h3 className="text-xs font-bold tracking-wider text-gray-400 uppercase mb-3">
               Other Cities ({filteredOtherCities.length})
             </h3>
             <div className="flex flex-wrap gap-2 max-h-44 overflow-y-auto p-1">

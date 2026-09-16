@@ -82,7 +82,7 @@ export default function CinemasPage() {
                   Updated Live
                 </span>
               </div>
-              <h1 className="text-2xl sm:text-3xl font-extrabold tracking-tight">
+              <h1 className="text-2xl sm:text-3xl lg:text-[36px] font-extrabold tracking-tight">
                 Theatres & Multiplexes in <span className="text-[#F84464]">{selectedCity}</span>
               </h1>
               <p className="text-sm text-gray-400 mt-1">
@@ -374,7 +374,7 @@ export default function CinemasPage() {
                                   className="group flex flex-col items-center px-3.5 py-1.5 bg-white hover:bg-red-50/70 border border-gray-200/90 hover:border-[#F84464] rounded-xl transition-all duration-200 text-center cursor-pointer hover:scale-105 hover:shadow-[0_6px_14px_-3px_rgba(248,68,100,0.22)] shadow-xs"
                                   title={`Book ${show.movieTitle} at ${show.startTime} (${show.format || '2D'})`}
                                 >
-                                  <span className="text-xs font-black text-gray-800 group-hover:text-[#F84464] transition-colors">
+                                  <span className="text-xs font-bold text-gray-800 group-hover:text-[#F84464] transition-colors">
                                     {show.startTime}
                                   </span>
                                   <span className="text-[10px] text-gray-500 font-semibold group-hover:text-gray-800">

@@ -123,18 +123,18 @@ export default function SignInPage() {
           {/* Header */}
           <div className="text-center mb-6">
             <Link to="/" className="inline-block mb-3">
-              <span className="text-3xl font-black tracking-tight text-gray-900">
+              <span className="text-3xl font-extrabold tracking-tight text-gray-900">
                 book<span className="text-[#F84464]">my</span>show
               </span>
             </Link>
-            <h2 className="text-xl font-black text-gray-900 tracking-tight">Sign In to Your Account</h2>
+            <h2 className="text-xl font-bold text-gray-900 tracking-tight">Sign In to Your Account</h2>
             <p className="text-xs text-gray-500 mt-1">Access your tickets, saved movies, and faster checkout</p>
           </div>
 
           {/* Quick Role Demo Chips (Customer, Cinema Partner, Super Admin) */}
           <div className="mb-5">
             <div className="flex items-center justify-between mb-1.5 px-0.5">
-              <span className="text-[10px] font-black uppercase tracking-wider text-gray-500 flex items-center gap-1">
+              <span className="text-[10px] font-bold uppercase tracking-wider text-gray-500 flex items-center gap-1">
                 <Sparkles className="w-3 h-3 text-amber-500" />
                 <span>Choose Account Role</span>
               </span>
@@ -152,7 +152,7 @@ export default function SignInPage() {
                     : 'bg-gray-50/80 border-gray-200 text-gray-700 hover:bg-gray-100'
                 }`}
               >
-                <div className="flex items-center gap-1.5 text-xs font-black truncate">
+                <div className="flex items-center gap-1.5 text-xs font-bold truncate">
                   <User className="w-3.5 h-3.5 text-blue-600 shrink-0" />
                   <span className="truncate">Customer</span>
                 </div>
@@ -169,7 +169,7 @@ export default function SignInPage() {
                     : 'bg-gray-50/80 border-gray-200 text-gray-700 hover:bg-gray-100'
                 }`}
               >
-                <div className="flex items-center gap-1.5 text-xs font-black truncate">
+                <div className="flex items-center gap-1.5 text-xs font-bold truncate">
                   <Building2 className="w-3.5 h-3.5 text-[#F84464] shrink-0" />
                   <span className="truncate">Partner</span>
                 </div>
@@ -186,7 +186,7 @@ export default function SignInPage() {
                     : 'bg-gray-50/80 border-gray-200 text-gray-700 hover:bg-gray-100'
                 }`}
               >
-                <div className="flex items-center gap-1.5 text-xs font-black truncate">
+                <div className="flex items-center gap-1.5 text-xs font-bold truncate">
                   <ShieldCheck className="w-3.5 h-3.5 text-amber-600 shrink-0" />
                   <span className="truncate">Admin</span>
                 </div>
@@ -258,7 +258,7 @@ export default function SignInPage() {
             <button
               type="submit"
               disabled={loading}
-              className="w-full py-3 bg-[#F84464] hover:bg-[#e03a58] text-white text-xs sm:text-sm font-black rounded-xl shadow-lg shadow-red-500/25 transition-all cursor-pointer mt-2 disabled:opacity-70 active:scale-[0.99]"
+              className="w-full py-3 bg-[#F84464] hover:bg-[#e03a58] text-white text-xs sm:text-sm font-bold rounded-xl shadow-lg shadow-red-500/25 transition-all cursor-pointer mt-2 disabled:opacity-70 active:scale-[0.99]"
             >
               {loading
                 ? 'Signing In...'
@@ -291,7 +291,7 @@ export default function SignInPage() {
             </div>
             <Link
               to="/vendor/signup"
-              className="px-3 py-1.5 rounded-xl bg-white border border-gray-200 text-[#F84464] font-black text-xs hover:bg-red-50 hover:border-[#F84464]/30 transition-all flex items-center gap-1 cursor-pointer shadow-xs shrink-0"
+              className="px-3 py-1.5 rounded-xl bg-white border border-gray-200 text-[#F84464] font-bold text-xs hover:bg-red-50 hover:border-[#F84464]/30 transition-all flex items-center gap-1 cursor-pointer shadow-xs shrink-0"
             >
               <span>Partner Sign Up</span>
               <ArrowRight className="w-3 h-3" />

@@ -26,12 +26,12 @@ export default function PageHeader({
             </div>
           )}
 
-          <h1 className="text-xl sm:text-2xl font-black text-[#222432] tracking-tight">
+          <h1 className="text-xl sm:text-2xl font-extrabold text-[#222432] tracking-tight">
             {title}
           </h1>
 
           {badge && (
-            <span className="text-[10px] font-black uppercase tracking-wider px-2.5 py-0.5 rounded-full bg-[#F84464]/10 text-[#F84464] border border-[#F84464]/20">
+            <span className="text-[10px] font-bold uppercase tracking-wider px-2.5 py-0.5 rounded-full bg-[#F84464]/10 text-[#F84464] border border-[#F84464]/20">
               {badge}
             </span>
           )}

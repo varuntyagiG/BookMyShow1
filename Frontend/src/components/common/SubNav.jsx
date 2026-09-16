@@ -116,8 +116,8 @@ export default function SubNav() {
                 setActiveMegaMenu(null);
                 playPop();
               }}
-              className={`hover:text-white transition-all cursor-pointer relative py-2 font-semibold shrink-0 flex items-center ${
-                currentPath === '/' ? 'text-white font-black' : 'text-gray-300 hover:text-white'
+              className={`hover:text-white transition-all cursor-pointer relative py-2 text-[13px] sm:text-sm font-semibold shrink-0 flex items-center ${
+                currentPath === '/' ? 'text-white font-semibold' : 'text-gray-300 hover:text-white'
               }`}
             >
               <span>All</span>
@@ -142,14 +142,14 @@ export default function SubNav() {
                       setActiveMegaMenu(null);
                       playPop();
                     }}
-                    className={`hover:text-white transition-all cursor-pointer relative py-2 font-semibold shrink-0 flex items-center gap-1.5 ${
-                      isActive || isHovered ? 'text-white font-black' : 'text-gray-300 hover:text-white'
+                    className={`hover:text-white transition-all cursor-pointer relative py-2 text-[13px] sm:text-sm font-semibold shrink-0 flex items-center gap-1.5 ${
+                      isActive || isHovered ? 'text-white font-semibold' : 'text-gray-300 hover:text-white'
                     }`}
                   >
                     <span>{cat.label}</span>
                     {cat.badge && (
                       <span 
-                        className={`px-1.5 py-0.5 text-[8.5px] rounded font-black uppercase tracking-wider shadow-xs ${
+                        className={`px-1.5 py-0.5 text-[9px] sm:text-[10px] rounded font-bold uppercase tracking-wider shadow-xs ${
                           cat.badge === 'NEW' 
                             ? 'bg-gradient-to-r from-[#F84464] to-[#ff5978] text-white animate-pulse' 
                             : cat.badge === 'VIP' 
@@ -181,10 +181,10 @@ export default function SubNav() {
                     setActiveMegaMenu(null);
                     playPop();
                   }}
-                  className={`transition-all flex items-center gap-1.5 font-semibold cursor-pointer text-xs ${
+                  className={`transition-all flex items-center gap-1.5 text-xs font-semibold cursor-pointer ${
                     item.highlight 
                       ? 'bg-white/[0.10] hover:bg-white/[0.18] border border-white/20 px-3 py-1 rounded-full text-gray-100 hover:text-white shadow-sm hover:border-[#F84464]/50 backdrop-blur-md' 
-                      : (currentPath === item.path ? 'text-white font-black' : 'text-gray-300 hover:text-white')
+                      : (currentPath === item.path ? 'text-white font-semibold' : 'text-gray-300 hover:text-white')
                   }`}
                 >
                   {Icon && <Icon className={`w-3 h-3 ${item.highlight ? 'text-[#F84464]' : 'text-gray-400'}`} />}
@@ -225,7 +225,7 @@ export default function SubNav() {
               {/* Col 1: Now Showing Blockbusters (4 Cols) */}
               <div className="col-span-12 lg:col-span-5 pr-0 lg:pr-4 border-b lg:border-b-0 lg:border-r border-white/10 pb-4 lg:pb-0">
                 <div className="flex items-center justify-between mb-3.5">
-                  <div className="flex items-center gap-2 text-xs font-black uppercase tracking-wider text-gray-300">
+                  <div className="flex items-center gap-2 text-xs font-bold uppercase tracking-wider text-gray-300">
                     <Film className="w-3.5 h-3.5 text-[#F84464]" />
                     <span>Now Showing in Cinemas</span>
                   </div>
@@ -254,7 +254,7 @@ export default function SubNav() {
                     >
                       <div>
                         <div className="flex items-center justify-between gap-1 mb-1">
-                          <span className="text-[9px] font-black uppercase tracking-wider px-1.5 py-0.5 rounded bg-white/10 text-gray-300 group-hover:bg-[#F84464]/25 group-hover:text-[#F84464] transition-colors">
+                          <span className="text-[9px] font-bold uppercase tracking-wider px-1.5 py-0.5 rounded bg-white/10 text-gray-300 group-hover:bg-[#F84464]/25 group-hover:text-[#F84464] transition-colors">
                             {m.format}
                           </span>
                           <span className="flex items-center gap-0.5 text-[10px] font-bold text-amber-400">
@@ -279,7 +279,7 @@ export default function SubNav() {
 
               {/* Col 2: Advance Bookings & Anticipated (3 Cols) */}
               <div className="col-span-12 sm:col-span-6 lg:col-span-3 pr-0 lg:pr-4 border-b lg:border-b-0 lg:border-r border-white/10 pb-4 lg:pb-0">
-                <div className="flex items-center gap-1.5 text-xs font-black uppercase tracking-wider text-gray-300 mb-3.5">
+                <div className="flex items-center gap-1.5 text-xs font-bold uppercase tracking-wider text-gray-300 mb-3.5">
                   <Flame className="w-3.5 h-3.5 text-amber-400" />
                   <span>Advance Bookings</span>
                 </div>
@@ -307,7 +307,7 @@ export default function SubNav() {
                         <span className="text-[10px] text-gray-400">{item.status}</span>
                       </div>
                       <div className="text-right shrink-0">
-                        <span className="text-[9px] font-black px-1.5 py-0.5 rounded bg-amber-500/20 text-amber-300 border border-amber-500/30">
+                        <span className="text-[9px] font-bold px-1.5 py-0.5 rounded bg-amber-500/20 text-amber-300 border border-amber-500/30">
                           {item.date}
                         </span>
                       </div>
@@ -318,7 +318,7 @@ export default function SubNav() {
 
               {/* Col 3: Languages & Filters (2 Cols) */}
               <div className="col-span-6 lg:col-span-2 pr-0 lg:pr-3 border-r border-white/10">
-                <div className="flex items-center gap-1.5 text-xs font-black uppercase tracking-wider text-gray-300 mb-3.5">
+                <div className="flex items-center gap-1.5 text-xs font-bold uppercase tracking-wider text-gray-300 mb-3.5">
                   <Compass className="w-3.5 h-3.5 text-[#F84464]" />
                   <span>Languages</span>
                 </div>
@@ -348,7 +348,7 @@ export default function SubNav() {
 
               {/* Col 4: Premium Formats & VIP Experiences (2 Cols) */}
               <div className="col-span-6 lg:col-span-2">
-                <div className="flex items-center gap-1.5 text-xs font-black uppercase tracking-wider text-gray-300 mb-3.5">
+                <div className="flex items-center gap-1.5 text-xs font-bold uppercase tracking-wider text-gray-300 mb-3.5">
                   <Crown className="w-3.5 h-3.5 text-amber-400" />
                   <span>Experiences</span>
                 </div>
@@ -399,7 +399,7 @@ export default function SubNav() {
 
               {/* Col 1: Flagship Chains */}
               <div className="border-r border-white/10 pr-4">
-                <div className="flex items-center gap-2 text-xs font-black uppercase tracking-wider text-gray-300 mb-3.5">
+                <div className="flex items-center gap-2 text-xs font-bold uppercase tracking-wider text-gray-300 mb-3.5">
                   <Clapperboard className="w-3.5 h-3.5 text-[#F84464]" />
                   <span>Flagship Multiplex Chains</span>
                 </div>
@@ -428,7 +428,7 @@ export default function SubNav() {
 
               {/* Col 2: Auditoriums */}
               <div className="border-r border-white/10 pr-4">
-                <div className="flex items-center gap-2 text-xs font-black uppercase tracking-wider text-gray-300 mb-3.5">
+                <div className="flex items-center gap-2 text-xs font-bold uppercase tracking-wider text-gray-300 mb-3.5">
                   <Crown className="w-3.5 h-3.5 text-amber-400" />
                   <span>Signature Formats & Screens</span>
                 </div>
@@ -454,7 +454,7 @@ export default function SubNav() {
 
               {/* Col 3: Services & Privileges */}
               <div>
-                <div className="flex items-center gap-2 text-xs font-black uppercase tracking-wider text-gray-300 mb-3.5">
+                <div className="flex items-center gap-2 text-xs font-bold uppercase tracking-wider text-gray-300 mb-3.5">
                   <Coffee className="w-3.5 h-3.5 text-[#F84464]" />
                   <span>Multiplex Services & Comfort</span>
                 </div>
@@ -490,7 +490,7 @@ export default function SubNav() {
 
               {/* Col 1: Live Concerts */}
               <div className="border-r border-white/10 pr-4">
-                <div className="flex items-center gap-2 text-xs font-black uppercase tracking-wider text-gray-300 mb-3.5">
+                <div className="flex items-center gap-2 text-xs font-bold uppercase tracking-wider text-gray-300 mb-3.5">
                   <Music className="w-3.5 h-3.5 text-[#F84464]" />
                   <span>Live Concerts & Festivals</span>
                 </div>
@@ -518,7 +518,7 @@ export default function SubNav() {
 
               {/* Col 2: Comedy & Theater */}
               <div className="border-r border-white/10 pr-4">
-                <div className="flex items-center gap-2 text-xs font-black uppercase tracking-wider text-gray-300 mb-3.5">
+                <div className="flex items-center gap-2 text-xs font-bold uppercase tracking-wider text-gray-300 mb-3.5">
                   <Smile className="w-3.5 h-3.5 text-amber-400" />
                   <span>Standup Comedy & Theater</span>
                 </div>
@@ -546,7 +546,7 @@ export default function SubNav() {
 
               {/* Col 3: VIP Pass Privileges */}
               <div>
-                <div className="flex items-center gap-2 text-xs font-black uppercase tracking-wider text-gray-300 mb-3.5">
+                <div className="flex items-center gap-2 text-xs font-bold uppercase tracking-wider text-gray-300 mb-3.5">
                   <Ticket className="w-3.5 h-3.5 text-[#F84464]" />
                   <span>VIP Experience Passes</span>
                 </div>
@@ -590,7 +590,7 @@ export default function SubNav() {
                 <div>
                   <h4 className="text-sm font-bold text-white flex items-center gap-2">
                     <span>BookMyShow Stream Premieres</span>
-                    <span className="text-[9px] px-1.5 py-0.5 rounded bg-gradient-to-r from-[#F84464] to-[#ff5978] text-white font-black animate-pulse">NEW</span>
+                    <span className="text-[9px] px-1.5 py-0.5 rounded bg-gradient-to-r from-[#F84464] to-[#ff5978] text-white font-bold animate-pulse">NEW</span>
                   </h4>
                   <p className="text-xs text-gray-400">Rent or buy the latest cinema blockbusters directly on your Smart TV or mobile devices.</p>
                 </div>
@@ -599,7 +599,7 @@ export default function SubNav() {
               <Link
                 to="/stream"
                 onClick={() => { setActiveMegaMenu(null); playPop(); }}
-                className="bg-gradient-to-r from-[#F84464] to-[#e03a58] hover:from-[#ff5274] hover:to-[#eb4363] text-white text-xs font-black px-4 py-2 rounded-xl transition-all shadow-[0_4px_16px_rgba(248,68,100,0.4)] cursor-pointer shrink-0"
+                className="bg-gradient-to-r from-[#F84464] to-[#e03a58] hover:from-[#ff5274] hover:to-[#eb4363] text-white text-xs sm:text-sm font-bold px-4 py-2 rounded-xl transition-all shadow-[0_4px_16px_rgba(248,68,100,0.4)] cursor-pointer shrink-0"
               >
                 <span>Explore Stream Premieres</span>
               </Link>

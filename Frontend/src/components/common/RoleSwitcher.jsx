@@ -172,7 +172,7 @@ export default function RoleSwitcher() {
                 <Layers className="w-4 h-4" />
               </div>
               <div>
-                <h4 className="text-xs font-black text-white uppercase tracking-wider flex items-center gap-1.5">
+                <h4 className="text-xs font-bold text-white uppercase tracking-wider flex items-center gap-1.5">
                   <span>RBAC Role Switcher</span>
                   <span className="px-1.5 py-0.2 rounded text-[9px] bg-white/10 text-gray-300 font-semibold">Live Demo</span>
                 </h4>
@@ -213,7 +213,7 @@ export default function RoleSwitcher() {
 
                   <div className="flex-1 min-w-0">
                     <div className="flex items-center justify-between gap-1">
-                      <span className="text-xs font-black text-white group-hover:text-[#F84464] transition-colors truncate">
+                      <span className="text-xs font-bold text-white group-hover:text-[#F84464] transition-colors truncate">
                         {role.label}
                       </span>
                       <span className="text-[9px] font-bold px-1.5 py-0.5 rounded-full bg-white/10 text-gray-300 shrink-0">
@@ -274,7 +274,7 @@ export default function RoleSwitcher() {
           </div>
 
           <div className="text-left pr-1">
-            <div className="text-[11px] font-black text-white flex items-center gap-1">
+            <div className="text-[11px] font-bold text-white flex items-center gap-1">
               <span>{currentRoleObj.label.split(' (')[0]}</span>
               <span className="w-1.5 h-1.5 rounded-full bg-emerald-400 animate-pulse" />
             </div>

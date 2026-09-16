@@ -58,16 +58,16 @@ function EventPassCard({ event, onClick }) {
         {/* Event Info */}
         <div className="p-4 flex-1 flex flex-col justify-between">
           <div>
-            <h3 className="text-sm font-bold text-white hover:text-[#F84464] transition-colors line-clamp-1">
+            <h3 className="text-[15px] sm:text-[17px] font-bold text-white hover:text-[#F84464] transition-colors line-clamp-1">
               {event.title}
             </h3>
 
-            <div className="flex items-center gap-2 text-xs text-slate-300 mt-2 font-medium">
+            <div className="flex items-center gap-2 text-xs sm:text-[13px] text-slate-300 mt-2 font-medium">
               <Calendar className="w-3.5 h-3.5 text-[#F84464] shrink-0" />
               <span className="truncate">{event.date}</span>
             </div>
 
-            <div className="flex items-center gap-2 text-xs text-slate-400 mt-1">
+            <div className="flex items-center gap-2 text-xs sm:text-[13px] text-slate-400 mt-1">
               <MapPin className="w-3.5 h-3.5 text-slate-500 shrink-0" />
               <span className="truncate">{event.venue}</span>
             </div>
@@ -76,9 +76,9 @@ function EventPassCard({ event, onClick }) {
           <div className="mt-4 pt-3 border-t border-slate-800/80 flex items-center justify-between">
             <div>
               <span className="text-[10px] text-slate-400 block uppercase font-medium">Starts From</span>
-              <span className="text-xs font-bold text-white">{event.price}</span>
+              <span className="text-xs sm:text-sm font-bold text-white">{event.price}</span>
             </div>
-            <span className="text-xs font-bold text-white bg-[#F84464] hover:bg-[#E03A58] px-3.5 py-1.5 rounded-xl transition-all flex items-center gap-1 shadow-md shadow-rose-950/50">
+            <span className="text-xs sm:text-sm font-bold text-white bg-[#F84464] hover:bg-[#E03A58] px-3.5 py-1.5 rounded-xl transition-all flex items-center gap-1 shadow-md shadow-rose-950/50">
               <Ticket className="w-3 h-3" />
               <span>Book</span>
             </span>
@@ -97,17 +97,17 @@ export default function LiveEventsSection({ events = [] }) {
     <section className="py-12 bg-[#0b0c14] text-white">
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
 
-        {/* Section Title */}
+        {/* Section Title (24–28px Desktop / 20–24px Mobile, Weight 700) */}
         <div className="flex items-center justify-between mb-6">
           <div>
             <div className="flex items-center gap-2.5">
               <div className="w-1.5 h-6 bg-purple-500 rounded-full shadow-[0_0_10px_rgba(168,85,247,0.8)]" />
-              <h2 className="text-xl sm:text-2xl font-black text-white tracking-tight flex items-center gap-2">
+              <h2 className="text-xl sm:text-2xl lg:text-[26px] font-bold text-white tracking-tight flex items-center gap-2">
                 <span>The Best Of Live Events</span>
                 <Sparkles className="w-4 h-4 text-purple-400" />
               </h2>
             </div>
-            <p className="text-xs text-slate-400 mt-1 font-medium">Top concerts, comedy gigs, live sports and theatrical performances</p>
+            <p className="text-xs sm:text-[13px] text-slate-400 mt-1 font-normal">Top concerts, comedy gigs, live sports and theatrical performances</p>
           </div>
           <button
             onClick={() => navigate('/events')}
@@ -130,17 +130,17 @@ export default function LiveEventsSection({ events = [] }) {
                 className="w-full h-full object-cover group-hover:scale-110 transition-transform duration-500"
               />
               <div className="absolute inset-0 bg-gradient-to-t from-black/60 via-transparent to-transparent pointer-events-none" />
-              <span className="absolute bottom-1.5 left-1/2 -translate-x-1/2 text-[9px] font-black uppercase tracking-wider text-purple-300 bg-black/60 backdrop-blur-md px-2 py-0.5 rounded-full border border-purple-400/30 whitespace-nowrap">
+              <span className="absolute bottom-1.5 left-1/2 -translate-x-1/2 text-[9px] font-bold uppercase tracking-wider text-purple-300 bg-black/60 backdrop-blur-md px-2 py-0.5 rounded-full border border-purple-400/30 whitespace-nowrap">
                 VIP Pass
               </span>
             </div>
 
             <div>
-              <div className="inline-flex items-center gap-1.5 px-2.5 py-0.5 rounded-full bg-purple-500/20 border border-purple-500/30 text-purple-300 text-[10px] font-black uppercase tracking-wider mb-2">
+              <div className="inline-flex items-center gap-1.5 px-2.5 py-0.5 rounded-full bg-purple-500/20 border border-purple-500/30 text-purple-300 text-[10px] font-bold uppercase tracking-wider mb-2">
                 <Sparkles className="w-3 h-3 text-purple-400" />
                 <span>Festival Hologram Passes</span>
               </div>
-              <h3 className="text-base sm:text-xl font-black text-white tracking-tight">
+              <h3 className="text-base sm:text-xl font-bold text-white tracking-tight">
                 Live Stadium Concerts &amp; Electronic Arenas
               </h3>
               <p className="text-xs text-purple-200/80 mt-1 max-w-xl">
@@ -152,7 +152,7 @@ export default function LiveEventsSection({ events = [] }) {
           <button
             type="button"
             onClick={() => navigate('/events')}
-            className="shrink-0 bg-gradient-to-r from-purple-600 via-[#F84464] to-pink-600 hover:from-purple-500 hover:to-pink-500 text-white text-xs font-black py-3 px-5 rounded-2xl transition-all shadow-[0_4px_18px_rgba(168,85,247,0.4)] active:scale-95 flex items-center gap-2 cursor-pointer z-10 border border-white/20"
+            className="shrink-0 bg-gradient-to-r from-purple-600 via-[#F84464] to-pink-600 hover:from-purple-500 hover:to-pink-500 text-white text-xs font-bold py-3 px-5 rounded-2xl transition-all shadow-[0_4px_18px_rgba(168,85,247,0.4)] active:scale-95 flex items-center gap-2 cursor-pointer z-10 border border-white/20"
           >
             <span>Explore Live Concerts</span>
             <ChevronRight className="w-4 h-4" />

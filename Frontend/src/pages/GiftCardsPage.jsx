@@ -261,7 +261,7 @@ export default function GiftCardsPage() {
                 <Gift className="w-3.5 h-3.5" />
                 <span>Instant Digital E-Gift Cards</span>
               </div>
-              <h1 className="text-3xl sm:text-5xl font-black text-white tracking-tight my-0 leading-[1.12]">
+              <h1 className="text-3xl sm:text-5xl font-extrabold text-white tracking-tight my-0 leading-[1.12]">
                 Gift The Magic Of Movies &amp; Live Shows
               </h1>
               <p className="text-xs sm:text-sm text-gray-300 mt-4 leading-relaxed max-w-xl">
@@ -313,7 +313,7 @@ export default function GiftCardsPage() {
         <div className="mb-8">
           <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-2 mb-4">
             <div>
-              <h2 className="text-lg sm:text-xl font-black text-gray-900 tracking-tight my-0">
+              <h2 className="text-lg sm:text-xl font-bold text-gray-900 tracking-tight my-0">
                 1. Select an Occasion &amp; Theme
               </h2>
               <p className="text-xs text-gray-500 mt-0.5">Choose a design that matches the celebration</p>
@@ -365,7 +365,7 @@ export default function GiftCardsPage() {
                         <span>{des.tagline}</span>
                       </span>
                       {isSelected ? (
-                        <span className="w-5 h-5 rounded-full bg-white text-[#F84464] flex items-center justify-center font-black text-xs shadow-sm">
+                        <span className="w-5 h-5 rounded-full bg-white text-[#F84464] flex items-center justify-center font-bold text-xs shadow-sm">
                           ✓
                         </span>
                       ) : (
@@ -373,7 +373,7 @@ export default function GiftCardsPage() {
                       )}
                     </div>
 
-                    <h3 className="text-base font-black tracking-tight text-white mb-1">
+                    <h3 className="text-base font-bold tracking-tight text-white mb-1">
                       {des.title}
                     </h3>
                     <p className="text-xs text-white/80 line-clamp-1 leading-relaxed">
@@ -391,7 +391,7 @@ export default function GiftCardsPage() {
 
             {/* Denomination & Quantity Box */}
             <div className="bg-white rounded-2xl p-6 border border-gray-100 shadow-xs">
-              <h2 className="text-sm font-black text-gray-900 uppercase tracking-wider mb-3">
+              <h2 className="text-sm font-bold text-gray-900 uppercase tracking-wider mb-3">
                 2. Select Voucher Amount
               </h2>
 
@@ -401,7 +401,7 @@ export default function GiftCardsPage() {
                     key={val}
                     type="button"
                     onClick={() => handleAmountSelect(val)}
-                    className={`py-3 px-3 rounded-xl text-xs font-black transition-all cursor-pointer ${
+                    className={`py-3 px-3 rounded-xl text-xs font-bold transition-all cursor-pointer ${
                       amount === val && !customAmount
                         ? 'bg-[#F84464] text-white shadow-md shadow-red-500/25 scale-105'
                         : 'bg-gray-50 border border-gray-200 text-gray-700 hover:bg-gray-100'
@@ -461,7 +461,7 @@ export default function GiftCardsPage() {
 
             {/* Recipient & Sender Form */}
             <form onSubmit={handlePurchase} className="bg-white rounded-2xl p-6 border border-gray-100 shadow-xs space-y-4">
-              <h2 className="text-sm font-black text-gray-900 uppercase tracking-wider mb-2">
+              <h2 className="text-sm font-bold text-gray-900 uppercase tracking-wider mb-2">
                 3. Recipient &amp; Sender Information
               </h2>
 
@@ -579,7 +579,7 @@ export default function GiftCardsPage() {
                   <span>Digital Delivery &amp; Processing:</span>
                   <span className="font-bold text-emerald-600">FREE</span>
                 </div>
-                <div className="flex justify-between pt-2 border-t border-gray-200 text-sm font-black">
+                <div className="flex justify-between pt-2 border-t border-gray-200 text-sm font-bold">
                   <span>Total Amount Payable:</span>
                   <span className="text-[#F84464]">₹{(amount * quantity).toLocaleString('en-IN')}</span>
                 </div>
@@ -588,7 +588,7 @@ export default function GiftCardsPage() {
               <button
                 type="submit"
                 disabled={isSubmitting}
-                className="w-full py-3.5 bg-[#F84464] hover:bg-[#e03a58] active:scale-[0.98] text-white text-xs sm:text-sm font-extrabold rounded-xl transition-all shadow-md shadow-red-500/25 cursor-pointer flex items-center justify-center gap-2"
+                className="w-full py-3.5 bg-[#F84464] hover:bg-[#e03a58] active:scale-[0.98] text-white text-xs sm:text-sm font-bold rounded-xl transition-all shadow-md shadow-red-500/25 cursor-pointer flex items-center justify-center gap-2"
               >
                 {isSubmitting ? (
                   <>
@@ -612,7 +612,7 @@ export default function GiftCardsPage() {
           <div className="lg:col-span-5">
             <div className="sticky top-28 space-y-5">
               <div className="flex items-center justify-between">
-                <span className="text-xs uppercase font-extrabold text-gray-500 tracking-wider">
+                <span className="text-xs uppercase font-bold text-gray-500 tracking-wider">
                   Live Card Preview
                 </span>
                 <span className="text-[11px] font-bold text-emerald-600 flex items-center gap-1">
@@ -627,8 +627,8 @@ export default function GiftCardsPage() {
                 {/* Top Row */}
                 <div className="relative z-10 flex items-start justify-between">
                   <div>
-                    <span className="text-xl font-black tracking-tight text-white flex items-center">
-                      book<span className="text-white drop-shadow-sm font-black">my</span>show
+                    <span className="text-xl font-extrabold tracking-tight text-white flex items-center">
+                      book<span className="text-white drop-shadow-sm font-extrabold">my</span>show
                     </span>
                     <span className="text-[10px] text-white/80 block uppercase tracking-wider font-semibold mt-0.5">
                       Official E-Gift Voucher
@@ -636,7 +636,7 @@ export default function GiftCardsPage() {
                   </div>
                   <div className="text-right">
                     <span className="text-[10px] uppercase font-bold text-white/70 block">Card Value</span>
-                    <span className="text-xl sm:text-2xl font-black text-white">
+                    <span className="text-xl sm:text-2xl font-extrabold text-white">
                       ₹{amount.toLocaleString('en-IN')}
                     </span>
                   </div>
@@ -644,7 +644,7 @@ export default function GiftCardsPage() {
 
                 {/* Center Content */}
                 <div className="relative z-10 my-1">
-                  <span className="text-[10px] font-extrabold px-2.5 py-0.5 bg-black/40 rounded-full text-white uppercase tracking-wider inline-block">
+                  <span className="text-[10px] font-bold px-2.5 py-0.5 bg-black/40 rounded-full text-white uppercase tracking-wider inline-block">
                     {selectedDesign.tagline}
                   </span>
                   <p className="text-xs text-white/95 mt-2 font-medium italic line-clamp-2 leading-relaxed">
@@ -656,7 +656,7 @@ export default function GiftCardsPage() {
                 <div className="relative z-10 pt-3 border-t border-white/25 flex items-end justify-between text-xs">
                   <div>
                     <span className="text-[10px] text-white/70 block uppercase font-bold">Recipient:</span>
-                    <span className="font-black text-white text-sm truncate max-w-[180px] block">
+                    <span className="font-bold text-white text-sm truncate max-w-[180px] block">
                       {formData.recipientName || 'Someone Special'}
                     </span>
                   </div>
@@ -711,7 +711,7 @@ export default function GiftCardsPage() {
               <CheckCircle className="w-8 h-8 text-emerald-500" />
             </div>
 
-            <h3 className="text-xl font-black text-gray-900 mb-1">
+            <h3 className="text-xl font-bold text-gray-900 mb-1">
               Gift Voucher Generated!
             </h3>
             <p className="text-xs text-gray-500 mb-5">
@@ -721,8 +721,8 @@ export default function GiftCardsPage() {
             {/* Printable Digital Voucher Card */}
             <div className={`p-5 rounded-2xl text-white text-left text-xs mb-5 shadow-lg bg-gradient-to-br ${orderConfirmed.design.bgGradient}`}>
               <div className="flex justify-between items-center border-b border-white/20 pb-3 mb-3">
-                <span className="text-xs font-black tracking-wider uppercase">BookMyShow E-Gift Voucher</span>
-                <span className="text-base font-black">₹{orderConfirmed.amount.toLocaleString('en-IN')}</span>
+                <span className="text-xs font-bold tracking-wider uppercase">BookMyShow E-Gift Voucher</span>
+                <span className="text-base font-bold">₹{orderConfirmed.amount.toLocaleString('en-IN')}</span>
               </div>
               
               <div className="space-y-2.5 font-mono">
@@ -778,26 +778,26 @@ export default function GiftCardsPage() {
 
       {/* 4. Frequently Asked Questions */}
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 mt-16 pt-10 border-t border-gray-200">
-        <h2 className="text-lg font-black text-gray-900 mb-6 tracking-tight">
+        <h2 className="text-lg font-bold text-gray-900 mb-6 tracking-tight">
           Frequently Asked Questions
         </h2>
         <div className="grid grid-cols-1 md:grid-cols-3 gap-6 text-xs text-gray-600">
           <div className="bg-white p-6 rounded-2xl border border-gray-100 shadow-xs">
-            <h3 className="font-black text-gray-900 text-xs mb-2">Where can I use this Gift Card?</h3>
+            <h3 className="font-bold text-gray-900 text-xs mb-2">Where can I use this Gift Card?</h3>
             <p className="leading-relaxed">
               BookMyShow Gift Cards can be redeemed for booking movie tickets, concert passes, theatrical plays, 
               sports matches, and cinema snacks across 100+ cities in India.
             </p>
           </div>
           <div className="bg-white p-6 rounded-2xl border border-gray-100 shadow-xs">
-            <h3 className="font-black text-gray-900 text-xs mb-2">What is the validity period?</h3>
+            <h3 className="font-bold text-gray-900 text-xs mb-2">What is the validity period?</h3>
             <p className="leading-relaxed">
               Every Gift Card is valid for 12 months (365 days) from the purchase date. The voucher can be used across 
               multiple transactions until the balance is fully exhausted.
             </p>
           </div>
           <div className="bg-white p-6 rounded-2xl border border-gray-100 shadow-xs">
-            <h3 className="font-black text-gray-900 text-xs mb-2">How do I redeem at checkout?</h3>
+            <h3 className="font-bold text-gray-900 text-xs mb-2">How do I redeem at checkout?</h3>
             <p className="leading-relaxed">
               On the booking checkout screen, choose "Gift Voucher", enter your 16-digit voucher code and 6-digit PIN. 
               The voucher value will be instantly applied to your bill.

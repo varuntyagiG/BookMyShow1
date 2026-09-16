@@ -118,7 +118,7 @@ export default function MoviesPage() {
         {/* Top Header */}
         <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4 mb-7">
           <div>
-            <h1 className="text-2xl sm:text-3xl font-black text-[#222432] tracking-tight my-0">
+            <h1 className="text-2xl sm:text-3xl lg:text-[36px] font-extrabold text-[#222432] tracking-tight my-0">
               Movies in {selectedCity}
             </h1>
             <p className="text-xs sm:text-sm text-gray-500 mt-1.5">

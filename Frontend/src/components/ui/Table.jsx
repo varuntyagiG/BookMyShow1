@@ -14,7 +14,7 @@ export function Table({ children, className = '', ...props }) {
 export function TableHeader({ children, className = '', ...props }) {
   return (
     <thead
-      className={`bg-gray-50/80 border-b border-gray-100 text-[11px] font-black uppercase tracking-wider text-gray-500 select-none ${className}`}
+      className={`bg-gray-50/80 border-b border-gray-100 text-[11px] font-bold uppercase tracking-wider text-gray-500 select-none ${className}`}
       {...props}
     >
       {children}
@@ -71,8 +71,8 @@ export function TablePagination({
       className={`flex flex-col sm:flex-row items-center justify-between gap-3 px-4 sm:px-6 py-3.5 bg-gray-50/50 border-t border-gray-100 text-xs text-gray-500 ${className}`}
     >
       <div className="font-semibold">
-        Showing Page <span className="font-black text-[#222432]">{page}</span> of{' '}
-        <span className="font-black text-[#222432]">{totalPages || 1}</span>{' '}
+        Showing Page <span className="font-bold text-[#222432]">{page}</span> of{' '}
+        <span className="font-bold text-[#222432]">{totalPages || 1}</span>{' '}
         {totalItems > 0 && <span>({totalItems} total records)</span>}
       </div>
 

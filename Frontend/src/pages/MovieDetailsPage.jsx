@@ -835,7 +835,7 @@ export default function MovieDetailsPage() {
               className="w-9 h-12 object-cover rounded-lg shadow-sm border border-white/15 shrink-0"
             />
             <div className="min-w-0">
-              <h4 className="text-sm font-black text-white truncate m-0">{movie.title}</h4>
+              <h4 className="text-sm font-bold text-white truncate m-0">{movie.title}</h4>
               <div className="flex items-center gap-2 text-[11px] text-gray-300 font-medium">
                 <span className="flex items-center gap-1 text-[#F84464] font-bold">
                   <Star className="w-3 h-3 fill-[#F84464]" /> {movie.rating}
@@ -861,7 +861,7 @@ export default function MovieDetailsPage() {
             <button
               type="button"
               onClick={scrollToBooking}
-              className="px-6 py-2.5 rounded-xl bg-[#F84464] hover:bg-[#E03A58] text-white text-xs font-black shadow-[0_4px_16px_rgba(248,68,100,0.5)] transition-all duration-150 cursor-pointer active:scale-95 flex items-center gap-1.5"
+              className="px-6 py-2.5 rounded-xl bg-[#F84464] hover:bg-[#E03A58] text-white text-xs font-bold shadow-[0_4px_16px_rgba(248,68,100,0.5)] transition-all duration-150 cursor-pointer active:scale-95 flex items-center gap-1.5"
             >
               <Ticket className="w-3.5 h-3.5" />
               <span>Book Tickets</span>
@@ -909,7 +909,7 @@ export default function MovieDetailsPage() {
             <div className="flex-1 flex flex-col justify-between self-stretch">
               <div>
                 <div className="flex items-center justify-between gap-4">
-                  <h1 className="text-2xl sm:text-4xl lg:text-5xl font-black tracking-tight text-white my-0 leading-[1.08]">
+                  <h1 className="text-[32px] sm:text-[44px] lg:text-[54px] font-extrabold tracking-tight text-white my-0 leading-[1.08]">
                     {movie.title}
                   </h1>
 
@@ -941,7 +941,7 @@ export default function MovieDetailsPage() {
                     </div>
                     <div>
                       <div className="flex items-baseline gap-1">
-                        <span className="text-xl font-black text-white">{movie.rating}</span>
+                        <span className="text-xl font-extrabold text-white">{movie.rating}</span>
                         <span className="text-xs text-gray-300">/ 10</span>
                       </div>
                       <p className="text-[11px] text-gray-300 font-medium">{movie.voteCount} Votes</p>
@@ -1008,7 +1008,7 @@ export default function MovieDetailsPage() {
               <div className="mt-8 pt-4 flex flex-wrap items-center gap-4">
                 <button
                   onClick={scrollToBooking}
-                  className="w-full sm:w-auto bg-[#F84464] hover:bg-[#E03A58] text-white text-sm font-black px-10 py-3.5 rounded-2xl shadow-[0_10px_30px_-8px_rgba(248,68,100,0.5)] transition-all duration-200 hover:scale-[1.03] active:scale-95 cursor-pointer flex items-center justify-center gap-2 focus-visible:outline focus-visible:outline-2 focus-visible:outline-white focus-visible:outline-offset-2"
+                  className="w-full sm:w-auto bg-[#F84464] hover:bg-[#E03A58] text-white text-sm sm:text-base font-bold px-10 py-3.5 rounded-2xl shadow-[0_10px_30px_-8px_rgba(248,68,100,0.5)] transition-all duration-200 hover:scale-[1.03] active:scale-95 cursor-pointer flex items-center justify-center gap-2 focus-visible:outline focus-visible:outline-2 focus-visible:outline-white focus-visible:outline-offset-2"
                 >
                   <Ticket className="w-4 h-4" />
                   <span>Book tickets</span>
@@ -1061,7 +1061,7 @@ export default function MovieDetailsPage() {
                       className="w-18 h-18 sm:w-20 sm:h-20 rounded-full object-cover shadow-sm border-2 border-gray-100 group-hover:border-[#F84464] transition-colors duration-200"
                     />
                     {person.role.toLowerCase().includes('director') && (
-                      <span className="absolute -bottom-1 left-1/2 -translate-x-1/2 px-1.5 py-0.2 bg-[#222432] text-white text-[9px] font-black rounded-full shadow-xs whitespace-nowrap">
+                      <span className="absolute -bottom-1 left-1/2 -translate-x-1/2 px-1.5 py-0.2 bg-[#222432] text-white text-[9px] font-bold rounded-full shadow-xs whitespace-nowrap">
                         DIRECTOR
                       </span>
                     )}
@@ -1081,12 +1081,12 @@ export default function MovieDetailsPage() {
           <div className="flex flex-col md:flex-row md:items-center justify-between gap-4 pb-6 border-b border-gray-100">
             <div>
               <div className="flex items-center gap-2 mb-1">
-                <span className="px-2.5 py-0.5 rounded-full text-[10px] font-black uppercase tracking-wider bg-red-50 text-[#F84464] border border-red-200">
+                <span className="px-2.5 py-0.5 rounded-full text-[10px] font-bold uppercase tracking-wider bg-red-50 text-[#F84464] border border-red-200">
                   Audience Pulse
                 </span>
                 <span className="text-xs text-gray-500 font-medium">Verified BookMyShow Audiences</span>
               </div>
-              <h2 className="text-xl sm:text-2xl font-black text-[#222432] tracking-tight my-0">
+              <h2 className="text-xl sm:text-2xl font-bold text-[#222432] tracking-tight my-0">
                 User Reviews &amp; Sentiment
               </h2>
             </div>
@@ -1094,7 +1094,7 @@ export default function MovieDetailsPage() {
             <button
               type="button"
               onClick={() => setRatingModalOpen(true)}
-              className="self-start md:self-auto px-5 py-2.5 bg-[#F84464] hover:bg-[#E03A58] text-white text-xs font-black rounded-xl shadow-[0_4px_16px_rgba(248,68,100,0.35)] transition-all cursor-pointer flex items-center gap-2 active:scale-95"
+              className="self-start md:self-auto px-5 py-2.5 bg-[#F84464] hover:bg-[#E03A58] text-white text-xs font-bold rounded-xl shadow-[0_4px_16px_rgba(248,68,100,0.35)] transition-all cursor-pointer flex items-center gap-2 active:scale-95"
             >
               <Star className="w-3.5 h-3.5 fill-white" />
               <span>Rate &amp; Write Review</span>
@@ -1106,7 +1106,7 @@ export default function MovieDetailsPage() {
             <div className="lg:col-span-4 flex flex-col justify-between space-y-6">
               <div className="bg-gradient-to-br from-gray-50 to-gray-100/70 p-5 rounded-2xl border border-gray-200/70">
                 <div className="flex items-center gap-4 mb-3">
-                  <div className="w-14 h-14 rounded-2xl bg-[#F84464] text-white flex flex-col items-center justify-center font-black shadow-md shadow-red-500/25">
+                  <div className="w-14 h-14 rounded-2xl bg-[#F84464] text-white flex flex-col items-center justify-center font-bold shadow-md shadow-red-500/25">
                     <span className="text-lg leading-none">{movie.rating || '8.8'}</span>
                     <span className="text-[10px] opacity-80 mt-0.5">/ 10</span>
                   </div>
@@ -1273,7 +1273,7 @@ export default function MovieDetailsPage() {
                             </div>
                           </div>
 
-                          <div className="flex items-center gap-1 bg-red-50 text-[#F84464] px-2 py-0.5 rounded-md text-xs font-black border border-red-200 shrink-0">
+                          <div className="flex items-center gap-1 bg-red-50 text-[#F84464] px-2 py-0.5 rounded-md text-xs font-bold border border-red-200 shrink-0">
                             <Star className="w-3 h-3 fill-[#F84464]" />
                             <span>{rev.rating}/10</span>
                           </div>
@@ -1360,14 +1360,14 @@ export default function MovieDetailsPage() {
                       onClick={() => setSelectedDateIndex(targetIdx)}
                       className={`flex flex-col items-center px-4 py-2 rounded-xl text-xs transition-all duration-150 cursor-pointer shrink-0 border ${
                         isWkndActive
-                          ? 'bg-amber-500 border-amber-500 text-white font-black shadow-md scale-[1.02]'
+                          ? 'bg-amber-500 border-amber-500 text-white font-bold shadow-md scale-[1.02]'
                           : 'bg-amber-50/80 border-amber-200 text-amber-900 hover:bg-amber-100 font-bold'
                       }`}
                     >
-                      <span className="text-[9px] uppercase font-black tracking-wider flex items-center gap-1">
+                      <span className="text-[9px] uppercase font-bold tracking-wider flex items-center gap-1">
                         <Sparkles className="w-2.5 h-2.5 text-amber-500" /> WEEKEND
                       </span>
-                      <span className="text-xs font-black">{dates[targetIdx].date}</span>
+                      <span className="text-xs font-bold">{dates[targetIdx].date}</span>
                     </button>
                   );
                 }
@@ -1522,10 +1522,10 @@ export default function MovieDetailsPage() {
                     </button>
                   )}
                   <div>
-                    <span className="text-[10px] uppercase font-black text-[#F84464] tracking-widest block">
+                    <span className="text-[10px] uppercase font-bold text-[#F84464] tracking-widest block">
                       {bookingModal.step === 'vehicle' ? 'Step 1 of 3 • Seat Count' : bookingModal.step === 'snacks' ? 'Step 3 of 3 • Concessions' : 'Step 2 of 3 • Select Seats'}
                     </span>
-                    <h3 className="text-base sm:text-lg font-black text-white leading-tight">
+                    <h3 className="text-base sm:text-lg font-bold text-white leading-tight">
                       {movie.title}
                     </h3>
                     <p className="text-[11px] text-gray-300 mt-0.5 font-medium">
@@ -1552,7 +1552,7 @@ export default function MovieDetailsPage() {
                       <div className="inline-flex items-center gap-1.5 px-2.5 py-0.5 rounded-full bg-red-50 text-[#F84464] text-[10px] font-bold uppercase tracking-wider mb-1.5">
                         <Sparkles className="w-3 h-3" /> BookMyShow Classic
                       </div>
-                      <h3 className="text-lg sm:text-xl font-black text-[#222432] tracking-tight">
+                      <h3 className="text-lg sm:text-xl font-bold text-[#222432] tracking-tight">
                         How Many Seats?
                       </h3>
                       <p className="text-xs text-gray-500 mt-0.5">
@@ -1580,7 +1580,7 @@ export default function MovieDetailsPage() {
                             }`}
                           >
                             <span className="text-xl sm:text-2xl mb-0.5 filter drop-shadow-xs">{t.emoji}</span>
-                            <span className="text-xs font-black">{t.count}</span>
+                            <span className="text-xs font-bold">{t.count}</span>
                             <span className={`text-[8px] font-semibold truncate max-w-full ${isSelected ? 'text-white/90' : 'text-gray-500'}`}>
                               {t.name}
                             </span>
@@ -1591,7 +1591,7 @@ export default function MovieDetailsPage() {
 
                     {/* Price Tiers for this Cinema */}
                     <div className="bg-gray-50 rounded-xl p-3 sm:p-4 border border-gray-100 mb-4">
-                      <p className="text-[10px] font-black uppercase tracking-wider text-gray-500 mb-2">
+                      <p className="text-[10px] font-bold uppercase tracking-wider text-gray-500 mb-2">
                         Auditorium Tiers &amp; Pricing
                       </p>
                       <div className="grid grid-cols-1 sm:grid-cols-3 gap-2">
@@ -1600,21 +1600,21 @@ export default function MovieDetailsPage() {
                             <span className="text-xs font-bold text-gray-900 block">RECLINER VIP</span>
                             <span className="text-[9px] text-emerald-600 font-bold">Plush Luxury</span>
                           </div>
-                          <span className="text-xs font-black text-[#F84464]">₹450</span>
+                          <span className="text-xs font-bold text-[#F84464]">₹450</span>
                         </div>
                         <div className="bg-white p-2.5 rounded-lg border border-gray-200 flex items-center justify-between">
                           <div>
                             <span className="text-xs font-bold text-gray-900 block">PRIME PLUS</span>
                             <span className="text-[9px] text-amber-600 font-bold">Filling Fast</span>
                           </div>
-                          <span className="text-xs font-black text-[#F84464]">₹280</span>
+                          <span className="text-xs font-bold text-[#F84464]">₹280</span>
                         </div>
                         <div className="bg-white p-2.5 rounded-lg border border-gray-200 flex items-center justify-between">
                           <div>
                             <span className="text-xs font-bold text-gray-900 block">CLASSIC</span>
                             <span className="text-[9px] text-emerald-600 font-bold">Available</span>
                           </div>
-                          <span className="text-xs font-black text-[#F84464]">₹180</span>
+                          <span className="text-xs font-bold text-[#F84464]">₹180</span>
                         </div>
                       </div>
                     </div>
@@ -1623,7 +1623,7 @@ export default function MovieDetailsPage() {
                     <button
                       type="button"
                       onClick={() => setBookingModal((prev) => ({ ...prev, step: 'seats' }))}
-                      className="w-full py-3 bg-[#F84464] hover:bg-[#E03A58] text-white text-xs sm:text-sm font-black rounded-xl shadow-sm transition-all active:scale-[0.98] cursor-pointer flex items-center justify-center gap-2"
+                      className="w-full py-3 bg-[#F84464] hover:bg-[#E03A58] text-white text-xs sm:text-sm font-bold rounded-xl shadow-sm transition-all active:scale-[0.98] cursor-pointer flex items-center justify-center gap-2"
                     >
                       <span>Select {bookingModal.seatsCount} {bookingModal.seatsCount === 1 ? 'Seat' : 'Seats'}</span>
                       <ChevronLeft className="w-4 h-4 rotate-180" />
@@ -1644,7 +1644,7 @@ export default function MovieDetailsPage() {
                       </div>
 
                       <div className="flex items-center justify-center gap-1.5 mt-0.5">
-                        <span className="inline-flex items-center gap-1 px-2 py-0.5 rounded-full bg-slate-100 text-slate-700 text-[9px] font-black uppercase tracking-wider border border-slate-200/80 shadow-2xs">
+                        <span className="inline-flex items-center gap-1 px-2 py-0.5 rounded-full bg-slate-100 text-slate-700 text-[9px] font-bold uppercase tracking-wider border border-slate-200/80 shadow-2xs">
                           <Tv className="w-2.5 h-2.5 text-cyan-600" />
                           <span>SCREEN THIS WAY</span>
                         </span>
@@ -1693,7 +1693,7 @@ export default function MovieDetailsPage() {
                               {/* Group Tier Header: Only shown once per tier section */}
                               {isNewTier && (
                                 <div className="flex items-center justify-between pt-1.5 pb-0.5 px-2 border-b border-gray-100 mb-0.5">
-                                  <span className="text-[10px] uppercase font-black tracking-wider text-gray-600">
+                                  <span className="text-[10px] uppercase font-bold tracking-wider text-gray-600">
                                     {rowItem.tier}
                                   </span>
                                   <span className="text-[10px] font-bold text-[#F84464]">
@@ -1755,11 +1755,11 @@ export default function MovieDetailsPage() {
                       <div className="min-w-0">
                         <div className="flex items-center gap-1.5">
                           <span className="text-[11px] font-bold text-gray-500">Seats:</span>
-                          <span className="text-xs font-black text-gray-900 truncate max-w-[140px] sm:max-w-[200px]">
+                          <span className="text-xs font-bold text-gray-900 truncate max-w-[140px] sm:max-w-[200px]">
                             {bookingModal.selectedSeats.join(', ') || 'None selected'}
                           </span>
                         </div>
-                        <div className="text-xs font-black text-[#F84464] mt-0.5">
+                        <div className="text-xs font-bold text-[#F84464] mt-0.5">
                           ₹{ticketsSubtotal} <span className="text-[10px] text-gray-400 font-normal">subtotal</span>
                         </div>
                       </div>
@@ -1768,7 +1768,7 @@ export default function MovieDetailsPage() {
                         type="button"
                         onClick={() => setBookingModal((prev) => ({ ...prev, step: 'snacks' }))}
                         disabled={bookingModal.selectedSeats.length === 0}
-                        className="py-2.5 px-4 bg-[#F84464] hover:bg-[#E03A58] disabled:opacity-50 text-white text-xs font-black rounded-xl shadow-sm transition-all active:scale-[0.98] cursor-pointer flex items-center gap-1.5 shrink-0"
+                        className="py-2.5 px-4 bg-[#F84464] hover:bg-[#E03A58] disabled:opacity-50 text-white text-xs font-bold rounded-xl shadow-sm transition-all active:scale-[0.98] cursor-pointer flex items-center gap-1.5 shrink-0"
                       >
                         <Popcorn className="w-3.5 h-3.5" />
                         <span>Proceed to Snacks ➔</span>
@@ -1786,7 +1786,7 @@ export default function MovieDetailsPage() {
                       <div className="inline-flex items-center gap-1.5 px-2.5 py-0.5 rounded-full bg-amber-50 text-amber-700 text-[10px] font-bold uppercase tracking-wider mb-1">
                         🍿 Multiplex Fresh Concessions
                       </div>
-                      <h3 className="text-lg sm:text-xl font-black text-[#222432] tracking-tight">
+                      <h3 className="text-lg sm:text-xl font-bold text-[#222432] tracking-tight">
                         Grab a Bite!
                       </h3>
                       <p className="text-xs text-gray-500 mt-0.5">
@@ -1921,14 +1921,14 @@ export default function MovieDetailsPage() {
                                   </span>
                                   <span className="text-xs font-bold text-gray-900 truncate">{snack.name}</span>
                                   {snack.badge && (
-                                    <span className="text-[8px] font-black px-1.5 py-0.2 rounded-full bg-amber-100 text-amber-800 uppercase">
+                                    <span className="text-[8px] font-bold px-1.5 py-0.2 rounded-full bg-amber-100 text-amber-800 uppercase">
                                       {snack.badge}
                                     </span>
                                   )}
                                 </div>
                                 <p className="text-[10px] text-gray-500 mt-0.5 line-clamp-1">{snack.desc}</p>
                                 <div className="flex items-center gap-1.5 mt-0.5">
-                                  <span className="text-xs font-black text-gray-900">₹{snack.price}</span>
+                                  <span className="text-xs font-bold text-gray-900">₹{snack.price}</span>
                                   <span className="text-[10px] text-gray-400 font-medium">• {snack.calories}</span>
                                 </div>
                               </div>
@@ -1955,7 +1955,7 @@ export default function MovieDetailsPage() {
                                   >
                                     <Minus className="w-2.5 h-2.5 text-white" />
                                   </button>
-                                  <span className="text-xs font-black px-1 min-w-[14px] text-center">
+                                  <span className="text-xs font-bold px-1 min-w-[14px] text-center">
                                     {qty}
                                   </span>
                                   <button
@@ -2001,8 +2001,8 @@ export default function MovieDetailsPage() {
                         </div>
                       )}
                       <div className="pt-1.5 border-t border-gray-200 flex justify-between items-center text-sm">
-                        <span className="font-black text-gray-900">Total Amount:</span>
-                        <span className="text-base font-black text-[#F84464]">₹{grandTotal}</span>
+                        <span className="font-bold text-gray-900">Total Amount:</span>
+                        <span className="text-base font-bold text-[#F84464]">₹{grandTotal}</span>
                       </div>
                     </div>
 
@@ -2041,7 +2041,7 @@ export default function MovieDetailsPage() {
                           setIsPaymentModalOpen(true);
                         }}
                         disabled={bookingLoading}
-                        className="w-2/3 py-2.5 bg-[#F84464] hover:bg-[#E03A58] disabled:opacity-70 text-white text-xs sm:text-sm font-black rounded-xl shadow-sm transition-all active:scale-[0.98] cursor-pointer flex items-center justify-center gap-2"
+                        className="w-2/3 py-2.5 bg-[#F84464] hover:bg-[#E03A58] disabled:opacity-70 text-white text-xs sm:text-sm font-bold rounded-xl shadow-sm transition-all active:scale-[0.98] cursor-pointer flex items-center justify-center gap-2"
                       >
                         {bookingLoading ? (
                           <>
@@ -2077,7 +2077,7 @@ export default function MovieDetailsPage() {
                 <div className="flex items-start justify-between relative z-10">
                   <div>
                     <div className="flex items-center gap-1.5 mb-1.5">
-                      <span className="inline-flex items-center gap-1 px-2.5 py-0.5 rounded-full bg-[#F84464]/20 border border-[#F84464]/40 text-[#F84464] text-[9px] font-black uppercase tracking-widest">
+                      <span className="inline-flex items-center gap-1 px-2.5 py-0.5 rounded-full bg-[#F84464]/20 border border-[#F84464]/40 text-[#F84464] text-[9px] font-bold uppercase tracking-widest">
                         <Sparkles className="w-2.5 h-2.5" />
                         <span>Official M-Pass</span>
                       </span>
@@ -2086,7 +2086,7 @@ export default function MovieDetailsPage() {
                         <span>Confirmed</span>
                       </span>
                     </div>
-                    <h3 className="text-base sm:text-lg font-black text-white leading-tight">
+                    <h3 className="text-base sm:text-lg font-bold text-white leading-tight">
                       {movie.title}
                     </h3>
                     <div className="flex items-center gap-1.5 text-xs text-gray-300 mt-1 font-medium">
@@ -2125,7 +2125,7 @@ export default function MovieDetailsPage() {
                       includeMargin={false}
                     />
                   </div>
-                  <div className="font-mono text-xs font-black text-slate-800 tracking-widest">
+                  <div className="font-mono text-xs font-bold text-slate-800 tracking-widest">
                     {bookingModal.bookingId}
                   </div>
                   <div className="flex items-center justify-center gap-1.5 text-[10px] font-bold text-emerald-700 bg-emerald-50 border border-emerald-200 px-2.5 py-1 rounded-full mt-2 w-fit mx-auto shadow-2xs">
@@ -2155,13 +2155,13 @@ export default function MovieDetailsPage() {
                   </div>
                   <div>
                     <span className="text-[9px] text-slate-400 block uppercase font-bold">Reserved Seats ({bookingModal.selectedSeats.length})</span>
-                    <span className="font-mono font-black text-[#F84464] text-xs sm:text-sm">
+                    <span className="font-mono font-bold text-[#F84464] text-xs sm:text-sm">
                       {bookingModal.selectedSeats.join(', ')}
                     </span>
                   </div>
                   <div>
                     <span className="text-[9px] text-slate-400 block uppercase font-bold">Total Paid</span>
-                    <span className="font-black text-slate-900 text-xs sm:text-sm">
+                    <span className="font-bold text-slate-900 text-xs sm:text-sm">
                       ₹{grandTotal}
                     </span>
                   </div>
@@ -2174,7 +2174,7 @@ export default function MovieDetailsPage() {
                       <div className="flex items-center gap-2">
                         <span className="text-xl">🍿</span>
                         <div>
-                          <span className="text-xs font-black text-amber-950 block">
+                          <span className="text-xs font-bold text-amber-950 block">
                             Cinema Concessions Voucher
                           </span>
                           <span className="text-[10px] text-amber-800 font-semibold">
@@ -2184,7 +2184,7 @@ export default function MovieDetailsPage() {
                           </span>
                         </div>
                       </div>
-                      <span className="text-xs font-mono font-black text-amber-900 bg-amber-200/60 px-2 py-0.5 rounded-md">
+                      <span className="text-xs font-mono font-bold text-amber-900 bg-amber-200/60 px-2 py-0.5 rounded-md">
                         PAID ₹{snacksTotal}
                       </span>
                     </div>
@@ -2256,7 +2256,7 @@ export default function MovieDetailsPage() {
                     type="button"
                     onClick={handleDownloadPdf}
                     disabled={isGeneratingPdf}
-                    className="w-full py-2.5 px-4 bg-gradient-to-r from-[#222538] via-[#2a2d42] to-[#1c1e2d] hover:from-[#2a2d42] hover:to-[#222538] text-white text-xs font-black rounded-xl shadow-md border border-slate-700/80 transition-all active:scale-[0.98] cursor-pointer flex items-center justify-center gap-2 group"
+                    className="w-full py-2.5 px-4 bg-gradient-to-r from-[#222538] via-[#2a2d42] to-[#1c1e2d] hover:from-[#2a2d42] hover:to-[#222538] text-white text-xs font-bold rounded-xl shadow-md border border-slate-700/80 transition-all active:scale-[0.98] cursor-pointer flex items-center justify-center gap-2 group"
                   >
                     {isGeneratingPdf ? (
                       <>
@@ -2287,7 +2287,7 @@ export default function MovieDetailsPage() {
                   <button
                     type="button"
                     onClick={() => setBookingModal({ ...bookingModal, isOpen: false })}
-                    className="flex-1 py-3 bg-[#F84464] hover:bg-[#E03A58] text-white text-xs font-black rounded-xl transition-all cursor-pointer shadow-sm shadow-red-500/25"
+                    className="flex-1 py-3 bg-[#F84464] hover:bg-[#E03A58] text-white text-xs font-bold rounded-xl transition-all cursor-pointer shadow-sm shadow-red-500/25"
                   >
                     Done
                   </button>
@@ -2339,7 +2339,7 @@ export default function MovieDetailsPage() {
                   ))}
                 </div>
 
-                <div className="text-base font-black text-[#F84464] mb-6">
+                <div className="text-base font-bold text-[#F84464] mb-6">
                   {userRatingScore} / 10
                 </div>
 

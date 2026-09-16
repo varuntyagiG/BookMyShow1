@@ -303,11 +303,11 @@ export default function HomePage({ searchQuery }) {
               </div>
 
               <div style={{ transform: 'translateZ(20px)' }}>
-                <div className="inline-flex items-center gap-1.5 px-3 py-1 rounded-full bg-[#F84464]/20 border border-[#F84464]/40 text-[#F84464] text-[10px] font-black uppercase tracking-wider mb-2 shadow-xs">
+                <div className="inline-flex items-center gap-1.5 px-3 py-1 rounded-full bg-[#F84464]/20 border border-[#F84464]/40 text-[#F84464] text-[10px] font-bold uppercase tracking-wider mb-2 shadow-xs">
                   <Sparkles className="w-3 h-3" />
                   <span>Meet CineBot • Your 3D Cinema Companion</span>
                 </div>
-                <h3 className="text-xl sm:text-2xl font-black text-white tracking-tight">
+                <h3 className="text-xl sm:text-2xl font-bold text-white tracking-tight">
                   Hosting a Corporate Premiere or Private Screen?
                 </h3>
                 <p className="text-xs text-gray-300 mt-1 max-w-xl leading-relaxed">
@@ -320,7 +320,7 @@ export default function HomePage({ searchQuery }) {
               type="button"
               onClick={() => alert('BookMyShow Private Screenings: Connect with our VIP Concierge team at vip@bookmyshow.com or +91 22 6144 5050 for custom auditoriums.')}
               style={{ transform: 'translateZ(30px)' }}
-              className="shrink-0 bg-gradient-to-r from-[#F84464] via-[#ff4769] to-[#E03A58] hover:from-[#ff5576] hover:to-[#eb4464] text-white text-xs font-black py-3.5 px-6 rounded-2xl transition-all shadow-[0_8px_25px_rgba(248,68,100,0.5)] active:scale-95 flex items-center gap-2 cursor-pointer z-10 border border-white/20"
+              className="shrink-0 bg-gradient-to-r from-[#F84464] via-[#ff4769] to-[#E03A58] hover:from-[#ff5576] hover:to-[#eb4464] text-white text-xs sm:text-sm font-bold py-3.5 px-6 rounded-2xl transition-all shadow-[0_8px_25px_rgba(248,68,100,0.5)] active:scale-95 flex items-center gap-2 cursor-pointer z-10 border border-white/20"
             >
               <span>Enquire Private Screen</span>
               <ChevronRight className="w-4 h-4" />

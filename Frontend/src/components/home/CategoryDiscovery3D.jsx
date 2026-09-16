@@ -67,14 +67,14 @@ function DiscoveryCard3D({ item }) {
             loading="lazy"
             className="w-full h-full object-cover"
           />
-          <div className="absolute top-2 left-2 px-2 py-0.5 rounded-full bg-black/60 backdrop-blur-md border border-white/15 text-white text-[9px] font-black uppercase tracking-wider">
+          <div className="absolute top-2 left-2 px-2 py-0.5 rounded-full bg-black/60 backdrop-blur-md border border-white/15 text-white text-[9px] font-bold uppercase tracking-wider">
             {item.tag}
           </div>
         </div>
 
         {/* Card Typography & Actions */}
         <div style={{ transform: isHovered ? 'translateZ(20px)' : 'translateZ(0px)', transition: 'transform 0.3s ease-out' }}>
-          <h4 className="text-sm font-black text-white group-hover:text-[#F84464] transition-colors leading-snug">
+          <h4 className="text-sm font-bold text-white group-hover:text-[#F84464] transition-colors leading-snug">
             {item.title}
           </h4>
           <p className="text-[11px] text-gray-400 mt-0.5 line-clamp-1">
@@ -136,7 +136,7 @@ export default function CategoryDiscovery3D() {
       <div className="flex items-center justify-between mb-4 px-1">
         <div className="flex items-center gap-2">
           <div className="w-1.5 h-5 bg-[#F84464] rounded-full shadow-[0_0_8px_rgba(248,68,100,0.8)]" />
-          <h3 className="text-base sm:text-lg font-black text-white tracking-tight flex items-center gap-2">
+          <h3 className="text-base sm:text-lg font-bold text-white tracking-tight flex items-center gap-2">
             <span>Explore The Experience</span>
             <Sparkles className="w-4 h-4 text-[#F84464]" />
           </h3>

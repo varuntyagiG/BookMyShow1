@@ -31,7 +31,7 @@ export default function VIPCinema3DSection() {
                 <span>Next-Gen Cinema Dimension</span>
               </div>
 
-              <h2 className="text-2xl sm:text-3xl lg:text-4xl font-black text-white tracking-tight leading-tight">
+              <h2 className="text-2xl sm:text-3xl lg:text-4xl font-extrabold text-white tracking-tight leading-tight">
                 Immerse Yourself in <span className="bg-gradient-to-r from-white via-rose-100 to-[#F84464] bg-clip-text text-transparent">Full 3D &amp; VIP Luxury</span>
               </h2>
 

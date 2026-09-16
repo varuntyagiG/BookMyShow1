@@ -96,7 +96,7 @@ export default function EventsPage() {
         {/* Page Header */}
         <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4 mb-6">
           <div>
-            <h1 className="text-2xl sm:text-3xl font-black text-gray-900 tracking-tight my-0">
+            <h1 className="text-2xl sm:text-3xl lg:text-[36px] font-extrabold text-gray-900 tracking-tight my-0">
               Live Events in {selectedCity}
             </h1>
             <p className="text-xs text-gray-500 mt-1">
@@ -172,7 +172,7 @@ export default function EventsPage() {
                   <div className="mt-5 pt-3.5 border-t border-gray-100 flex items-center justify-between">
                     <div>
                       <span className="text-[10px] text-gray-400 block uppercase font-medium">Starting from</span>
-                      <span className="text-xs font-black text-gray-900">{event.price}</span>
+                      <span className="text-xs font-bold text-gray-900">{event.price}</span>
                     </div>
                     <button
                       onClick={(e) => {
@@ -214,7 +214,7 @@ export default function EventsPage() {
                 <span className="text-[10px] font-bold text-[#F84464] uppercase tracking-wider block mb-1">
                   Event Pass Booking
                 </span>
-                <h3 className="text-lg font-black text-gray-900 mb-1 leading-tight">{selectedEvent.title}</h3>
+                <h3 className="text-lg font-bold text-gray-900 mb-1 leading-tight">{selectedEvent.title}</h3>
                 <p className="text-xs text-gray-500 mb-5">{selectedEvent.venue} • {selectedEvent.date}</p>
 
                 <div className="mb-5">
@@ -249,7 +249,7 @@ export default function EventsPage() {
                   </div>
                   <div className="flex justify-between pt-2 border-t border-gray-200 font-bold text-sm">
                     <span>Total Passes:</span>
-                    <span className="text-[#F84464] font-black">{ticketCount} Pass(es)</span>
+                    <span className="text-[#F84464] font-bold">{ticketCount} Pass(es)</span>
                   </div>
                 </div>
 
@@ -282,7 +282,7 @@ export default function EventsPage() {
                 <div className="w-14 h-14 bg-green-100 rounded-full flex items-center justify-center mx-auto mb-3 shadow-inner">
                   <CheckCircle className="w-8 h-8 text-green-600 animate-bounce" />
                 </div>
-                <h3 className="text-xl font-black text-gray-900 mb-1">Passes Confirmed!</h3>
+                <h3 className="text-xl font-bold text-gray-900 mb-1">Passes Confirmed!</h3>
                 <p className="text-xs text-gray-500 mb-5">
                   {ticketCount} Pass(es) booked for <strong>{selectedEvent.title}</strong>
                 </p>

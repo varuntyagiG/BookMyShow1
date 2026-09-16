@@ -100,7 +100,7 @@ export default function TicketPassCard({
             <span className="text-[10px] uppercase font-bold text-slate-400 block -mb-0.5">
               Total
             </span>
-            <span className="text-sm font-black text-slate-900 tracking-tight">
+            <span className="text-sm font-bold text-slate-900 tracking-tight">
               ₹{Number(totalAmount).toLocaleString('en-IN')}
             </span>
           </div>
@@ -116,7 +116,7 @@ export default function TicketPassCard({
             />
           )}
           <div className="min-w-0 flex-1">
-            <h3 className="text-base sm:text-lg font-black text-slate-900 leading-snug line-clamp-1 group-hover:text-[#F84464] transition-colors">
+            <h3 className="text-base sm:text-lg font-bold text-slate-900 leading-snug line-clamp-1 group-hover:text-[#F84464] transition-colors">
               {movieTitle}
             </h3>
 

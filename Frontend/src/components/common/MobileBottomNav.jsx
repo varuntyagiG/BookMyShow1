@@ -98,8 +98,8 @@ export default function MobileBottomNav() {
               <span
                 className={`text-[10px] tracking-tight transition-all duration-200 ${
                   isActive
-                    ? 'font-black text-[#F84464]'
-                    : 'font-semibold text-gray-400 group-hover:text-gray-200'
+                    ? 'font-bold text-[#F84464]'
+                    : 'font-medium text-gray-400 group-hover:text-gray-200'
                 }`}
               >
                 {item.label}
