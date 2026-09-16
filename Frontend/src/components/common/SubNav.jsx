@@ -101,8 +101,8 @@ export default function SubNav() {
       onMouseLeave={handleMouseLeave}
       className={`sticky top-[68px] z-30 select-none text-xs transition-all duration-300 ${
         isScrolled
-          ? 'bg-[#0A0C14]/96 backdrop-blur-2xl border-b border-white/[0.08] text-gray-200 shadow-[0_6px_25px_-5px_rgba(0,0,0,0.5)]'
-          : 'bg-[#0E1018]/94 backdrop-blur-2xl border-b border-white/[0.08] text-gray-200 shadow-[0_4px_20px_-4px_rgba(0,0,0,0.35)]'
+          ? 'bg-[#1A1B24]/98 backdrop-blur-xl border-b border-white/10 text-[#A6A8B3] shadow-[0_6px_20px_-5px_rgba(0,0,0,0.4)]'
+          : 'bg-[#1A1B24] border-b border-white/10 text-[#A6A8B3]'
       }`}
     >
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
@@ -116,13 +116,13 @@ export default function SubNav() {
                 setActiveMegaMenu(null);
                 playPop();
               }}
-              className={`hover:text-white transition-all cursor-pointer relative py-2 text-[13px] sm:text-sm font-semibold shrink-0 flex items-center ${
-                currentPath === '/' ? 'text-white font-semibold' : 'text-gray-300 hover:text-white'
+              className={`transition-all cursor-pointer relative py-2 text-[13px] sm:text-sm font-semibold shrink-0 flex items-center ${
+                currentPath === '/' ? 'text-[#F5F5F7]' : 'text-[#A6A8B3] hover:text-[#F5F5F7]'
               }`}
             >
               <span>All</span>
               {currentPath === '/' && (
-                <span className="absolute bottom-0 left-0 right-0 h-0.5 bg-gradient-to-r from-[#F84464] to-[#ff6b85] rounded-full shadow-[0_0_12px_rgba(248,68,100,0.95)]" />
+                <span className="absolute bottom-0 left-0 right-0 h-0.5 bg-[#F84464] rounded-full shadow-[0_0_8px_rgba(248,68,100,0.7)]" />
               )}
             </Link>
 
@@ -142,8 +142,8 @@ export default function SubNav() {
                       setActiveMegaMenu(null);
                       playPop();
                     }}
-                    className={`hover:text-white transition-all cursor-pointer relative py-2 text-[13px] sm:text-sm font-semibold shrink-0 flex items-center gap-1.5 ${
-                      isActive || isHovered ? 'text-white font-semibold' : 'text-gray-300 hover:text-white'
+                    className={`transition-all cursor-pointer relative py-2 text-[13px] sm:text-sm font-semibold shrink-0 flex items-center gap-1.5 ${
+                      isActive || isHovered ? 'text-[#F5F5F7]' : 'text-[#A6A8B3] hover:text-[#F5F5F7]'
                     }`}
                   >
                     <span>{cat.label}</span>
@@ -151,17 +151,17 @@ export default function SubNav() {
                       <span 
                         className={`px-1.5 py-0.5 text-[9px] sm:text-[10px] rounded font-bold uppercase tracking-wider shadow-xs ${
                           cat.badge === 'NEW' 
-                            ? 'bg-gradient-to-r from-[#F84464] to-[#ff5978] text-white animate-pulse' 
+                            ? 'bg-[#F84464] text-white' 
                             : cat.badge === 'VIP' 
-                            ? 'bg-amber-500/20 text-amber-300 border border-amber-500/40' 
-                            : 'bg-red-500/20 text-[#ff5978] border border-red-500/30'
+                            ? 'bg-[#F5B800]/20 text-[#F5B800] border border-[#F5B800]/30' 
+                            : 'bg-[#F84464]/20 text-[#F84464] border border-[#F84464]/30'
                         }`}
                       >
                         {cat.badge}
                       </span>
                     )}
                     {(isActive || isHovered) && (
-                      <span className="absolute bottom-0 left-0 right-0 h-0.5 bg-gradient-to-r from-[#F84464] to-[#ff6b85] rounded-full shadow-[0_0_12px_rgba(248,68,100,0.95)]" />
+                      <span className="absolute bottom-0 left-0 right-0 h-0.5 bg-[#F84464] rounded-full shadow-[0_0_8px_rgba(248,68,100,0.7)]" />
                     )}
                   </Link>
                 </div>
@@ -183,20 +183,20 @@ export default function SubNav() {
                   }}
                   className={`transition-all flex items-center gap-1.5 text-xs font-semibold cursor-pointer ${
                     item.highlight 
-                      ? 'bg-white/[0.10] hover:bg-white/[0.18] border border-white/20 px-3 py-1 rounded-full text-gray-100 hover:text-white shadow-sm hover:border-[#F84464]/50 backdrop-blur-md' 
-                      : (currentPath === item.path ? 'text-white font-semibold' : 'text-gray-300 hover:text-white')
+                      ? 'bg-[#292B35] hover:bg-[#323440] border border-white/10 hover:border-white/20 px-3 py-1 rounded-full text-[#F5F5F7] shadow-2xs' 
+                      : (currentPath === item.path ? 'text-[#F5F5F7] font-semibold' : 'text-[#A6A8B3] hover:text-[#F5F5F7]')
                   }`}
                 >
-                  {Icon && <Icon className={`w-3 h-3 ${item.highlight ? 'text-[#F84464]' : 'text-gray-400'}`} />}
+                  {Icon && <Icon className={`w-3 h-3 ${item.highlight ? 'text-[#F84464]' : 'text-[#A6A8B3]'}`} />}
                   <span>{item.label}</span>
                 </Link>
               ) : (
                 <button
                   key={item.label}
                   onClick={() => alert(`${item.label}: Exclusive services portal.`)}
-                  className="hover:text-white transition-colors flex items-center gap-1 font-semibold cursor-pointer text-gray-400 hover:text-white text-xs"
+                  className="transition-colors flex items-center gap-1 font-semibold cursor-pointer text-[#A6A8B3] hover:text-[#F5F5F7] text-xs"
                 >
-                  {Icon && <Icon className="w-3 h-3 text-gray-400" />}
+                  {Icon && <Icon className="w-3 h-3 text-[#A6A8B3]" />}
                   <span>{item.label}</span>
                 </button>
               );
@@ -214,18 +214,18 @@ export default function SubNav() {
       {activeMegaMenu === 'movies' && (
         <div 
           onMouseEnter={() => handleMouseEnter('movies')}
-          className="absolute top-full left-0 right-0 w-full bg-[#12141F]/98 backdrop-blur-2xl border-b border-white/10 shadow-[0_30px_70px_rgba(0,0,0,0.85)] py-6 z-50 animate-in fade-in slide-in-from-top-2 duration-200"
+          className="absolute top-full left-0 right-0 w-full bg-[#1A1B24]/98 backdrop-blur-2xl border-b border-white/10 shadow-[0_30px_70px_rgba(0,0,0,0.7)] py-6 z-50 animate-in fade-in slide-in-from-top-2 duration-200"
         >
-          {/* Glowing Top Accent Beam */}
-          <div className="absolute top-0 left-0 right-0 h-[1px] bg-gradient-to-r from-transparent via-[#F84464]/70 to-transparent" />
+          {/* Subtle Top Accent Hairline */}
+          <div className="absolute top-0 left-0 right-0 h-[1px] bg-gradient-to-r from-transparent via-[#F84464]/35 to-transparent" />
 
           <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-            <div className="grid grid-cols-12 gap-6 text-white">
+            <div className="grid grid-cols-12 gap-6 text-[#F5F5F7]">
 
               {/* Col 1: Now Showing Blockbusters (4 Cols) */}
               <div className="col-span-12 lg:col-span-5 pr-0 lg:pr-4 border-b lg:border-b-0 lg:border-r border-white/10 pb-4 lg:pb-0">
                 <div className="flex items-center justify-between mb-3.5">
-                  <div className="flex items-center gap-2 text-xs font-bold uppercase tracking-wider text-gray-300">
+                  <div className="flex items-center gap-2 text-xs font-bold uppercase tracking-wider text-[#A6A8B3]">
                     <Film className="w-3.5 h-3.5 text-[#F84464]" />
                     <span>Now Showing in Cinemas</span>
                   </div>
@@ -250,22 +250,22 @@ export default function SubNav() {
                       key={m.id}
                       to={`/movies/${m.id}`}
                       onClick={() => { setActiveMegaMenu(null); playPop(); }}
-                      className="p-2.5 rounded-xl bg-white/[0.05] hover:bg-white/[0.12] border border-white/10 hover:border-[#F84464]/50 transition-all group flex flex-col justify-between"
+                      className="p-2.5 rounded-xl bg-[#20212B] hover:bg-[#292B35] border border-white/10 hover:border-white/20 transition-all group flex flex-col justify-between"
                     >
                       <div>
                         <div className="flex items-center justify-between gap-1 mb-1">
-                          <span className="text-[9px] font-bold uppercase tracking-wider px-1.5 py-0.5 rounded bg-white/10 text-gray-300 group-hover:bg-[#F84464]/25 group-hover:text-[#F84464] transition-colors">
+                          <span className="text-[9px] font-bold uppercase tracking-wider px-1.5 py-0.5 rounded bg-white/10 text-[#A6A8B3] group-hover:bg-[#F84464]/20 group-hover:text-[#F84464] transition-colors">
                             {m.format}
                           </span>
-                          <span className="flex items-center gap-0.5 text-[10px] font-bold text-amber-400">
-                            <Star className="w-2.5 h-2.5 fill-amber-400 text-amber-400" />
+                          <span className="flex items-center gap-0.5 text-[10px] font-bold text-[#F5B800]">
+                            <Star className="w-2.5 h-2.5 fill-[#F5B800] text-[#F5B800]" />
                             <span>{m.rating}</span>
                           </span>
                         </div>
-                        <h4 className="font-bold text-xs text-gray-100 group-hover:text-white line-clamp-1 leading-snug">
+                        <h4 className="font-bold text-xs text-[#F5F5F7] group-hover:text-white line-clamp-1 leading-snug">
                           {m.title}
                         </h4>
-                        <p className="text-[10px] text-gray-400 mt-0.5">{m.lang}</p>
+                        <p className="text-[10px] text-[#A6A8B3] mt-0.5">{m.lang}</p>
                       </div>
 
                       <div className="mt-2 pt-2 border-t border-white/5 flex items-center justify-between text-[10px] font-bold text-[#F84464]">
@@ -390,12 +390,12 @@ export default function SubNav() {
       {activeMegaMenu === 'cinemas' && (
         <div 
           onMouseEnter={() => handleMouseEnter('cinemas')}
-          className="absolute top-full left-0 right-0 w-full bg-[#12141F]/98 backdrop-blur-2xl border-b border-white/10 shadow-[0_30px_70px_rgba(0,0,0,0.85)] py-6 z-50 animate-in fade-in slide-in-from-top-2 duration-200"
+          className="absolute top-full left-0 right-0 w-full bg-[#1A1B24]/98 backdrop-blur-2xl border-b border-white/10 shadow-[0_30px_70px_rgba(0,0,0,0.7)] py-6 z-50 animate-in fade-in slide-in-from-top-2 duration-200"
         >
-          <div className="absolute top-0 left-0 right-0 h-[1px] bg-gradient-to-r from-transparent via-[#F84464]/70 to-transparent" />
+          <div className="absolute top-0 left-0 right-0 h-[1px] bg-gradient-to-r from-transparent via-[#F84464]/35 to-transparent" />
 
           <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-            <div className="grid grid-cols-1 sm:grid-cols-3 gap-6 text-white">
+            <div className="grid grid-cols-1 sm:grid-cols-3 gap-6 text-[#F5F5F7]">
 
               {/* Col 1: Flagship Chains */}
               <div className="border-r border-white/10 pr-4">
@@ -481,12 +481,12 @@ export default function SubNav() {
       {activeMegaMenu === 'events' && (
         <div 
           onMouseEnter={() => handleMouseEnter('events')}
-          className="absolute top-full left-0 right-0 w-full bg-[#12141F]/98 backdrop-blur-2xl border-b border-white/10 shadow-[0_30px_70px_rgba(0,0,0,0.85)] py-6 z-50 animate-in fade-in slide-in-from-top-2 duration-200"
+          className="absolute top-full left-0 right-0 w-full bg-[#1A1B24]/98 backdrop-blur-2xl border-b border-white/10 shadow-[0_30px_70px_rgba(0,0,0,0.7)] py-6 z-50 animate-in fade-in slide-in-from-top-2 duration-200"
         >
-          <div className="absolute top-0 left-0 right-0 h-[1px] bg-gradient-to-r from-transparent via-[#F84464]/70 to-transparent" />
+          <div className="absolute top-0 left-0 right-0 h-[1px] bg-gradient-to-r from-transparent via-[#F84464]/35 to-transparent" />
 
           <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-            <div className="grid grid-cols-1 sm:grid-cols-3 gap-6 text-white">
+            <div className="grid grid-cols-1 sm:grid-cols-3 gap-6 text-[#F5F5F7]">
 
               {/* Col 1: Live Concerts */}
               <div className="border-r border-white/10 pr-4">
@@ -578,9 +578,9 @@ export default function SubNav() {
       {activeMegaMenu === 'stream' && (
         <div 
           onMouseEnter={() => handleMouseEnter('stream')}
-          className="absolute top-full left-0 right-0 w-full bg-[#12141F]/98 backdrop-blur-2xl border-b border-white/10 shadow-[0_30px_70px_rgba(0,0,0,0.85)] py-5 z-50 animate-in fade-in slide-in-from-top-2 duration-200"
+          className="absolute top-full left-0 right-0 w-full bg-[#1A1B24]/98 backdrop-blur-2xl border-b border-white/10 shadow-[0_30px_70px_rgba(0,0,0,0.7)] py-5 z-50 animate-in fade-in slide-in-from-top-2 duration-200"
         >
-          <div className="absolute top-0 left-0 right-0 h-[1px] bg-gradient-to-r from-transparent via-[#F84464]/70 to-transparent" />
+          <div className="absolute top-0 left-0 right-0 h-[1px] bg-gradient-to-r from-transparent via-[#F84464]/35 to-transparent" />
           <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
             <div className="flex flex-col sm:flex-row items-center justify-between gap-4">
               <div className="flex items-center gap-3">

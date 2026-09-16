@@ -100,17 +100,16 @@ export default function Navbar({ onSearch }) {
 
   return (
     <header 
-      className={`sticky top-0 z-40 text-white select-none transition-all duration-300 ${
+      className={`sticky top-0 z-40 text-[#F5F5F7] select-none transition-all duration-300 ${
         isScrolled
-          ? 'bg-[#0E1019]/96 backdrop-blur-2xl shadow-[0_15px_35px_-10px_rgba(0,0,0,0.85)] border-b border-white/[0.08]'
-          : 'bg-[#12141F]/94 backdrop-blur-2xl shadow-[0_12px_30px_-10px_rgba(0,0,0,0.5)] border-b border-white/[0.08]'
+          ? 'bg-[#20212B]/98 backdrop-blur-xl shadow-[0_10px_30px_-10px_rgba(0,0,0,0.5)] border-b border-white/10'
+          : 'bg-[#20212B] backdrop-blur-md shadow-[0_4px_20px_rgba(0,0,0,0.25)] border-b border-white/10'
       }`}
     >
       
-      {/* Theatrical Ambient Projector Laser Underglow Beam */}
-      <div className="relative h-[1.5px] w-full overflow-hidden">
-        <div className="absolute inset-0 bg-gradient-to-r from-transparent via-[#F84464]/85 to-transparent opacity-90 shadow-[0_0_15px_rgba(248,68,100,0.9)]" />
-        <div className="absolute inset-0 bg-gradient-to-r from-transparent via-[#ff5f7e] to-transparent animate-pulse opacity-75" />
+      {/* Subtle Refined Hairline Accent */}
+      <div className="relative h-[1px] w-full overflow-hidden bg-white/5">
+        <div className="absolute inset-0 bg-gradient-to-r from-transparent via-[#F84464]/30 to-transparent" />
       </div>
 
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
@@ -128,10 +127,10 @@ export default function Navbar({ onSearch }) {
               </div>
 
               <div className="flex flex-col">
-                <span className="text-xl sm:text-[22px] font-extrabold tracking-tight text-white flex items-center transition-transform group-hover:scale-[1.01] leading-none">
+                <span className="text-xl sm:text-[22px] font-extrabold tracking-tight text-[#F5F5F7] flex items-center transition-transform group-hover:scale-[1.01] leading-none">
                   book<span className="bg-gradient-to-r from-[#F84464] via-[#ff5f7e] to-[#F84464] bg-clip-text text-transparent">my</span>show
                 </span>
-                <span className="text-[10px] font-bold uppercase tracking-[0.16em] text-slate-400 group-hover:text-slate-200 transition-colors mt-1">
+                <span className="text-[10px] font-bold uppercase tracking-[0.16em] text-[#A6A8B3] group-hover:text-[#F5F5F7] transition-colors mt-1">
                   CINEMA &bull; EXPERIENCES
                 </span>
               </div>
@@ -141,15 +140,15 @@ export default function Navbar({ onSearch }) {
             <div ref={searchBoxRef} className="relative flex-1 hidden sm:block max-w-xl">
               <form onSubmit={handleSearchSubmit} className="relative">
                 <div 
-                  className={`relative flex items-center rounded-xl transition-all duration-300 backdrop-blur-md ${
+                  className={`relative flex items-center rounded-xl transition-all duration-200 ${
                     searchFocused 
-                      ? 'bg-white/[0.20] ring-2 ring-[#F84464]/70 border-transparent shadow-[0_0_25px_rgba(248,68,100,0.35)]' 
-                      : 'bg-white/[0.10] hover:bg-white/[0.16] border border-white/20'
+                      ? 'bg-[#292B35] ring-2 ring-[#F84464]/70 border-transparent shadow-[0_0_15px_rgba(248,68,100,0.25)]' 
+                      : 'bg-[#292B35] hover:bg-[#30333f] border border-white/10 hover:border-white/20'
                   }`}
                 >
                   <Search 
                     className={`absolute left-3.5 w-4 h-4 transition-colors pointer-events-none ${
-                      searchFocused ? 'text-[#F84464]' : 'text-gray-300'
+                      searchFocused ? 'text-[#F84464]' : 'text-[#A6A8B3]'
                     }`} 
                   />
                   <input
@@ -162,7 +161,7 @@ export default function Navbar({ onSearch }) {
                       setSearchInput(e.target.value);
                       if (onSearch) onSearch(e.target.value);
                     }}
-                    className="w-full pl-10 pr-14 py-2.5 bg-transparent text-white text-[13px] font-normal placeholder-slate-400 focus:outline-none transition-all"
+                    className="w-full pl-10 pr-14 py-2.5 bg-transparent text-[#F5F5F7] text-[13px] font-normal placeholder-[#A6A8B3] focus:outline-none transition-all"
                   />
                   
                   {/* Right side helper (clear and Ctrl+K shortcut) */}
@@ -171,13 +170,13 @@ export default function Navbar({ onSearch }) {
                       <button
                         type="button"
                         onClick={handleClearSearch}
-                        className="p-1 text-gray-400 hover:text-white rounded-full cursor-pointer transition-colors"
+                        className="p-1 text-[#A6A8B3] hover:text-[#F5F5F7] rounded-full cursor-pointer transition-colors"
                         title="Clear search"
                       >
                         <X className="w-3.5 h-3.5" />
                       </button>
                     ) : (
-                      <kbd className="hidden lg:inline-flex items-center gap-0.5 px-1.5 py-0.5 text-[10px] font-medium text-slate-400 bg-white/10 border border-white/15 rounded-md select-none">
+                      <kbd className="hidden lg:inline-flex items-center gap-0.5 px-1.5 py-0.5 text-[10px] font-medium text-[#A6A8B3] bg-white/[0.06] border border-white/10 rounded-md select-none">
                         <span>Ctrl</span> K
                       </kbd>
                     )}
@@ -187,16 +186,16 @@ export default function Navbar({ onSearch }) {
 
               {/* Suggestions Popup Dropdown */}
               {searchFocused && (
-                <div className="absolute top-full left-0 right-0 mt-2 bg-[#1B1D28]/98 backdrop-blur-2xl text-white rounded-2xl shadow-[0_25px_60px_-15px_rgba(0,0,0,0.8)] border border-white/10 py-3 z-50 animate-in fade-in zoom-in-95 duration-150">
-                  <div className="px-4 py-1.5 text-[10px] uppercase font-bold text-gray-400 tracking-wider flex items-center justify-between border-b border-white/5 pb-2">
+                <div className="absolute top-full left-0 right-0 mt-2 bg-[#20212B] backdrop-blur-2xl text-[#F5F5F7] rounded-2xl shadow-[0_25px_60px_-15px_rgba(0,0,0,0.8)] border border-white/10 py-3 z-50 animate-in fade-in zoom-in-95 duration-150">
+                  <div className="px-4 py-1.5 text-[10px] uppercase font-bold text-[#A6A8B3] tracking-wider flex items-center justify-between border-b border-white/10 pb-2">
                     <span className="flex items-center gap-1.5 text-[#F84464]">
                       <Sparkles className="w-3.5 h-3.5" />
                       <span>{searchInput ? 'Matching Results' : 'Trending Blockbusters & Events'}</span>
                     </span>
-                    <span className="text-[9px] text-gray-500 font-normal">Esc to dismiss</span>
+                    <span className="text-[9px] text-[#A6A8B3] font-normal">Esc to dismiss</span>
                   </div>
 
-                  <div className="mt-1 divide-y divide-white/5 max-h-80 overflow-y-auto no-scrollbar">
+                  <div className="mt-1 divide-y divide-white/10 max-h-80 overflow-y-auto no-scrollbar">
                     {filteredQuickSearches.map((item) => (
                       <button
                         key={item.title}
@@ -208,27 +207,27 @@ export default function Navbar({ onSearch }) {
                           playPop();
                           navigate(item.path);
                         }}
-                        className="w-full px-4 py-2.5 text-left hover:bg-white/[0.08] flex items-center justify-between text-xs cursor-pointer transition-colors group"
+                        className="w-full px-4 py-2.5 text-left hover:bg-[#292B35] flex items-center justify-between text-xs cursor-pointer transition-colors group"
                       >
                         <div className="flex items-center gap-3">
                           <div className="w-8 h-8 rounded-lg bg-[#F84464]/15 border border-[#F84464]/30 flex items-center justify-center text-[#F84464] shrink-0 group-hover:scale-105 group-hover:bg-[#F84464]/25 transition-all">
                             <Film className="w-4 h-4" />
                           </div>
                           <div>
-                            <span className="font-semibold text-gray-200 group-hover:text-white transition-colors block leading-snug">
+                            <span className="font-semibold text-[#F5F5F7] group-hover:text-white transition-colors block leading-snug">
                               {item.title}
                             </span>
-                            <span className="text-[10px] text-gray-400">
+                            <span className="text-[10px] text-[#A6A8B3]">
                               {item.category}
                             </span>
                           </div>
                         </div>
 
                         <div className="flex items-center gap-2">
-                          <span className="text-[10px] px-2 py-0.5 rounded-full bg-white/10 border border-white/10 text-gray-300 font-semibold group-hover:bg-[#F84464]/20 group-hover:text-[#F84464] group-hover:border-[#F84464]/30 transition-all">
+                          <span className="text-[10px] px-2 py-0.5 rounded-full bg-white/[0.06] border border-white/10 text-[#A6A8B3] font-semibold group-hover:bg-[#F84464]/20 group-hover:text-[#F84464] group-hover:border-[#F84464]/30 transition-all">
                             {item.type}
                           </span>
-                          <ArrowRight className="w-3.5 h-3.5 text-gray-500 opacity-0 group-hover:opacity-100 group-hover:translate-x-0.5 transition-all" />
+                          <ArrowRight className="w-3.5 h-3.5 text-[#A6A8B3] opacity-0 group-hover:opacity-100 group-hover:translate-x-0.5 transition-all" />
                         </div>
                       </button>
                     ))}
@@ -247,15 +246,15 @@ export default function Navbar({ onSearch }) {
                 playPop();
                 setIsCityModalOpen(true);
               }}
-              className="flex items-center gap-2 text-xs text-gray-100 hover:text-white transition-all cursor-pointer py-1.5 px-3 sm:px-3.5 rounded-full bg-white/[0.09] hover:bg-white/[0.18] border border-white/20 backdrop-blur-md active:scale-95 shadow-sm hover:border-[#F84464]/50 hover:shadow-[0_0_15px_rgba(248,68,100,0.2)]"
+              className="flex items-center gap-2 text-xs text-[#F5F5F7] hover:text-white transition-all cursor-pointer py-1.5 px-3 sm:px-3.5 rounded-full bg-[#292B35] hover:bg-[#30333f] border border-white/10 hover:border-white/20 active:scale-95 shadow-xs"
               title="Change City"
             >
               <div className="relative flex items-center justify-center">
                 <MapPin className="w-3.5 h-3.5 text-[#F84464]" />
                 <span className="absolute -top-0.5 -right-0.5 w-1.5 h-1.5 bg-[#F84464] rounded-full animate-ping" />
               </div>
-              <span className="font-semibold text-slate-200 text-[13px]">{selectedCity}</span>
-              <ChevronDown className="w-3.5 h-3.5 text-slate-300" />
+              <span className="font-semibold text-[#F5F5F7] text-[13px]">{selectedCity}</span>
+              <ChevronDown className="w-3.5 h-3.5 text-[#A6A8B3]" />
             </button>
 
             {/* Live Notification Bell */}
@@ -264,13 +263,13 @@ export default function Navbar({ onSearch }) {
                 playPop();
                 setIsOpenDrawer(true);
               }}
-              className="relative p-2 text-gray-200 hover:text-white rounded-full bg-white/[0.09] hover:bg-white/[0.18] border border-white/20 backdrop-blur-md transition-all cursor-pointer active:scale-95 hover:border-[#F84464]/50"
+              className="relative p-2 text-[#F5F5F7] hover:text-white rounded-full bg-[#292B35] hover:bg-[#30333f] border border-white/10 hover:border-white/20 transition-all cursor-pointer active:scale-95 shadow-xs"
               title="Notifications"
               aria-label="Notifications"
             >
               <Bell className="w-4 h-4" />
               {unreadCount > 0 && (
-                <span className="absolute -top-1 -right-1 min-w-[18px] h-[18px] px-1 bg-gradient-to-r from-[#F84464] to-[#ff4767] text-white text-[9px] font-bold rounded-full flex items-center justify-center shadow-lg shadow-[#F84464]/50 animate-pulse">
+                <span className="absolute -top-1 -right-1 min-w-[18px] h-[18px] px-1 bg-[#F84464] text-white text-[9px] font-bold rounded-full flex items-center justify-center shadow-md shadow-[#F84464]/50">
                   {unreadCount > 9 ? '9+' : unreadCount}
                 </span>
               )}
@@ -280,10 +279,10 @@ export default function Navbar({ onSearch }) {
             <Link
               to="/my-bookings"
               onClick={() => playPop()}
-              className="hidden lg:flex items-center gap-1.5 text-[13px] sm:text-sm text-amber-300 hover:text-amber-100 transition-all cursor-pointer py-1.5 px-3.5 rounded-full bg-amber-500/15 hover:bg-amber-500/25 border border-amber-500/35 backdrop-blur-md active:scale-95 shadow-[0_0_12px_rgba(245,158,11,0.2)] group"
+              className="hidden lg:flex items-center gap-1.5 text-[13px] sm:text-sm text-[#F5B800] hover:text-[#ffd24d] transition-all cursor-pointer py-1.5 px-3.5 rounded-full bg-[#F5B800]/15 hover:bg-[#F5B800]/25 border border-[#F5B800]/30 active:scale-95 shadow-[0_0_10px_rgba(245,184,0,0.15)] group"
               title="View Digital M-Ticket & Gate Pass"
             >
-              <Ticket className="w-3.5 h-3.5 text-amber-400 group-hover:rotate-12 transition-transform" />
+              <Ticket className="w-3.5 h-3.5 text-[#F5B800] group-hover:rotate-12 transition-transform" />
               <span className="font-semibold text-[13px] sm:text-sm tracking-normal">M-Pass</span>
             </Link>
 
@@ -295,36 +294,36 @@ export default function Navbar({ onSearch }) {
                     playPop();
                     setUserDropdownOpen(!userDropdownOpen);
                   }}
-                  className="flex items-center gap-2 py-1 px-1.5 sm:px-2.5 rounded-full bg-white/[0.09] hover:bg-white/[0.18] backdrop-blur-md transition-all cursor-pointer border border-white/20 active:scale-95 hover:border-[#F84464]/50 group"
+                  className="flex items-center gap-2 py-1 px-1.5 sm:px-2.5 rounded-full bg-[#292B35] hover:bg-[#30333f] transition-all cursor-pointer border border-white/10 hover:border-white/20 active:scale-95 group shadow-xs"
                 >
                   {/* Square-Curved Avatar Tile */}
                   <div className="relative">
                     <div className="w-7 h-7 sm:w-8 sm:h-8 rounded-lg bg-gradient-to-tr from-[#F84464] via-[#ff3b5c] to-[#e0183e] flex items-center justify-center text-white text-xs font-bold shadow-md ring-2 ring-[#F84464]/50 group-hover:ring-[#F84464] transition-all">
                       {user?.name ? user.name.charAt(0).toUpperCase() : 'U'}
                     </div>
-                    <span className="absolute -top-1 -right-1 w-2.5 h-2.5 bg-amber-400 rounded-full border border-black flex items-center justify-center shadow-xs">
+                    <span className="absolute -top-1 -right-1 w-2.5 h-2.5 bg-[#F5B800] rounded-full border border-black flex items-center justify-center shadow-xs">
                       <Crown className="w-1.5 h-1.5 text-black" />
                     </span>
                   </div>
 
-                  <span className="text-[13px] sm:text-sm font-semibold max-w-[110px] truncate hidden md:inline text-slate-200 group-hover:text-white transition-colors">
+                  <span className="text-[13px] sm:text-sm font-semibold max-w-[110px] truncate hidden md:inline text-[#F5F5F7] group-hover:text-white transition-colors">
                     {user?.name?.split(' ')[0] || 'Member'}
                   </span>
-                  <ChevronDown className="w-3.5 h-3.5 text-slate-400 group-hover:text-white transition-colors" />
+                  <ChevronDown className="w-3.5 h-3.5 text-[#A6A8B3] group-hover:text-[#F5F5F7] transition-colors" />
                 </button>
 
                 {/* Dropdown Menu */}
                 {userDropdownOpen && (
-                  <div className="absolute right-0 mt-2.5 w-68 bg-[#1B1D28]/98 backdrop-blur-2xl rounded-2xl shadow-[0_20px_50px_rgba(0,0,0,0.8)] py-2 text-white border border-white/10 z-50 animate-in fade-in zoom-in-95 duration-150 divide-y divide-white/10">
+                  <div className="absolute right-0 mt-2.5 w-68 bg-[#20212B] backdrop-blur-2xl rounded-2xl shadow-[0_20px_50px_rgba(0,0,0,0.8)] py-2 text-[#F5F5F7] border border-white/10 z-50 animate-in fade-in zoom-in-95 duration-150 divide-y divide-white/10">
                     
                     {/* Header Banner */}
-                    <div className="px-4 py-3.5 bg-gradient-to-b from-white/[0.06] to-transparent">
-                      <div className="flex items-center gap-1.5 text-[10px] text-amber-400 font-bold uppercase tracking-wider mb-1.5">
+                    <div className="px-4 py-3.5 bg-gradient-to-b from-white/[0.04] to-transparent">
+                      <div className="flex items-center gap-1.5 text-[10px] text-[#F5B800] font-bold uppercase tracking-wider mb-1.5">
                         <Crown className="w-3.5 h-3.5" />
                         <span>BookMyShow Superstar Member</span>
                       </div>
-                      <p className="text-sm font-bold text-white truncate">{user?.name}</p>
-                      <p className="text-xs text-gray-400 truncate mt-0.5">{user?.email}</p>
+                      <p className="text-sm font-bold text-[#F5F5F7] truncate">{user?.name}</p>
+                      <p className="text-xs text-[#A6A8B3] truncate mt-0.5">{user?.email}</p>
                     </div>
 
                     {/* Quick Access Links */}
@@ -335,14 +334,14 @@ export default function Navbar({ onSearch }) {
                           playPop();
                           setUserDropdownOpen(false);
                         }}
-                        className="w-full flex items-center gap-3 px-4 py-2.5 text-xs font-semibold text-gray-200 hover:bg-white/10 hover:text-[#F84464] cursor-pointer transition-colors group"
+                        className="w-full flex items-center gap-3 px-4 py-2.5 text-xs font-semibold text-[#F5F5F7] hover:bg-[#292B35] hover:text-[#F84464] cursor-pointer transition-colors group"
                       >
                         <div className="w-7 h-7 rounded-lg bg-[#F84464]/15 flex items-center justify-center text-[#F84464] group-hover:scale-110 transition-transform">
                           <Ticket className="w-3.5 h-3.5" />
                         </div>
                         <div className="flex-1">
                           <span className="block font-bold">Your Orders &amp; Tickets</span>
-                          <span className="text-[10px] text-gray-400 font-normal">Digital M-Pass &amp; QR Turnstile</span>
+                          <span className="text-[10px] text-[#A6A8B3] font-normal">Digital M-Pass &amp; QR Turnstile</span>
                         </div>
                       </Link>
 
@@ -352,14 +351,14 @@ export default function Navbar({ onSearch }) {
                           playPop();
                           setUserDropdownOpen(false);
                         }}
-                        className="w-full flex items-center gap-3 px-4 py-2.5 text-xs font-semibold text-gray-200 hover:bg-white/10 hover:text-[#F84464] cursor-pointer transition-colors group"
+                        className="w-full flex items-center gap-3 px-4 py-2.5 text-xs font-semibold text-[#F5F5F7] hover:bg-[#292B35] hover:text-[#F84464] cursor-pointer transition-colors group"
                       >
-                        <div className="w-7 h-7 rounded-lg bg-white/10 flex items-center justify-center text-gray-300 group-hover:scale-110 transition-transform">
+                        <div className="w-7 h-7 rounded-lg bg-white/10 flex items-center justify-center text-[#A6A8B3] group-hover:text-white group-hover:scale-110 transition-transform">
                           <Settings className="w-3.5 h-3.5" />
                         </div>
                         <div className="flex-1">
                           <span className="block font-bold">Account &amp; Security</span>
-                          <span className="text-[10px] text-gray-400 font-normal">Manage payment &amp; profile</span>
+                          <span className="text-[10px] text-[#A6A8B3] font-normal">Manage payment &amp; profile</span>
                         </div>
                       </Link>
                     </div>
@@ -394,7 +393,7 @@ export default function Navbar({ onSearch }) {
                       navigate('/signin');
                     }
                   }}
-                  className="bg-gradient-to-r from-[#F84464] via-[#ff4769] to-[#e03a58] hover:from-[#ff5274] hover:to-[#eb4363] text-white text-[13px] sm:text-sm font-bold px-5 py-2 rounded-xl transition-all shadow-[0_4px_16px_rgba(248,68,100,0.4)] hover:shadow-[0_6px_24px_rgba(248,68,100,0.6)] active:scale-95 cursor-pointer flex items-center gap-1.5"
+                  className="bg-gradient-to-r from-[#F84464] via-[#ff4769] to-[#e03a58] hover:from-[#ff5274] hover:to-[#eb4363] text-white text-[13px] sm:text-sm font-bold px-5 py-2 rounded-xl transition-all shadow-[0_4px_14px_rgba(248,68,100,0.35)] hover:shadow-[0_6px_20px_rgba(248,68,100,0.5)] active:scale-95 cursor-pointer flex items-center gap-1.5"
                 >
                   <span>Sign In</span>
                 </button>
@@ -409,7 +408,7 @@ export default function Navbar({ onSearch }) {
         <div className="pb-3 sm:hidden">
           <form onSubmit={handleSearchSubmit} className="relative">
             <div className="relative flex items-center">
-              <Search className="absolute left-3.5 w-4 h-4 text-gray-400 pointer-events-none" />
+              <Search className="absolute left-3.5 w-4 h-4 text-[#A6A8B3] pointer-events-none" />
               <input
                 type="text"
                 placeholder="Search movies, events, sports..."
@@ -418,13 +417,13 @@ export default function Navbar({ onSearch }) {
                   setSearchInput(e.target.value);
                   if (onSearch) onSearch(e.target.value);
                 }}
-                className="w-full pl-10 pr-9 py-2.5 bg-white/[0.08] text-white text-[13px] font-normal rounded-xl placeholder-slate-400 border border-white/10 focus:outline-none focus:ring-2 focus:ring-[#F84464]/50"
+                className="w-full pl-10 pr-9 py-2.5 bg-[#292B35] text-[#F5F5F7] text-[13px] font-normal rounded-xl placeholder-[#A6A8B3] border border-white/10 focus:outline-none focus:ring-2 focus:ring-[#F84464]/50"
               />
               {searchInput && (
                 <button
                   type="button"
                   onClick={handleClearSearch}
-                  className="absolute right-2.5 p-1 text-gray-400 hover:text-white"
+                  className="absolute right-2.5 p-1 text-[#A6A8B3] hover:text-[#F5F5F7]"
                 >
                   <X className="w-3.5 h-3.5" />
                 </button>
