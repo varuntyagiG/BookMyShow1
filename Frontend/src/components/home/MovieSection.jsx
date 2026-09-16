@@ -24,14 +24,14 @@ export default function MovieSection({ movies = [], onMovieClick }) {
   if (!movies.length) return null;
 
   return (
-    <section className="py-10 bg-[#0b0c14] text-white select-none">
+    <section className="py-10 bg-[#12131A] text-[#F5F5F7] select-none border-t border-b border-white/5">
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
         
-        {/* Section Header (24–28px Desktop / 20–24px Mobile, Weight 700) */}
+        {/* Section Header */}
         <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-3 mb-6">
           <div className="flex items-center gap-2.5">
-            <div className="w-1.5 h-6 bg-[#F84464] rounded-full shadow-[0_0_10px_rgba(248,68,100,0.8)]" />
-            <h2 className="text-xl sm:text-2xl lg:text-[26px] font-bold text-white tracking-tight flex items-center gap-2">
+            <div className="w-1.5 h-6 bg-[#F84464] rounded-full" />
+            <h2 className="text-xl sm:text-2xl lg:text-[26px] font-bold text-[#F5F5F7] tracking-tight flex items-center gap-2">
               <span>Recommended Movies</span>
               <Sparkles className="w-4 h-4 text-[#F84464]" />
             </h2>
@@ -49,7 +49,7 @@ export default function MovieSection({ movies = [], onMovieClick }) {
           </button>
         </div>
 
-        {/* Filter Pills (12–13px, Weight 500) */}
+        {/* Filter Pills */}
         <div className="flex items-center gap-2 overflow-x-auto no-scrollbar pb-3 mb-5">
           {filterPills.map((pill) => {
             const isSelected = selectedFilter === pill;
@@ -62,8 +62,8 @@ export default function MovieSection({ movies = [], onMovieClick }) {
                 }}
                 className={`px-4 py-1.5 rounded-full text-xs sm:text-[13px] font-medium shrink-0 transition-all cursor-pointer ${
                   isSelected
-                    ? 'bg-gradient-to-r from-[#F84464] to-rose-600 text-white shadow-md shadow-rose-900/40 border border-transparent active:scale-95 font-semibold'
-                    : 'bg-slate-900/90 text-slate-300 hover:text-white hover:bg-slate-800 border border-slate-800 active:scale-95'
+                    ? 'bg-[#F84464] text-white border border-[#F84464] shadow-none active:scale-95 font-semibold'
+                    : 'bg-[#20212B] text-[#A6A8B3] hover:text-[#F5F5F7] hover:bg-[#292B35] border border-white/10 active:scale-95'
                 }`}
               >
                 {pill}

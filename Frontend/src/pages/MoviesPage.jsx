@@ -112,16 +112,16 @@ export default function MoviesPage() {
   ];
 
   return (
-    <div className="bg-[#F5F5FA] text-[#222432] min-h-screen py-8">
+    <div className="bg-[#12131A] text-[#F5F5F7] min-h-screen py-8 select-none">
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
 
         {/* Top Header */}
         <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4 mb-7">
           <div>
-            <h1 className="text-2xl sm:text-3xl lg:text-[36px] font-extrabold text-[#222432] tracking-tight my-0">
+            <h1 className="text-2xl sm:text-3xl lg:text-[36px] font-extrabold text-[#F5F5F7] tracking-tight my-0">
               Movies in {selectedCity}
             </h1>
-            <p className="text-xs sm:text-sm text-gray-500 mt-1.5">
+            <p className="text-xs sm:text-sm text-[#A6A8B3] mt-1.5">
               Explore trending blockbusters, new releases, and upcoming cinema tickets
             </p>
           </div>
@@ -130,7 +130,7 @@ export default function MoviesPage() {
           <div className="flex items-center gap-2 overflow-x-auto no-scrollbar pb-0.5">
             <button
               onClick={() => setMobileFilterOpen(!mobileFilterOpen)}
-              className="lg:hidden px-3.5 py-2 bg-white border border-gray-200 text-[#222432] rounded-full text-xs font-bold shrink-0 shadow-xs flex items-center gap-1.5 transition-colors hover:border-[#F84464]/40 cursor-pointer"
+              className="lg:hidden px-3.5 py-2 bg-[#20212B] border border-white/10 text-[#F5F5F7] rounded-full text-xs font-bold shrink-0 shadow-xs flex items-center gap-1.5 transition-colors hover:border-[#F84464]/40 cursor-pointer"
             >
               <SlidersHorizontal className="w-3.5 h-3.5 text-[#F84464]" />
               <span>Filters {hasActiveFilters && `(${activeFilterList.length})`}</span>
@@ -141,13 +141,13 @@ export default function MoviesPage() {
             </span>
             <button
               onClick={() => alert('Coming Soon lineup: Fantastic Four, Superman, Avatar 3')}
-              className="px-4 py-2 bg-white border border-gray-200 text-gray-700 hover:border-[#F84464]/40 hover:text-[#222432] rounded-full text-xs font-semibold shrink-0 cursor-pointer transition-colors"
+              className="px-4 py-2 bg-[#20212B] border border-white/10 text-[#A6A8B3] hover:border-white/20 hover:text-[#F5F5F7] rounded-full text-xs font-semibold shrink-0 cursor-pointer transition-colors"
             >
               Coming Soon
             </button>
             <button
               onClick={() => alert('Cinema chains in ' + selectedCity + ': PVR Inox, Cinepolis, Miraj, MovieMax')}
-              className="px-4 py-2 bg-white border border-gray-200 text-gray-700 hover:border-[#F84464]/40 hover:text-[#222432] rounded-full text-xs font-semibold shrink-0 cursor-pointer transition-colors"
+              className="px-4 py-2 bg-[#20212B] border border-white/10 text-[#A6A8B3] hover:border-white/20 hover:text-[#F5F5F7] rounded-full text-xs font-semibold shrink-0 cursor-pointer transition-colors"
             >
               Cinemas
             </button>
@@ -161,11 +161,11 @@ export default function MoviesPage() {
           <div className={`lg:col-span-1 space-y-4 lg:sticky lg:top-32 lg:self-start lg:max-h-[calc(100vh-9rem)] lg:overflow-y-auto no-scrollbar pb-6 ${mobileFilterOpen ? 'block' : 'hidden lg:block'}`}>
 
             {/* Filters Box */}
-            <div className="bg-white rounded-xl p-5 shadow-xs border border-gray-200">
-              <div className="flex items-center justify-between pb-4 border-b border-gray-100">
+            <div className="bg-[#1A1B24] rounded-2xl p-5 border border-white/10 shadow-xs">
+              <div className="flex items-center justify-between pb-4 border-b border-white/10">
                 <div className="flex items-center gap-2">
                   <Filter className="w-4 h-4 text-[#F84464]" />
-                  <h2 className="text-sm font-bold text-[#222432] my-0 uppercase tracking-wider">Filters</h2>
+                  <h2 className="text-sm font-bold text-[#F5F5F7] my-0 uppercase tracking-wider">Filters</h2>
                 </div>
                 {hasActiveFilters && (
                   <button
@@ -179,18 +179,18 @@ export default function MoviesPage() {
               </div>
 
               {/* Languages Accordion */}
-              <div className="py-4 border-b border-gray-100">
+              <div className="py-4 border-b border-white/10">
                 <button
                   onClick={() =>
                     setOpenSections((prev) => ({ ...prev, languages: !prev.languages }))
                   }
-                  className="w-full flex items-center justify-between text-xs font-bold text-gray-800 cursor-pointer mb-3"
+                  className="w-full flex items-center justify-between text-xs font-bold text-[#F5F5F7] cursor-pointer mb-3"
                 >
-                  <span className="uppercase tracking-wider text-gray-600">Languages</span>
+                  <span className="uppercase tracking-wider text-[#A6A8B3]">Languages</span>
                   {openSections.languages ? (
-                    <ChevronUp className="w-4 h-4 text-gray-400" />
+                    <ChevronUp className="w-4 h-4 text-[#A6A8B3]" />
                   ) : (
-                    <ChevronDown className="w-4 h-4 text-gray-400" />
+                    <ChevronDown className="w-4 h-4 text-[#A6A8B3]" />
                   )}
                 </button>
                 {openSections.languages && (
@@ -203,7 +203,7 @@ export default function MoviesPage() {
                           onClick={() => toggleFilter(selectedLanguages, setSelectedLanguages, lang)}
                           className={`px-3 py-1.5 rounded-lg text-xs font-semibold transition-all duration-150 cursor-pointer ${isChecked
                               ? 'bg-[#F84464] text-white shadow-xs'
-                              : 'bg-gray-100 border border-gray-200 hover:bg-gray-200 text-gray-700'
+                              : 'bg-[#20212B] border border-white/10 hover:border-white/20 text-[#A6A8B3] hover:text-[#F5F5F7]'
                             }`}
                         >
                           {lang}
@@ -215,18 +215,18 @@ export default function MoviesPage() {
               </div>
 
               {/* Genres Accordion */}
-              <div className="py-4 border-b border-gray-100">
+              <div className="py-4 border-b border-white/10">
                 <button
                   onClick={() =>
                     setOpenSections((prev) => ({ ...prev, genres: !prev.genres }))
                   }
-                  className="w-full flex items-center justify-between text-xs font-bold text-gray-800 cursor-pointer mb-3"
+                  className="w-full flex items-center justify-between text-xs font-bold text-[#F5F5F7] cursor-pointer mb-3"
                 >
-                  <span className="uppercase tracking-wider text-gray-600">Genres</span>
+                  <span className="uppercase tracking-wider text-[#A6A8B3]">Genres</span>
                   {openSections.genres ? (
-                    <ChevronUp className="w-4 h-4 text-gray-400" />
+                    <ChevronUp className="w-4 h-4 text-[#A6A8B3]" />
                   ) : (
-                    <ChevronDown className="w-4 h-4 text-gray-400" />
+                    <ChevronDown className="w-4 h-4 text-[#A6A8B3]" />
                   )}
                 </button>
                 {openSections.genres && (
@@ -239,7 +239,7 @@ export default function MoviesPage() {
                           onClick={() => toggleFilter(selectedGenres, setSelectedGenres, genre)}
                           className={`px-3 py-1.5 rounded-lg text-xs font-semibold transition-all duration-150 cursor-pointer ${isChecked
                               ? 'bg-[#F84464] text-white shadow-xs'
-                              : 'bg-gray-100 border border-gray-200 hover:bg-gray-200 text-gray-700'
+                              : 'bg-[#20212B] border border-white/10 hover:border-white/20 text-[#A6A8B3] hover:text-[#F5F5F7]'
                             }`}
                         >
                           {genre}
@@ -256,13 +256,13 @@ export default function MoviesPage() {
                   onClick={() =>
                     setOpenSections((prev) => ({ ...prev, formats: !prev.formats }))
                   }
-                  className="w-full flex items-center justify-between text-xs font-bold text-gray-800 cursor-pointer mb-3"
+                  className="w-full flex items-center justify-between text-xs font-bold text-[#F5F5F7] cursor-pointer mb-3"
                 >
-                  <span className="uppercase tracking-wider text-gray-600">Format</span>
+                  <span className="uppercase tracking-wider text-[#A6A8B3]">Format</span>
                   {openSections.formats ? (
-                    <ChevronUp className="w-4 h-4 text-gray-400" />
+                    <ChevronUp className="w-4 h-4 text-[#A6A8B3]" />
                   ) : (
-                    <ChevronDown className="w-4 h-4 text-gray-400" />
+                    <ChevronDown className="w-4 h-4 text-[#A6A8B3]" />
                   )}
                 </button>
                 {openSections.formats && (
@@ -275,7 +275,7 @@ export default function MoviesPage() {
                           onClick={() => toggleFilter(selectedFormats, setSelectedFormats, fmt)}
                           className={`px-3 py-1.5 rounded-lg text-xs font-semibold transition-all duration-150 cursor-pointer ${isChecked
                               ? 'bg-[#F84464] text-white shadow-xs'
-                              : 'bg-gray-100 border border-gray-200 hover:bg-gray-200 text-gray-700'
+                              : 'bg-[#20212B] border border-white/10 hover:border-white/20 text-[#A6A8B3] hover:text-[#F5F5F7]'
                             }`}
                         >
                           {fmt}
@@ -289,9 +289,9 @@ export default function MoviesPage() {
             </div>
 
             {/* Promo Banner in Sidebar */}
-            <div className="relative bg-gradient-to-br from-[#333545] to-[#1F2533] p-5 rounded-xl text-white text-xs shadow-md border border-gray-700/50 overflow-hidden">
+            <div className="relative bg-gradient-to-br from-[#20212B] to-[#1A1B24] p-5 rounded-2xl text-[#F5F5F7] text-xs shadow-md border border-white/10 overflow-hidden">
               <p className="font-extrabold text-sm text-[#F84464]">BookMyShow Stream</p>
-              <p className="text-gray-300 mt-2 leading-relaxed">
+              <p className="text-[#A6A8B3] mt-2 leading-relaxed">
                 Missed a blockbuster in theatres? Rent or buy straight to your screen!
               </p>
             </div>
@@ -301,7 +301,7 @@ export default function MoviesPage() {
           <div className="lg:col-span-3">
 
             {/* Sorting & Filter Tags Toolbar */}
-            <div className="bg-white p-4 rounded-xl border border-gray-200 mb-6 flex flex-col sm:flex-row sm:items-center justify-between gap-3 shadow-xs">
+            <div className="bg-[#1A1B24] p-4 rounded-2xl border border-white/10 mb-6 flex flex-col sm:flex-row sm:items-center justify-between gap-3 shadow-xs">
 
               {/* Active Filter Chips */}
               <div className="flex items-center gap-1.5 flex-wrap flex-1">
@@ -309,20 +309,20 @@ export default function MoviesPage() {
                   activeFilterList.map((chip) => (
                     <span
                       key={chip.label}
-                      className="inline-flex items-center gap-1 px-2.5 py-1 bg-red-50 text-[#F84464] border border-red-200 rounded-full text-xs font-bold"
+                      className="inline-flex items-center gap-1 px-2.5 py-1 bg-[#F84464]/15 text-[#F84464] border border-[#F84464]/30 rounded-full text-xs font-bold"
                     >
                       <span>{chip.label}</span>
                       <button
                         type="button"
                         onClick={chip.clear}
-                        className="p-0.5 hover:bg-red-100 rounded-full cursor-pointer transition-colors"
+                        className="p-0.5 hover:bg-[#F84464]/30 rounded-full cursor-pointer transition-colors"
                       >
                         <X className="w-3 h-3" />
                       </button>
                     </span>
                   ))
                 ) : (
-                  <span className="text-xs text-gray-500 font-medium">
+                  <span className="text-xs text-[#A6A8B3] font-medium">
                     Showing all available releases in {selectedCity}
                   </span>
                 )}
@@ -330,26 +330,26 @@ export default function MoviesPage() {
 
               {/* Sort By Dropdown */}
               <div className="flex items-center gap-2 shrink-0 text-xs">
-                <span className="text-gray-500 font-semibold flex items-center gap-1">
-                  <ArrowUpDown className="w-3.5 h-3.5 text-gray-400" /> Sort:
+                <span className="text-[#A6A8B3] font-semibold flex items-center gap-1">
+                  <ArrowUpDown className="w-3.5 h-3.5 text-[#A6A8B3]" /> Sort:
                 </span>
                 <select
                   value={sortBy}
                   onChange={(e) => setSortBy(e.target.value)}
-                  className="bg-gray-50 border border-gray-300 rounded-md px-3 py-1.5 text-xs font-bold text-gray-800 focus:outline-none focus:border-[#F84464] cursor-pointer"
+                  className="bg-[#20212B] border border-white/10 rounded-lg px-3 py-1.5 text-xs font-bold text-[#F5F5F7] focus:outline-none focus:border-[#F84464] cursor-pointer"
                 >
-                  <option value="popularity">Popularity</option>
-                  <option value="rating">Top Rated</option>
-                  <option value="release">New Releases</option>
+                  <option value="popularity" className="bg-[#20212B] text-[#F5F5F7]">Popularity</option>
+                  <option value="rating" className="bg-[#20212B] text-[#F5F5F7]">Top Rated</option>
+                  <option value="release" className="bg-[#20212B] text-[#F5F5F7]">New Releases</option>
                 </select>
               </div>
 
             </div>
 
             {loading ? (
-              <div className="flex flex-col items-center justify-center py-24 bg-white rounded-xl border border-gray-200 shadow-xs">
+              <div className="flex flex-col items-center justify-center py-24 bg-[#1A1B24] rounded-2xl border border-white/10 shadow-xs">
                 <Loader2 className="w-8 h-8 text-[#F84464] animate-spin mb-3" />
-                <p className="text-xs text-gray-500 font-semibold">Loading movies in {selectedCity}...</p>
+                <p className="text-xs text-[#A6A8B3] font-semibold">Loading movies in {selectedCity}...</p>
               </div>
             ) : filteredMovies.length > 0 ? (
               <div className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 gap-4 sm:gap-6">
@@ -358,16 +358,16 @@ export default function MoviesPage() {
                 ))}
               </div>
             ) : (
-              <div className="bg-white rounded-xl p-10 sm:p-12 text-center border border-gray-200 shadow-xs">
-                <p className="text-base font-bold text-gray-800 mb-1.5">
+              <div className="bg-[#1A1B24] rounded-2xl p-10 sm:p-12 text-center border border-white/10 shadow-xs">
+                <p className="text-base font-bold text-[#F5F5F7] mb-1.5">
                   No movies match your selected filters
                 </p>
-                <p className="text-xs text-gray-500 mb-6 max-w-sm mx-auto leading-relaxed">
+                <p className="text-xs text-[#A6A8B3] mb-6 max-w-sm mx-auto leading-relaxed">
                   Try adjusting or resetting your filter choices to explore more titles.
                 </p>
                 <button
                   onClick={clearAllFilters}
-                  className="bg-[#F84464] hover:bg-[#E03A58] active:scale-[0.97] text-white text-xs font-bold py-2.5 px-6 rounded-lg cursor-pointer shadow-xs transition-all duration-200"
+                  className="bg-[#F84464] hover:bg-[#E03A58] active:scale-[0.97] text-white text-xs font-bold py-2.5 px-6 rounded-xl cursor-pointer shadow-xs transition-all duration-200"
                 >
                   Reset All Filters
                 </button>
