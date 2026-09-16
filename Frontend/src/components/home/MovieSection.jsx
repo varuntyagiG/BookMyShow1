@@ -1,5 +1,5 @@
 import React, { useState, useMemo } from 'react';
-import { ChevronRight } from 'lucide-react';
+import { ChevronRight, Sparkles } from 'lucide-react';
 import { useNavigate } from 'react-router-dom';
 import MovieCard from './MovieCard';
 import { playPop } from '../../utils/soundEffects';
@@ -24,14 +24,16 @@ export default function MovieSection({ movies = [], onMovieClick }) {
   if (!movies.length) return null;
 
   return (
-    <section className="py-10 bg-[#F5F5FA] text-[#222432] select-none">
+    <section className="py-10 bg-[#0b0c14] text-white select-none">
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
         
         {/* Section Header */}
         <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-3 mb-6">
-          <div className="flex items-center gap-2">
-            <h2 className="text-xl sm:text-2xl font-bold text-[#222432] tracking-tight">
-              Recommended Movies
+          <div className="flex items-center gap-2.5">
+            <div className="w-1.5 h-6 bg-[#F84464] rounded-full shadow-[0_0_10px_rgba(248,68,100,0.8)]" />
+            <h2 className="text-xl sm:text-2xl font-black text-white tracking-tight flex items-center gap-2">
+              <span>Recommended Movies</span>
+              <Sparkles className="w-4 h-4 text-[#F84464]" />
             </h2>
           </div>
 
@@ -40,15 +42,15 @@ export default function MovieSection({ movies = [], onMovieClick }) {
               playPop();
               navigate('/movies');
             }}
-            className="flex items-center gap-1 text-xs sm:text-sm font-semibold text-[#F84464] hover:text-[#e03a58] transition-colors cursor-pointer self-start sm:self-auto group"
+            className="flex items-center gap-1 text-xs sm:text-sm font-bold text-[#F84464] hover:text-[#ff6b85] transition-colors cursor-pointer self-start sm:self-auto group"
           >
             <span>See All</span>
             <ChevronRight className="w-4 h-4 transform group-hover:translate-x-0.5 transition-transform" />
           </button>
         </div>
 
-        {/* Filter Pills */}
-        <div className="flex items-center gap-2 overflow-x-auto no-scrollbar pb-3 mb-4">
+        {/* Filter Pills (Dark Glassmorphic Style) */}
+        <div className="flex items-center gap-2 overflow-x-auto no-scrollbar pb-3 mb-5">
           {filterPills.map((pill) => {
             const isSelected = selectedFilter === pill;
             return (
@@ -58,10 +60,10 @@ export default function MovieSection({ movies = [], onMovieClick }) {
                   playPop();
                   setSelectedFilter(pill);
                 }}
-                className={`px-3.5 py-1.5 rounded-full text-xs font-semibold shrink-0 transition-all cursor-pointer ${
+                className={`px-4 py-1.5 rounded-full text-xs font-bold shrink-0 transition-all cursor-pointer ${
                   isSelected
-                    ? 'bg-[#F84464] text-white shadow-xs'
-                    : 'bg-white text-gray-700 hover:bg-gray-100 border border-gray-200'
+                    ? 'bg-gradient-to-r from-[#F84464] to-rose-600 text-white shadow-md shadow-rose-900/40 border border-transparent active:scale-95'
+                    : 'bg-slate-900/90 text-slate-300 hover:text-white hover:bg-slate-800 border border-slate-800 active:scale-95'
                 }`}
               >
                 {pill}
@@ -70,7 +72,7 @@ export default function MovieSection({ movies = [], onMovieClick }) {
           })}
         </div>
 
-        {/* 5-Column Movie Grid (Pure BookMyShow) */}
+        {/* 5-Column Movie Grid */}
         <div className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-5 gap-4 sm:gap-6">
           {filteredMovies.slice(0, 10).map((movie) => (
             <MovieCard

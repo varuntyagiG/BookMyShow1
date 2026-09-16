@@ -136,12 +136,12 @@ export default function CategoryDiscovery3D() {
       <div className="flex items-center justify-between mb-4 px-1">
         <div className="flex items-center gap-2">
           <div className="w-1.5 h-5 bg-[#F84464] rounded-full shadow-[0_0_8px_rgba(248,68,100,0.8)]" />
-          <h3 className="text-base sm:text-lg font-black text-[#222432] tracking-tight flex items-center gap-2">
+          <h3 className="text-base sm:text-lg font-black text-white tracking-tight flex items-center gap-2">
             <span>Explore The Experience</span>
             <Sparkles className="w-4 h-4 text-[#F84464]" />
           </h3>
         </div>
-        <span className="text-xs text-gray-500 font-semibold hidden sm:inline">
+        <span className="text-xs text-slate-400 font-semibold hidden sm:inline">
           Tap any 3D category for instant access
         </span>
       </div>

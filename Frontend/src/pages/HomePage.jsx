@@ -63,39 +63,39 @@ export default function HomePage({ searchQuery }) {
   });
 
   /* =========================
-     LOADING UI
+     LOADING UI (Dark Cinema Shimmer)
   ========================= */
 
   if (loading && !data.movies.length) {
     return (
-      <main className="flex-1 min-h-screen bg-[#F5F5FA] py-6 px-4 sm:px-6 lg:px-8 max-w-7xl mx-auto w-full">
+      <main className="flex-1 min-h-screen bg-[#0b0c14] py-6 px-4 sm:px-6 lg:px-8 max-w-7xl mx-auto w-full">
         {/* Shimmer Status */}
         <div className="flex items-center gap-2 mb-6 px-1">
           <span className="w-2 h-2 rounded-full bg-[#F84464] animate-pulse" />
-          <span className="text-xs font-semibold text-gray-500">
-            Fetching blockbusters &amp; experiences in <strong className="text-gray-800">{selectedCity}</strong>...
+          <span className="text-xs font-semibold text-slate-400">
+            Fetching blockbusters &amp; experiences in <strong className="text-white">{selectedCity}</strong>...
           </span>
         </div>
 
         {/* Hero Carousel Skeleton */}
-        <div className="w-full h-56 sm:h-72 md:h-80 rounded-2xl bg-gray-200 animate-pulse mb-10 shadow-xs" />
+        <div className="w-full h-56 sm:h-72 md:h-80 rounded-3xl bg-slate-900/80 border border-slate-800 animate-pulse mb-10 shadow-xl" />
 
         {/* Recommended Movies Header Skeleton */}
         <div className="flex items-center justify-between mb-5 px-1">
           <div className="flex items-center gap-2.5">
             <div className="w-1.5 h-6 bg-[#F84464] rounded-full" />
-            <div className="w-48 h-6 rounded-lg bg-gray-200 animate-pulse" />
+            <div className="w-48 h-6 rounded-lg bg-slate-800/80 animate-pulse" />
           </div>
-          <div className="w-16 h-4 rounded-md bg-gray-200 animate-pulse hidden sm:block" />
+          <div className="w-16 h-4 rounded-md bg-slate-800/80 animate-pulse hidden sm:block" />
         </div>
 
         {/* 5-Column Movie Poster Grid Skeleton */}
         <div className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-5 gap-5 mb-12">
           {[1, 2, 3, 4, 5].map((item) => (
             <div key={item} className="flex flex-col gap-2.5">
-              <div className="w-full aspect-[2/3] rounded-xl bg-gray-200 animate-pulse shadow-xs" />
-              <div className="w-4/5 h-4 rounded-md bg-gray-200 animate-pulse" />
-              <div className="w-1/2 h-3 rounded-md bg-gray-200 animate-pulse" />
+              <div className="w-full aspect-[2/3] rounded-2xl bg-slate-900/80 border border-slate-800 animate-pulse" />
+              <div className="w-4/5 h-4 rounded-md bg-slate-800/80 animate-pulse" />
+              <div className="w-1/2 h-3 rounded-md bg-slate-800/80 animate-pulse" />
             </div>
           ))}
         </div>
@@ -104,15 +104,15 @@ export default function HomePage({ searchQuery }) {
         <div className="flex items-center justify-between mb-5 px-1">
           <div className="flex items-center gap-2.5">
             <div className="w-1.5 h-6 bg-[#F84464] rounded-full" />
-            <div className="w-40 h-6 rounded-lg bg-gray-200 animate-pulse" />
+            <div className="w-40 h-6 rounded-lg bg-slate-800/80 animate-pulse" />
           </div>
         </div>
         <div className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-5 gap-5">
           {[1, 2, 3, 4, 5].map((item) => (
             <div key={item} className="flex flex-col gap-2.5">
-              <div className="w-full aspect-[2/3] rounded-xl bg-gray-200 animate-pulse shadow-xs" />
-              <div className="w-3/4 h-4 rounded-md bg-gray-200 animate-pulse" />
-              <div className="w-2/5 h-3 rounded-md bg-gray-200 animate-pulse" />
+              <div className="w-full aspect-[2/3] rounded-2xl bg-slate-900/80 border border-slate-800 animate-pulse" />
+              <div className="w-3/4 h-4 rounded-md bg-slate-800/80 animate-pulse" />
+              <div className="w-2/5 h-3 rounded-md bg-slate-800/80 animate-pulse" />
             </div>
           ))}
         </div>
@@ -121,19 +121,26 @@ export default function HomePage({ searchQuery }) {
   }
 
   return (
-    <main className="flex-1 min-h-screen bg-[#F5F5FA] text-[#222432]">
+    <main className="flex-1 min-h-screen bg-[#0b0c14] text-white relative selection:bg-[#F84464] selection:text-white">
+
+      {/* Ambient Theater Lighting Glows */}
+      <div className="fixed inset-0 pointer-events-none overflow-hidden z-0">
+        <div className="absolute top-10 left-1/4 w-[600px] h-[600px] bg-[#F84464]/[0.035] rounded-full blur-[140px]" />
+        <div className="absolute top-1/3 right-10 w-[500px] h-[500px] bg-violet-600/[0.03] rounded-full blur-[150px]" />
+        <div className="absolute bottom-20 left-10 w-[500px] h-[500px] bg-amber-500/[0.025] rounded-full blur-[140px]" />
+      </div>
 
       {/* =========================
           BACKEND ERROR
       ========================= */}
 
       {error && (
-        <div className="bg-[#F84464]/[0.06] border-b border-[#F84464]/20">
+        <div className="bg-rose-950/40 border-b border-rose-800/50 backdrop-blur-md relative z-10">
           <div className="max-w-[1200px] mx-auto px-4 sm:px-6 py-3.5 flex flex-wrap items-center justify-center gap-3">
 
-            <div className="flex items-center gap-2.5 text-xs sm:text-sm text-[#B4233D]">
-              <div className="w-7 h-7 rounded-full bg-[#F84464]/15 flex items-center justify-center shrink-0">
-                <AlertCircle className="w-4 h-4 text-[#F84464]" />
+            <div className="flex items-center gap-2.5 text-xs sm:text-sm text-rose-300">
+              <div className="w-7 h-7 rounded-full bg-rose-500/15 flex items-center justify-center shrink-0">
+                <AlertCircle className="w-4 h-4 text-rose-400" />
               </div>
 
               <span>{error}</span>
@@ -144,17 +151,14 @@ export default function HomePage({ searchQuery }) {
               className="
                 flex items-center gap-1.5
                 px-3.5 py-1.5
-                rounded-md
+                rounded-lg
                 text-xs font-bold
-                text-[#F84464]
-                bg-white
-                border border-[#F84464]
-                hover:bg-[#F84464]
-                hover:text-white
+                text-white
+                bg-[#F84464]
+                hover:bg-rose-600
                 active:scale-[0.97]
                 transition-all duration-200
-                cursor-pointer
-                focus-visible:outline focus-visible:outline-2 focus-visible:outline-[#F84464] focus-visible:outline-offset-2
+                cursor-pointer shadow-md shadow-rose-950/50
               "
             >
               <RefreshCw className="w-3.5 h-3.5" />
@@ -170,12 +174,12 @@ export default function HomePage({ searchQuery }) {
       ========================= */}
 
       {searchQuery && (
-        <div className="bg-white border-b border-gray-200 shadow-xs">
+        <div className="bg-slate-900/90 border-b border-slate-800/80 backdrop-blur-md relative z-10">
           <div className="max-w-[1200px] mx-auto px-4 sm:px-6 py-3.5">
 
             <div className="flex flex-wrap items-center justify-center gap-1.5 text-xs sm:text-sm">
 
-              <span className="text-gray-500">
+              <span className="text-slate-400">
                 Showing search results for
               </span>
 
@@ -183,11 +187,11 @@ export default function HomePage({ searchQuery }) {
                 "{searchQuery}"
               </span>
 
-              <span className="text-gray-500">
+              <span className="text-slate-400">
                 in
               </span>
 
-              <span className="font-semibold text-gray-800">
+              <span className="font-semibold text-white">
                 {selectedCity}
               </span>
 
@@ -198,11 +202,11 @@ export default function HomePage({ searchQuery }) {
       )}
 
       {/* =========================
-          HERO SECTION
+          HERO SECTION (Cinematic Video Stage)
       ========================= */}
 
       {!searchQuery && data.banners && (
-        <section className="w-full bg-[#EBEBF2]">
+        <section className="w-full bg-[#0b0c14] relative z-10">
           <HeroCarousel banners={data.banners} />
         </section>
       )}
@@ -210,31 +214,39 @@ export default function HomePage({ searchQuery }) {
       {/* =========================
           REAL-TIME MULTIPLEX VITALITY TICKER
       ========================= */}
-      <MultiplexTicker />
+      <div className="relative z-10">
+        <MultiplexTicker />
+      </div>
 
       {/* =========================
           3D QUICK CATEGORY DISCOVERY RIBBON
       ========================= */}
       {!searchQuery && (
-        <CategoryDiscovery3D />
+        <div className="relative z-10">
+          <CategoryDiscovery3D />
+        </div>
       )}
 
       {/* =========================
-          MOVIES SECTION
+          MOVIES SECTION (Dark Cinema Grid)
       ========================= */}
 
-      <MovieSection
-        movies={data.movies}
-        onMovieClick={(movie) => {
-          navigate(`/movies/${movie.id}`);
-        }}
-      />
+      <div className="relative z-10">
+        <MovieSection
+          movies={data.movies}
+          onMovieClick={(movie) => {
+            navigate(`/movies/${movie.id}`);
+          }}
+        />
+      </div>
 
       {/* =========================
           3D GOURMET CONCESSIONS STRIP
       ========================= */}
       {!searchQuery && (
-        <ConcessionsShowcase3D />
+        <div className="relative z-10">
+          <ConcessionsShowcase3D />
+        </div>
       )}
 
       {/* =========================
@@ -242,35 +254,43 @@ export default function HomePage({ searchQuery }) {
       ========================= */}
 
       {!searchQuery && (
-        <PromoBanner />
+        <div className="relative z-10">
+          <PromoBanner />
+        </div>
       )}
 
       {/* =========================
           VIP 3D CINEMA EXPERIENCE
       ========================= */}
       {!searchQuery && (
-        <VIPCinema3DSection />
+        <div className="relative z-10">
+          <VIPCinema3DSection />
+        </div>
       )}
 
       {/* =========================
           LIVE EVENTS
       ========================= */}
 
-      <LiveEventsSection events={data.events} />
+      <div className="relative z-10">
+        <LiveEventsSection events={data.events} />
+      </div>
 
       {/* =========================
           STREAM / PREMIERES
       ========================= */}
 
       {!searchQuery && (
-        <StreamSection premieres={data.premieres} />
+        <div className="relative z-10">
+          <StreamSection premieres={data.premieres} />
+        </div>
       )}
 
       {/* =========================
           CINEBOT VIP CONCIERGE SPOTLIGHT (3D Interactive)
       ========================= */}
       {!searchQuery && (
-        <section className="py-10 px-4 sm:px-6 lg:px-8 max-w-7xl mx-auto" style={{ perspective: '1200px' }}>
+        <section className="py-10 px-4 sm:px-6 lg:px-8 max-w-7xl mx-auto relative z-10" style={{ perspective: '1200px' }}>
           <div 
             className="rounded-3xl bg-gradient-to-r from-[#171A29] via-[#202538] to-[#171A29] p-6 sm:p-8 border border-white/15 shadow-[0_20px_50px_rgba(0,0,0,0.5)] relative overflow-hidden flex flex-col md:flex-row items-center justify-between gap-6 transition-all duration-300 hover:border-[#F84464]/50 group"
             style={{ transformStyle: 'preserve-3d' }}
