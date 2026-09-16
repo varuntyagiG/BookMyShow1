@@ -49,8 +49,8 @@ export default function MovieSection({ movies = [], onMovieClick }) {
           </button>
         </div>
 
-        {/* Filter Pills */}
-        <div className="flex items-center gap-2 overflow-x-auto no-scrollbar pb-3 mb-5">
+        {/* Filter Pills (Sticky below Navbar & SubNav) */}
+        <div className="sticky top-[112px] z-20 bg-[#12131A]/95 backdrop-blur-md py-2.5 mb-5 border-b border-white/5 flex items-center gap-2 overflow-x-auto no-scrollbar -mx-4 px-4 sm:-mx-6 sm:px-6 lg:-mx-8 lg:px-8 transition-all">
           {filterPills.map((pill) => {
             const isSelected = selectedFilter === pill;
             return (

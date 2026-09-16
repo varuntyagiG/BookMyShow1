@@ -1,4 +1,5 @@
-import React, { useState, useEffect, useCallback } from 'react';
+import React, { useState, useEffect, useCallback, useMemo } from 'react';
+import { useSearchParams } from 'react-router-dom';
 import { useCity } from '../context/CityContext';
 import { contentApi } from '../services/api';
 import { useRealtimeRefresh } from '../services/realtimeSync';
@@ -7,15 +8,28 @@ import { Filter, ChevronDown, ChevronUp, RotateCcw, Loader2, SlidersHorizontal, 
 
 export default function MoviesPage() {
   const { selectedCity } = useCity();
+  const [searchParams, setSearchParams] = useSearchParams();
   const [movies, setMovies] = useState([]);
   const [loading, setLoading] = useState(true);
   const [mobileFilterOpen, setMobileFilterOpen] = useState(false);
-  const [sortBy, setSortBy] = useState('popularity'); // 'popularity' | 'rating' | 'release'
 
-  // Filters
-  const [selectedLanguages, setSelectedLanguages] = useState([]);
-  const [selectedGenres, setSelectedGenres] = useState([]);
-  const [selectedFormats, setSelectedFormats] = useState([]);
+  // Read URL search query parameters (persists across reloads & shareable)
+  const selectedLanguages = useMemo(() => {
+    const raw = searchParams.get('languages');
+    return raw ? raw.split(',').filter(Boolean) : [];
+  }, [searchParams]);
+
+  const selectedGenres = useMemo(() => {
+    const raw = searchParams.get('genres');
+    return raw ? raw.split(',').filter(Boolean) : [];
+  }, [searchParams]);
+
+  const selectedFormats = useMemo(() => {
+    const raw = searchParams.get('formats');
+    return raw ? raw.split(',').filter(Boolean) : [];
+  }, [searchParams]);
+
+  const sortBy = searchParams.get('sort') || 'popularity';
 
   // Accordion toggle states
   const [openSections, setOpenSections] = useState({
@@ -53,18 +67,48 @@ export default function MoviesPage() {
     fetchMovies(true);
   });
 
-  const toggleFilter = (list, setList, item) => {
-    if (list.includes(item)) {
-      setList(list.filter(i => i !== item));
-    } else {
-      setList([...list, item]);
-    }
+  const toggleFilter = (paramKey, item) => {
+    const currentList = paramKey === 'languages'
+      ? selectedLanguages
+      : paramKey === 'genres'
+        ? selectedGenres
+        : selectedFormats;
+
+    const nextList = currentList.includes(item)
+      ? currentList.filter(i => i !== item)
+      : [...currentList, item];
+
+    setSearchParams((prev) => {
+      const nextParams = new URLSearchParams(prev);
+      if (nextList.length === 0) {
+        nextParams.delete(paramKey);
+      } else {
+        nextParams.set(paramKey, nextList.join(','));
+      }
+      return nextParams;
+    }, { replace: true });
   };
 
   const clearAllFilters = () => {
-    setSelectedLanguages([]);
-    setSelectedGenres([]);
-    setSelectedFormats([]);
+    setSearchParams((prev) => {
+      const nextParams = new URLSearchParams(prev);
+      nextParams.delete('languages');
+      nextParams.delete('genres');
+      nextParams.delete('formats');
+      return nextParams;
+    }, { replace: true });
+  };
+
+  const setSortBy = (newSort) => {
+    setSearchParams((prev) => {
+      const nextParams = new URLSearchParams(prev);
+      if (!newSort || newSort === 'popularity') {
+        nextParams.delete('sort');
+      } else {
+        nextParams.set('sort', newSort);
+      }
+      return nextParams;
+    }, { replace: true });
   };
 
   // Filter movies client-side
@@ -106,9 +150,9 @@ export default function MoviesPage() {
     selectedFormats.length > 0;
 
   const activeFilterList = [
-    ...selectedLanguages.map(l => ({ type: 'lang', label: l, clear: () => toggleFilter(selectedLanguages, setSelectedLanguages, l) })),
-    ...selectedGenres.map(g => ({ type: 'genre', label: g, clear: () => toggleFilter(selectedGenres, setSelectedGenres, g) })),
-    ...selectedFormats.map(f => ({ type: 'format', label: f, clear: () => toggleFilter(selectedFormats, setSelectedFormats, f) })),
+    ...selectedLanguages.map(l => ({ type: 'lang', label: l, clear: () => toggleFilter('languages', l) })),
+    ...selectedGenres.map(g => ({ type: 'genre', label: g, clear: () => toggleFilter('genres', g) })),
+    ...selectedFormats.map(f => ({ type: 'format', label: f, clear: () => toggleFilter('formats', f) })),
   ];
 
   return (
@@ -127,7 +171,7 @@ export default function MoviesPage() {
           </div>
 
           {/* Quick Categories Bar & Mobile Filter Toggle */}
-          <div className="flex items-center gap-2 overflow-x-auto no-scrollbar pb-0.5">
+          <div className="sticky top-[112px] lg:static z-20 bg-[#12131A]/95 lg:bg-transparent backdrop-blur-md lg:backdrop-blur-none py-2 lg:py-0 -mx-4 px-4 sm:-mx-6 sm:px-6 lg:mx-0 lg:px-0 border-b lg:border-none border-white/5 flex items-center gap-2 overflow-x-auto no-scrollbar pb-2 lg:pb-0.5 transition-all">
             <button
               onClick={() => setMobileFilterOpen(!mobileFilterOpen)}
               className="lg:hidden px-3.5 py-2 bg-[#20212B] border border-white/10 text-[#F5F5F7] rounded-full text-xs font-bold shrink-0 shadow-xs flex items-center gap-1.5 transition-colors hover:border-[#F84464]/40 cursor-pointer"
@@ -155,13 +199,14 @@ export default function MoviesPage() {
         </div>
 
         {/* Main Content Layout (Sidebar Filters + Movie Grid) */}
-        <div className="grid grid-cols-1 lg:grid-cols-4 gap-6 lg:gap-8 items-start">
+        <div className="grid grid-cols-1 lg:grid-cols-4 gap-6 lg:gap-8">
 
-          {/* Left Sidebar Filters */}
-          <div className={`lg:col-span-1 space-y-4 lg:sticky lg:top-32 lg:self-start lg:max-h-[calc(100vh-9rem)] lg:overflow-y-auto no-scrollbar pb-6 ${mobileFilterOpen ? 'block' : 'hidden lg:block'}`}>
+          {/* Left Sidebar Filters Column (stretches to full height of movie grid) */}
+          <aside className={`lg:col-span-1 ${mobileFilterOpen ? 'block' : 'hidden lg:block'}`}>
+            <div className="lg:sticky lg:top-[124px] space-y-4 max-h-[calc(100vh-140px)] overflow-y-auto overscroll-contain no-scrollbar pb-8 z-20">
 
-            {/* Filters Box */}
-            <div className="bg-[#1A1B24] rounded-2xl p-5 border border-white/10 shadow-xs">
+              {/* Filters Box */}
+              <div className="bg-[#1A1B24] rounded-2xl p-5 border border-white/10 shadow-xs">
               <div className="flex items-center justify-between pb-4 border-b border-white/10">
                 <div className="flex items-center gap-2">
                   <Filter className="w-4 h-4 text-[#F84464]" />
@@ -200,7 +245,7 @@ export default function MoviesPage() {
                       return (
                         <button
                           key={lang}
-                          onClick={() => toggleFilter(selectedLanguages, setSelectedLanguages, lang)}
+                          onClick={() => toggleFilter('languages', lang)}
                           className={`px-3 py-1.5 rounded-lg text-xs font-semibold transition-all duration-150 cursor-pointer ${isChecked
                               ? 'bg-[#F84464] text-white shadow-xs'
                               : 'bg-[#20212B] border border-white/10 hover:border-white/20 text-[#A6A8B3] hover:text-[#F5F5F7]'
@@ -236,7 +281,7 @@ export default function MoviesPage() {
                       return (
                         <button
                           key={genre}
-                          onClick={() => toggleFilter(selectedGenres, setSelectedGenres, genre)}
+                          onClick={() => toggleFilter('genres', genre)}
                           className={`px-3 py-1.5 rounded-lg text-xs font-semibold transition-all duration-150 cursor-pointer ${isChecked
                               ? 'bg-[#F84464] text-white shadow-xs'
                               : 'bg-[#20212B] border border-white/10 hover:border-white/20 text-[#A6A8B3] hover:text-[#F5F5F7]'
@@ -272,7 +317,7 @@ export default function MoviesPage() {
                       return (
                         <button
                           key={fmt}
-                          onClick={() => toggleFilter(selectedFormats, setSelectedFormats, fmt)}
+                          onClick={() => toggleFilter('formats', fmt)}
                           className={`px-3 py-1.5 rounded-lg text-xs font-semibold transition-all duration-150 cursor-pointer ${isChecked
                               ? 'bg-[#F84464] text-white shadow-xs'
                               : 'bg-[#20212B] border border-white/10 hover:border-white/20 text-[#A6A8B3] hover:text-[#F5F5F7]'
@@ -296,6 +341,7 @@ export default function MoviesPage() {
               </p>
             </div>
           </div>
+        </aside>
 
           {/* Right Movie Grid */}
           <div className="lg:col-span-3">
