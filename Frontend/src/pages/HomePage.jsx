@@ -9,7 +9,6 @@ import LiveEventsSection from '../components/home/LiveEventsSection';
 import StreamSection from '../components/home/StreamSection';
 import PromoBanner from '../components/home/PromoBanner';
 import VIPCinema3DSection from '../components/home/VIPCinema3DSection';
-import MultiplexTicker from '../components/home/MultiplexTicker';
 import CategoryDiscovery3D from '../components/home/CategoryDiscovery3D';
 import ConcessionsShowcase3D from '../components/home/ConcessionsShowcase3D';
 import { Loader2, AlertCircle, RefreshCw, Sparkles, ChevronRight } from 'lucide-react';
@@ -210,13 +209,6 @@ export default function HomePage({ searchQuery }) {
           <HeroCarousel banners={data.banners} />
         </section>
       )}
-
-      {/* =========================
-          REAL-TIME MULTIPLEX VITALITY TICKER
-      ========================= */}
-      <div className="relative z-10">
-        <MultiplexTicker />
-      </div>
 
       {/* =========================
           3D QUICK CATEGORY DISCOVERY RIBBON
