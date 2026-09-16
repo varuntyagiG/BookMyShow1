@@ -3,7 +3,6 @@ import {
   ChevronLeft, 
   ChevronRight, 
   Ticket, 
-  Sparkles, 
   Star, 
   Volume2, 
   VolumeX, 
@@ -152,11 +151,6 @@ export default function HeroCarousel({ banners = [] }) {
           
           {/* Top Badges Row */}
           <div className="flex items-center gap-2 sm:gap-2.5 flex-wrap">
-            <div className="inline-flex items-center gap-1.5 px-3 py-1 rounded-full bg-gradient-to-r from-[#F84464] to-[#ff3b5c] text-white text-[10px] sm:text-xs font-black uppercase tracking-wider shadow-lg shadow-[#F84464]/30">
-              <Sparkles className="w-3.5 h-3.5" />
-              <span>Featured Premiere</span>
-            </div>
-
             <div className="inline-flex items-center gap-1 px-2.5 py-1 rounded-full bg-amber-500/20 text-amber-300 border border-amber-500/40 text-[10px] sm:text-xs font-black uppercase tracking-wider backdrop-blur-md">
               <Star className="w-3.5 h-3.5 fill-amber-400 text-amber-400" />
               <span>★ 9.4/10 IMDb</span>
@@ -166,13 +160,6 @@ export default function HeroCarousel({ banners = [] }) {
               <Tv className="w-3 h-3" />
               <span>IMAX 3D Laser</span>
             </span>
-
-            {currentVideoUrl && (
-              <span className="hidden sm:inline-flex items-center gap-1.5 px-2.5 py-1 rounded-full bg-rose-500/15 text-rose-300 border border-rose-500/30 text-[10px] font-bold uppercase tracking-wider backdrop-blur-md">
-                <span className="w-1.5 h-1.5 rounded-full bg-rose-400 animate-pulse" />
-                Live Motion Trailer
-              </span>
-            )}
           </div>
 
           {/* Giant Cinematic Title */}
