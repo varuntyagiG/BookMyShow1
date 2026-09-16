@@ -4,6 +4,7 @@ import { bookingApi } from '../services/api';
 import { useRealtimeRefresh } from '../services/realtimeSync';
 import { useAuth } from '../context/AuthContext';
 import { TicketPassCard } from '../components/ui';
+import { QRCodeSVG } from 'qrcode.react';
 import {
   Ticket,
   Calendar,
@@ -332,16 +333,30 @@ export default function CustomerBookingsPage() {
               {/* QR Code Validation Box */}
               <div className="bg-slate-50 border-2 border-dashed border-slate-200 rounded-2xl p-4 text-center mb-3.5 relative">
                 <div
-                  className={`w-28 h-28 bg-white rounded-xl shadow-inner border border-slate-200 p-2 mx-auto flex items-center justify-center mb-2 transition-transform duration-200 ${
+                  className={`w-30 h-30 bg-white rounded-2xl shadow-inner border border-slate-200 p-2.5 mx-auto flex items-center justify-center mb-2 transition-transform duration-200 ${
                     isScannerBright ? 'scale-105 ring-4 ring-amber-300 shadow-xl' : ''
                   }`}
                 >
-                  <QrCode className="w-24 h-24 text-slate-900" />
+                  <QRCodeSVG
+                    value={typeof window !== 'undefined' ? `${window.location.origin}/vendor/scanner?bookingId=${activeTicketModal.bookingId || activeTicketModal._id}` : (activeTicketModal.bookingId || 'BMS')}
+                    size={100}
+                    level="H"
+                    includeMargin={false}
+                  />
                 </div>
                 <div className="font-mono text-xs font-black text-slate-800 tracking-widest">
                   {activeTicketModal.bookingId || `BMT-${(activeTicketModal._id || '').slice(-6).toUpperCase()}`}
                 </div>
-                <p className="text-[10px] font-mono tracking-widest text-slate-400 mt-0.5">
+                {activeTicketModal.paymentMethod && (
+                  <div className="flex items-center justify-center gap-1.5 text-[10px] font-bold text-emerald-700 bg-emerald-50 border border-emerald-200 px-2.5 py-1 rounded-full mt-1.5 w-fit mx-auto">
+                    <CheckCircle2 className="w-3.5 h-3.5 text-emerald-600 shrink-0" />
+                    <span>Paid via {activeTicketModal.paymentMethod.replace('upi_', '').replace('_', ' ').toUpperCase()}</span>
+                    {activeTicketModal.transactionId && (
+                      <span className="font-mono text-[9px] text-slate-500 font-semibold">• {activeTicketModal.transactionId}</span>
+                    )}
+                  </div>
+                )}
+                <p className="text-[10px] font-mono tracking-widest text-slate-400 mt-1">
                   |||| | || ||| |||| |
                 </p>
                 <div className="mt-1.5">

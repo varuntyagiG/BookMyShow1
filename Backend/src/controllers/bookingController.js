@@ -35,7 +35,9 @@ async function createBooking(req, res) {
       categoryType = 'movie',
       ticketPrice: customTicketPrice,
       convenienceFee: customConvenienceFee,
-      totalAmount: customTotalAmount
+      totalAmount: customTotalAmount,
+      paymentMethod = 'upi_phonepe',
+      transactionId
     } = req.body;
 
     // Resolve seat list
@@ -236,6 +238,9 @@ async function createBooking(req, res) {
       fnbStatus,
       totalAmount,
       paymentStatus: 'paid',
+      paymentMethod: paymentMethod || 'upi_phonepe',
+      transactionId: transactionId || ('TXN-' + Date.now().toString().slice(-8) + '-' + Math.random().toString(36).substring(2, 6).toUpperCase()),
+      paidAt: new Date(),
       bookingStatus: 'confirmed',
       cinema: safeCinemaId,
       partner: safePartnerId,

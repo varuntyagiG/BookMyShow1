@@ -102,6 +102,19 @@ const bookingSchema = new mongoose.Schema(
       enum: ['pending', 'paid', 'failed', 'refunded'],
       default: 'paid'
     },
+    paymentMethod: {
+      type: String,
+      default: 'upi_phonepe'
+    },
+    transactionId: {
+      type: String,
+      default: '',
+      index: true
+    },
+    paidAt: {
+      type: Date,
+      default: Date.now
+    },
     bookingStatus: {
       type: String,
       enum: ['confirmed', 'cancelled'],

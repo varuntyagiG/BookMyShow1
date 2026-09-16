@@ -1,4 +1,5 @@
 import React, { useState, useEffect } from 'react';
+import { useSearchParams } from 'react-router-dom';
 import { vendorApi } from '../../services/vendorApi';
 import {
   Button
@@ -50,6 +51,8 @@ function playGateSound(type = 'success') {
 }
 
 export default function VendorScannerPage() {
+  const [searchParams] = useSearchParams();
+  const urlBookingId = searchParams.get('bookingId');
   const [bookingIdInput, setBookingIdInput] = useState('');
   const [loading, setLoading] = useState(false);
   const [validationResult, setValidationResult] = useState(null);
@@ -77,6 +80,14 @@ export default function VendorScannerPage() {
   useEffect(() => {
     fetchTestTickets();
   }, []);
+
+  // Optical scan auto-trigger when navigated via QR code URL (?bookingId=BMS-123456)
+  useEffect(() => {
+    if (urlBookingId) {
+      setBookingIdInput(urlBookingId);
+      handleValidate(urlBookingId);
+    }
+  }, [urlBookingId]);
 
   const handleValidate = async (idToValidate) => {
     const targetId = (idToValidate || bookingIdInput || '').trim();

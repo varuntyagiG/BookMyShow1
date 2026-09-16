@@ -42,8 +42,10 @@ import {
 } from 'lucide-react';
 import confetti from 'canvas-confetti';
 import { motion } from 'framer-motion';
+import { QRCodeSVG } from 'qrcode.react';
 import { playSeatClick, playPop, playFlip, playChime } from '../utils/soundEffects';
 import { FNB_CATALOG } from '../components/common/FnbConcessionsModal';
+import PaymentGatewayModal from '../components/common/PaymentGatewayModal';
 
 const generateBookingId = () => 'BMS-' + Date.now().toString().slice(-6);
 
@@ -182,6 +184,7 @@ export default function MovieDetailsPage() {
 
   const [bookingLoading, setBookingLoading] = useState(false);
   const [bookingError, setBookingError] = useState('');
+  const [isPaymentModalOpen, setIsPaymentModalOpen] = useState(false);
 
   const showtimesRef = useRef(null);
 
@@ -582,7 +585,7 @@ export default function MovieDetailsPage() {
     });
   };
 
-  const confirmBooking = async () => {
+  const confirmBooking = async (paymentDetails = {}) => {
     if (!isAuthenticated) {
       openAuthModal('signin');
       return;
@@ -617,6 +620,8 @@ export default function MovieDetailsPage() {
         showId: isObjectId(rawShowId) ? rawShowId : undefined,
         screenId: isObjectId(rawScreenId) ? rawScreenId : undefined,
         cinemaId: isObjectId(rawCinemaId) ? rawCinemaId : undefined,
+        paymentMethod: paymentDetails?.paymentMethod || 'upi_phonepe',
+        transactionId: paymentDetails?.transactionId,
       });
 
       if (res.success && res.booking) {
@@ -663,6 +668,8 @@ export default function MovieDetailsPage() {
           confirmed: true,
           bookingId: res.booking.bookingId,
           bookingData: res.booking,
+          paymentMethod: res.booking.paymentMethod || paymentDetails?.paymentMethod || 'upi_phonepe',
+          transactionId: res.booking.transactionId || paymentDetails?.transactionId,
           occupiedSeats: [...(prev.occupiedSeats || []), ...prev.selectedSeats],
         }));
       } else {
@@ -1955,7 +1962,11 @@ export default function MovieDetailsPage() {
                         type="button"
                         onClick={() => {
                           setBookingModal((prev) => ({ ...prev, includeSnacks: false, snacksList: [], snacksTotal: 0 }));
-                          confirmBooking();
+                          if (!isAuthenticated) {
+                            openAuthModal('signin');
+                            return;
+                          }
+                          setIsPaymentModalOpen(true);
                         }}
                         disabled={bookingLoading}
                         className="w-1/3 py-2.5 bg-gray-100 hover:bg-gray-200 text-gray-700 text-xs font-bold rounded-xl transition-colors cursor-pointer"
@@ -1965,7 +1976,13 @@ export default function MovieDetailsPage() {
 
                       <button
                         type="button"
-                        onClick={confirmBooking}
+                        onClick={() => {
+                          if (!isAuthenticated) {
+                            openAuthModal('signin');
+                            return;
+                          }
+                          setIsPaymentModalOpen(true);
+                        }}
                         disabled={bookingLoading}
                         className="w-2/3 py-2.5 bg-[#F84464] hover:bg-[#E03A58] disabled:opacity-70 text-white text-xs sm:text-sm font-black rounded-xl shadow-sm transition-all active:scale-[0.98] cursor-pointer flex items-center justify-center gap-2"
                       >
@@ -2043,15 +2060,24 @@ export default function MovieDetailsPage() {
               <div className="p-4 sm:p-5 bg-white">
                 {/* QR Code & Optical Turnstile Stub */}
                 <div className="bg-slate-50 border-2 border-dashed border-slate-200 rounded-2xl p-4 text-center mb-3.5 relative">
-                  <div className={`w-24 h-24 bg-white rounded-xl shadow-inner border border-slate-200 p-2 mx-auto flex items-center justify-center mb-2.5 transition-transform ${isTurnstileBright ? 'scale-105 ring-4 ring-amber-300' : ''}`}>
-                    <QrCode className="w-20 h-20 text-slate-900" />
+                  <div className={`w-28 h-28 bg-white rounded-2xl shadow-inner border border-slate-200 p-2.5 mx-auto flex items-center justify-center mb-2.5 transition-transform ${isTurnstileBright ? 'scale-105 ring-4 ring-amber-300' : ''}`}>
+                    <QRCodeSVG
+                      value={typeof window !== 'undefined' ? `${window.location.origin}/vendor/scanner?bookingId=${bookingModal.bookingId || 'BMS-DEMO'}` : `BMS-${bookingModal.bookingId}`}
+                      size={96}
+                      level="H"
+                      includeMargin={false}
+                    />
                   </div>
                   <div className="font-mono text-xs font-black text-slate-800 tracking-widest">
                     {bookingModal.bookingId}
                   </div>
-                  <p className="text-[10px] font-mono tracking-widest text-slate-400 mt-0.5">
-                    |||| | || ||| |||| |
-                  </p>
+                  <div className="flex items-center justify-center gap-1.5 text-[10px] font-bold text-emerald-700 bg-emerald-50 border border-emerald-200 px-2.5 py-1 rounded-full mt-2 w-fit mx-auto shadow-2xs">
+                    <CheckCircle2 className="w-3.5 h-3.5 text-emerald-600 shrink-0" />
+                    <span>Paid via {(bookingModal.paymentMethod || 'UPI / PhonePe').replace('upi_', '').replace('_', ' ').toUpperCase()}</span>
+                    {bookingModal.transactionId && (
+                      <span className="font-mono text-[9px] text-slate-500 font-semibold">• {bookingModal.transactionId}</span>
+                    )}
+                  </div>
                 </div>
 
                 {/* Show Details Grid (Customer Theme) */}
@@ -2306,6 +2332,25 @@ export default function MovieDetailsPage() {
           </div>
         </div>
       )}
+
+      {/* 5. Modern Day UPI & Card Payment Gateway Modal */}
+      <PaymentGatewayModal
+        isOpen={isPaymentModalOpen}
+        onClose={() => setIsPaymentModalOpen(false)}
+        onPaymentSuccess={(paymentDetails) => {
+          setIsPaymentModalOpen(false);
+          confirmBooking(paymentDetails);
+        }}
+        amount={grandTotal}
+        itemDetails={{
+          title: movie?.title || 'Movie Tickets',
+          seats: bookingModal.selectedSeats,
+          theatre: bookingModal.theatre?.name,
+          showtime: bookingModal.showtime?.time,
+          includeSnacks: bookingModal.includeSnacks,
+        }}
+        isProcessing={bookingLoading}
+      />
 
     </div>
   );

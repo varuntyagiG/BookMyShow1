@@ -218,6 +218,11 @@ export default function TicketPassCard({
             <span className="font-mono text-[10px] font-bold text-slate-700 tracking-wider">
               {bookingId}
             </span>
+            {booking.paymentMethod && (
+              <span className="text-[9px] font-bold text-emerald-700 block">
+                Paid: {booking.paymentMethod.replace('upi_', '').replace('_', ' ').toUpperCase()}
+              </span>
+            )}
           </div>
         </div>
 
