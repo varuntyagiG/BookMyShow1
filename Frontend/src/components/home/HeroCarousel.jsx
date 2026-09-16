@@ -12,8 +12,7 @@ import {
   Film, 
   Tv, 
   ArrowRight,
-  Clock,
-  ShieldAlert
+  Clock
 } from 'lucide-react';
 import { useNavigate } from 'react-router-dom';
 import { playPop } from '../../utils/soundEffects';
@@ -27,23 +26,11 @@ const CINEMA_TRAILER_LOOPS = {
   default: 'https://media.w3.org/2010/05/video/movie_300.mp4'
 };
 
-// Curated high-impact portrait artwork posters for the prominent right side
-const MOVIE_ARTWORK_MAP = {
-  m1: 'https://images.unsplash.com/photo-1534447677768-be436bb09401?q=80&w=600&auto=format&fit=crop', // Dune
-  m2: 'https://images.unsplash.com/photo-1518709268805-4e9042af9f23?q=80&w=600&auto=format&fit=crop', // Kalki
-  m3: 'https://images.unsplash.com/photo-1509281373149-e957c6296406?q=80&w=600&auto=format&fit=crop', // Stree 2
-  b1: 'https://images.unsplash.com/photo-1534447677768-be436bb09401?q=80&w=600&auto=format&fit=crop',
-  b2: 'https://images.unsplash.com/photo-1518709268805-4e9042af9f23?q=80&w=600&auto=format&fit=crop',
-};
-
 export default function HeroCarousel({ banners = [] }) {
   const [currentIndex, setCurrentIndex] = useState(0);
   const [isPaused, setIsPaused] = useState(false);
   const [isMuted, setIsMuted] = useState(true);
   const [isPlaying, setIsPlaying] = useState(true);
-  const [mousePos, setMousePos] = useState({ x: 0.5, y: 0.5 });
-  const [isHovered, setIsHovered] = useState(false);
-  const posterRef = useRef(null);
   const videoRef = useRef(null);
   const navigate = useNavigate();
 
@@ -70,7 +57,6 @@ export default function HeroCarousel({ banners = [] }) {
 
   const current = banners[currentIndex];
   const currentVideoUrl = current.videoUrl || CINEMA_TRAILER_LOOPS[current.movieId] || CINEMA_TRAILER_LOOPS[current.id] || CINEMA_TRAILER_LOOPS[current.customId];
-  const currentArtworkUrl = MOVIE_ARTWORK_MAP[current.movieId] || MOVIE_ARTWORK_MAP[current.id] || current.posterUrl || current.imageUrl;
 
   const prevSlide = () => {
     playPop();
@@ -89,14 +75,6 @@ export default function HeroCarousel({ banners = [] }) {
     } else if (current.link) {
       navigate(current.link);
     }
-  };
-
-  const handleMouseMove = (e) => {
-    if (!posterRef.current) return;
-    const rect = posterRef.current.getBoundingClientRect();
-    const x = Math.max(0, Math.min(1, (e.clientX - rect.left) / rect.width));
-    const y = Math.max(0, Math.min(1, (e.clientY - rect.top) / rect.height));
-    setMousePos({ x, y });
   };
 
   const toggleMute = (e) => {
@@ -122,26 +100,14 @@ export default function HeroCarousel({ banners = [] }) {
     }
   };
 
-  // 3D Perspective Tilt for the prominent right artwork card
-  const rotateX = isHovered ? (0.5 - mousePos.y) * 14 : 0;
-  const rotateY = isHovered ? (mousePos.x - 0.5) * 16 : 0;
-
   return (
     <section
-      onMouseEnter={() => {
-        setIsPaused(true);
-        setIsHovered(true);
-      }}
-      onMouseMove={handleMouseMove}
-      onMouseLeave={() => {
-        setIsPaused(false);
-        setIsHovered(false);
-        setMousePos({ x: 0.5, y: 0.5 });
-      }}
+      onMouseEnter={() => setIsPaused(true)}
+      onMouseLeave={() => setIsPaused(false)}
       className="relative w-full min-h-[540px] sm:min-h-[580px] md:min-h-[640px] lg:min-h-[680px] bg-[#07080c] select-none overflow-hidden flex items-center border-b border-white/[0.06]"
     >
       {/* =========================================================================
-          1. FULL-WIDTH CINEMATIC BACKDROP (VIDEO TRAILER OR HIGH-RES BACKDROP)
+          1. FULL-WIDTH CINEMATIC BACKDROP (VIDEO TRAILER OR HIGH-RES IMAGE)
       ========================================================================= */}
       <div className="absolute inset-0 w-full h-full overflow-hidden">
         {currentVideoUrl ? (
@@ -165,8 +131,8 @@ export default function HeroCarousel({ banners = [] }) {
           />
         )}
 
-        {/* Left Dark Gradient Scrim (Guarantees 100% Readable Text & Badges) */}
-        <div className="absolute inset-0 bg-gradient-to-r from-[#07080c] via-[#07080c]/90 via-45% sm:via-[#07080c]/70 to-transparent z-10" />
+        {/* Left Dark Gradient Scrim (Ensures 100% Readable Text on Left) */}
+        <div className="absolute inset-0 bg-gradient-to-r from-[#07080c] via-[#07080c]/85 via-45% sm:via-[#07080c]/60 to-transparent z-10" />
 
         {/* Bottom Dark Gradient Scrim (Blends seamlessly into page below) */}
         <div className="absolute inset-x-0 bottom-0 h-48 bg-gradient-to-t from-[#0b0c14] via-[#0b0c14]/70 to-transparent z-10" />
@@ -179,168 +145,86 @@ export default function HeroCarousel({ banners = [] }) {
       </div>
 
       {/* =========================================================================
-          2. MAIN CONTENT GRID: MOVIE INFO (LEFT) & PROMINENT ARTWORK (RIGHT)
+          2. MAIN CONTENT: LEFT-SIDE MOVIE INFORMATION + OPEN VIDEO AREA ON RIGHT
       ========================================================================= */}
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 relative z-20 w-full py-12 sm:py-16 lg:py-20">
-        <div className="grid grid-cols-1 lg:grid-cols-12 gap-8 lg:gap-12 items-center">
+        <div className="max-w-2xl lg:max-w-3xl space-y-4 sm:space-y-6 text-left">
           
-          {/* -------------------------------------------------------------
-              LEFT COLUMN: MOVIE METADATA, TITLE, BADGES & ACTION BUTTONS
-          ------------------------------------------------------------- */}
-          <div className="lg:col-span-7 xl:col-span-7 space-y-4 sm:space-y-6 text-left">
-            
-            {/* Top Badges Row */}
-            <div className="flex items-center gap-2 sm:gap-2.5 flex-wrap">
-              <div className="inline-flex items-center gap-1.5 px-3 py-1 rounded-full bg-gradient-to-r from-[#F84464] to-[#ff3b5c] text-white text-[10px] sm:text-xs font-black uppercase tracking-wider shadow-lg shadow-[#F84464]/30">
-                <Sparkles className="w-3.5 h-3.5" />
-                <span>Featured Premiere</span>
-              </div>
-
-              <div className="inline-flex items-center gap-1 px-2.5 py-1 rounded-full bg-amber-500/20 text-amber-300 border border-amber-500/40 text-[10px] sm:text-xs font-black uppercase tracking-wider backdrop-blur-md">
-                <Star className="w-3.5 h-3.5 fill-amber-400 text-amber-400" />
-                <span>★ 9.4/10 IMDb</span>
-              </div>
-
-              <span className="inline-flex items-center gap-1.5 px-2.5 py-1 rounded-full bg-cyan-500/15 text-cyan-300 border border-cyan-500/30 text-[10px] sm:text-xs font-bold uppercase tracking-wider backdrop-blur-md">
-                <Tv className="w-3 h-3" />
-                <span>IMAX 3D Laser</span>
-              </span>
-
-              {currentVideoUrl && (
-                <span className="hidden sm:inline-flex items-center gap-1.5 px-2.5 py-1 rounded-full bg-rose-500/15 text-rose-300 border border-rose-500/30 text-[10px] font-bold uppercase tracking-wider backdrop-blur-md">
-                  <span className="w-1.5 h-1.5 rounded-full bg-rose-400 animate-pulse" />
-                  Live Motion Trailer
-                </span>
-              )}
+          {/* Top Badges Row */}
+          <div className="flex items-center gap-2 sm:gap-2.5 flex-wrap">
+            <div className="inline-flex items-center gap-1.5 px-3 py-1 rounded-full bg-gradient-to-r from-[#F84464] to-[#ff3b5c] text-white text-[10px] sm:text-xs font-black uppercase tracking-wider shadow-lg shadow-[#F84464]/30">
+              <Sparkles className="w-3.5 h-3.5" />
+              <span>Featured Premiere</span>
             </div>
 
-            {/* Giant Cinematic Title */}
-            <h1 className="text-3xl sm:text-5xl md:text-6xl font-black text-white tracking-tight leading-[1.05] drop-shadow-[0_10px_30px_rgba(0,0,0,0.9)]">
-              {current.title}
-            </h1>
-
-            {/* Movie Spec Ribbon: Rating, Certificate & Languages */}
-            <div className="flex items-center gap-3 text-xs sm:text-sm text-slate-300 flex-wrap font-semibold">
-              <span className="px-2 py-0.5 rounded-md bg-slate-800/80 border border-slate-700 text-slate-200 text-[11px] font-black uppercase">
-                UA 16+
-              </span>
-              <span>•</span>
-              <span className="flex items-center gap-1 text-slate-200">
-                <Clock className="w-3.5 h-3.5 text-slate-400" />
-                2h 46m
-              </span>
-              <span>•</span>
-              <span className="text-slate-300">
-                {current.category || 'Action, Sci-Fi, Adventure'}
-              </span>
-              <span>•</span>
-              <span className="text-slate-400">
-                Hindi, English, Telugu, Tamil
-              </span>
+            <div className="inline-flex items-center gap-1 px-2.5 py-1 rounded-full bg-amber-500/20 text-amber-300 border border-amber-500/40 text-[10px] sm:text-xs font-black uppercase tracking-wider backdrop-blur-md">
+              <Star className="w-3.5 h-3.5 fill-amber-400 text-amber-400" />
+              <span>★ 9.4/10 IMDb</span>
             </div>
 
-            {/* Movie Synopsis / Subtitle */}
-            <p className="text-sm sm:text-base md:text-lg text-slate-300 font-normal leading-relaxed max-w-xl line-clamp-3 drop-shadow-md">
-              {current.subtitle || current.description || 'Experience the visually majestic cinematic spectacle with breathtaking world-building, razor-sharp IMAX projections, and ground-shaking Dolby sound.'}
-            </p>
+            <span className="inline-flex items-center gap-1.5 px-2.5 py-1 rounded-full bg-cyan-500/15 text-cyan-300 border border-cyan-500/30 text-[10px] sm:text-xs font-bold uppercase tracking-wider backdrop-blur-md">
+              <Tv className="w-3 h-3" />
+              <span>IMAX 3D Laser</span>
+            </span>
 
-            {/* Action Buttons Row */}
-            <div className="pt-2 flex items-center gap-3 sm:gap-4 flex-wrap">
-              <button
-                type="button"
-                onClick={handleBannerClick}
-                className="bg-gradient-to-r from-[#F84464] via-[#ff4769] to-[#e03a58] hover:from-[#ff5274] hover:to-[#eb4363] text-white font-black text-sm sm:text-base px-7 sm:px-9 py-3.5 sm:py-4 rounded-2xl transition-all shadow-[0_10px_30px_rgba(248,68,100,0.5)] hover:shadow-[0_15px_40px_rgba(248,68,100,0.7)] active:scale-95 flex items-center gap-2.5 cursor-pointer border border-white/20"
-              >
-                <Ticket className="w-5 h-5" />
-                <span>Book Tickets Now</span>
-                <ArrowRight className="w-4 h-4 ml-0.5" />
-              </button>
-
-              <button
-                type="button"
-                onClick={handleBannerClick}
-                className="bg-white/10 hover:bg-white/15 text-white font-bold text-sm sm:text-base px-6 py-3.5 sm:py-4 rounded-2xl transition-all backdrop-blur-md active:scale-95 flex items-center gap-2 cursor-pointer border border-white/15 shadow-lg"
-              >
-                <Film className="w-4 h-4 text-amber-300" />
-                <span>Movie Details</span>
-              </button>
-            </div>
-
+            {currentVideoUrl && (
+              <span className="hidden sm:inline-flex items-center gap-1.5 px-2.5 py-1 rounded-full bg-rose-500/15 text-rose-300 border border-rose-500/30 text-[10px] font-bold uppercase tracking-wider backdrop-blur-md">
+                <span className="w-1.5 h-1.5 rounded-full bg-rose-400 animate-pulse" />
+                Live Motion Trailer
+              </span>
+            )}
           </div>
 
-          {/* -------------------------------------------------------------
-              RIGHT COLUMN: PROMINENT MOVIE ARTWORK CARD (3D FLOATING POSTER)
-          ------------------------------------------------------------- */}
-          <div className="lg:col-span-5 xl:col-span-5 flex justify-center lg:justify-end">
-            <div 
-              style={{ perspective: '1100px' }}
-              className="relative group/poster"
+          {/* Giant Cinematic Title */}
+          <h1 className="text-3xl sm:text-5xl md:text-6xl font-black text-white tracking-tight leading-[1.05] drop-shadow-[0_10px_30px_rgba(0,0,0,0.9)]">
+            {current.title}
+          </h1>
+
+          {/* Movie Spec Ribbon: Rating, Certificate & Languages */}
+          <div className="flex items-center gap-3 text-xs sm:text-sm text-slate-300 flex-wrap font-semibold">
+            <span className="px-2 py-0.5 rounded-md bg-slate-800/80 border border-slate-700 text-slate-200 text-[11px] font-black uppercase">
+              UA 16+
+            </span>
+            <span>•</span>
+            <span className="flex items-center gap-1 text-slate-200">
+              <Clock className="w-3.5 h-3.5 text-slate-400" />
+              2h 46m
+            </span>
+            <span>•</span>
+            <span className="text-slate-300">
+              {current.category || 'Action, Sci-Fi, Adventure'}
+            </span>
+            <span>•</span>
+            <span className="text-slate-400">
+              Hindi, English, Telugu, Tamil
+            </span>
+          </div>
+
+          {/* Movie Synopsis / Subtitle */}
+          <p className="text-sm sm:text-base md:text-lg text-slate-300 font-normal leading-relaxed max-w-xl line-clamp-3 drop-shadow-md">
+            {current.subtitle || current.description || 'Experience the visually majestic cinematic spectacle with breathtaking world-building, razor-sharp IMAX projections, and ground-shaking Dolby sound.'}
+          </p>
+
+          {/* Action Buttons Row */}
+          <div className="pt-2 flex items-center gap-3 sm:gap-4 flex-wrap">
+            <button
+              type="button"
               onClick={handleBannerClick}
+              className="bg-gradient-to-r from-[#F84464] via-[#ff4769] to-[#e03a58] hover:from-[#ff5274] hover:to-[#eb4363] text-white font-black text-sm sm:text-base px-7 sm:px-9 py-3.5 sm:py-4 rounded-2xl transition-all shadow-[0_10px_30px_rgba(248,68,100,0.5)] hover:shadow-[0_15px_40px_rgba(248,68,100,0.7)] active:scale-95 flex items-center gap-2.5 cursor-pointer border border-white/20"
             >
-              {/* Vibrant Ambient Glow Behind Card */}
-              <div className="absolute -inset-4 bg-gradient-to-tr from-[#F84464]/30 via-violet-600/20 to-amber-400/25 rounded-3xl blur-2xl group-hover/poster:blur-3xl group-hover/poster:bg-[#F84464]/45 transition-all duration-500 pointer-events-none" />
+              <Ticket className="w-5 h-5" />
+              <span>Book Tickets Now</span>
+              <ArrowRight className="w-4 h-4 ml-0.5" />
+            </button>
 
-              {/* 3D Poster Artwork Card */}
-              <div
-                ref={posterRef}
-                style={{
-                  transform: `rotateX(${rotateX}deg) rotateY(${rotateY}deg) scale3d(${isHovered ? 1.03 : 1}, ${isHovered ? 1.03 : 1}, 1)`,
-                  transformStyle: 'preserve-3d',
-                  transition: isHovered ? 'transform 0.1s ease-out' : 'transform 0.6s cubic-bezier(0.16, 1, 0.3, 1)',
-                }}
-                className="relative w-60 sm:w-68 md:w-76 lg:w-80 aspect-[2/3] rounded-3xl overflow-hidden shadow-[0_25px_60px_-10px_rgba(0,0,0,0.9)] border-2 border-white/20 hover:border-[#F84464]/80 transition-colors cursor-pointer bg-[#121420]"
-              >
-                {/* Poster Image */}
-                <img
-                  src={currentArtworkUrl}
-                  alt={current.title}
-                  className="w-full h-full object-cover transition-transform duration-700 group-hover/poster:scale-105"
-                  style={{ transform: 'translateZ(0px)' }}
-                />
-
-                {/* Top Corner Floating Badge */}
-                <div 
-                  style={{ transform: 'translateZ(25px)' }}
-                  className="absolute top-3.5 left-3.5 bg-black/75 backdrop-blur-md text-white px-3 py-1 rounded-full border border-white/20 text-[10px] font-black uppercase tracking-wider flex items-center gap-1.5 shadow-lg"
-                >
-                  <Sparkles className="w-3 h-3 text-[#F84464]" />
-                  <span>Cinematic 3D</span>
-                </div>
-
-                {/* Top Right Bookmark / Star Pill */}
-                <div 
-                  style={{ transform: 'translateZ(25px)' }}
-                  className="absolute top-3.5 right-3.5 bg-black/75 backdrop-blur-md text-amber-300 px-2.5 py-1 rounded-full border border-amber-400/30 text-[11px] font-black flex items-center gap-1 shadow-lg"
-                >
-                  <Star className="w-3 h-3 fill-amber-400 text-amber-400" />
-                  <span>9.4</span>
-                </div>
-
-                {/* Bottom Overlay Pill on Poster */}
-                <div 
-                  style={{ transform: 'translateZ(20px)' }}
-                  className="absolute inset-x-0 bottom-0 bg-gradient-to-t from-black/95 via-black/70 to-transparent p-4 pt-10 flex flex-col items-center text-center"
-                >
-                  <span className="text-white font-black text-sm sm:text-base drop-shadow-md truncate w-full">
-                    {current.title}
-                  </span>
-                  <span className="text-[11px] text-slate-300 flex items-center gap-1 mt-0.5">
-                    <span>Tap to Reserve Seats</span>
-                    <ArrowRight className="w-3 h-3 text-[#F84464]" />
-                  </span>
-                </div>
-
-                {/* Dynamic Specular Sheen on Hover */}
-                {isHovered && (
-                  <div
-                    className="pointer-events-none absolute inset-0 z-30 mix-blend-overlay transition-opacity duration-300"
-                    style={{
-                      background: `radial-gradient(circle at ${mousePos.x * 100}% ${mousePos.y * 100}%, rgba(255,255,255,0.4) 0%, transparent 65%)`,
-                    }}
-                  />
-                )}
-              </div>
-            </div>
+            <button
+              type="button"
+              onClick={handleBannerClick}
+              className="bg-white/10 hover:bg-white/15 text-white font-bold text-sm sm:text-base px-6 py-3.5 sm:py-4 rounded-2xl transition-all backdrop-blur-md active:scale-95 flex items-center gap-2 cursor-pointer border border-white/15 shadow-lg"
+            >
+              <Film className="w-4 h-4 text-amber-300" />
+              <span>Movie Details</span>
+            </button>
           </div>
 
         </div>
