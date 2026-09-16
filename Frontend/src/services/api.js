@@ -138,6 +138,11 @@ export const bookingApi = {
       method: 'PUT',
       body: JSON.stringify({ reason }),
     }),
+  updateFnbStatus: (id, fnbStatus) =>
+    request(`/bookings/${id}/fnb-status`, {
+      method: 'PATCH',
+      body: JSON.stringify({ fnbStatus }),
+    }),
   getShowSeats: (params = {}) => {
     let queryObj = {};
     if (typeof params === 'string') {

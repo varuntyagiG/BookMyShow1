@@ -73,6 +73,26 @@ const bookingSchema = new mongoose.Schema(
       type: Number,
       default: 0
     },
+    snacksList: [
+      {
+        snackId: { type: String },
+        name: { type: String, required: true },
+        category: { type: String, default: 'Snacks' },
+        price: { type: Number, required: true },
+        quantity: { type: Number, default: 1 },
+        emoji: { type: String, default: '🍿' }
+      }
+    ],
+    deliveryPreference: {
+      type: String,
+      enum: ['seat_delivery', 'counter_pickup'],
+      default: 'seat_delivery'
+    },
+    fnbStatus: {
+      type: String,
+      enum: ['none', 'preparing', 'delivered', 'ready_for_pickup'],
+      default: 'none'
+    },
     totalAmount: {
       type: Number,
       required: true

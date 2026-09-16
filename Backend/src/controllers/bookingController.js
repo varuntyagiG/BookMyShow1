@@ -29,6 +29,9 @@ async function createBooking(req, res) {
       seats = [],
       seatsCount,
       includeSnacks = false,
+      snacksList = [],
+      deliveryPreference = 'seat_delivery',
+      snacksFee: customSnacksFee,
       categoryType = 'movie',
       ticketPrice: customTicketPrice,
       convenienceFee: customConvenienceFee,
@@ -170,7 +173,18 @@ async function createBooking(req, res) {
     const finalSeatsCount = seatsCount || seatList.length;
     const ticketPrice = customTicketPrice !== undefined ? customTicketPrice : (unitPrice * finalSeatsCount);
     const convenienceFee = customConvenienceFee !== undefined ? customConvenienceFee : (categoryType === 'movie' ? Math.round(35.4 * finalSeatsCount) : 0);
-    const snacksFee = includeSnacks ? 250 : 0;
+
+    // Compute itemized snacks fee with fallback support
+    let computedSnacksFee = 0;
+    if (Array.isArray(snacksList) && snacksList.length > 0) {
+      computedSnacksFee = snacksList.reduce((sum, s) => sum + ((Number(s.price) || 0) * (Number(s.quantity) || 1)), 0);
+    } else if (includeSnacks) {
+      computedSnacksFee = 250;
+    }
+    const snacksFee = customSnacksFee !== undefined ? customSnacksFee : computedSnacksFee;
+    const hasSnacks = (Array.isArray(snacksList) && snacksList.length > 0) || includeSnacks || snacksFee > 0;
+    const fnbStatus = hasSnacks ? 'preparing' : 'none';
+
     const totalAmount = customTotalAmount !== undefined ? customTotalAmount : (ticketPrice + convenienceFee + snacksFee);
 
     const bookingId = 'BMS-' + Date.now().toString().slice(-6);
@@ -215,8 +229,11 @@ async function createBooking(req, res) {
       seatsCount: finalSeatsCount,
       ticketPrice,
       convenienceFee,
-      includeSnacks: !!includeSnacks,
+      includeSnacks: hasSnacks,
       snacksFee,
+      snacksList: Array.isArray(snacksList) ? snacksList : [],
+      deliveryPreference: deliveryPreference === 'counter_pickup' ? 'counter_pickup' : 'seat_delivery',
+      fnbStatus,
       totalAmount,
       paymentStatus: 'paid',
       bookingStatus: 'confirmed',
@@ -549,10 +566,41 @@ async function getShowSeats(req, res) {
   }
 }
 
+// Update F&B delivery/fulfillment status (Vendor/Admin/Staff)
+async function updateFnbStatus(req, res) {
+  try {
+    const { id } = req.params;
+    const { fnbStatus } = req.body;
+
+    const allowedStatuses = ['none', 'preparing', 'delivered', 'ready_for_pickup'];
+    if (!allowedStatuses.includes(fnbStatus)) {
+      return res.status(400).json({ success: false, message: 'Invalid F&B status.' });
+    }
+
+    const booking = await Booking.findById(id);
+    if (!booking) {
+      return res.status(404).json({ success: false, message: 'Booking not found.' });
+    }
+
+    booking.fnbStatus = fnbStatus;
+    await booking.save();
+
+    return res.json({
+      success: true,
+      message: `F&B status updated to ${fnbStatus}`,
+      booking
+    });
+  } catch (error) {
+    console.error('Error updating F&B status:', error);
+    return res.status(500).json({ success: false, message: 'Server error updating F&B status.' });
+  }
+}
+
 module.exports = {
   createBooking,
   getUserBookings,
   getBookingById,
   cancelUserBooking,
-  getShowSeats
+  getShowSeats,
+  updateFnbStatus
 };

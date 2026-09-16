@@ -5,7 +5,8 @@ const {
   getUserBookings,
   getBookingById,
   cancelUserBooking,
-  getShowSeats
+  getShowSeats,
+  updateFnbStatus
 } = require('../controllers/bookingController');
 const { authenticateToken } = require('../middleware/authMiddleware');
 
@@ -15,5 +16,7 @@ router.get('/my-bookings', authenticateToken, getUserBookings);
 router.get('/seats', getShowSeats);
 router.get('/:id', authenticateToken, getBookingById);
 router.put('/:id/cancel', authenticateToken, cancelUserBooking);
+router.patch('/:id/fnb-status', authenticateToken, updateFnbStatus);
 
 module.exports = router;
+

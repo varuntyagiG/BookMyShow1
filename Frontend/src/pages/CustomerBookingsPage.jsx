@@ -412,15 +412,51 @@ export default function CustomerBookingsPage() {
 
               {/* Snack Voucher Pill if included */}
               {activeTicketModal.includeSnacks && (
-                <div className="mb-3.5 p-2.5 rounded-xl bg-amber-50 border border-amber-200 flex items-center justify-between text-xs">
-                  <div className="flex items-center gap-2">
-                    <span className="text-base">🍿</span>
-                    <div>
-                      <span className="text-[11px] font-bold text-amber-900 block">Snack Combo Voucher</span>
-                      <span className="text-[10px] text-amber-700">Collect at Refreshment Counter #3</span>
+                <div className="mb-3.5 p-3 rounded-2xl bg-gradient-to-r from-amber-50 to-orange-50 border border-amber-200 text-xs shadow-xs">
+                  <div className="flex items-center justify-between gap-2 mb-2 pb-2 border-b border-amber-200/60">
+                    <div className="flex items-center gap-2">
+                      <span className="text-xl">🍿</span>
+                      <div>
+                        <span className="text-xs font-black text-amber-950 block">
+                          Cinema Concessions Voucher
+                        </span>
+                        <span className="text-[10px] text-amber-800 font-semibold">
+                          {activeTicketModal.deliveryPreference === 'counter_pickup'
+                            ? '⚡ Express Counter: Refreshment Counter #3'
+                            : `🛋️ In-Seat Delivery: ${activeTicketModal.theatreName || 'Screen 1'} • Seats ${(Array.isArray(activeTicketModal.seats) ? activeTicketModal.seats : []).join(', ')}`}
+                        </span>
+                      </div>
                     </div>
+                    <span className="text-xs font-mono font-black text-amber-900 bg-amber-200/60 px-2 py-0.5 rounded-md">
+                      PAID ₹{activeTicketModal.snacksFee || 0}
+                    </span>
                   </div>
-                  <span className="text-[11px] font-mono font-black text-amber-900">PAID VOUCHER</span>
+
+                  {/* Itemized Snacks List */}
+                  {Array.isArray(activeTicketModal.snacksList) && activeTicketModal.snacksList.length > 0 ? (
+                    <div className="space-y-1 mb-2">
+                      {activeTicketModal.snacksList.map((snack, sIdx) => (
+                        <div key={sIdx} className="flex items-center justify-between text-[11px] text-amber-900">
+                          <span>{snack.emoji || '🍿'} {snack.name} <span className="font-bold text-amber-950">× {snack.quantity || 1}</span></span>
+                          <span className="font-semibold">₹{(snack.price || 0) * (snack.quantity || 1)}</span>
+                        </div>
+                      ))}
+                    </div>
+                  ) : (
+                    <p className="text-[10px] text-amber-700 font-medium mb-1.5">
+                      Standard Multiplex Snack Combo
+                    </p>
+                  )}
+
+                  <div className="pt-1.5 border-t border-amber-200/60 flex items-center justify-between text-[9px] text-amber-800 font-bold uppercase tracking-wider">
+                    <span className="flex items-center gap-1">
+                      <span className={`w-1.5 h-1.5 rounded-full ${
+                        activeTicketModal.fnbStatus === 'delivered' ? 'bg-emerald-500' : 'bg-amber-500 animate-pulse'
+                      }`} />
+                      Kitchen Status: {activeTicketModal.fnbStatus === 'delivered' ? 'Delivered to Seat ✓' : 'Preparing at Kitchen ⏳'}
+                    </span>
+                    <span>Intermission Delivery</span>
+                  </div>
                 </div>
               )}
 

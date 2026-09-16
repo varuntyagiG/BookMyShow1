@@ -167,8 +167,11 @@ export default function TicketPassCard({
 
           {booking.includeSnacks && (
             <span className="text-[10px] font-bold text-amber-800 bg-amber-50 border border-amber-200 px-2 py-0.5 rounded-full flex items-center gap-1">
-              <Sparkles className="w-2.5 h-2.5 text-amber-600" />
-              <span>F&B Combo</span>
+              <span>🍿</span>
+              <span>
+                {booking.deliveryPreference === 'counter_pickup' ? 'Counter F&B' : 'In-Seat F&B'}
+                {Array.isArray(booking.snacksList) && booking.snacksList.length > 0 ? ` (${booking.snacksList.length})` : ''}
+              </span>
             </span>
           )}
         </div>

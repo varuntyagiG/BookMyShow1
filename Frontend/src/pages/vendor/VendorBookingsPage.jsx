@@ -117,6 +117,20 @@ export default function VendorBookingsPage() {
     }
   };
 
+  const handleUpdateFnbStatus = async (bookingId, newStatus) => {
+    try {
+      setActionLoadingId(bookingId);
+      const res = await vendorApi.updateFnbStatus(bookingId, newStatus);
+      if (res && res.success) {
+        await fetchBookings();
+      }
+    } catch (err) {
+      alert(err.message || 'Failed to update F&B status');
+    } finally {
+      setActionLoadingId(null);
+    }
+  };
+
   // Client-side gate status filter (All, Checked In, Pending Gate)
   const filteredBookings = useMemo(() => {
     if (selectedStatus === 'CheckedIn') {
@@ -545,7 +559,7 @@ export default function VendorBookingsPage() {
                           </div>
                         </TableCell>
 
-                        {/* 6. Allocated Seats */}
+                        {/* 6. Allocated Seats & F&B Concessions */}
                         <TableCell className="py-3.5 px-4">
                           <div className="flex flex-wrap gap-1 max-w-[150px]">
                             {seatList.map((seat) => {
@@ -568,6 +582,42 @@ export default function VendorBookingsPage() {
                               );
                             })}
                           </div>
+
+                          {/* F&B Concessions Fulfillment Pill */}
+                          {b.includeSnacks && (
+                            <div className="mt-1.5 p-1.5 rounded-lg bg-amber-50 border border-amber-200/80 text-[10px] max-w-[180px]">
+                              <div className="flex items-center justify-between gap-1 text-amber-950 font-bold">
+                                <span className="flex items-center gap-1 truncate">
+                                  <span>🍿</span>
+                                  <span>{b.deliveryPreference === 'counter_pickup' ? 'Counter Pickup' : 'In-Seat Delivery'}</span>
+                                </span>
+                                <span className="font-mono text-[9px] text-amber-800">
+                                  ₹{b.snacksFee || 0}
+                                </span>
+                              </div>
+                              {Array.isArray(b.snacksList) && b.snacksList.length > 0 && (
+                                <div className="text-[9px] text-amber-800 mt-0.5 truncate" title={b.snacksList.map(s => `${s.name} ×${s.quantity}`).join(', ')}>
+                                  {b.snacksList.map(s => `${s.name} ×${s.quantity}`).join(', ')}
+                                </div>
+                              )}
+                              <div className="mt-1 flex items-center justify-between gap-1 pt-1 border-t border-amber-200/60">
+                                <span className={`text-[8px] font-black uppercase px-1.5 py-0.2 rounded ${
+                                  b.fnbStatus === 'delivered' ? 'bg-emerald-100 text-emerald-800' : 'bg-amber-100 text-amber-800'
+                                }`}>
+                                  {b.fnbStatus === 'delivered' ? 'Delivered ✓' : 'Kitchen Prep'}
+                                </span>
+                                {b.fnbStatus !== 'delivered' && (
+                                  <button
+                                    onClick={() => handleUpdateFnbStatus(b._id || b.id, 'delivered')}
+                                    disabled={actionLoadingId === (b._id || b.id)}
+                                    className="text-[9px] font-bold text-amber-900 hover:text-amber-950 underline cursor-pointer disabled:opacity-50"
+                                  >
+                                    Mark Delivered
+                                  </button>
+                                )}
+                              </div>
+                            </div>
+                          )}
                         </TableCell>
 
                         {/* 7. Amount */}

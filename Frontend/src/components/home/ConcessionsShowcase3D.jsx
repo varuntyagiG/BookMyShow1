@@ -1,12 +1,14 @@
 import React, { useState, useRef } from 'react';
 import { useNavigate } from 'react-router-dom';
-import { Sparkles, UtensilsCrossed, ChevronRight, Check } from 'lucide-react';
+import { Sparkles, UtensilsCrossed, ChevronRight, Check, Eye } from 'lucide-react';
 import { playPop } from '../../utils/soundEffects';
+import FnbConcessionsModal from '../common/FnbConcessionsModal';
 
 export default function ConcessionsShowcase3D() {
   const navigate = useNavigate();
   const [mousePos, setMousePos] = useState({ x: 0.5, y: 0.5 });
   const [isHovered, setIsHovered] = useState(false);
+  const [showMenuModal, setShowMenuModal] = useState(false);
   const cardRef = useRef(null);
 
   const handleMouseMove = (e) => {
@@ -107,7 +109,20 @@ export default function ConcessionsShowcase3D() {
         </div>
 
         {/* Right CTA */}
-        <div className="shrink-0 z-10" style={{ transform: isHovered ? 'translateZ(35px)' : 'translateZ(0px)', transition: 'transform 0.3s ease-out' }}>
+        <div className="shrink-0 z-10 flex flex-col sm:flex-row items-center gap-2.5" style={{ transform: isHovered ? 'translateZ(35px)' : 'translateZ(0px)', transition: 'transform 0.3s ease-out' }}>
+          <button
+            type="button"
+            onClick={(e) => {
+              e.stopPropagation();
+              playPop();
+              setShowMenuModal(true);
+            }}
+            className="bg-white/10 hover:bg-white/20 text-white text-xs sm:text-sm font-bold py-3.5 px-5 rounded-2xl transition-all active:scale-95 flex items-center gap-1.5 cursor-pointer border border-white/15"
+          >
+            <Eye className="w-4 h-4 text-amber-300" />
+            <span>Preview Menu</span>
+          </button>
+
           <button
             type="button"
             onClick={(e) => {
@@ -122,6 +137,22 @@ export default function ConcessionsShowcase3D() {
         </div>
 
       </div>
+
+      {/* Interactive Concessions Menu Modal Preview */}
+      <FnbConcessionsModal
+        isOpen={showMenuModal}
+        onClose={() => setShowMenuModal(false)}
+        onProceed={() => {
+          setShowMenuModal(false);
+          navigate('/movies');
+        }}
+        onSkip={() => {
+          setShowMenuModal(false);
+          navigate('/movies');
+        }}
+        screenName="Screen 1 (IMAX)"
+        theatreName="PVR Multiplex"
+      />
     </section>
   );
 }

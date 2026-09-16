@@ -169,5 +169,11 @@ export const vendorApi = {
     return vendorRequest(`/bookings${query ? `?${query}` : ''}`);
   },
 
+  updateFnbStatus: (id, fnbStatus) =>
+    vendorRequest(`/bookings/${id}/fnb-status`, {
+      method: 'PATCH',
+      body: JSON.stringify({ fnbStatus }),
+    }),
+
   getAnalytics: () => vendorRequest('/analytics'),
 };

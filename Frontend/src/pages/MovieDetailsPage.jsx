@@ -34,11 +34,16 @@ import {
   MessageSquare,
   ShieldCheck,
   Printer,
-  Tv
+  Tv,
+  Armchair,
+  Zap,
+  CheckCircle2,
+  ShoppingBag
 } from 'lucide-react';
 import confetti from 'canvas-confetti';
 import { motion } from 'framer-motion';
 import { playSeatClick, playPop, playFlip, playChime } from '../utils/soundEffects';
+import { FNB_CATALOG } from '../components/common/FnbConcessionsModal';
 
 const generateBookingId = () => 'BMS-' + Date.now().toString().slice(-6);
 
@@ -164,9 +169,14 @@ export default function MovieDetailsPage() {
     seatsCount: 2,
     selectedSeats: ['B5', 'B6'],
     includeSnacks: false,
+    snacksList: [],
+    deliveryPreference: 'seat_delivery',
+    snacksTotal: 0,
     confirmed: false,
     bookingId: null,
   });
+
+  const [activeSnackCategory, setActiveSnackCategory] = useState('all');
 
   const [isTicketFlipped, setIsTicketFlipped] = useState(false);
 
@@ -436,6 +446,8 @@ export default function MovieDetailsPage() {
       seatsCount: initialSeats.length || 2,
       selectedSeats: initialSeats,
       includeSnacks: false,
+      snacksList: [],
+      deliveryPreference: 'seat_delivery',
       snacksTotal: 0,
       confirmed: false,
       bookingId: generateBookingId(),
@@ -521,6 +533,55 @@ export default function MovieDetailsPage() {
     });
   };
 
+  const handleAddSnack = (snackItem) => {
+    playSeatClick();
+    setBookingModal((prev) => {
+      const existing = [...(prev.snacksList || [])];
+      const idx = existing.findIndex((s) => s.snackId === snackItem.id);
+      if (idx >= 0) {
+        existing[idx] = { ...existing[idx], quantity: existing[idx].quantity + 1 };
+      } else {
+        existing.push({
+          snackId: snackItem.id,
+          name: snackItem.name,
+          category: snackItem.category,
+          price: snackItem.price,
+          quantity: 1,
+          emoji: snackItem.emoji,
+        });
+      }
+      const newTotal = existing.reduce((sum, item) => sum + item.price * item.quantity, 0);
+      return {
+        ...prev,
+        includeSnacks: true,
+        snacksList: existing,
+        snacksTotal: newTotal,
+      };
+    });
+  };
+
+  const handleRemoveSnack = (snackId) => {
+    playPop();
+    setBookingModal((prev) => {
+      let existing = [...(prev.snacksList || [])];
+      const idx = existing.findIndex((s) => s.snackId === snackId);
+      if (idx >= 0) {
+        if (existing[idx].quantity <= 1) {
+          existing.splice(idx, 1);
+        } else {
+          existing[idx] = { ...existing[idx], quantity: existing[idx].quantity - 1 };
+        }
+      }
+      const newTotal = existing.reduce((sum, item) => sum + item.price * item.quantity, 0);
+      return {
+        ...prev,
+        includeSnacks: existing.length > 0,
+        snacksList: existing,
+        snacksTotal: newTotal,
+      };
+    });
+  };
+
   const confirmBooking = async () => {
     if (!isAuthenticated) {
       openAuthModal('signin');
@@ -550,6 +611,9 @@ export default function MovieDetailsPage() {
         showDate: selectedDate,
         seats: bookingModal.selectedSeats,
         includeSnacks: bookingModal.includeSnacks,
+        snacksList: bookingModal.snacksList || [],
+        deliveryPreference: bookingModal.deliveryPreference || 'seat_delivery',
+        snacksFee: bookingModal.snacksTotal || 0,
         showId: isObjectId(rawShowId) ? rawShowId : undefined,
         screenId: isObjectId(rawScreenId) ? rawScreenId : undefined,
         cinemaId: isObjectId(rawCinemaId) ? rawCinemaId : undefined,
@@ -1666,109 +1730,181 @@ export default function MovieDetailsPage() {
                       </p>
                     </div>
 
-                    {/* Compact Gourmet Multiplex Concessions Showcase */}
-                    <div className="relative rounded-xl overflow-hidden mb-3.5 border border-amber-300/40 shadow-sm group">
-                      <div className="h-24 sm:h-28 w-full overflow-hidden bg-slate-900 relative">
-                        <img
-                          src="/assets/graphics/concessions_combo.jpg"
-                          alt="Gourmet Cinema Concessions Combo"
-                          className="w-full h-full object-cover object-center group-hover:scale-105 transition-transform duration-700"
-                        />
-                        <div className="absolute inset-0 bg-gradient-to-t from-black/85 via-black/30 to-transparent pointer-events-none" />
-                        <div className="absolute bottom-2 left-3 right-3 flex items-center justify-between">
-                          <div>
-                            <span className="text-[9px] font-black uppercase tracking-wider text-amber-300 bg-amber-500/30 backdrop-blur-md px-2 py-0.5 rounded-full border border-amber-400/30">
-                              Chef's Signature Combo
-                            </span>
-                            <p className="text-[11px] font-bold text-white mt-0.5 drop-shadow-sm">
-                              Fresh Butter Popcorn, Ice-Cold Cola &amp; Cheesy Nachos
+                    {/* Delivery Preference Selector Strip */}
+                    <div className="bg-slate-50 p-3 rounded-2xl border border-slate-200 mb-3.5">
+                      <span className="text-[10px] font-extrabold uppercase tracking-wider text-slate-500 block mb-2">
+                        Delivery Preference:
+                      </span>
+                      <div className="grid grid-cols-1 sm:grid-cols-2 gap-2">
+                        <button
+                          type="button"
+                          onClick={() => {
+                            playPop();
+                            setBookingModal((prev) => ({ ...prev, deliveryPreference: 'seat_delivery' }));
+                          }}
+                          className={`p-2.5 rounded-xl border text-left transition-all cursor-pointer flex items-start gap-2.5 ${
+                            (bookingModal.deliveryPreference || 'seat_delivery') === 'seat_delivery'
+                              ? 'bg-amber-50/90 border-amber-400 ring-2 ring-amber-400/20 shadow-xs'
+                              : 'bg-white border-slate-200 hover:border-slate-300'
+                          }`}
+                        >
+                          <div className={`p-1.5 rounded-lg shrink-0 ${
+                            (bookingModal.deliveryPreference || 'seat_delivery') === 'seat_delivery' ? 'bg-amber-500 text-white' : 'bg-slate-100 text-slate-600'
+                          }`}>
+                            <Armchair className="w-3.5 h-3.5" />
+                          </div>
+                          <div className="min-w-0">
+                            <div className="flex items-center gap-1">
+                              <span className="text-xs font-bold text-slate-900">In-Seat Delivery</span>
+                              {(bookingModal.deliveryPreference || 'seat_delivery') === 'seat_delivery' && (
+                                <CheckCircle2 className="w-3 h-3 text-amber-600 shrink-0" />
+                              )}
+                            </div>
+                            <p className="text-[10px] text-slate-500 mt-0.5">
+                              Delivered at Intermission to Seats <span className="font-bold text-slate-700">{bookingModal.selectedSeats.join(', ')}</span>
                             </p>
                           </div>
-                          <span className="bg-[#F84464] text-white text-[9px] font-black px-2 py-0.5 rounded-md shadow-xs">
-                            SAVE 20%
-                          </span>
-                        </div>
+                        </button>
+
+                        <button
+                          type="button"
+                          onClick={() => {
+                            playPop();
+                            setBookingModal((prev) => ({ ...prev, deliveryPreference: 'counter_pickup' }));
+                          }}
+                          className={`p-2.5 rounded-xl border text-left transition-all cursor-pointer flex items-start gap-2.5 ${
+                            bookingModal.deliveryPreference === 'counter_pickup'
+                              ? 'bg-amber-50/90 border-amber-400 ring-2 ring-amber-400/20 shadow-xs'
+                              : 'bg-white border-slate-200 hover:border-slate-300'
+                          }`}
+                        >
+                          <div className={`p-1.5 rounded-lg shrink-0 ${
+                            bookingModal.deliveryPreference === 'counter_pickup' ? 'bg-amber-500 text-white' : 'bg-slate-100 text-slate-600'
+                          }`}>
+                            <Zap className="w-3.5 h-3.5" />
+                          </div>
+                          <div className="min-w-0">
+                            <div className="flex items-center gap-1">
+                              <span className="text-xs font-bold text-slate-900">Express Counter</span>
+                              {bookingModal.deliveryPreference === 'counter_pickup' && (
+                                <CheckCircle2 className="w-3 h-3 text-amber-600 shrink-0" />
+                              )}
+                            </div>
+                            <p className="text-[10px] text-slate-500 mt-0.5">
+                              Show ticket barcode at Refreshment Counter #3
+                            </p>
+                          </div>
+                        </button>
                       </div>
                     </div>
 
-                    {/* Snack Combos Cards */}
-                    <div className="space-y-2 mb-4">
+                    {/* Category Tabs */}
+                    <div className="flex items-center gap-1.5 overflow-x-auto no-scrollbar pb-2 mb-2.5">
                       {[
-                        {
-                          id: 'combo-duo',
-                          name: 'Popcorn & Chilled Pepsi Duo',
-                          desc: '1 Jumbo Salted Popcorn Tub + 2 Chilled Pepsis (400ml)',
-                          price: 250,
-                          badge: 'BMS BESTSELLER',
-                          emoji: '🍿🥤',
-                        },
-                        {
-                          id: 'caramel-tub',
-                          name: 'Jumbo Golden Caramel Tub',
-                          desc: 'Signature crunchy golden caramel popcorn prepared fresh',
-                          price: 210,
-                          badge: 'CHEF CHOICE',
-                          emoji: '🍿✨',
-                        },
-                        {
-                          id: 'nachos-cheese',
-                          name: 'Nachos with Warm Cheese Dip',
-                          desc: 'Crispy salted corn tortilla chips served with warm melted cheddar',
-                          price: 180,
-                          badge: 'CRISPY SNACK',
-                          emoji: '🧀🌮',
-                        }
-                      ].map((snack) => {
-                        const isAdded = bookingModal.includeSnacks && (bookingModal.selectedSnackId === snack.id || !bookingModal.selectedSnackId);
+                        { id: 'all', label: 'All Items', emoji: '🍿' },
+                        { id: 'combos', label: 'Saver Combos', emoji: '🌟' },
+                        { id: 'popcorn', label: 'Popcorn', emoji: '🌽' },
+                        { id: 'snacks', label: 'Nachos & Bites', emoji: '🌮' },
+                        { id: 'beverages', label: 'Beverages', emoji: '🥤' },
+                        { id: 'desserts', label: 'Desserts', emoji: '🍫' }
+                      ].map((cat) => (
+                        <button
+                          key={cat.id}
+                          type="button"
+                          onClick={() => {
+                            playPop();
+                            setActiveSnackCategory(cat.id);
+                          }}
+                          className={`px-3 py-1 rounded-full text-xs font-bold whitespace-nowrap transition-all cursor-pointer flex items-center gap-1 shrink-0 ${
+                            activeSnackCategory === cat.id
+                              ? 'bg-amber-500 text-white shadow-xs'
+                              : 'bg-gray-100 hover:bg-gray-200 text-gray-600'
+                          }`}
+                        >
+                          <span>{cat.emoji}</span>
+                          <span>{cat.label}</span>
+                        </button>
+                      ))}
+                    </div>
+
+                    {/* Snack Combos Cards */}
+                    <div className="space-y-2 mb-4 max-h-[280px] overflow-y-auto pr-1">
+                      {FNB_CATALOG.filter(
+                        (item) => activeSnackCategory === 'all' || item.category === activeSnackCategory
+                      ).map((snack) => {
+                        const inCart = (bookingModal.snacksList || []).find((s) => s.snackId === snack.id);
+                        const qty = inCart ? inCart.quantity : 0;
                         return (
                           <div
                             key={snack.id}
-                            className={`p-3 rounded-xl border transition-all flex items-center justify-between gap-3 ${
-                              isAdded
-                                ? 'bg-amber-50/80 border-amber-300 ring-2 ring-amber-400/20'
+                            className={`p-2.5 rounded-xl border transition-all flex items-center justify-between gap-3 ${
+                              qty > 0
+                                ? 'bg-amber-50/80 border-amber-300 ring-1 ring-amber-400/30'
                                 : 'bg-white border-gray-200 hover:border-gray-300'
                             }`}
                           >
-                            <div className="flex items-center gap-3">
-                              <span className="text-2xl filter drop-shadow-xs">{snack.emoji}</span>
-                              <div>
-                                <div className="flex items-center gap-1.5">
-                                  <span className="text-xs font-bold text-gray-900">{snack.name}</span>
-                                  <span className="text-[8px] font-black px-1.5 py-0.2 rounded-full bg-amber-100 text-amber-800 uppercase">
-                                    {snack.badge}
+                            <div className="flex items-center gap-2.5 min-w-0">
+                              <span className="text-2xl filter drop-shadow-xs shrink-0">{snack.emoji}</span>
+                              <div className="min-w-0">
+                                <div className="flex items-center gap-1.5 flex-wrap">
+                                  {/* Veg / Non-Veg badge */}
+                                  <span
+                                    className={`w-2.5 h-2.5 rounded-xs border flex items-center justify-center shrink-0 ${
+                                      snack.isVeg ? 'border-emerald-500' : 'border-rose-600'
+                                    }`}
+                                  >
+                                    <span className={`w-1 h-1 rounded-full ${snack.isVeg ? 'bg-emerald-500' : 'bg-rose-600'}`} />
                                   </span>
+                                  <span className="text-xs font-bold text-gray-900 truncate">{snack.name}</span>
+                                  {snack.badge && (
+                                    <span className="text-[8px] font-black px-1.5 py-0.2 rounded-full bg-amber-100 text-amber-800 uppercase">
+                                      {snack.badge}
+                                    </span>
+                                  )}
                                 </div>
-                                <p className="text-[10px] text-gray-500 mt-0.5">{snack.desc}</p>
-                                <span className="text-xs font-black text-gray-900 mt-0.5 block">₹{snack.price}</span>
+                                <p className="text-[10px] text-gray-500 mt-0.5 line-clamp-1">{snack.desc}</p>
+                                <div className="flex items-center gap-1.5 mt-0.5">
+                                  <span className="text-xs font-black text-gray-900">₹{snack.price}</span>
+                                  <span className="text-[10px] text-gray-400 font-medium">• {snack.calories}</span>
+                                </div>
                               </div>
                             </div>
 
-                            <button
-                              type="button"
-                              onPointerDown={() => {
-                                setBookingModal((prev) => ({
-                                  ...prev,
-                                  includeSnacks: !isAdded,
-                                  selectedSnackId: isAdded ? null : snack.id,
-                                  snacksTotal: !isAdded ? snack.price : 0,
-                                }));
-                              }}
-                              onClick={() => {
-                                setBookingModal((prev) => ({
-                                  ...prev,
-                                  includeSnacks: !isAdded,
-                                  selectedSnackId: isAdded ? null : snack.id,
-                                  snacksTotal: !isAdded ? snack.price : 0,
-                                }));
-                              }}
-                              className={`px-3 py-1.5 rounded-lg text-xs font-bold transition-all cursor-pointer shrink-0 ${
-                                isAdded
-                                  ? 'bg-amber-500 hover:bg-amber-600 text-white shadow-xs'
-                                  : 'bg-gray-100 hover:bg-gray-200 text-gray-700'
-                              }`}
-                            >
-                              {isAdded ? 'Added ✓' : '+ Add'}
-                            </button>
+                            {/* Add / Stepper Controls */}
+                            <div className="shrink-0">
+                              {qty === 0 ? (
+                                <button
+                                  type="button"
+                                  onClick={() => handleAddSnack(snack)}
+                                  className="px-3 py-1.5 rounded-lg text-xs font-bold bg-gray-100 hover:bg-gray-200 text-gray-700 transition-all cursor-pointer flex items-center gap-1 hover:text-gray-900 active:scale-95"
+                                >
+                                  <Plus className="w-3 h-3" />
+                                  <span>Add</span>
+                                </button>
+                              ) : (
+                                <div className="flex items-center gap-1.5 bg-amber-500 text-white rounded-lg p-1 shadow-xs">
+                                  <button
+                                    type="button"
+                                    onClick={() => handleRemoveSnack(snack.id)}
+                                    className="w-5 h-5 rounded-md bg-black/20 hover:bg-black/30 flex items-center justify-center transition-colors cursor-pointer"
+                                    aria-label="Decrease quantity"
+                                  >
+                                    <Minus className="w-2.5 h-2.5 text-white" />
+                                  </button>
+                                  <span className="text-xs font-black px-1 min-w-[14px] text-center">
+                                    {qty}
+                                  </span>
+                                  <button
+                                    type="button"
+                                    onClick={() => handleAddSnack(snack)}
+                                    className="w-5 h-5 rounded-md bg-black/20 hover:bg-black/30 flex items-center justify-center transition-colors cursor-pointer"
+                                    aria-label="Increase quantity"
+                                  >
+                                    <Plus className="w-2.5 h-2.5 text-white" />
+                                  </button>
+                                </div>
+                              )}
+                            </div>
                           </div>
                         );
                       })}
@@ -1784,10 +1920,20 @@ export default function MovieDetailsPage() {
                         <span>Convenience Fees &amp; GST:</span>
                         <span>₹{convenienceFee}</span>
                       </div>
-                      {bookingModal.includeSnacks && (
-                        <div className="flex justify-between items-center text-amber-700 font-bold text-[11px]">
-                          <span>Multiplex Snack Combo:</span>
-                          <span>+₹{snacksTotal}</span>
+                      {bookingModal.includeSnacks && (bookingModal.snacksTotal || 0) > 0 && (
+                        <div className="pt-1 border-t border-gray-200/80 space-y-1">
+                          <div className="flex justify-between items-center text-amber-800 font-bold text-[11px]">
+                            <span>
+                              Cinema Concessions ({bookingModal.deliveryPreference === 'counter_pickup' ? 'Counter Pickup' : 'In-Seat Delivery'}):
+                            </span>
+                            <span>+₹{bookingModal.snacksTotal}</span>
+                          </div>
+                          {Array.isArray(bookingModal.snacksList) && bookingModal.snacksList.map((s, idx) => (
+                            <div key={idx} className="flex justify-between items-center text-[10px] text-amber-700 pl-2">
+                              <span>{s.emoji} {s.name} × {s.quantity}</span>
+                              <span>₹{s.price * s.quantity}</span>
+                            </div>
+                          ))}
                         </div>
                       )}
                       <div className="pt-1.5 border-t border-gray-200 flex justify-between items-center text-sm">
@@ -1808,7 +1954,7 @@ export default function MovieDetailsPage() {
                       <button
                         type="button"
                         onClick={() => {
-                          setBookingModal((prev) => ({ ...prev, includeSnacks: false, snacksTotal: 0 }));
+                          setBookingModal((prev) => ({ ...prev, includeSnacks: false, snacksList: [], snacksTotal: 0 }));
                           confirmBooking();
                         }}
                         disabled={bookingLoading}
@@ -1940,15 +2086,49 @@ export default function MovieDetailsPage() {
 
                 {/* Snack Voucher Pill if included */}
                 {bookingModal.includeSnacks && (
-                  <div className="mb-3.5 p-2.5 rounded-xl bg-amber-50 border border-amber-200 flex items-center justify-between text-xs">
-                    <div className="flex items-center gap-2">
-                      <span className="text-base">🍿</span>
-                      <div>
-                        <span className="text-[11px] font-bold text-amber-900 block">Snack Combo Voucher</span>
-                        <span className="text-[10px] text-amber-700">Collect at Refreshment Counter #3</span>
+                  <div className="mb-3.5 p-3 rounded-2xl bg-gradient-to-r from-amber-50 to-orange-50 border border-amber-200 text-xs shadow-xs">
+                    <div className="flex items-center justify-between gap-2 mb-2 pb-2 border-b border-amber-200/60">
+                      <div className="flex items-center gap-2">
+                        <span className="text-xl">🍿</span>
+                        <div>
+                          <span className="text-xs font-black text-amber-950 block">
+                            Cinema Concessions Voucher
+                          </span>
+                          <span className="text-[10px] text-amber-800 font-semibold">
+                            {bookingModal.deliveryPreference === 'counter_pickup'
+                              ? '⚡ Express Counter: Refreshment Counter #3'
+                              : `🛋️ In-Seat Delivery: Seats ${bookingModal.selectedSeats.join(', ')}`}
+                          </span>
+                        </div>
                       </div>
+                      <span className="text-xs font-mono font-black text-amber-900 bg-amber-200/60 px-2 py-0.5 rounded-md">
+                        PAID ₹{snacksTotal}
+                      </span>
                     </div>
-                    <span className="text-[11px] font-mono font-black text-amber-900">PAID ₹{snacksTotal}</span>
+
+                    {/* Itemized Snacks List */}
+                    {Array.isArray(bookingModal.snacksList) && bookingModal.snacksList.length > 0 ? (
+                      <div className="space-y-1 mb-2">
+                        {bookingModal.snacksList.map((snack, sIdx) => (
+                          <div key={sIdx} className="flex items-center justify-between text-[11px] text-amber-900">
+                            <span>{snack.emoji || '🍿'} {snack.name} <span className="font-bold text-amber-950">× {snack.quantity || 1}</span></span>
+                            <span className="font-semibold">₹{(snack.price || 0) * (snack.quantity || 1)}</span>
+                          </div>
+                        ))}
+                      </div>
+                    ) : (
+                      <p className="text-[10px] text-amber-700 font-medium mb-1.5">
+                        Standard Multiplex Snack Combo
+                      </p>
+                    )}
+
+                    <div className="pt-1.5 border-t border-amber-200/60 flex items-center justify-between text-[9px] text-amber-800 font-bold uppercase tracking-wider">
+                      <span className="flex items-center gap-1">
+                        <span className="w-1.5 h-1.5 rounded-full bg-amber-500 animate-pulse" />
+                        Kitchen Status: Preparing
+                      </span>
+                      <span>Intermission Delivery</span>
+                    </div>
                   </div>
                 )}
 
