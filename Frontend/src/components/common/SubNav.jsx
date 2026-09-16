@@ -117,12 +117,12 @@ export default function SubNav() {
                 playPop();
               }}
               className={`transition-all cursor-pointer relative py-2 text-[13px] sm:text-sm font-semibold shrink-0 flex items-center ${
-                currentPath === '/' ? 'text-[#F5F5F7]' : 'text-[#A6A8B3] hover:text-[#F5F5F7]'
+                currentPath === '/' ? 'text-[#F84464]' : 'text-[#A6A8B3] hover:text-[#F5F5F7]'
               }`}
             >
               <span>All</span>
               {currentPath === '/' && (
-                <span className="absolute bottom-0 left-0 right-0 h-0.5 bg-[#F84464] rounded-full shadow-[0_0_8px_rgba(248,68,100,0.7)]" />
+                <span className="absolute bottom-0 left-0 right-0 h-0.5 bg-[#F84464] rounded-full" />
               )}
             </Link>
 
@@ -143,7 +143,7 @@ export default function SubNav() {
                       playPop();
                     }}
                     className={`transition-all cursor-pointer relative py-2 text-[13px] sm:text-sm font-semibold shrink-0 flex items-center gap-1.5 ${
-                      isActive || isHovered ? 'text-[#F5F5F7]' : 'text-[#A6A8B3] hover:text-[#F5F5F7]'
+                      isActive ? 'text-[#F84464]' : isHovered ? 'text-[#F5F5F7]' : 'text-[#A6A8B3] hover:text-[#F5F5F7]'
                     }`}
                   >
                     <span>{cat.label}</span>
@@ -161,7 +161,7 @@ export default function SubNav() {
                       </span>
                     )}
                     {(isActive || isHovered) && (
-                      <span className="absolute bottom-0 left-0 right-0 h-0.5 bg-[#F84464] rounded-full shadow-[0_0_8px_rgba(248,68,100,0.7)]" />
+                      <span className="absolute bottom-0 left-0 right-0 h-0.5 bg-[#F84464] rounded-full" />
                     )}
                   </Link>
                 </div>
@@ -184,7 +184,7 @@ export default function SubNav() {
                   className={`transition-all flex items-center gap-1.5 text-xs font-semibold cursor-pointer ${
                     item.highlight 
                       ? 'bg-[#292B35] hover:bg-[#323440] border border-white/10 hover:border-white/20 px-3 py-1 rounded-full text-[#F5F5F7] shadow-2xs' 
-                      : (currentPath === item.path ? 'text-[#F5F5F7] font-semibold' : 'text-[#A6A8B3] hover:text-[#F5F5F7]')
+                      : (currentPath === item.path ? 'text-[#F84464] font-semibold' : 'text-[#A6A8B3] hover:text-[#F5F5F7]')
                   }`}
                 >
                   {Icon && <Icon className={`w-3 h-3 ${item.highlight ? 'text-[#F84464]' : 'text-[#A6A8B3]'}`} />}

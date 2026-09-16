@@ -9,16 +9,24 @@ import {
   X, 
   Film, 
   Bell, 
-  Crown,
-  Sparkles,
-  ArrowRight,
-  Compass
+  User,
+  Tag,
+  ArrowRight
 } from 'lucide-react';
 import { useAuth } from '../../context/AuthContext';
 import { useCity } from '../../context/CityContext';
 import { useNotification } from '../../context/NotificationContext';
 import { Link, useNavigate } from 'react-router-dom';
 import { playPop } from '../../utils/soundEffects';
+
+const getUserInitials = (name) => {
+  if (!name || typeof name !== 'string') return 'U';
+  const parts = name.trim().split(/\s+/);
+  if (parts.length >= 2) {
+    return (parts[0][0] + parts[parts.length - 1][0]).toUpperCase();
+  }
+  return parts[0].slice(0, 2).toUpperCase();
+};
 
 export default function Navbar({ onSearch }) {
   const { user, isAuthenticated, logout, openAuthModal } = useAuth();
@@ -257,17 +265,18 @@ export default function Navbar({ onSearch }) {
 
             {/* Live Notification Bell */}
             <button
+              type="button"
               onClick={() => {
                 playPop();
                 setIsOpenDrawer(true);
               }}
-              className="relative p-2 text-[#F5F5F7] hover:text-white rounded-full bg-[#292B35] hover:bg-[#30333f] border border-white/10 hover:border-white/20 transition-all cursor-pointer active:scale-95 shadow-xs"
+              className="relative p-2 text-[#F5F5F7] hover:text-white rounded-full bg-[#292B35] hover:bg-[#323542] border border-white/10 hover:border-white/20 transition-all cursor-pointer active:scale-95 shadow-none"
               title="Notifications"
               aria-label="Notifications"
             >
               <Bell className="w-4 h-4" />
               {unreadCount > 0 && (
-                <span className="absolute -top-1 -right-1 min-w-[18px] h-[18px] px-1 bg-[#F84464] text-white text-[9px] font-bold rounded-full flex items-center justify-center shadow-md shadow-[#F84464]/50">
+                <span className="absolute -top-1 -right-1 min-w-[18px] h-[18px] px-1 bg-[#F84464] text-white text-[9px] font-bold rounded-full flex items-center justify-center shadow-none">
                   {unreadCount > 9 ? '9+' : unreadCount}
                 </span>
               )}
@@ -284,63 +293,70 @@ export default function Navbar({ onSearch }) {
               <span className="font-semibold text-[13px] sm:text-sm tracking-normal">M-Pass</span>
             </Link>
 
-            {/* Auth Button or VIP Profile Avatar */}
+            {/* Profile / Account Area (40-44px Circular Icon) */}
             {isAuthenticated ? (
               <div className="relative" ref={dropdownRef}>
                 <button
+                  type="button"
                   onClick={() => {
                     playPop();
                     setUserDropdownOpen(!userDropdownOpen);
                   }}
-                  className="flex items-center gap-2 py-1 px-1.5 sm:px-2.5 rounded-full bg-[#292B35] hover:bg-[#30333f] transition-all cursor-pointer border border-white/10 hover:border-white/20 active:scale-95 group shadow-xs"
+                  className="w-10 h-10 sm:w-11 sm:h-11 rounded-full bg-[#292B35] hover:bg-[#323542] border border-white/[0.12] hover:border-white/20 flex items-center justify-center text-[#F5F5F7] transition-all cursor-pointer shadow-none active:scale-95 shrink-0 overflow-hidden"
+                  title="User Profile Menu"
+                  aria-label="User Account Menu"
+                  aria-expanded={userDropdownOpen}
                 >
-                  {/* Square-Curved Avatar Tile */}
-                  <div className="relative">
-                    <div className="w-7 h-7 sm:w-8 sm:h-8 rounded-lg bg-gradient-to-tr from-[#F84464] via-[#ff3b5c] to-[#e0183e] flex items-center justify-center text-white text-xs font-bold shadow-md ring-2 ring-[#F84464]/50 group-hover:ring-[#F84464] transition-all">
-                      {user?.name ? user.name.charAt(0).toUpperCase() : 'U'}
-                    </div>
-                    <span className="absolute -top-1 -right-1 w-2.5 h-2.5 bg-[#F5B800] rounded-full border border-black flex items-center justify-center shadow-xs">
-                      <Crown className="w-1.5 h-1.5 text-black" />
+                  {user?.avatar || user?.profilePicture || user?.image ? (
+                    <img
+                      src={user.avatar || user.profilePicture || user.image}
+                      alt={user?.name || 'User'}
+                      className="w-full h-full object-cover rounded-full"
+                    />
+                  ) : (
+                    <span className="text-xs sm:text-sm font-bold tracking-tight text-[#F5F5F7] select-none">
+                      {getUserInitials(user?.name)}
                     </span>
-                  </div>
-
-                  <span className="text-[13px] sm:text-sm font-semibold max-w-[110px] truncate hidden md:inline text-[#F5F5F7] group-hover:text-white transition-colors">
-                    {user?.name?.split(' ')[0] || 'Member'}
-                  </span>
-                  <ChevronDown className="w-3.5 h-3.5 text-[#A6A8B3] group-hover:text-[#F5F5F7] transition-colors" />
+                  )}
                 </button>
 
-                {/* Dropdown Menu */}
+                {/* Redesigned Compact Profile Dropdown */}
                 {userDropdownOpen && (
-                  <div className="absolute right-0 mt-2.5 w-68 bg-[#20212B] backdrop-blur-2xl rounded-2xl shadow-[0_20px_50px_rgba(0,0,0,0.8)] py-2 text-[#F5F5F7] border border-white/10 z-50 animate-in fade-in zoom-in-95 duration-150 divide-y divide-white/10">
+                  <div className="absolute right-0 mt-2.5 w-64 bg-[#20212B] rounded-xl border border-white/10 shadow-[0_10px_30px_rgba(0,0,0,0.25)] py-2 text-[#F5F5F7] z-50 animate-in fade-in zoom-in-95 duration-150">
                     
-                    {/* Header Banner */}
-                    <div className="px-4 py-3.5 bg-gradient-to-b from-white/[0.04] to-transparent">
-                      <div className="flex items-center gap-1.5 text-[10px] text-[#F5B800] font-bold uppercase tracking-wider mb-1.5">
-                        <Crown className="w-3.5 h-3.5" />
-                        <span>BookMyShow Superstar Member</span>
+                    {/* User Header */}
+                    <div className="px-4 py-3 border-b border-white/10">
+                      <div className="text-[11px] font-semibold uppercase tracking-wider text-[#A6A8B3] mb-1">
+                        Profile
                       </div>
-                      <p className="text-sm font-bold text-[#F5F5F7] truncate">{user?.name}</p>
-                      <p className="text-xs text-[#A6A8B3] truncate mt-0.5">{user?.email}</p>
+                      <p className="text-sm font-bold text-[#F5F5F7] truncate">{user?.name || 'Customer'}</p>
+                      <p className="text-xs text-[#A6A8B3] truncate mt-0.5">{user?.email || ''}</p>
                     </div>
 
-                    {/* Quick Access Links */}
-                    <div className="py-2">
+                    {/* Navigation Links */}
+                    <div className="py-1.5">
                       <Link
                         to="/my-bookings"
                         onClick={() => {
                           playPop();
                           setUserDropdownOpen(false);
                         }}
-                        className="w-full flex items-center gap-3 px-4 py-2.5 text-xs font-semibold text-[#F5F5F7] hover:bg-[#292B35] hover:text-[#F84464] cursor-pointer transition-colors group"
+                        className="w-full flex items-center gap-3 px-4 py-2.5 text-xs font-semibold text-[#F5F5F7] hover:bg-[#292B35] transition-colors cursor-pointer"
                       >
-                        <div className="w-7 h-7 rounded-lg bg-[#F84464]/15 flex items-center justify-center text-[#F84464] group-hover:scale-110 transition-transform">
-                          <Ticket className="w-3.5 h-3.5" />
-                        </div>
-                        <div className="flex-1">
-                          <span className="block font-bold">Your Orders &amp; Tickets</span>
-                          <span className="text-[10px] text-[#A6A8B3] font-normal">Digital M-Pass &amp; QR Turnstile</span>
-                        </div>
+                        <Ticket className="w-4 h-4 text-[#A6A8B3]" />
+                        <span>My Bookings</span>
+                      </Link>
+
+                      <Link
+                        to="/offers"
+                        onClick={() => {
+                          playPop();
+                          setUserDropdownOpen(false);
+                        }}
+                        className="w-full flex items-center gap-3 px-4 py-2.5 text-xs font-semibold text-[#F5F5F7] hover:bg-[#292B35] transition-colors cursor-pointer"
+                      >
+                        <Tag className="w-4 h-4 text-[#A6A8B3]" />
+                        <span>Offers &amp; Rewards</span>
                       </Link>
 
                       <Link
@@ -349,29 +365,25 @@ export default function Navbar({ onSearch }) {
                           playPop();
                           setUserDropdownOpen(false);
                         }}
-                        className="w-full flex items-center gap-3 px-4 py-2.5 text-xs font-semibold text-[#F5F5F7] hover:bg-[#292B35] hover:text-[#F84464] cursor-pointer transition-colors group"
+                        className="w-full flex items-center gap-3 px-4 py-2.5 text-xs font-semibold text-[#F5F5F7] hover:bg-[#292B35] transition-colors cursor-pointer"
                       >
-                        <div className="w-7 h-7 rounded-lg bg-white/10 flex items-center justify-center text-[#A6A8B3] group-hover:text-white group-hover:scale-110 transition-transform">
-                          <Settings className="w-3.5 h-3.5" />
-                        </div>
-                        <div className="flex-1">
-                          <span className="block font-bold">Account &amp; Security</span>
-                          <span className="text-[10px] text-[#A6A8B3] font-normal">Manage payment &amp; profile</span>
-                        </div>
+                        <Settings className="w-4 h-4 text-[#A6A8B3]" />
+                        <span>Account Settings</span>
                       </Link>
                     </div>
 
                     {/* Sign Out Action */}
-                    <div className="p-2">
+                    <div className="border-t border-white/10 pt-1.5 px-2">
                       <button
+                        type="button"
                         onClick={() => {
                           playPop();
                           setUserDropdownOpen(false);
                           logout();
                         }}
-                        className="w-full flex items-center gap-2.5 px-3 py-2 text-xs font-bold text-red-400 hover:bg-red-500/15 rounded-xl cursor-pointer transition-colors"
+                        className="w-full flex items-center gap-2.5 px-3 py-2 text-xs font-semibold text-red-400 hover:bg-[#292B35] hover:text-red-300 rounded-lg transition-colors cursor-pointer"
                       >
-                        <LogOut className="w-3.5 h-3.5" />
+                        <LogOut className="w-4 h-4 text-red-400" />
                         <span>Sign Out</span>
                       </button>
                     </div>
@@ -380,22 +392,24 @@ export default function Navbar({ onSearch }) {
                 )}
               </div>
             ) : (
-              <div className="flex items-center gap-2">
-                <button
-                  onClick={(e) => {
-                    playPop();
-                    if (window.innerWidth > 640) {
-                      e.preventDefault();
-                      openAuthModal('signin');
-                    } else {
-                      navigate('/signin');
-                    }
-                  }}
-                  className="bg-gradient-to-r from-[#F84464] via-[#ff4769] to-[#e03a58] hover:from-[#ff5274] hover:to-[#eb4363] text-white text-[13px] sm:text-sm font-bold px-5 py-2 rounded-xl transition-all shadow-[0_4px_14px_rgba(248,68,100,0.35)] hover:shadow-[0_6px_20px_rgba(248,68,100,0.5)] active:scale-95 cursor-pointer flex items-center gap-1.5"
-                >
-                  <span>Sign In</span>
-                </button>
-              </div>
+              /* Logged-out State: Circular Profile Icon triggering existing Sign In flow */
+              <button
+                type="button"
+                onClick={(e) => {
+                  playPop();
+                  if (window.innerWidth > 640) {
+                    e.preventDefault();
+                    openAuthModal('signin');
+                  } else {
+                    navigate('/signin');
+                  }
+                }}
+                className="w-10 h-10 sm:w-11 sm:h-11 rounded-full bg-[#292B35] hover:bg-[#323542] border border-white/[0.12] hover:border-white/20 flex items-center justify-center text-[#F5F5F7] transition-all cursor-pointer shadow-none active:scale-95 shrink-0"
+                title="Sign In"
+                aria-label="Sign In to Account"
+              >
+                <User className="w-5 h-5 text-[#F5F5F7]" />
+              </button>
             )}
 
           </div>
