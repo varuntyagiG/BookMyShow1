@@ -1,6 +1,5 @@
-import React, { useState, useCallback, useEffect } from 'react';
+import React, { useState, useCallback } from 'react';
 import { BrowserRouter, Routes, Route, Outlet, Navigate } from 'react-router-dom';
-import { Sparkles } from 'lucide-react';
 import { AuthProvider } from './context/AuthContext';
 import { VendorAuthProvider } from './context/VendorAuthContext';
 import { CityProvider } from './context/CityContext';
@@ -13,7 +12,6 @@ import SubNav from './components/common/SubNav';
 import Footer from './components/common/Footer';
 import CityModal from './components/common/CityModal';
 import AuthModal from './components/auth/AuthModal';
-import CineMatchModal from './components/common/CineMatchModal';
 import CursorSpotlight from './components/common/CursorSpotlight';
 import ScrollToTop from './components/common/ScrollToTop';
 
@@ -60,14 +58,6 @@ import AdminSettlementsPage from './pages/admin/AdminSettlementsPage';
 import MobileBottomNav from './components/common/MobileBottomNav';
 
 const CustomerLayout = React.memo(function CustomerLayout({ onSearch }) {
-  const [isCineMatchOpen, setIsCineMatchOpen] = useState(false);
-
-  useEffect(() => {
-    const handleOpen = () => setIsCineMatchOpen(true);
-    window.addEventListener('open-cinematch', handleOpen);
-    return () => window.removeEventListener('open-cinematch', handleOpen);
-  }, []);
-
   return (
     <div className="flex flex-col min-h-screen bg-[#F5F5FA] text-[#222432] relative pb-16 md:pb-0">
       {/* Ambient Cinema Cursor Spotlight FX */}
@@ -90,22 +80,9 @@ const CustomerLayout = React.memo(function CustomerLayout({ onSearch }) {
       {/* Responsive Mobile Bottom Navigation Dock */}
       <MobileBottomNav />
 
-      {/* Floating CineMatch AI Assistant Widget */}
-      <button
-        type="button"
-        onClick={() => setIsCineMatchOpen(true)}
-        className="fixed bottom-20 md:bottom-6 right-5 z-40 py-2.5 px-4 bg-gradient-to-r from-violet-600 via-[#F84464] to-rose-600 hover:from-violet-500 hover:to-rose-500 text-white rounded-full shadow-2xl shadow-rose-900/40 border border-white/20 flex items-center gap-2 cursor-pointer transition-all hover:scale-105 active:scale-95 group backdrop-blur-md"
-        title="Ask CineMatch AI Movie Concierge"
-      >
-        <span className="w-2 h-2 rounded-full bg-emerald-400 animate-ping" />
-        <Sparkles className="w-4 h-4 text-amber-300 group-hover:rotate-12 transition-transform" />
-        <span className="text-xs font-black tracking-wide">CineMatch AI</span>
-      </button>
-
       {/* Global Modals */}
       <CityModal />
       <AuthModal />
-      <CineMatchModal isOpen={isCineMatchOpen} onClose={() => setIsCineMatchOpen(false)} />
     </div>
   );
 });
