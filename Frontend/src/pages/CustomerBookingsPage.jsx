@@ -24,8 +24,10 @@ import {
   X,
   Navigation,
   Sun,
-  ExternalLink
+  ExternalLink,
+  Download
 } from 'lucide-react';
+import { generateTicketPDF } from '../utils/ticketPdfGenerator';
 
 export default function CustomerBookingsPage() {
   const navigate = useNavigate();
@@ -38,6 +40,20 @@ export default function CustomerBookingsPage() {
   const [cancelModal, setCancelModal] = useState({ isOpen: false, booking: null, loading: false, error: '' });
   const [filterStatus, setFilterStatus] = useState('all');
   const [isScannerBright, setIsScannerBright] = useState(false);
+  const [pdfDownloadingId, setPdfDownloadingId] = useState(null);
+
+  const handleDownloadTicketPdf = async (booking) => {
+    const target = booking || activeTicketModal;
+    if (!target) return;
+    setPdfDownloadingId(target.bookingId || target._id);
+    try {
+      await generateTicketPDF(target, { autoSave: true });
+    } catch (pdfErr) {
+      console.error('Failed to generate PDF ticket:', pdfErr);
+    } finally {
+      setPdfDownloadingId(null);
+    }
+  };
 
   const handleCalendar = (booking) => {
     const title = `${booking.movieTitle || 'Movie'} - BookMyShow Ticket`;
@@ -229,6 +245,8 @@ export default function CustomerBookingsPage() {
                 booking={b}
                 onViewTicket={(booking) => setActiveTicketModal(booking)}
                 onCancel={(booking) => setCancelModal({ isOpen: true, booking, loading: false, error: '' })}
+                onDownloadPdf={handleDownloadTicketPdf}
+                isPdfDownloading={pdfDownloadingId === (b.bookingId || b._id)}
               />
             ))}
           </div>
@@ -507,6 +525,30 @@ export default function CustomerBookingsPage() {
                   title="Share on WhatsApp"
                 >
                   <span>WhatsApp</span>
+                </button>
+              </div>
+
+              {/* 1-Click Official PDF Ticket Download */}
+              <div className="mb-3">
+                <button
+                  type="button"
+                  onClick={() => handleDownloadTicketPdf(activeTicketModal)}
+                  disabled={pdfDownloadingId === (activeTicketModal.bookingId || activeTicketModal._id)}
+                  className="w-full py-2.5 px-4 bg-gradient-to-r from-[#222538] via-[#2a2d42] to-[#1c1e2d] hover:from-[#2a2d42] hover:to-[#222538] text-white text-xs font-black rounded-xl shadow-md border border-slate-700/80 transition-all active:scale-[0.98] cursor-pointer flex items-center justify-center gap-2 group"
+                >
+                  {pdfDownloadingId === (activeTicketModal.bookingId || activeTicketModal._id) ? (
+                    <>
+                      <Loader2 className="w-3.5 h-3.5 text-[#F84464] animate-spin" />
+                      <span>Compiling High-Res PDF Pass...</span>
+                    </>
+                  ) : (
+                    <>
+                      <div className="w-5 h-5 rounded-md bg-[#F84464] flex items-center justify-center text-white group-hover:scale-110 transition-transform">
+                        <Download className="w-3 h-3" />
+                      </div>
+                      <span>Download Official PDF Ticket (with QR &amp; Invoice)</span>
+                    </>
+                  )}
                 </button>
               </div>
 

@@ -7,7 +7,9 @@ import {
   CheckCircle2,
   AlertCircle,
   Armchair,
-  Sparkles
+  Sparkles,
+  Download,
+  Loader2
 } from 'lucide-react';
 import { motion } from 'framer-motion';
 import { playPop } from '../../utils/soundEffects';
@@ -15,7 +17,9 @@ import { playPop } from '../../utils/soundEffects';
 export default function TicketPassCard({
   booking,
   onViewTicket,
-  onCancel
+  onCancel,
+  onDownloadPdf,
+  isPdfDownloading = false
 }) {
   if (!booking) return null;
 
@@ -235,6 +239,23 @@ export default function TicketPassCard({
               className="text-xs font-semibold text-slate-500 hover:text-red-600 transition-colors cursor-pointer px-2.5 py-1.5"
             >
               Cancel
+            </button>
+          )}
+
+          {onDownloadPdf && !isCancelled && (
+            <button
+              type="button"
+              onClick={() => onDownloadPdf(booking)}
+              disabled={isPdfDownloading}
+              className="px-2.5 py-1.5 bg-slate-100 hover:bg-slate-200 text-slate-700 text-xs font-bold rounded-xl transition-all flex items-center justify-center gap-1 cursor-pointer shrink-0 active:scale-95"
+              title="Download Official PDF Ticket"
+            >
+              {isPdfDownloading ? (
+                <Loader2 className="w-3.5 h-3.5 animate-spin text-[#F84464]" />
+              ) : (
+                <Download className="w-3.5 h-3.5 text-slate-700" />
+              )}
+              <span>PDF</span>
             </button>
           )}
 

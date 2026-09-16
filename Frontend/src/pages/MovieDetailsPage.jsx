@@ -46,6 +46,7 @@ import { QRCodeSVG } from 'qrcode.react';
 import { playSeatClick, playPop, playFlip, playChime } from '../utils/soundEffects';
 import { FNB_CATALOG } from '../components/common/FnbConcessionsModal';
 import PaymentGatewayModal from '../components/common/PaymentGatewayModal';
+import { generateTicketPDF } from '../utils/ticketPdfGenerator';
 
 const generateBookingId = () => 'BMS-' + Date.now().toString().slice(-6);
 
@@ -185,6 +186,7 @@ export default function MovieDetailsPage() {
   const [bookingLoading, setBookingLoading] = useState(false);
   const [bookingError, setBookingError] = useState('');
   const [isPaymentModalOpen, setIsPaymentModalOpen] = useState(false);
+  const [isGeneratingPdf, setIsGeneratingPdf] = useState(false);
 
   const showtimesRef = useRef(null);
 
@@ -672,6 +674,33 @@ export default function MovieDetailsPage() {
           transactionId: res.booking.transactionId || paymentDetails?.transactionId,
           occupiedSeats: [...(prev.occupiedSeats || []), ...prev.selectedSeats],
         }));
+
+        // Automatically compile & download the official PDF ticket pass for the customer
+        try {
+          const rawBasePrice = bookingModal.showtime?.basePrice || 450;
+          const sCount = bookingModal.selectedSeats?.length || 1;
+          const tSubtotal = rawBasePrice * sCount;
+          const cFee = Math.round(35.4 * sCount);
+          const sTotal = bookingModal.includeSnacks ? (bookingModal.snacksTotal || 0) : 0;
+          generateTicketPDF({
+            ...res.booking,
+            movieTitle: movie?.title || res.booking.movieTitle,
+            theatreName: bookingModal.theatre?.name || res.booking.theatreName,
+            showtime: bookingModal.showtime?.time || res.booking.showtime,
+            showDate: selectedDate,
+            seats: bookingModal.selectedSeats,
+            paymentMethod: res.booking.paymentMethod || paymentDetails?.paymentMethod || 'upi_phonepe',
+            transactionId: res.booking.transactionId || paymentDetails?.transactionId,
+            snacksList: bookingModal.snacksList || [],
+            deliveryPreference: bookingModal.deliveryPreference,
+            ticketPrice: tSubtotal,
+            convenienceFee: cFee,
+            snacksFee: sTotal,
+            totalAmount: tSubtotal + cFee + sTotal
+          }, { autoSave: true });
+        } catch (_pdfErr) {
+          console.warn('Auto PDF download error:', _pdfErr);
+        }
       } else {
         setBookingError(res.message || 'Unable to confirm booking. Please try again.');
       }
@@ -701,6 +730,34 @@ export default function MovieDetailsPage() {
       setBookingError(err.message || 'Seat conflict: One or more selected seats were already booked. Please choose other available seats.');
     } finally {
       setBookingLoading(false);
+    }
+  };
+
+  const handleDownloadPdf = async () => {
+    setIsGeneratingPdf(true);
+    try {
+      const selectedDate = dates[selectedDateIndex]?.date || 'Today';
+      await generateTicketPDF({
+        ...(bookingModal.bookingData || {}),
+        bookingId: bookingModal.bookingId || bookingModal.bookingData?.bookingId,
+        movieTitle: movie?.title || bookingModal.bookingData?.movieTitle,
+        theatreName: bookingModal.theatre?.name || bookingModal.bookingData?.theatreName,
+        showtime: bookingModal.showtime?.time || bookingModal.bookingData?.showtime,
+        showDate: selectedDate,
+        seats: bookingModal.selectedSeats,
+        paymentMethod: bookingModal.paymentMethod || bookingModal.bookingData?.paymentMethod || 'upi_phonepe',
+        transactionId: bookingModal.transactionId || bookingModal.bookingData?.transactionId,
+        snacksList: bookingModal.snacksList || bookingModal.bookingData?.snacksList || [],
+        deliveryPreference: bookingModal.deliveryPreference,
+        ticketPrice: ticketsSubtotal,
+        convenienceFee: convenienceFee,
+        snacksFee: bookingModal.snacksTotal || 0,
+        totalAmount: grandTotal
+      }, { autoSave: true });
+    } catch (err) {
+      console.error('Failed to generate PDF:', err);
+    } finally {
+      setIsGeneratingPdf(false);
     }
   };
 
@@ -2190,6 +2247,30 @@ export default function MovieDetailsPage() {
                     title="Share on WhatsApp"
                   >
                     <span>WhatsApp</span>
+                  </button>
+                </div>
+
+                {/* 1-Click Official PDF Ticket Download */}
+                <div className="mb-3">
+                  <button
+                    type="button"
+                    onClick={handleDownloadPdf}
+                    disabled={isGeneratingPdf}
+                    className="w-full py-2.5 px-4 bg-gradient-to-r from-[#222538] via-[#2a2d42] to-[#1c1e2d] hover:from-[#2a2d42] hover:to-[#222538] text-white text-xs font-black rounded-xl shadow-md border border-slate-700/80 transition-all active:scale-[0.98] cursor-pointer flex items-center justify-center gap-2 group"
+                  >
+                    {isGeneratingPdf ? (
+                      <>
+                        <Loader2 className="w-3.5 h-3.5 text-[#F84464] animate-spin" />
+                        <span>Compiling High-Res PDF Pass...</span>
+                      </>
+                    ) : (
+                      <>
+                        <div className="w-5 h-5 rounded-md bg-[#F84464] flex items-center justify-center text-white group-hover:scale-110 transition-transform">
+                          <Download className="w-3 h-3" />
+                        </div>
+                        <span>Download Official PDF Ticket (with QR &amp; Invoice)</span>
+                      </>
+                    )}
                   </button>
                 </div>
 
