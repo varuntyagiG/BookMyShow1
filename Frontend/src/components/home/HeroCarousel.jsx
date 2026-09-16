@@ -187,13 +187,8 @@ export default function HeroCarousel({ banners = [] }) {
             </span>
           </div>
 
-          {/* Movie Synopsis / Subtitle */}
-          <p className="text-sm sm:text-base md:text-lg text-slate-300 font-normal leading-relaxed max-w-xl line-clamp-3 drop-shadow-md">
-            {current.subtitle || current.description || 'Experience the visually majestic cinematic spectacle with breathtaking world-building, razor-sharp IMAX projections, and ground-shaking Dolby sound.'}
-          </p>
-
           {/* Action Buttons Row */}
-          <div className="pt-2 flex items-center gap-3 sm:gap-4 flex-wrap">
+          <div className="pt-1 sm:pt-2 flex items-center gap-3 sm:gap-4 flex-wrap">
             <button
               type="button"
               onClick={handleBannerClick}
