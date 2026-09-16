@@ -240,21 +240,19 @@ export default function Navbar({ onSearch }) {
           {/* Right: Interactive Action Dock (Translucent Glass Beads) */}
           <div className="flex items-center gap-2 sm:gap-3 shrink-0">
 
-            {/* City Selector Capsule with Animated Radar Beacon */}
+            {/* Clean Location Selector Control */}
             <button
+              type="button"
               onClick={() => {
                 playPop();
                 setIsCityModalOpen(true);
               }}
-              className="flex items-center gap-2 text-xs text-[#F5F5F7] hover:text-white transition-all cursor-pointer py-1.5 px-3 sm:px-3.5 rounded-full bg-[#292B35] hover:bg-[#30333f] border border-white/10 hover:border-white/20 active:scale-95 shadow-xs"
+              className="flex items-center gap-2 text-xs text-[#F5F5F7] transition-all cursor-pointer py-1.5 px-3 sm:px-3.5 rounded-full bg-[#1F212A] hover:bg-[#252833] border border-white/10 hover:border-white/[0.18] shadow-none active:scale-95"
               title="Change City"
             >
-              <div className="relative flex items-center justify-center">
-                <MapPin className="w-3.5 h-3.5 text-[#F84464]" />
-                <span className="absolute -top-0.5 -right-0.5 w-1.5 h-1.5 bg-[#F84464] rounded-full animate-ping" />
-              </div>
+              <MapPin className="w-3.5 h-3.5 text-[#F84464] shrink-0" />
               <span className="font-semibold text-[#F5F5F7] text-[13px]">{selectedCity}</span>
-              <ChevronDown className="w-3.5 h-3.5 text-[#A6A8B3]" />
+              <ChevronDown className="w-3.5 h-3.5 text-[#A6A8B3] shrink-0" />
             </button>
 
             {/* Live Notification Bell */}
@@ -275,14 +273,14 @@ export default function Navbar({ onSearch }) {
               )}
             </button>
 
-            {/* Smart M-Ticket Gate Pass Shortcut */}
+            {/* Clean M-Pass Shortcut */}
             <Link
               to="/my-bookings"
               onClick={() => playPop()}
-              className="hidden lg:flex items-center gap-1.5 text-[13px] sm:text-sm text-[#F5B800] hover:text-[#ffd24d] transition-all cursor-pointer py-1.5 px-3.5 rounded-full bg-[#F5B800]/15 hover:bg-[#F5B800]/25 border border-[#F5B800]/30 active:scale-95 shadow-[0_0_10px_rgba(245,184,0,0.15)] group"
+              className="hidden lg:flex items-center gap-1.5 text-[13px] sm:text-sm text-[#F5B800] transition-all cursor-pointer py-1.5 px-3.5 rounded-full bg-[#F5B800]/[0.07] hover:bg-[#F5B800]/[0.12] border border-[#F5B800]/40 hover:border-[#F5B800]/[0.55] shadow-none active:scale-95 group"
               title="View Digital M-Ticket & Gate Pass"
             >
-              <Ticket className="w-3.5 h-3.5 text-[#F5B800] group-hover:rotate-12 transition-transform" />
+              <Ticket className="w-3.5 h-3.5 text-[#F5B800] group-hover:rotate-12 transition-transform shrink-0" />
               <span className="font-semibold text-[13px] sm:text-sm tracking-normal">M-Pass</span>
             </Link>
 
